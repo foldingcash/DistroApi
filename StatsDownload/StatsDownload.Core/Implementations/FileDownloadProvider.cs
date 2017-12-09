@@ -1,0 +1,101 @@
+﻿namespace StatsDownload.Core
+{
+    using System;
+
+    public class FileDownloadProvider : IFileDownloadService
+    {
+        private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
+
+        private readonly IFileDownloadLoggingService fileDownloadLoggingService;
+
+        public FileDownloadProvider(
+            IFileDownloadDataStoreService fileDownloadDataStoreService,
+            IFileDownloadLoggingService fileDownloadLoggingService)
+        {
+            if (IsNull(fileDownloadDataStoreService))
+            {
+                throw NewArgumentNullException(nameof(fileDownloadDataStoreService));
+            }
+
+            if (IsNull(fileDownloadLoggingService))
+            {
+                throw NewArgumentNullException(nameof(fileDownloadLoggingService));
+            }
+
+            this.fileDownloadDataStoreService = fileDownloadDataStoreService;
+            this.fileDownloadLoggingService = fileDownloadLoggingService;
+        }
+
+        public FileDownloadResult DownloadFile()
+        {
+            try
+            {
+                LogMethodInvoked(nameof(DownloadFile));
+
+                if (DataStoreUnavailable())
+                {
+                    var failedResult = NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable);
+                    LogResult(failedResult);
+                    return failedResult;
+                }
+
+                var successResult = NewSuccessFileDownloadResult();
+                LogResult(successResult);
+                return successResult;
+            }
+            catch (Exception exception)
+            {
+                var result = NewFailedFileDownloadResult(exception);
+
+                LogResult(result);
+
+                return result;
+            }
+        }
+
+        private bool DataStoreUnavailable()
+        {
+            return !fileDownloadDataStoreService.IsAvailable();
+        }
+
+        private bool IsNull(object value)
+        {
+            return value == null;
+        }
+
+        private void LogMethodInvoked(string method)
+        {
+            LogVerbose($"{method} Invoked");
+        }
+
+        private void LogResult(FileDownloadResult result)
+        {
+            fileDownloadLoggingService.LogResult(result);
+        }
+
+        private void LogVerbose(string message)
+        {
+            fileDownloadLoggingService.LogVerbose(message);
+        }
+
+        private Exception NewArgumentNullException(string parameterName)
+        {
+            return new ArgumentNullException(parameterName);
+        }
+
+        private FileDownloadResult NewFailedFileDownloadResult(Exception exception)
+        {
+            return new FileDownloadResult(exception);
+        }
+
+        private FileDownloadResult NewFailedFileDownloadResult(FailedReason failedReason)
+        {
+            return new FileDownloadResult(failedReason);
+        }
+
+        private FileDownloadResult NewSuccessFileDownloadResult()
+        {
+            return new FileDownloadResult();
+        }
+    }
+}
