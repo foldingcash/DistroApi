@@ -17,12 +17,7 @@
             {
                 lock (sync)
                 {
-                    if (innerContainer == null)
-                    {
-                        innerContainer = CreateWindsorContainer();
-                    }
-
-                    return innerContainer;
+                    return innerContainer ?? (innerContainer = CreateWindsorContainer());
                 }
             }
         }
