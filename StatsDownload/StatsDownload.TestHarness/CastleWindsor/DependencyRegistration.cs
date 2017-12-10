@@ -13,9 +13,9 @@
         {
             get
             {
-                var codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
                 var uri = new UriBuilder(codeBase);
-                var path = Uri.UnescapeDataString(uri.Path);
+                string path = Uri.UnescapeDataString(uri.Path);
                 return Path.GetDirectoryName(path);
             }
         }

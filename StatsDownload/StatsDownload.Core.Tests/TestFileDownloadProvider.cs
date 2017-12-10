@@ -27,10 +27,9 @@
         {
             fileDownloadDataStoreServiceMock.IsAvailable().Returns(false);
 
-            var actual = InvokeDownloadFile();
+            FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
-            Assert.That(actual.Exception, Is.Null);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
         }
 
@@ -40,16 +39,16 @@
             var expected = new Exception();
             fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw expected; });
 
-            var actual = InvokeDownloadFile();
+            FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
-            Assert.That(actual.Exception, Is.EqualTo(expected));
         }
 
         [Test]
         public void DownloadFile_WhenExceptionThrown_LoggingIsCalled()
         {
-            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw new Exception(); });
+            var expected = new Exception();
+            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw expected; });
 
             InvokeDownloadFile();
 
@@ -58,7 +57,7 @@
                     {
                         fileDownloadLoggingServiceMock.LogVerbose("DownloadFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
-                        fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
+                        fileDownloadLoggingServiceMock.LogException(expected);
                     }));
         }
 
@@ -79,7 +78,7 @@
         [Test]
         public void DownloadFile_WhenSuccess_ResultIsSuccess()
         {
-            var actual = InvokeDownloadFile();
+            FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.True);
         }

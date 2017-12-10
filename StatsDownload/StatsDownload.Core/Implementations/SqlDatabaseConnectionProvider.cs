@@ -11,13 +11,9 @@
 
         private SqlConnection sqlConnection { get; set; }
 
-        public void Close()
-        {
-            sqlConnection.Close();
-        }
-
         public void Dispose()
         {
+            sqlConnection.Close();
             sqlConnection.Dispose();
             sqlConnection = null;
         }

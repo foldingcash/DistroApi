@@ -20,8 +20,7 @@
 
         public void LogResult(FileDownloadResult result)
         {
-            Log?.Invoke(
-                $"Success: {result.Success}{Environment.NewLine}Failed Reason: {result.FailedReason}{Environment.NewLine}Exception Message: {result.Exception?.Message}");
+            Log?.Invoke($"Success: {result.Success}{Environment.NewLine}Failed Reason: {result.FailedReason}");
         }
 
         public void LogVerbose(string message)

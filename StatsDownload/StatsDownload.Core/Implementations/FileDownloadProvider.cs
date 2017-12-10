@@ -34,21 +34,19 @@
 
                 if (DataStoreUnavailable())
                 {
-                    var failedResult = NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable);
+                    FileDownloadResult failedResult = NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable);
                     LogResult(failedResult);
                     return failedResult;
                 }
 
-                var successResult = NewSuccessFileDownloadResult();
+                FileDownloadResult successResult = NewSuccessFileDownloadResult();
                 LogResult(successResult);
                 return successResult;
             }
             catch (Exception exception)
             {
-                var result = NewFailedFileDownloadResult(exception);
-
-                LogResult(result);
-
+                FileDownloadResult result = NewFailedFileDownloadResult(FailedReason.UnexpectedException);
+                LogException(exception);
                 return result;
             }
         }
@@ -61,6 +59,11 @@
         private bool IsNull(object value)
         {
             return value == null;
+        }
+
+        private void LogException(Exception exception)
+        {
+            fileDownloadLoggingService.LogException(exception);
         }
 
         private void LogMethodInvoked(string method)
@@ -81,11 +84,6 @@
         private Exception NewArgumentNullException(string parameterName)
         {
             return new ArgumentNullException(parameterName);
-        }
-
-        private FileDownloadResult NewFailedFileDownloadResult(Exception exception)
-        {
-            return new FileDownloadResult(exception);
         }
 
         private FileDownloadResult NewFailedFileDownloadResult(FailedReason failedReason)

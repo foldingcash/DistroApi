@@ -4,6 +4,8 @@
     {
         None,
 
-        DataStoreUnavailable
+        DataStoreUnavailable,
+
+        UnexpectedException
     }
 }

@@ -4,8 +4,6 @@
 
     public interface IDatabaseConnectionService : IDisposable
     {
-        void Close();
-
         void Open();
     }
 }

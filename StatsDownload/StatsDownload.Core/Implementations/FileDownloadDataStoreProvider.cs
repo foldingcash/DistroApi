@@ -41,14 +41,14 @@
         {
             LogMethodInvoked(nameof(IsAvailable));
 
-            IDatabaseConnectionService databaseConnection = default(IDatabaseConnectionService);
-
             try
             {
-                var connectionString = GetConnectionString();
-                databaseConnection = CreateDatabaseConnection(connectionString);
-                OpenDatabaseConnection(databaseConnection);
-                LogVerbose(DatabaseConnectionSuccessfulLogMessage);
+                string connectionString = GetConnectionString();
+                using (IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(connectionString))
+                {
+                    OpenDatabaseConnection(databaseConnection);
+                    LogVerbose(DatabaseConnectionSuccessfulLogMessage);
+                }
                 return true;
             }
             catch (Exception exception)
@@ -56,15 +56,6 @@
                 LogException(exception);
                 return false;
             }
-            finally
-            {
-                CloseDatabaseConnection(databaseConnection);
-            }
-        }
-
-        private void CloseDatabaseConnection(IDatabaseConnectionService databaseConnectionService)
-        {
-            databaseConnectionService.Close();
         }
 
         private IDatabaseConnectionService CreateDatabaseConnection(string connectionString)

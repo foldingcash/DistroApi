@@ -43,7 +43,7 @@
         }
 
         [Test]
-        public void IsAvailable_WhenDatabaseConnectionFails_ConnectionClosed()
+        public void IsAvailable_WhenDatabaseConnectionFails_ConnectionDisposed()
         {
             databaseConnectionServiceMock.When(mock => mock.Open()).Throw<Exception>();
 
@@ -53,7 +53,7 @@
                 (() =>
                     {
                         databaseConnectionServiceMock.Open();
-                        databaseConnectionServiceMock.Close();
+                        databaseConnectionServiceMock.Dispose();
                     }));
         }
 
@@ -78,7 +78,7 @@
         {
             databaseConnectionServiceMock.When(mock => mock.Open()).Throw<Exception>();
 
-            var actual = InvokeIsAvailable();
+            bool actual = InvokeIsAvailable();
 
             Assert.That(actual, Is.False);
         }
@@ -92,7 +92,7 @@
                 (() =>
                     {
                         databaseConnectionServiceMock.Open();
-                        databaseConnectionServiceMock.Close();
+                        databaseConnectionServiceMock.Dispose();
                     }));
         }
 
@@ -112,7 +112,7 @@
         [Test]
         public void IsAvailable_WhenDatabaseConnectionSuccessful_ReturnsTrue()
         {
-            var actual = InvokeIsAvailable();
+            bool actual = InvokeIsAvailable();
 
             Assert.That(actual, Is.True);
         }
