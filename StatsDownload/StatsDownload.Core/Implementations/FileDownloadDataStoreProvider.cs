@@ -56,7 +56,7 @@
         public void UpdateToLatest()
         {
             LogMethodInvoked(nameof(UpdateToLatest));
-            CreateDatabaseConnectionAndExecuteAction(null);
+            CreateDatabaseConnectionAndExecuteAction(service => { service.ExecuteStoredProcedure(); });
         }
 
         private IDatabaseConnectionService CreateDatabaseConnection(string connectionString)

@@ -1,6 +1,6 @@
 ﻿namespace StatsDownload.Core
 {
-    using System;
+    using System.Data;
     using System.Data.SqlClient;
 
     public class SqlDatabaseConnectionProvider : IDatabaseConnectionService
@@ -21,7 +21,12 @@
 
         public void ExecuteStoredProcedure()
         {
-            throw new NotImplementedException();
+            using (SqlCommand command = sqlConnection.CreateCommand())
+            {
+                command.CommandText = "[FoldingCoin].[UpdateToLatest]";
+                command.CommandType = CommandType.StoredProcedure;
+                command.ExecuteNonQuery();
+            }
         }
 
         public void Open()

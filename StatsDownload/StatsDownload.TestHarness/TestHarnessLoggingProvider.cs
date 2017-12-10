@@ -16,6 +16,7 @@
         public void LogException(Exception exception)
         {
             Log?.Invoke(exception.Message);
+            Log?.Invoke(exception.StackTrace);
         }
 
         public void LogResult(FileDownloadResult result)

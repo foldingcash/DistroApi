@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Implementations\SqlDatabaseConnectionProvider.cs" />
     <Compile Include="Enums\FailedReason.cs" />
+    <Compile Include="Implementations\SqlDatabaseConnectionProviderFactory.cs" />
     <Compile Include="Interfaces\IDatabaseConnectionService.cs" />
     <Compile Include="Interfaces\IDatabaseConnectionServiceFactory.cs" />
     <Compile Include="Interfaces\IDatabaseConnectionSettingsService.cs" />
