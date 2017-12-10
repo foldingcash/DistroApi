@@ -1,6 +1,9 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.Common;
 
     using NSubstitute;
 
@@ -9,6 +12,8 @@
     [TestFixture]
     public class TestFileDownloadDataStoreProvider
     {
+        private const int NumberOfRowsEffectedExpected = 5;
+
         private IDatabaseConnectionServiceFactory databaseConnectionServiceFactoryMock;
 
         private IDatabaseConnectionService databaseConnectionServiceMock;
@@ -43,6 +48,21 @@
         }
 
         [Test]
+        public void IsAvailable_Invoked_DependenciesCalledInOrder()
+        {
+            InvokeIsAvailable();
+
+            Received.InOrder(
+                (() =>
+                    {
+                        fileDownloadLoggingServiceMock.LogVerbose("IsAvailable Invoked");
+                        databaseConnectionServiceMock.Open();
+                        fileDownloadLoggingServiceMock.LogVerbose("Database connection was successful");
+                        databaseConnectionServiceMock.Close();
+                    }));
+        }
+
+        [Test]
         public void IsAvailable_WhenDatabaseConnectionFails_DependenciesCalledInOrder()
         {
             var expected = new Exception();
@@ -71,7 +91,7 @@
         }
 
         [Test]
-        public void IsAvailable_WhenDatabaseConnectionSuccessful_ReturnsTrue()
+        public void IsAvailable_WhenInvoked_ReturnsTrue()
         {
             bool actual = InvokeIsAvailable();
 
@@ -79,18 +99,39 @@
         }
 
         [Test]
-        public void IsAvailable_WhenDataStoreIsAvailable_DependenciesCalledInOrder()
+        public void NewFileDownloadStarted_WhenInvoked_DependenciesCalledInOrder()
         {
-            InvokeIsAvailable();
+            InvokeNewFileDownloadStarted();
 
             Received.InOrder(
                 (() =>
                     {
-                        fileDownloadLoggingServiceMock.LogVerbose("IsAvailable Invoked");
+                        fileDownloadLoggingServiceMock.LogVerbose("NewFileDownloadStarted Invoked");
                         databaseConnectionServiceMock.Open();
                         fileDownloadLoggingServiceMock.LogVerbose("Database connection was successful");
+                        databaseConnectionServiceMock.ExecuteStoredProcedure(
+                            "[FoldingCoin].[NewFileDownloadStarted]",
+                            Arg.Any<List<DbParameter>>());
                         databaseConnectionServiceMock.Close();
                     }));
+        }
+
+        [Test]
+        public void NewFileDownloadStarted_WhenInvoked_ParametersAreProvided()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock.When(
+                service =>
+                service.ExecuteStoredProcedure("[FoldingCoin].[NewFileDownloadStarted]", Arg.Any<List<DbParameter>>()))
+                .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            InvokeNewFileDownloadStarted();
+
+            Assert.That(actualParameters.Count, Is.EqualTo(1));
+            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
+            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
+            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Output));
         }
 
         [SetUp]
@@ -109,11 +150,32 @@
                 databaseConnectionSettingsServiceMock,
                 databaseConnectionServiceFactoryMock,
                 fileDownloadLoggingServiceMock);
+
+            databaseConnectionServiceMock.CreateParameter(
+                Arg.Any<string>(),
+                Arg.Any<DbType>(),
+                Arg.Any<ParameterDirection>()).Returns(
+                    info =>
+                        {
+                            var parameterName = info.Arg<string>();
+                            var dbType = info.Arg<DbType>();
+                            var direction = info.Arg<ParameterDirection>();
+
+                            var dbParameter = Substitute.For<DbParameter>();
+                            dbParameter.ParameterName.Returns(parameterName);
+                            dbParameter.DbType.Returns(dbType);
+                            dbParameter.Direction.Returns(direction);
+
+                            return dbParameter;
+                        });
         }
 
         [Test]
-        public void UpdateToLatest_WhenUpdateToLatestSuccessful_DependenciesCalledInOrder()
+        public void UpdateToLatest_WhenInvoked_DependenciesCalledInOrder()
         {
+            databaseConnectionServiceMock.ExecuteStoredProcedure(Arg.Any<string>())
+                .Returns(NumberOfRowsEffectedExpected);
+
             InvokeUpdateToLatest();
 
             Received.InOrder(
@@ -123,6 +185,8 @@
                         databaseConnectionServiceMock.Open();
                         fileDownloadLoggingServiceMock.LogVerbose("Database connection was successful");
                         databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[UpdateToLatest]");
+                        fileDownloadLoggingServiceMock.LogVerbose(
+                            $"'{NumberOfRowsEffectedExpected}' rows were effected");
                         databaseConnectionServiceMock.Close();
                     }));
         }
@@ -130,6 +194,11 @@
         private bool InvokeIsAvailable()
         {
             return systemUnderTest.IsAvailable();
+        }
+
+        private void InvokeNewFileDownloadStarted()
+        {
+            systemUnderTest.NewFileDownloadStarted();
         }
 
         private void InvokeUpdateToLatest()

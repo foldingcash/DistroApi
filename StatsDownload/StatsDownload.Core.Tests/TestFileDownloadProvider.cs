@@ -46,6 +46,7 @@
                     {
                         fileDownloadLoggingServiceMock.LogVerbose("DownloadFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
+                        fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                         fileDownloadLoggingServiceMock.LogException(expected);
                     }));
         }
@@ -62,7 +63,7 @@
         }
 
         [Test]
-        public void DownloadFile_WhenSuccess_DependenciesCalledInOrder()
+        public void DownloadFile_WhenInvoked_DependenciesCalledInOrder()
         {
             InvokeDownloadFile();
 
@@ -72,16 +73,20 @@
                         fileDownloadLoggingServiceMock.LogVerbose("DownloadFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
                         fileDownloadDataStoreServiceMock.UpdateToLatest();
+                        fileDownloadDataStoreServiceMock.NewFileDownloadStarted();
                         fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }
 
         [Test]
-        public void DownloadFile_WhenSuccess_ResultIsSuccess()
+        public void DownloadFile_WhenInvoked_ResultIsSuccess()
         {
+            fileDownloadDataStoreServiceMock.NewFileDownloadStarted().Returns(100);
+
             FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.True);
+            Assert.That(actual.DownloadId, Is.EqualTo(100));
         }
 
         [SetUp]

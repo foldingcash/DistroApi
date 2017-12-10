@@ -1,6 +1,9 @@
 ﻿namespace StatsDownload.Core
 {
     using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.Common;
 
     public class FileDownloadDataStoreProvider : IFileDownloadDataStoreService
     {
@@ -11,6 +14,8 @@
         private readonly IDatabaseConnectionSettingsService databaseConnectionSettingsService;
 
         private readonly IFileDownloadLoggingService fileDownloadLoggingService;
+
+        private readonly string NewFileDownloadStartedProcedureName = "[FoldingCoin].[NewFileDownloadStarted]";
 
         private readonly string UpdateToLatestStoredProcedureName = "[FoldingCoin].[UpdateToLatest]";
 
@@ -53,6 +58,13 @@
                 LogException(exception);
                 return false;
             }
+        }
+
+        public int NewFileDownloadStarted()
+        {
+            LogMethodInvoked(nameof(NewFileDownloadStarted));
+            CreateDatabaseConnectionAndExecuteAction(NewFileDownloadStarted);
+            return 100;
         }
 
         public void UpdateToLatest()
@@ -118,6 +130,18 @@
             return new ArgumentNullException(parameterName);
         }
 
+        private void NewFileDownloadStarted(IDatabaseConnectionService databaseConnection)
+        {
+            DbParameter parameter = databaseConnection.CreateParameter(
+                "@DownloadId",
+                DbType.Int32,
+                ParameterDirection.Output);
+
+            databaseConnection.ExecuteStoredProcedure(
+                NewFileDownloadStartedProcedureName,
+                new List<DbParameter> { parameter });
+        }
+
         private void OpenDatabaseConnection(IDatabaseConnectionService databaseConnectionService)
         {
             databaseConnectionService.Open();
@@ -125,7 +149,8 @@
 
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)
         {
-            databaseConnection.ExecuteStoredProcedure(UpdateToLatestStoredProcedureName);
+            int numberOfRowsEffected = databaseConnection.ExecuteStoredProcedure(UpdateToLatestStoredProcedureName);
+            LogVerbose($"'{numberOfRowsEffected}' rows were effected");
         }
     }
 }

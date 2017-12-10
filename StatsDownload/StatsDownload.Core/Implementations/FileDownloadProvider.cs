@@ -40,14 +40,16 @@
                 }
 
                 UpdateToLatest();
+                int downloadId = NewFileDownloadStarted();
 
-                FileDownloadResult successResult = NewSuccessFileDownloadResult();
+                FileDownloadResult successResult = NewSuccessFileDownloadResult(downloadId);
                 LogResult(successResult);
                 return successResult;
             }
             catch (Exception exception)
             {
                 FileDownloadResult result = NewFailedFileDownloadResult(FailedReason.UnexpectedException);
+                LogResult(result);
                 LogException(exception);
                 return result;
             }
@@ -93,9 +95,14 @@
             return new FileDownloadResult(failedReason);
         }
 
-        private FileDownloadResult NewSuccessFileDownloadResult()
+        private int NewFileDownloadStarted()
         {
-            return new FileDownloadResult();
+            return fileDownloadDataStoreService.NewFileDownloadStarted();
+        }
+
+        private FileDownloadResult NewSuccessFileDownloadResult(int downloadId)
+        {
+            return new FileDownloadResult(downloadId);
         }
 
         private void UpdateToLatest()

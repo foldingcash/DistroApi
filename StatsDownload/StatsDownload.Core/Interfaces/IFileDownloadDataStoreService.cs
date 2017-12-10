@@ -4,6 +4,8 @@
     {
         bool IsAvailable();
 
+        int NewFileDownloadStarted();
+
         void UpdateToLatest();
     }
 }
