@@ -6,6 +6,7 @@
     using System.Data.Common;
 
     using NSubstitute;
+    using NSubstitute.ClearExtensions;
 
     using NUnit.Framework;
 
@@ -134,6 +135,21 @@
             Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Output));
         }
 
+        [Test]
+        public void NewFileDownloadStarted_WhenInvoked_ReturnsDownloadId()
+        {
+            var dbParameter = Substitute.For<DbParameter>();
+            dbParameter.Value.Returns(101);
+
+            databaseConnectionServiceMock.ClearSubstitute();
+            databaseConnectionServiceMock.CreateParameter("@DownloadId", DbType.Int32, ParameterDirection.Output)
+                .Returns(dbParameter);
+
+            int actual = InvokeNewFileDownloadStarted();
+
+            Assert.That(actual, Is.EqualTo(101));
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -166,6 +182,11 @@
                             dbParameter.DbType.Returns(dbType);
                             dbParameter.Direction.Returns(direction);
 
+                            if (dbType.Equals(DbType.Int32))
+                            {
+                                dbParameter.Value.Returns(default(int));
+                            }
+
                             return dbParameter;
                         });
         }
@@ -196,9 +217,9 @@
             return systemUnderTest.IsAvailable();
         }
 
-        private void InvokeNewFileDownloadStarted()
+        private int InvokeNewFileDownloadStarted()
         {
-            systemUnderTest.NewFileDownloadStarted();
+            return systemUnderTest.NewFileDownloadStarted();
         }
 
         private void InvokeUpdateToLatest()

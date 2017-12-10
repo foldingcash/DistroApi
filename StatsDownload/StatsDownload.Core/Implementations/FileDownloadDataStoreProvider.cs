@@ -63,8 +63,10 @@
         public int NewFileDownloadStarted()
         {
             LogMethodInvoked(nameof(NewFileDownloadStarted));
-            CreateDatabaseConnectionAndExecuteAction(NewFileDownloadStarted);
-            return 100;
+            int downloadId = default(int);
+            CreateDatabaseConnectionAndExecuteAction(service => { downloadId = NewFileDownloadStarted(service); });
+
+            return downloadId;
         }
 
         public void UpdateToLatest()
@@ -130,16 +132,18 @@
             return new ArgumentNullException(parameterName);
         }
 
-        private void NewFileDownloadStarted(IDatabaseConnectionService databaseConnection)
+        private int NewFileDownloadStarted(IDatabaseConnectionService databaseConnection)
         {
-            DbParameter parameter = databaseConnection.CreateParameter(
+            DbParameter downloadId = databaseConnection.CreateParameter(
                 "@DownloadId",
                 DbType.Int32,
                 ParameterDirection.Output);
 
             databaseConnection.ExecuteStoredProcedure(
                 NewFileDownloadStartedProcedureName,
-                new List<DbParameter> { parameter });
+                new List<DbParameter> { downloadId });
+
+            return (int)downloadId.Value;
         }
 
         private void OpenDatabaseConnection(IDatabaseConnectionService databaseConnectionService)
@@ -150,6 +154,7 @@
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)
         {
             int numberOfRowsEffected = databaseConnection.ExecuteStoredProcedure(UpdateToLatestStoredProcedureName);
+
             LogVerbose($"'{numberOfRowsEffected}' rows were effected");
         }
     }

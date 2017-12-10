@@ -66,7 +66,7 @@
             }
             catch (Exception exception)
             {
-                LoggingTextBox.Text = exception.ToString();
+                Log(exception.ToString());
             }
         }
     }

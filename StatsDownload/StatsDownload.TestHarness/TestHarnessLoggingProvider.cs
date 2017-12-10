@@ -21,7 +21,8 @@
 
         public void LogResult(FileDownloadResult result)
         {
-            Log?.Invoke($"Success: {result.Success}{Environment.NewLine}Failed Reason: {result.FailedReason}");
+            Log?.Invoke(
+                $"Success: {result.Success}{Environment.NewLine}Failed Reason: {result.FailedReason}{Environment.NewLine}Download Id: {result.DownloadId}");
         }
 
         public void LogVerbose(string message)
