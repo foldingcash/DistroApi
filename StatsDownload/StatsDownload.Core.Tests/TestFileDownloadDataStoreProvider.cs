@@ -43,22 +43,7 @@
         }
 
         [Test]
-        public void IsAvailable_WhenDatabaseConnectionFails_ConnectionDisposed()
-        {
-            databaseConnectionServiceMock.When(mock => mock.Open()).Throw<Exception>();
-
-            InvokeIsAvailable();
-
-            Received.InOrder(
-                (() =>
-                    {
-                        databaseConnectionServiceMock.Open();
-                        databaseConnectionServiceMock.Dispose();
-                    }));
-        }
-
-        [Test]
-        public void IsAvailable_WhenDatabaseConnectionFails_LoggingIsCalled()
+        public void IsAvailable_WhenDatabaseConnectionFails_DependenciesCalledInOrder()
         {
             var expected = new Exception();
             databaseConnectionServiceMock.When(mock => mock.Open()).Throw(expected);
@@ -69,6 +54,8 @@
                 (() =>
                     {
                         fileDownloadLoggingServiceMock.LogVerbose("IsAvailable Invoked");
+                        databaseConnectionServiceMock.Open();
+                        databaseConnectionServiceMock.Close();
                         fileDownloadLoggingServiceMock.LogException(expected);
                     }));
         }
@@ -84,20 +71,15 @@
         }
 
         [Test]
-        public void IsAvailable_WhenDatabaseConnectionSuccessful_ConnectionClosed()
+        public void IsAvailable_WhenDatabaseConnectionSuccessful_ReturnsTrue()
         {
-            InvokeIsAvailable();
+            bool actual = InvokeIsAvailable();
 
-            Received.InOrder(
-                (() =>
-                    {
-                        databaseConnectionServiceMock.Open();
-                        databaseConnectionServiceMock.Dispose();
-                    }));
+            Assert.That(actual, Is.True);
         }
 
         [Test]
-        public void IsAvailable_WhenDatabaseConnectionSuccessful_LoggingIsCalled()
+        public void IsAvailable_WhenDataStoreIsAvailable_DependenciesCalledInOrder()
         {
             InvokeIsAvailable();
 
@@ -105,16 +87,10 @@
                 (() =>
                     {
                         fileDownloadLoggingServiceMock.LogVerbose("IsAvailable Invoked");
+                        databaseConnectionServiceMock.Open();
                         fileDownloadLoggingServiceMock.LogVerbose("Database connection was successful");
+                        databaseConnectionServiceMock.Close();
                     }));
-        }
-
-        [Test]
-        public void IsAvailable_WhenDatabaseConnectionSuccessful_ReturnsTrue()
-        {
-            bool actual = InvokeIsAvailable();
-
-            Assert.That(actual, Is.True);
         }
 
         [SetUp]
@@ -136,21 +112,7 @@
         }
 
         [Test]
-        public void UpdateToLatest_WhenDatabaseConnectionSuccessful_DatabaseConnectionReceivesCallsInOrder()
-        {
-            InvokeUpdateToLatest();
-
-            Received.InOrder(
-                (() =>
-                    {
-                        databaseConnectionServiceMock.Open();
-                        databaseConnectionServiceMock.ExecuteStoredProcedure();
-                        databaseConnectionServiceMock.Dispose();
-                    }));
-        }
-
-        [Test]
-        public void UpdateToLatest_WhenDatabaseConnectionSuccessful_LoggingIsCalled()
+        public void UpdateToLatest_WhenUpdateToLatestSuccessful_DependenciesCalledInOrder()
         {
             InvokeUpdateToLatest();
 
@@ -158,7 +120,10 @@
                 (() =>
                     {
                         fileDownloadLoggingServiceMock.LogVerbose("UpdateToLatest Invoked");
+                        databaseConnectionServiceMock.Open();
                         fileDownloadLoggingServiceMock.LogVerbose("Database connection was successful");
+                        databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[UpdateToLatest]");
+                        databaseConnectionServiceMock.Close();
                     }));
         }
 

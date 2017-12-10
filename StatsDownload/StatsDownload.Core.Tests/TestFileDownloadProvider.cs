@@ -34,18 +34,7 @@
         }
 
         [Test]
-        public void DownloadFile_WhenExceptionThrown_ExceptionHandled()
-        {
-            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw new Exception(); });
-
-            FileDownloadResult actual = InvokeDownloadFile();
-
-            Assert.That(actual.Success, Is.False);
-            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
-        }
-
-        [Test]
-        public void DownloadFile_WhenExceptionThrown_LoggingIsCalled()
+        public void DownloadFile_WhenExceptionThrown_DependenciesCalledInOrder()
         {
             var expected = new Exception();
             fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw expected; });
@@ -59,6 +48,17 @@
                         fileDownloadDataStoreServiceMock.IsAvailable();
                         fileDownloadLoggingServiceMock.LogException(expected);
                     }));
+        }
+
+        [Test]
+        public void DownloadFile_WhenExceptionThrown_ExceptionHandled()
+        {
+            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw new Exception(); });
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
         }
 
         [Test]

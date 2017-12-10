@@ -12,6 +12,8 @@
 
         private readonly IFileDownloadLoggingService fileDownloadLoggingService;
 
+        private readonly string UpdateToLatestStoredProcedureName = "[FoldingCoin].[UpdateToLatest]";
+
         public FileDownloadDataStoreProvider(
             IDatabaseConnectionSettingsService databaseConnectionSettingsService,
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
@@ -56,7 +58,12 @@
         public void UpdateToLatest()
         {
             LogMethodInvoked(nameof(UpdateToLatest));
-            CreateDatabaseConnectionAndExecuteAction(service => { service.ExecuteStoredProcedure(); });
+            CreateDatabaseConnectionAndExecuteAction(UpdateToLatest);
+        }
+
+        private void CloseDatabaseConnection(IDatabaseConnectionService databaseConnection)
+        {
+            databaseConnection?.Close();
         }
 
         private IDatabaseConnectionService CreateDatabaseConnection(string connectionString)
@@ -66,12 +73,18 @@
 
         private void CreateDatabaseConnectionAndExecuteAction(Action<IDatabaseConnectionService> action)
         {
-            string connectionString = GetConnectionString();
-            using (IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(connectionString))
+            IDatabaseConnectionService databaseConnection = default(IDatabaseConnectionService);
+            try
             {
+                string connectionString = GetConnectionString();
+                databaseConnection = CreateDatabaseConnection(connectionString);
                 OpenDatabaseConnection(databaseConnection);
                 LogVerbose(DatabaseConnectionSuccessfulLogMessage);
                 action?.Invoke(databaseConnection);
+            }
+            finally
+            {
+                CloseDatabaseConnection(databaseConnection);
             }
         }
 
@@ -108,6 +121,11 @@
         private void OpenDatabaseConnection(IDatabaseConnectionService databaseConnectionService)
         {
             databaseConnectionService.Open();
+        }
+
+        private void UpdateToLatest(IDatabaseConnectionService databaseConnection)
+        {
+            databaseConnection.ExecuteStoredProcedure(UpdateToLatestStoredProcedureName);
         }
     }
 }

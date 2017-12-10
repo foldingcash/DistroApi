@@ -4,7 +4,9 @@
 
     public interface IDatabaseConnectionService : IDisposable
     {
-        void ExecuteStoredProcedure();
+        void Close();
+
+        int ExecuteStoredProcedure(string storedProcedure);
 
         void Open();
     }

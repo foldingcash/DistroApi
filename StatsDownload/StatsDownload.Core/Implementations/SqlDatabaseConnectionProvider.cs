@@ -12,6 +12,11 @@
 
         private SqlConnection sqlConnection { get; set; }
 
+        public void Close()
+        {
+            sqlConnection.Close();
+        }
+
         public void Dispose()
         {
             sqlConnection.Close();
@@ -19,14 +24,12 @@
             sqlConnection = null;
         }
 
-        public void ExecuteStoredProcedure()
+        public int ExecuteStoredProcedure(string storedProcedure)
         {
-            using (SqlCommand command = sqlConnection.CreateCommand())
-            {
-                command.CommandText = "[FoldingCoin].[UpdateToLatest]";
-                command.CommandType = CommandType.StoredProcedure;
-                command.ExecuteNonQuery();
-            }
+            SqlCommand command = sqlConnection.CreateCommand();
+            command.CommandText = storedProcedure;
+            command.CommandType = CommandType.StoredProcedure;
+            return command.ExecuteNonQuery();
         }
 
         public void Open()
