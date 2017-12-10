@@ -136,6 +136,20 @@
         }
 
         [Test]
+        public void UpdateToLatest_WhenDatabaseConnectionSuccessful_DatabaseConnectionReceivesCallsInOrder()
+        {
+            InvokeUpdateToLatest();
+
+            Received.InOrder(
+                (() =>
+                    {
+                        databaseConnectionServiceMock.Open();
+                        databaseConnectionServiceMock.ExecuteStoredProcedure();
+                        databaseConnectionServiceMock.Dispose();
+                    }));
+        }
+
+        [Test]
         public void UpdateToLatest_WhenDatabaseConnectionSuccessful_LoggingIsCalled()
         {
             InvokeUpdateToLatest();
@@ -145,19 +159,6 @@
                     {
                         fileDownloadLoggingServiceMock.LogVerbose("UpdateToLatest Invoked");
                         fileDownloadLoggingServiceMock.LogVerbose("Database connection was successful");
-                    }));
-        }
-
-        [Test]
-        public void UpdateToLatestIsAvailable_WhenDatabaseConnectionSuccessful_ConnectionClosed()
-        {
-            InvokeUpdateToLatest();
-
-            Received.InOrder(
-                (() =>
-                    {
-                        databaseConnectionServiceMock.Open();
-                        databaseConnectionServiceMock.Dispose();
                     }));
         }
 

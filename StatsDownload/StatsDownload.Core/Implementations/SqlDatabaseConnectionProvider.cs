@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core
 {
+    using System;
     using System.Data.SqlClient;
 
     public class SqlDatabaseConnectionProvider : IDatabaseConnectionService
@@ -16,6 +17,11 @@
             sqlConnection.Close();
             sqlConnection.Dispose();
             sqlConnection = null;
+        }
+
+        public void ExecuteStoredProcedure()
+        {
+            throw new NotImplementedException();
         }
 
         public void Open()
