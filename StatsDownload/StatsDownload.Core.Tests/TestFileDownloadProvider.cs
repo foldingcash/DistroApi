@@ -36,12 +36,12 @@
         [Test]
         public void DownloadFile_WhenExceptionThrown_ExceptionHandled()
         {
-            var expected = new Exception();
-            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw expected; });
+            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw new Exception(); });
 
             FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
         }
 
         [Test]
@@ -62,7 +62,7 @@
         }
 
         [Test]
-        public void DownloadFile_WhenSuccess_LoggingIsCalled()
+        public void DownloadFile_WhenSuccess_DependenciesCalledInOrder()
         {
             InvokeDownloadFile();
 
@@ -71,6 +71,7 @@
                     {
                         fileDownloadLoggingServiceMock.LogVerbose("DownloadFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
+                        fileDownloadDataStoreServiceMock.UpdateToLatest();
                         fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }

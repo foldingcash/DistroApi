@@ -3,5 +3,7 @@
     public interface IFileDownloadDataStoreService
     {
         bool IsAvailable();
+
+        void UpdateToLatest();
     }
 }

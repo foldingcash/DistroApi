@@ -39,6 +39,8 @@
                     return failedResult;
                 }
 
+                UpdateToLatest();
+
                 FileDownloadResult successResult = NewSuccessFileDownloadResult();
                 LogResult(successResult);
                 return successResult;
@@ -94,6 +96,11 @@
         private FileDownloadResult NewSuccessFileDownloadResult()
         {
             return new FileDownloadResult();
+        }
+
+        private void UpdateToLatest()
+        {
+            fileDownloadDataStoreService.UpdateToLatest();
         }
     }
 }

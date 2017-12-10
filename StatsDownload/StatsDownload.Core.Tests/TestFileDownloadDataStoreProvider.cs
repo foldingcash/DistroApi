@@ -135,9 +135,40 @@
                 fileDownloadLoggingServiceMock);
         }
 
+        [Test]
+        public void UpdateToLatest_WhenDatabaseConnectionSuccessful_LoggingIsCalled()
+        {
+            InvokeUpdateToLatest();
+
+            Received.InOrder(
+                (() =>
+                    {
+                        fileDownloadLoggingServiceMock.LogVerbose("UpdateToLatest Invoked");
+                        fileDownloadLoggingServiceMock.LogVerbose("Database connection was successful");
+                    }));
+        }
+
+        [Test]
+        public void UpdateToLatestIsAvailable_WhenDatabaseConnectionSuccessful_ConnectionClosed()
+        {
+            InvokeUpdateToLatest();
+
+            Received.InOrder(
+                (() =>
+                    {
+                        databaseConnectionServiceMock.Open();
+                        databaseConnectionServiceMock.Dispose();
+                    }));
+        }
+
         private bool InvokeIsAvailable()
         {
             return systemUnderTest.IsAvailable();
+        }
+
+        private void InvokeUpdateToLatest()
+        {
+            systemUnderTest.UpdateToLatest();
         }
 
         private IFileDownloadDataStoreService NewFileDownloadDataStoreProvider(

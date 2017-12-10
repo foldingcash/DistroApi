@@ -43,12 +43,7 @@
 
             try
             {
-                string connectionString = GetConnectionString();
-                using (IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(connectionString))
-                {
-                    OpenDatabaseConnection(databaseConnection);
-                    LogVerbose(DatabaseConnectionSuccessfulLogMessage);
-                }
+                CreateDatabaseConnectionAndExecuteAction(null);
                 return true;
             }
             catch (Exception exception)
@@ -58,9 +53,26 @@
             }
         }
 
+        public void UpdateToLatest()
+        {
+            LogMethodInvoked(nameof(UpdateToLatest));
+            CreateDatabaseConnectionAndExecuteAction(null);
+        }
+
         private IDatabaseConnectionService CreateDatabaseConnection(string connectionString)
         {
             return databaseConnectionServiceFactory.Create(connectionString);
+        }
+
+        private void CreateDatabaseConnectionAndExecuteAction(Action<IDatabaseConnectionService> action)
+        {
+            string connectionString = GetConnectionString();
+            using (IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(connectionString))
+            {
+                OpenDatabaseConnection(databaseConnection);
+                LogVerbose(DatabaseConnectionSuccessfulLogMessage);
+                action?.Invoke(databaseConnection);
+            }
         }
 
         private string GetConnectionString()
