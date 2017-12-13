@@ -13,6 +13,7 @@
         {
             DependencyRegistration.Register();
             Application.ApplicationExit += (sender, args) => WindsorContainer.Dispose();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
