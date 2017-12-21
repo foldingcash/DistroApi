@@ -49,7 +49,7 @@
                 () =>
                     {
                         var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
-                        fileDownloadService.DownloadFile();
+                        fileDownloadService.DownloadStatsFile();
                         CreateSeparationInLog();
                     });
         }

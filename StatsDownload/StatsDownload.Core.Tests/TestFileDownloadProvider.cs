@@ -11,9 +11,13 @@
     {
         private IFileDownloadDataStoreService fileDownloadDataStoreServiceMock;
 
+        private IFileDownloaderService fileDownloaderServiceMock;
+
         private IFileDownloadLoggingService fileDownloadLoggingServiceMock;
 
         private IFileDownloadSettingsService fileDownloadSettingsServiceMock;
+
+        private IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorServiceMock;
 
         private IFileDownloadService systemUnderTest;
 
@@ -21,11 +25,45 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(
-                () => NewFileDownloadProvider(null, fileDownloadLoggingServiceMock, fileDownloadSettingsServiceMock));
+                () =>
+                NewFileDownloadProvider(
+                    null,
+                    fileDownloadLoggingServiceMock,
+                    fileDownloadSettingsServiceMock,
+                    fileDownloaderServiceMock,
+                    fileDownloadTimeoutValidatorServiceMock));
             Assert.Throws<ArgumentNullException>(
-                () => NewFileDownloadProvider(fileDownloadDataStoreServiceMock, null, fileDownloadSettingsServiceMock));
+                () =>
+                NewFileDownloadProvider(
+                    fileDownloadDataStoreServiceMock,
+                    null,
+                    fileDownloadSettingsServiceMock,
+                    fileDownloaderServiceMock,
+                    fileDownloadTimeoutValidatorServiceMock));
             Assert.Throws<ArgumentNullException>(
-                () => NewFileDownloadProvider(fileDownloadDataStoreServiceMock, fileDownloadLoggingServiceMock, null));
+                () =>
+                NewFileDownloadProvider(
+                    fileDownloadDataStoreServiceMock,
+                    fileDownloadLoggingServiceMock,
+                    null,
+                    fileDownloaderServiceMock,
+                    fileDownloadTimeoutValidatorServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewFileDownloadProvider(
+                    fileDownloadDataStoreServiceMock,
+                    fileDownloadLoggingServiceMock,
+                    fileDownloadSettingsServiceMock,
+                    null,
+                    fileDownloadTimeoutValidatorServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewFileDownloadProvider(
+                    fileDownloadDataStoreServiceMock,
+                    fileDownloadLoggingServiceMock,
+                    fileDownloadSettingsServiceMock,
+                    fileDownloaderServiceMock,
+                    null));
         }
 
         [Test]
@@ -50,7 +88,7 @@
             Received.InOrder(
                 (() =>
                     {
-                        fileDownloadLoggingServiceMock.LogVerbose("DownloadFile Invoked");
+                        fileDownloadLoggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
                         fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                         fileDownloadLoggingServiceMock.LogException(expected);
@@ -76,10 +114,11 @@
             Received.InOrder(
                 (() =>
                     {
-                        fileDownloadLoggingServiceMock.LogVerbose("DownloadFile Invoked");
+                        fileDownloadLoggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
                         fileDownloadDataStoreServiceMock.UpdateToLatest();
                         fileDownloadDataStoreServiceMock.NewFileDownloadStarted();
+                        fileDownloaderServiceMock.DownloadFile("DownloadUrl", "DownloadDirectory", 123);
                         fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }
@@ -111,26 +150,44 @@
             fileDownloadSettingsServiceMock.GetDownloadTimeout().Returns("DownloadTimeoutSeconds");
             fileDownloadSettingsServiceMock.GetDownloadDirectory().Returns("DownloadDirectory");
 
+            fileDownloaderServiceMock = Substitute.For<IFileDownloaderService>();
+
+            int timeout;
+            fileDownloadTimeoutValidatorServiceMock = Substitute.For<IFileDownloadTimeoutValidatorService>();
+            fileDownloadTimeoutValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
+                .Returns(
+                    callInfo =>
+                        {
+                            callInfo[1] = 123;
+                            return true;
+                        });
+
             systemUnderTest = NewFileDownloadProvider(
                 fileDownloadDataStoreServiceMock,
                 fileDownloadLoggingServiceMock,
-                fileDownloadSettingsServiceMock);
+                fileDownloadSettingsServiceMock,
+                fileDownloaderServiceMock,
+                fileDownloadTimeoutValidatorServiceMock);
         }
 
         private FileDownloadResult InvokeDownloadFile()
         {
-            return systemUnderTest.DownloadFile();
+            return systemUnderTest.DownloadStatsFile();
         }
 
         private IFileDownloadService NewFileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
             IFileDownloadLoggingService fileDownloadLoggingService,
-            IFileDownloadSettingsService fileDownloadSettingsService)
+            IFileDownloadSettingsService fileDownloadSettingsService,
+            IFileDownloaderService fileDownloaderService,
+            IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService)
         {
             return new FileDownloadProvider(
                 fileDownloadDataStoreService,
                 fileDownloadLoggingService,
-                fileDownloadSettingsService);
+                fileDownloadSettingsService,
+                fileDownloaderService,
+                fileDownloadTimeoutValidatorService);
         }
     }
 }

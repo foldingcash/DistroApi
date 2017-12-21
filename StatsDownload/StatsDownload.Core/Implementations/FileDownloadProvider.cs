@@ -6,14 +6,20 @@
     {
         private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
 
+        private readonly IFileDownloaderService fileDownloaderService;
+
         private readonly IFileDownloadLoggingService fileDownloadLoggingService;
 
         private readonly IFileDownloadSettingsService fileDownloadSettingsService;
 
+        private readonly IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService;
+
         public FileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
             IFileDownloadLoggingService fileDownloadLoggingService,
-            IFileDownloadSettingsService fileDownloadSettingsService)
+            IFileDownloadSettingsService fileDownloadSettingsService,
+            IFileDownloaderService fileDownloaderService,
+            IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService)
         {
             if (IsNull(fileDownloadDataStoreService))
             {
@@ -30,16 +36,28 @@
                 throw NewArgumentNullException(nameof(fileDownloadSettingsService));
             }
 
+            if (IsNull(fileDownloaderService))
+            {
+                throw NewArgumentNullException(nameof(fileDownloaderService));
+            }
+
+            if (IsNull(fileDownloadTimeoutValidatorService))
+            {
+                throw NewArgumentNullException(nameof(fileDownloadTimeoutValidatorService));
+            }
+
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
             this.fileDownloadLoggingService = fileDownloadLoggingService;
             this.fileDownloadSettingsService = fileDownloadSettingsService;
+            this.fileDownloaderService = fileDownloaderService;
+            this.fileDownloadTimeoutValidatorService = fileDownloadTimeoutValidatorService;
         }
 
-        public FileDownloadResult DownloadFile()
+        public FileDownloadResult DownloadStatsFile()
         {
             try
             {
-                LogMethodInvoked(nameof(DownloadFile));
+                LogMethodInvoked(nameof(DownloadStatsFile));
 
                 if (DataStoreUnavailable())
                 {
@@ -55,6 +73,11 @@
                 string downloadUrl = GetDownloadUrl();
                 string downloadTimeout = GetDownloadTimeout();
                 string downloadDirectory = GetDownloadDirectory();
+
+                int timeoutInSeconds;
+                TryParseTimeout(downloadTimeout, out timeoutInSeconds);
+
+                DownloadFile(downloadUrl, downloadDirectory, 0);
 
                 FileDownloadResult successResult = NewSuccessFileDownloadResult(
                     downloadId,
@@ -77,6 +100,11 @@
         private bool DataStoreUnavailable()
         {
             return !fileDownloadDataStoreService.IsAvailable();
+        }
+
+        private void DownloadFile(string downloadUrl, string downloadDirectory, int timeoutInSeconds)
+        {
+            fileDownloaderService.DownloadFile(downloadUrl, downloadDirectory, timeoutInSeconds);
         }
 
         private string GetDownloadDirectory()
@@ -141,6 +169,11 @@
             string downloadDirectory)
         {
             return new FileDownloadResult(downloadId, downloadUrl, downloadTimeout, downloadDirectory);
+        }
+
+        private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)
+        {
+            return fileDownloadTimeoutValidatorService.TryParseTimeout(unsafeTimeout, out timeoutInSeconds);
         }
 
         private void UpdateToLatest()
