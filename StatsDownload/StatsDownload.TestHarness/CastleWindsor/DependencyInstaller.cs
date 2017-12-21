@@ -19,6 +19,8 @@
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
                 Component.For<IFileDownloadDataStoreService>().ImplementedBy<FileDownloadDataStoreProvider>(),
                 Component.For<IFileDownloaderService>().ImplementedBy<FileDownloaderProvider>(),
+                Component.For<IFileDownloadTimeoutValidatorService>()
+                    .ImplementedBy<FileDownloadTimeoutValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>());
         }
     }

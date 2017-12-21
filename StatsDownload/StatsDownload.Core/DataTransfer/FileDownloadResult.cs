@@ -6,13 +6,13 @@
             int downloadId,
             string downloadUrl,
             string downloadTimeoutSeconds,
-            string downloadDirectory)
+            string downloadFileName)
         {
             Success = true;
             DownloadId = downloadId;
             DownloadUrl = downloadUrl;
             DownloadTimeoutSeconds = downloadTimeoutSeconds;
-            DownloadDirectory = downloadDirectory;
+            DownloadFileName = downloadFileName;
         }
 
         public FileDownloadResult(FailedReason failedReason)
@@ -21,7 +21,7 @@
             FailedReason = failedReason;
         }
 
-        public string DownloadDirectory { get; private set; }
+        public string DownloadFileName { get; private set; }
 
         public int DownloadId { get; private set; }
 

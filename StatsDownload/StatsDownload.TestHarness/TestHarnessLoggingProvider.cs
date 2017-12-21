@@ -27,7 +27,7 @@
                 + $"Download Id: {result.DownloadId}{Environment.NewLine}"
                 + $"Download Url: {result.DownloadUrl}{Environment.NewLine}"
                 + $"Download Timeout: {result.DownloadTimeoutSeconds}{Environment.NewLine}"
-                + $"Download Directory: {result.DownloadDirectory}{Environment.NewLine}");
+                + $"Download Directory: {result.DownloadFileName}{Environment.NewLine}");
         }
 
         public void LogVerbose(string message)
