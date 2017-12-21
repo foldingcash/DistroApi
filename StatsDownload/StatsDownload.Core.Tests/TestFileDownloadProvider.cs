@@ -94,7 +94,7 @@
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.DownloadId, Is.EqualTo(100));
             Assert.That(actual.DownloadUrl, Is.EqualTo("DownloadUrl"));
-            Assert.That(actual.DownloadTimeout, Is.EqualTo("DownloadTimeout"));
+            Assert.That(actual.DownloadTimeoutSeconds, Is.EqualTo("DownloadTimeoutSeconds"));
             Assert.That(actual.DownloadDirectory, Is.EqualTo("DownloadDirectory"));
         }
 
@@ -108,7 +108,7 @@
 
             fileDownloadSettingsServiceMock = Substitute.For<IFileDownloadSettingsService>();
             fileDownloadSettingsServiceMock.GetDownloadUrl().Returns("DownloadUrl");
-            fileDownloadSettingsServiceMock.GetDownloadTimeout().Returns("DownloadTimeout");
+            fileDownloadSettingsServiceMock.GetDownloadTimeout().Returns("DownloadTimeoutSeconds");
             fileDownloadSettingsServiceMock.GetDownloadDirectory().Returns("DownloadDirectory");
 
             systemUnderTest = NewFileDownloadProvider(
