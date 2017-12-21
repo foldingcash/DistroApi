@@ -18,6 +18,7 @@
                 Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
                 Component.For<IFileDownloadDataStoreService>().ImplementedBy<FileDownloadDataStoreProvider>(),
+                Component.For<IFileDownloaderService>().ImplementedBy<FileDownloaderProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>());
         }
     }

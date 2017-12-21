@@ -47,9 +47,6 @@
   <ItemGroup>
     <Compile Include="Interfaces\IFileDownloadTimeoutValidatorService.cs" />
     <Compile Include="Implementations\FileDownloaderProvider.cs" />
-    <Compile Include="Implementations\WebClientWithTimeout.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Interfaces\IFileDownloaderService.cs" />
     <Compile Include="Interfaces\IFileDownloadSettingsService.cs" />
     <Compile Include="Implementations\SqlDatabaseConnectionProvider.cs" />

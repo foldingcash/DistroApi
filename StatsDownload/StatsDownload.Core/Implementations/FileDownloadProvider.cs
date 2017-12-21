@@ -77,7 +77,7 @@
                 int timeoutInSeconds;
                 TryParseTimeout(downloadTimeout, out timeoutInSeconds);
 
-                DownloadFile(downloadUrl, downloadDirectory, 0);
+                DownloadFile(downloadUrl, downloadDirectory, timeoutInSeconds);
 
                 FileDownloadResult successResult = NewSuccessFileDownloadResult(
                     downloadId,
