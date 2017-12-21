@@ -8,9 +8,12 @@
 
         private readonly IFileDownloadLoggingService fileDownloadLoggingService;
 
+        private readonly IFileDownloadSettingsService fileDownloadSettingsService;
+
         public FileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
-            IFileDownloadLoggingService fileDownloadLoggingService)
+            IFileDownloadLoggingService fileDownloadLoggingService,
+            IFileDownloadSettingsService fileDownloadSettingsService)
         {
             if (IsNull(fileDownloadDataStoreService))
             {
@@ -22,8 +25,14 @@
                 throw NewArgumentNullException(nameof(fileDownloadLoggingService));
             }
 
+            if (IsNull(fileDownloadSettingsService))
+            {
+                throw NewArgumentNullException(nameof(fileDownloadSettingsService));
+            }
+
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
             this.fileDownloadLoggingService = fileDownloadLoggingService;
+            this.fileDownloadSettingsService = fileDownloadSettingsService;
         }
 
         public FileDownloadResult DownloadFile()
@@ -40,10 +49,20 @@
                 }
 
                 UpdateToLatest();
+
                 int downloadId = NewFileDownloadStarted();
 
-                FileDownloadResult successResult = NewSuccessFileDownloadResult(downloadId);
+                string downloadUrl = GetDownloadUrl();
+                string downloadTimeout = GetDownloadTimeout();
+                string downloadDirectory = GetDownloadDirectory();
+
+                FileDownloadResult successResult = NewSuccessFileDownloadResult(
+                    downloadId,
+                    downloadUrl,
+                    downloadTimeout,
+                    downloadDirectory);
                 LogResult(successResult);
+
                 return successResult;
             }
             catch (Exception exception)
@@ -58,6 +77,21 @@
         private bool DataStoreUnavailable()
         {
             return !fileDownloadDataStoreService.IsAvailable();
+        }
+
+        private string GetDownloadDirectory()
+        {
+            return fileDownloadSettingsService.GetDownloadDirectory();
+        }
+
+        private string GetDownloadTimeout()
+        {
+            return fileDownloadSettingsService.GetDownloadTimeout();
+        }
+
+        private string GetDownloadUrl()
+        {
+            return fileDownloadSettingsService.GetDownloadUrl();
         }
 
         private bool IsNull(object value)
@@ -100,9 +134,13 @@
             return fileDownloadDataStoreService.NewFileDownloadStarted();
         }
 
-        private FileDownloadResult NewSuccessFileDownloadResult(int downloadId)
+        private FileDownloadResult NewSuccessFileDownloadResult(
+            int downloadId,
+            string downloadUrl,
+            string downloadTimeout,
+            string downloadDirectory)
         {
-            return new FileDownloadResult(downloadId);
+            return new FileDownloadResult(downloadId, downloadUrl, downloadTimeout, downloadDirectory);
         }
 
         private void UpdateToLatest()

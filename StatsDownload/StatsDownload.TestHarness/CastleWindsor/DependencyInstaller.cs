@@ -13,8 +13,8 @@
         {
             container.Register(
                 Component.For<IFileDownloadLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
-                Component.For<IDatabaseConnectionSettingsService>()
-                    .ImplementedBy<TestHarnessDatabaseConnectionSettingsProvider>(),
+                Component.For<IDatabaseConnectionSettingsService, IFileDownloadSettingsService>()
+                    .ImplementedBy<TestHarnessSettingsProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
                 Component.For<IFileDownloadDataStoreService>().ImplementedBy<FileDownloadDataStoreProvider>(),

@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IFileDownloadSettingsService.cs" />
     <Compile Include="Implementations\SqlDatabaseConnectionProvider.cs" />
     <Compile Include="Enums\FailedReason.cs" />
     <Compile Include="Interfaces\IDatabaseConnectionService.cs" />

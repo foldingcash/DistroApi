@@ -22,7 +22,12 @@
         public void LogResult(FileDownloadResult result)
         {
             Log?.Invoke(
-                $"Success: {result.Success}{Environment.NewLine}Failed Reason: {result.FailedReason}{Environment.NewLine}Download Id: {result.DownloadId}");
+                $"Success: {result.Success}{Environment.NewLine}"
+                + $"Failed Reason: {result.FailedReason}{Environment.NewLine}"
+                + $"Download Id: {result.DownloadId}{Environment.NewLine}"
+                + $"Download Url: {result.DownloadUrl}{Environment.NewLine}"
+                + $"Download Timeout: {result.DownloadTimeout}{Environment.NewLine}"
+                + $"Download Directory: {result.DownloadDirectory}{Environment.NewLine}");
         }
 
         public void LogVerbose(string message)

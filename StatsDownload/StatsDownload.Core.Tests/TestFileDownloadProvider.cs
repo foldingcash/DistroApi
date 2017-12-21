@@ -13,13 +13,19 @@
 
         private IFileDownloadLoggingService fileDownloadLoggingServiceMock;
 
+        private IFileDownloadSettingsService fileDownloadSettingsServiceMock;
+
         private IFileDownloadService systemUnderTest;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewFileDownloadProvider(null, fileDownloadLoggingServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewFileDownloadProvider(fileDownloadDataStoreServiceMock, null));
+            Assert.Throws<ArgumentNullException>(
+                () => NewFileDownloadProvider(null, fileDownloadLoggingServiceMock, fileDownloadSettingsServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () => NewFileDownloadProvider(fileDownloadDataStoreServiceMock, null, fileDownloadSettingsServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () => NewFileDownloadProvider(fileDownloadDataStoreServiceMock, fileDownloadLoggingServiceMock, null));
         }
 
         [Test]
@@ -79,7 +85,7 @@
         }
 
         [Test]
-        public void DownloadFile_WhenInvoked_ResultIsSuccess()
+        public void DownloadFile_WhenInvoked_ResultIsSuccessAndContainsDownloadData()
         {
             fileDownloadDataStoreServiceMock.NewFileDownloadStarted().Returns(100);
 
@@ -87,6 +93,9 @@
 
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.DownloadId, Is.EqualTo(100));
+            Assert.That(actual.DownloadUrl, Is.EqualTo("DownloadUrl"));
+            Assert.That(actual.DownloadTimeout, Is.EqualTo("DownloadTimeout"));
+            Assert.That(actual.DownloadDirectory, Is.EqualTo("DownloadDirectory"));
         }
 
         [SetUp]
@@ -97,7 +106,15 @@
 
             fileDownloadLoggingServiceMock = Substitute.For<IFileDownloadLoggingService>();
 
-            systemUnderTest = NewFileDownloadProvider(fileDownloadDataStoreServiceMock, fileDownloadLoggingServiceMock);
+            fileDownloadSettingsServiceMock = Substitute.For<IFileDownloadSettingsService>();
+            fileDownloadSettingsServiceMock.GetDownloadUrl().Returns("DownloadUrl");
+            fileDownloadSettingsServiceMock.GetDownloadTimeout().Returns("DownloadTimeout");
+            fileDownloadSettingsServiceMock.GetDownloadDirectory().Returns("DownloadDirectory");
+
+            systemUnderTest = NewFileDownloadProvider(
+                fileDownloadDataStoreServiceMock,
+                fileDownloadLoggingServiceMock,
+                fileDownloadSettingsServiceMock);
         }
 
         private FileDownloadResult InvokeDownloadFile()
@@ -107,9 +124,13 @@
 
         private IFileDownloadService NewFileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
-            IFileDownloadLoggingService fileDownloadLoggingService)
+            IFileDownloadLoggingService fileDownloadLoggingService,
+            IFileDownloadSettingsService fileDownloadSettingsService)
         {
-            return new FileDownloadProvider(fileDownloadDataStoreService, fileDownloadLoggingService);
+            return new FileDownloadProvider(
+                fileDownloadDataStoreService,
+                fileDownloadLoggingService,
+                fileDownloadSettingsService);
         }
     }
 }
