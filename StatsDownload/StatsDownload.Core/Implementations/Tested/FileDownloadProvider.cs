@@ -86,7 +86,9 @@
                 int timeoutInSeconds;
                 TryParseTimeout(downloadTimeout, out timeoutInSeconds);
 
+                LogVerbose($"Stats file download started: {DateTime.Now}");
                 DownloadFile(downloadUrl, downloadFileName, timeoutInSeconds);
+                LogVerbose($"Stats file download completed: {DateTime.Now}");
 
                 FileDownloadResult successResult = NewSuccessFileDownloadResult(
                     downloadId,

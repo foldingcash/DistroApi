@@ -45,6 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementations\Untested\GuidProvider.cs" />
+    <Compile Include="Interfaces\IGuidService.cs" />
+    <Compile Include="Implementations\Tested\FileNameProvider.cs" />
     <Compile Include="Interfaces\IFileNameService.cs" />
     <Compile Include="Implementations\Tested\FileDownloadTimeoutValidatorProvider.cs" />
     <Compile Include="Interfaces\FileDownload\IFileDownloadTimeoutValidatorService.cs" />

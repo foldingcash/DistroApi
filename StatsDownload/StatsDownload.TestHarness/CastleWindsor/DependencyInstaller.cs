@@ -12,6 +12,8 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
+                Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
+                Component.For<IFileNameService>().ImplementedBy<FileNameProvider>(),
                 Component.For<IFileDownloadLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
                 Component.For<IDatabaseConnectionSettingsService, IFileDownloadSettingsService>()
                     .ImplementedBy<TestHarnessSettingsProvider>(),

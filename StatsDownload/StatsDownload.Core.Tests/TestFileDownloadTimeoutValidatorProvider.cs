@@ -26,8 +26,6 @@
             Assert.That(actual, Is.False);
         }
 
-        //[TestCase("0", 0)]
-        //[TestCase("-1", 0)]
         [TestCase("100", 100)]
         public void TryParseTimeout_WhenAnIntIsProvided_ReturnsTheParsedInt(string input, int expected)
         {

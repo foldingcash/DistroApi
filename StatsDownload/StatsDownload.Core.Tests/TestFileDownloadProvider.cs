@@ -134,7 +134,11 @@
                         fileDownloadDataStoreServiceMock.IsAvailable();
                         fileDownloadDataStoreServiceMock.UpdateToLatest();
                         fileDownloadDataStoreServiceMock.NewFileDownloadStarted();
+                        fileDownloadLoggingServiceMock.LogVerbose(
+                            Arg.Is<string>(value => value.StartsWith("Stats file download started")));
                         fileDownloaderServiceMock.DownloadFile("DownloadUrl", "DownloadFileName", 123);
+                        fileDownloadLoggingServiceMock.LogVerbose(
+                            Arg.Is<string>(value => value.StartsWith("Stats file download completed")));
                         fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }
