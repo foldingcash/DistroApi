@@ -9,7 +9,7 @@
     [TestFixture]
     public class TestFileNameProvider
     {
-        private IGuidService guidServiceMock;
+        private IDateTimeService dateTimeServiceMock;
 
         private IFileNameService systemUnderTest;
 
@@ -18,16 +18,16 @@
         {
             string actual = systemUnderTest.GetRandomFileNamePath(@"C:\Temp");
 
-            Assert.That(actual, Is.EqualTo($@"C:\Temp\{Guid.Empty}.daily_user_summary.txt.bz2"));
+            Assert.That(actual, Is.EqualTo($@"C:\Temp\{DateTime.MaxValue.ToFileTime()}.daily_user_summary.txt.bz2"));
         }
 
         [SetUp]
         public void SetUp()
         {
-            guidServiceMock = Substitute.For<IGuidService>();
-            guidServiceMock.NextGuid().Returns(Guid.Empty);
+            dateTimeServiceMock = Substitute.For<IDateTimeService>();
+            dateTimeServiceMock.DateTimeNow().Returns(DateTime.MaxValue);
 
-            systemUnderTest = new FileNameProvider(guidServiceMock);
+            systemUnderTest = new FileNameProvider(dateTimeServiceMock);
         }
     }
 }

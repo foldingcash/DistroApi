@@ -7,23 +7,23 @@
     {
         private const string FileName = "daily_user_summary.txt.bz2";
 
-        private readonly IGuidService guidService;
+        private readonly IDateTimeService dateTimeService;
 
-        public FileNameProvider(IGuidService guidService)
+        public FileNameProvider(IDateTimeService dateTimeService)
         {
-            this.guidService = guidService;
+            this.dateTimeService = dateTimeService;
         }
 
         public string GetRandomFileNamePath(string directory)
         {
-            Guid guid = NextGuid();
-            string fileName = $"{guid}.{FileName}";
+            DateTime dateTime = DateTimeNow();
+            string fileName = $"{dateTime.ToFileTime()}.{FileName}";
             return Path.Combine(directory, fileName);
         }
 
-        private Guid NextGuid()
+        private DateTime DateTimeNow()
         {
-            return guidService.NextGuid();
+            return dateTimeService.DateTimeNow();
         }
     }
 }
