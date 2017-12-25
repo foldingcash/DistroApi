@@ -1,6 +1,8 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System.Configuration;
+    using System.IO;
+    using System.Reflection;
 
     using StatsDownload.Core;
 
@@ -13,12 +15,13 @@
 
         public string GetDownloadDirectory()
         {
-            return ConfigurationManager.AppSettings["DownloadDirectory"];
+            return ConfigurationManager.AppSettings["DownloadDirectory"]
+                   ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         }
 
         public string GetDownloadTimeout()
         {
-            return ConfigurationManager.AppSettings["DownloadTimeout"];
+            return ConfigurationManager.AppSettings["DownloadTimeoutSeconds"];
         }
 
         public string GetDownloadUrl()
