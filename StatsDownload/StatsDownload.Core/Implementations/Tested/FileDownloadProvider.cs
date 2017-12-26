@@ -86,7 +86,7 @@
                 int timeoutInSeconds;
                 TryParseTimeout(downloadTimeout, out timeoutInSeconds);
 
-                var statsPayload = new StatsPayload(downloadId, downloadUrl, downloadTimeout, downloadFileName);
+                StatsPayload statsPayload = NewStatsPayload(downloadId, downloadUrl, downloadTimeout, downloadFileName);
 
                 LogVerbose($"Stats file download started: {DateTime.Now}");
                 DownloadFile(downloadUrl, downloadFileName, timeoutInSeconds);
@@ -175,6 +175,15 @@
         private int NewFileDownloadStarted()
         {
             return fileDownloadDataStoreService.NewFileDownloadStarted();
+        }
+
+        private StatsPayload NewStatsPayload(
+            int downloadId,
+            string downloadUrl,
+            string downloadTimeout,
+            string downloadFileName)
+        {
+            return new StatsPayload(downloadId, downloadUrl, downloadTimeout, downloadFileName);
         }
 
         private FileDownloadResult NewSuccessFileDownloadResult(StatsPayload statsPayload)
