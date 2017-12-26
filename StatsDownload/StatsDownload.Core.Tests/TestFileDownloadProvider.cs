@@ -151,10 +151,10 @@
             FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.True);
-            Assert.That(actual.DownloadId, Is.EqualTo(100));
-            Assert.That(actual.DownloadUrl, Is.EqualTo("DownloadUrl"));
-            Assert.That(actual.DownloadTimeoutSeconds, Is.EqualTo("DownloadTimeoutSeconds"));
-            Assert.That(actual.DownloadFileName, Is.EqualTo("DownloadFileName"));
+            Assert.That(actual.StatsPayload.DownloadId, Is.EqualTo(100));
+            Assert.That(actual.StatsPayload.DownloadUrl, Is.EqualTo("DownloadUrl"));
+            Assert.That(actual.StatsPayload.DownloadTimeoutSeconds, Is.EqualTo("DownloadTimeoutSeconds"));
+            Assert.That(actual.StatsPayload.DownloadFileName, Is.EqualTo("DownloadFileName"));
         }
 
         [SetUp]
@@ -183,7 +183,7 @@
                         });
 
             fileNameServiceMock = Substitute.For<IFileNameService>();
-            fileNameServiceMock.GetRandomFileNamePath("DownloadDirectory").Returns("DownloadFileName");
+            fileNameServiceMock.GetNewFilePath("DownloadDirectory").Returns("DownloadFileName");
 
             systemUnderTest = NewFileDownloadProvider(
                 fileDownloadDataStoreServiceMock,

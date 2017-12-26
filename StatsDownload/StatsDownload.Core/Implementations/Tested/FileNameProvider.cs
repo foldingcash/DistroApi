@@ -14,7 +14,7 @@
             this.dateTimeService = dateTimeService;
         }
 
-        public string GetRandomFileNamePath(string directory)
+        public string GetNewFilePath(string directory)
         {
             DateTime dateTime = DateTimeNow();
             string fileName = $"{dateTime.ToFileTime()}.{FileName}";

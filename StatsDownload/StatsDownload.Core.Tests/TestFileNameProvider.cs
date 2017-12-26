@@ -16,7 +16,7 @@
         [Test]
         public void GetRandomFileNamePath_WhenInvoked_ReturnsGuidAppendedToDirectory()
         {
-            string actual = systemUnderTest.GetRandomFileNamePath(@"C:\Temp");
+            string actual = systemUnderTest.GetNewFilePath(@"C:\Temp");
 
             Assert.That(actual, Is.EqualTo($@"C:\Temp\{DateTime.MaxValue.ToFileTime()}.daily_user_summary.txt.bz2"));
         }

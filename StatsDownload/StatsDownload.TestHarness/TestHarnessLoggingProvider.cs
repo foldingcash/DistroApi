@@ -24,10 +24,10 @@
             Log?.Invoke(
                 $"Success: {result.Success}{Environment.NewLine}"
                 + $"Failed Reason: {result.FailedReason}{Environment.NewLine}"
-                + $"Download Id: {result.DownloadId}{Environment.NewLine}"
-                + $"Download Url: {result.DownloadUrl}{Environment.NewLine}"
-                + $"Download Timeout: {result.DownloadTimeoutSeconds}{Environment.NewLine}"
-                + $"Download Directory: {result.DownloadFileName}{Environment.NewLine}");
+                + $"Download Id: {result.StatsPayload.DownloadId}{Environment.NewLine}"
+                + $"Download Url: {result.StatsPayload.DownloadUrl}{Environment.NewLine}"
+                + $"Download Timeout: {result.StatsPayload.DownloadTimeoutSeconds}{Environment.NewLine}"
+                + $"Download Directory: {result.StatsPayload.DownloadFileName}{Environment.NewLine}");
         }
 
         public void LogVerbose(string message)

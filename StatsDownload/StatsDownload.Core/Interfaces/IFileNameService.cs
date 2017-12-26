@@ -2,6 +2,6 @@
 {
     public interface IFileNameService
     {
-        string GetRandomFileNamePath(string directory);
+        string GetNewFilePath(string directory);
     }
 }

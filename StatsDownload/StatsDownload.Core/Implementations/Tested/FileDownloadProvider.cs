@@ -86,15 +86,13 @@
                 int timeoutInSeconds;
                 TryParseTimeout(downloadTimeout, out timeoutInSeconds);
 
+                var statsPayload = new StatsPayload(downloadId, downloadUrl, downloadTimeout, downloadFileName);
+
                 LogVerbose($"Stats file download started: {DateTime.Now}");
                 DownloadFile(downloadUrl, downloadFileName, timeoutInSeconds);
                 LogVerbose($"Stats file download completed: {DateTime.Now}");
 
-                FileDownloadResult successResult = NewSuccessFileDownloadResult(
-                    downloadId,
-                    downloadUrl,
-                    downloadTimeout,
-                    downloadFileName);
+                FileDownloadResult successResult = NewSuccessFileDownloadResult(statsPayload);
                 LogResult(successResult);
 
                 return successResult;
@@ -126,7 +124,7 @@
         private string GetDownloadFileName()
         {
             string downloadDirectory = GetDownloadDirectory();
-            return fileNameService.GetRandomFileNamePath(downloadDirectory);
+            return fileNameService.GetNewFilePath(downloadDirectory);
         }
 
         private string GetDownloadTimeout()
@@ -179,13 +177,9 @@
             return fileDownloadDataStoreService.NewFileDownloadStarted();
         }
 
-        private FileDownloadResult NewSuccessFileDownloadResult(
-            int downloadId,
-            string downloadUrl,
-            string downloadTimeout,
-            string downloadDirectory)
+        private FileDownloadResult NewSuccessFileDownloadResult(StatsPayload statsPayload)
         {
-            return new FileDownloadResult(downloadId, downloadUrl, downloadTimeout, downloadDirectory);
+            return new FileDownloadResult(statsPayload);
         }
 
         private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)
