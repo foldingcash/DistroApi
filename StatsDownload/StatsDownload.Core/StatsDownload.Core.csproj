@@ -48,6 +48,7 @@
     <Compile Include="DataTransfer\StatsPayload.cs" />
     <Compile Include="Implementations\Untested\DateTimeProvider.cs" />
     <Compile Include="Implementations\Untested\FileReaderProvider.cs" />
+    <Compile Include="Interfaces\FileDownload\IFileCompressionService.cs" />
     <Compile Include="Interfaces\IDateTimeService.cs" />
     <Compile Include="Implementations\Untested\GuidProvider.cs" />
     <Compile Include="Interfaces\IFileReaderService.cs" />

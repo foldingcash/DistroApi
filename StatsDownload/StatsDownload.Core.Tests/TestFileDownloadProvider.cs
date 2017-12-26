@@ -11,6 +11,8 @@
     {
         private IDownloadService downloadServiceMock;
 
+        private IFileCompressionService fileCompressionServiceMock;
+
         private IFileDownloadDataStoreService fileDownloadDataStoreServiceMock;
 
         private IFileDownloadLoggingService fileDownloadLoggingServiceMock;
@@ -37,6 +39,7 @@
                     downloadServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
                     fileNameServiceMock,
+                    fileCompressionServiceMock,
                     fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
@@ -47,6 +50,7 @@
                     downloadServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
                     fileNameServiceMock,
+                    fileCompressionServiceMock,
                     fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
@@ -57,6 +61,7 @@
                     downloadServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
                     fileNameServiceMock,
+                    fileCompressionServiceMock,
                     fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
@@ -67,6 +72,7 @@
                     null,
                     fileDownloadTimeoutValidatorServiceMock,
                     fileNameServiceMock,
+                    fileCompressionServiceMock,
                     fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
@@ -77,6 +83,7 @@
                     downloadServiceMock,
                     null,
                     fileNameServiceMock,
+                    fileCompressionServiceMock,
                     fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
@@ -86,6 +93,18 @@
                     fileDownloadSettingsServiceMock,
                     downloadServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
+                    null,
+                    fileCompressionServiceMock,
+                    fileReaderServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewFileDownloadProvider(
+                    fileDownloadDataStoreServiceMock,
+                    fileDownloadLoggingServiceMock,
+                    fileDownloadSettingsServiceMock,
+                    downloadServiceMock,
+                    fileDownloadTimeoutValidatorServiceMock,
+                    fileNameServiceMock,
                     null,
                     fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
@@ -97,6 +116,7 @@
                     downloadServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
                     fileNameServiceMock,
+                    fileCompressionServiceMock,
                     null));
         }
 
@@ -141,7 +161,21 @@
         }
 
         [Test]
-        public void DownloadFile_WhenInvoked_DependenciesCalledInOrder()
+        public void DownloadFile_WhenInvoked_ResultIsSuccessAndContainsDownloadData()
+        {
+            fileDownloadDataStoreServiceMock.NewFileDownloadStarted().Returns(100);
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.True);
+            Assert.That(actual.StatsPayload.DownloadId, Is.EqualTo(100));
+            Assert.That(actual.StatsPayload.DownloadUrl, Is.EqualTo("DownloadUrl"));
+            Assert.That(actual.StatsPayload.TimeoutSeconds, Is.EqualTo(123));
+            Assert.That(actual.StatsPayload.DownloadFileName, Is.EqualTo("DownloadFileName"));
+        }
+
+        [Test]
+        public void DownloadFile_WhenInvoked_StatsDownloadIsPerformed()
         {
             InvokeDownloadFile();
 
@@ -161,23 +195,10 @@
                                 && payload.TimeoutSeconds == 123));
                         fileDownloadLoggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download completed")));
+                        fileCompressionServiceMock.DecompressFile(Arg.Any<StatsPayload>());
                         fileReaderServiceMock.ReadFile(Arg.Any<StatsPayload>());
                         fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
-        }
-
-        [Test]
-        public void DownloadFile_WhenInvoked_ResultIsSuccessAndContainsDownloadData()
-        {
-            fileDownloadDataStoreServiceMock.NewFileDownloadStarted().Returns(100);
-
-            FileDownloadResult actual = InvokeDownloadFile();
-
-            Assert.That(actual.Success, Is.True);
-            Assert.That(actual.StatsPayload.DownloadId, Is.EqualTo(100));
-            Assert.That(actual.StatsPayload.DownloadUrl, Is.EqualTo("DownloadUrl"));
-            Assert.That(actual.StatsPayload.TimeoutSeconds, Is.EqualTo(123));
-            Assert.That(actual.StatsPayload.DownloadFileName, Is.EqualTo("DownloadFileName"));
         }
 
         [SetUp]
@@ -208,6 +229,8 @@
             fileNameServiceMock = Substitute.For<IFileNameService>();
             fileNameServiceMock.GetNewFilePath("DownloadDirectory").Returns("DownloadFileName");
 
+            fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
+
             fileReaderServiceMock = Substitute.For<IFileReaderService>();
 
             systemUnderTest = NewFileDownloadProvider(
@@ -217,6 +240,7 @@
                 downloadServiceMock,
                 fileDownloadTimeoutValidatorServiceMock,
                 fileNameServiceMock,
+                fileCompressionServiceMock,
                 fileReaderServiceMock);
         }
 
@@ -232,6 +256,7 @@
             IDownloadService downloadService,
             IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService,
             IFileNameService fileNameService,
+            IFileCompressionService fileCompressionService,
             IFileReaderService fileReaderService)
         {
             return new FileDownloadProvider(
@@ -241,6 +266,7 @@
                 downloadService,
                 fileDownloadTimeoutValidatorService,
                 fileNameService,
+                fileCompressionService,
                 fileReaderService);
         }
     }

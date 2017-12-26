@@ -6,6 +6,8 @@
     {
         private readonly IDownloadService downloadService;
 
+        private readonly IFileCompressionService fileCompressionService;
+
         private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
 
         private readonly IFileDownloadLoggingService fileDownloadLoggingService;
@@ -25,6 +27,7 @@
             IDownloadService downloadService,
             IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService,
             IFileNameService fileNameService,
+            IFileCompressionService fileCompressionService,
             IFileReaderService fileReaderService)
         {
             if (IsNull(fileDownloadDataStoreService))
@@ -57,6 +60,11 @@
                 throw NewArgumentNullException(nameof(fileNameService));
             }
 
+            if (IsNull(fileCompressionService))
+            {
+                throw NewArgumentNullException(nameof(fileCompressionService));
+            }
+
             if (IsNull(fileReaderService))
             {
                 throw NewArgumentNullException(nameof(fileReaderService));
@@ -68,6 +76,7 @@
             this.downloadService = downloadService;
             this.fileDownloadTimeoutValidatorService = fileDownloadTimeoutValidatorService;
             this.fileNameService = fileNameService;
+            this.fileCompressionService = fileCompressionService;
             this.fileReaderService = fileReaderService;
         }
 
@@ -206,6 +215,7 @@
 
         private void UploadFile(StatsPayload statsPayload)
         {
+            fileCompressionService.DecompressFile(statsPayload);
             fileReaderService.ReadFile(statsPayload);
         }
     }
