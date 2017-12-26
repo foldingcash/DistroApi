@@ -82,11 +82,15 @@
             smb.HttpGetEnabled = true;
             host.Description.Behaviors.Add(smb);
             host.Open();
+            StartServerButton.Enabled = false;
+            StopServerButton.Enabled = true;
         }
 
         private void StopServerButton_Click(object sender, EventArgs e)
         {
             host?.Close();
+            StartServerButton.Enabled = true;
+            StopServerButton.Enabled = false;
         }
     }
 }
