@@ -49,7 +49,7 @@
         }
 
         [Test]
-        public void IsAvailable_Invoked_DependenciesCalledInOrder()
+        public void IsAvailable_Invoked_ConnectionOpenedThenClosed()
         {
             InvokeIsAvailable();
 
@@ -64,7 +64,7 @@
         }
 
         [Test]
-        public void IsAvailable_WhenDatabaseConnectionFails_DependenciesCalledInOrder()
+        public void IsAvailable_WhenDatabaseConnectionFails_ConnectionOpenedThenClosed()
         {
             var expected = new Exception();
             databaseConnectionServiceMock.When(mock => mock.Open()).Throw(expected);
@@ -100,7 +100,7 @@
         }
 
         [Test]
-        public void NewFileDownloadStarted_WhenInvoked_DependenciesCalledInOrder()
+        public void NewFileDownloadStarted_WhenInvoked_NewFileDownloadStarted()
         {
             InvokeNewFileDownloadStarted();
 
@@ -192,7 +192,7 @@
         }
 
         [Test]
-        public void UpdateToLatest_WhenInvoked_DependenciesCalledInOrder()
+        public void UpdateToLatest_WhenInvoked_DatabaseUpdatedToLatest()
         {
             databaseConnectionServiceMock.ExecuteStoredProcedure(Arg.Any<string>())
                 .Returns(NumberOfRowsEffectedExpected);

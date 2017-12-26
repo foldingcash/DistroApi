@@ -14,11 +14,19 @@
         private IFileNameService systemUnderTest;
 
         [Test]
-        public void GetRandomFileNamePath_WhenInvoked_ReturnsGuidAppendedToDirectory()
+        public void GetFileDownloadPath_WhenInvoked_ReturnsFileTimePrependedToFilePath()
         {
-            string actual = systemUnderTest.GetNewFilePath(@"C:\Temp");
+            string actual = systemUnderTest.GetFileDownloadPath(@"C:\Temp");
 
             Assert.That(actual, Is.EqualTo($@"C:\Temp\{DateTime.MaxValue.ToFileTime()}.daily_user_summary.txt.bz2"));
+        }
+
+        [Test]
+        public void GetUncompressedFileDownloadPath_WhenInvoked_ReturnsFileTimePrependedToFilePath()
+        {
+            string actual = systemUnderTest.GetUncompressedFileDownloadPath(@"C:\Temp");
+
+            Assert.That(actual, Is.EqualTo($@"C:\Temp\{DateTime.MaxValue.ToFileTime()}.daily_user_summary.txt"));
         }
 
         [SetUp]

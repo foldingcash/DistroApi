@@ -171,7 +171,8 @@
             Assert.That(actual.StatsPayload.DownloadId, Is.EqualTo(100));
             Assert.That(actual.StatsPayload.DownloadUrl, Is.EqualTo("DownloadUrl"));
             Assert.That(actual.StatsPayload.TimeoutSeconds, Is.EqualTo(123));
-            Assert.That(actual.StatsPayload.DownloadFileName, Is.EqualTo("DownloadFileName"));
+            Assert.That(actual.StatsPayload.DownloadFilePath, Is.EqualTo("DownloadFilePath"));
+            Assert.That(actual.StatsPayload.UncompressedDownloadFilePath, Is.EqualTo("UncompressedDownloadFilePath"));
         }
 
         [Test]
@@ -191,7 +192,7 @@
                         downloadServiceMock.DownloadFile(
                             Arg.Is<StatsPayload>(
                                 payload =>
-                                payload.DownloadUrl == "DownloadUrl" && payload.DownloadFileName == "DownloadFileName"
+                                payload.DownloadUrl == "DownloadUrl" && payload.DownloadFilePath == "DownloadFilePath"
                                 && payload.TimeoutSeconds == 123));
                         fileDownloadLoggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download completed")));
@@ -227,7 +228,9 @@
                         });
 
             fileNameServiceMock = Substitute.For<IFileNameService>();
-            fileNameServiceMock.GetNewFilePath("DownloadDirectory").Returns("DownloadFileName");
+            fileNameServiceMock.GetFileDownloadPath("DownloadDirectory").Returns("DownloadFilePath");
+            fileNameServiceMock.GetUncompressedFileDownloadPath("DownloadDirectory")
+                .Returns("UncompressedDownloadFilePath");
 
             fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
 

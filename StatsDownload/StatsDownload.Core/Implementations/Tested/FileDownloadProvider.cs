@@ -131,7 +131,7 @@
         private string GetDownloadFileName()
         {
             string downloadDirectory = GetDownloadDirectory();
-            return fileNameService.GetNewFilePath(downloadDirectory);
+            return fileNameService.GetFileDownloadPath(downloadDirectory);
         }
 
         private string GetDownloadTimeout()
@@ -142,6 +142,12 @@
         private string GetDownloadUrl()
         {
             return fileDownloadSettingsService.GetDownloadUrl();
+        }
+
+        private string GetUncompressedDownloadFilePath()
+        {
+            string downloadDirectory = GetDownloadDirectory();
+            return fileNameService.GetUncompressedFileDownloadPath(downloadDirectory);
         }
 
         private bool IsNull(object value)
@@ -191,11 +197,17 @@
             string downloadUrl = GetDownloadUrl();
             string downloadTimeout = GetDownloadTimeout();
             string downloadFileName = GetDownloadFileName();
+            string uncompressedDownloadFilePath = GetUncompressedDownloadFilePath();
 
             int timeoutInSeconds;
             TryParseTimeout(downloadTimeout, out timeoutInSeconds);
 
-            return new StatsPayload(downloadId, downloadUrl, timeoutInSeconds, downloadFileName);
+            return new StatsPayload(
+                downloadId,
+                downloadUrl,
+                timeoutInSeconds,
+                downloadFileName,
+                uncompressedDownloadFilePath);
         }
 
         private FileDownloadResult NewSuccessFileDownloadResult(StatsPayload statsPayload)

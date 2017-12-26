@@ -2,6 +2,8 @@
 {
     public interface IFileNameService
     {
-        string GetNewFilePath(string directory);
+        string GetFileDownloadPath(string directory);
+
+        string GetUncompressedFileDownloadPath(string directory);
     }
 }

@@ -10,7 +10,7 @@
             using (var client = new WebClientWithTimeout())
             {
                 client.TimeoutInSeconds = statsPayload.TimeoutSeconds;
-                client.DownloadFile(statsPayload.DownloadUrl, statsPayload.DownloadFileName);
+                client.DownloadFile(statsPayload.DownloadUrl, statsPayload.DownloadFilePath);
             }
         }
 

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Core.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.TestHarness", "StatsDownload.TestHarness\StatsDownload.TestHarness.csproj", "{A0CC8A1A-A399-478D-A8EC-E7B3FD3C4AED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.SharpZipLib", "StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj", "{028E717E-7D47-41ED-AE08-23A40B68D68F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A0CC8A1A-A399-478D-A8EC-E7B3FD3C4AED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0CC8A1A-A399-478D-A8EC-E7B3FD3C4AED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0CC8A1A-A399-478D-A8EC-E7B3FD3C4AED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{028E717E-7D47-41ED-AE08-23A40B68D68F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{028E717E-7D47-41ED-AE08-23A40B68D68F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{028E717E-7D47-41ED-AE08-23A40B68D68F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{028E717E-7D47-41ED-AE08-23A40B68D68F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

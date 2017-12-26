@@ -27,8 +27,9 @@
                 + $"Download Id: {result.StatsPayload.DownloadId}{Environment.NewLine}"
                 + $"Download URL: {result.StatsPayload.DownloadUrl}{Environment.NewLine}"
                 + $"Download Timeout: {result.StatsPayload.TimeoutSeconds}{Environment.NewLine}"
-                + $"Download Directory: {result.StatsPayload.DownloadFileName}{Environment.NewLine}"
-                + $"Download Data (First 100): {result.StatsPayload.StatsData.Substring(0, 99)}");
+                + $"Download File Path: {result.StatsPayload.DownloadFilePath}{Environment.NewLine}{Environment.NewLine}"
+                + $"Uncompressed Download File Path: {result.StatsPayload.UncompressedDownloadFilePath}{Environment.NewLine}{Environment.NewLine}"
+                + $"Download Data (First 100): {result.StatsPayload.StatsData.Substring(0, 99)}{Environment.NewLine}{Environment.NewLine}");
         }
 
         public void LogVerbose(string message)
