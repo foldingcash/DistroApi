@@ -86,10 +86,10 @@
                 int timeoutInSeconds;
                 TryParseTimeout(downloadTimeout, out timeoutInSeconds);
 
-                StatsPayload statsPayload = NewStatsPayload(downloadId, downloadUrl, downloadTimeout, downloadFileName);
+                StatsPayload statsPayload = NewStatsPayload(downloadId, downloadUrl, timeoutInSeconds, downloadFileName);
 
                 LogVerbose($"Stats file download started: {DateTime.Now}");
-                DownloadFile(downloadUrl, downloadFileName, timeoutInSeconds);
+                DownloadFile(statsPayload);
                 LogVerbose($"Stats file download completed: {DateTime.Now}");
 
                 FileDownloadResult successResult = NewSuccessFileDownloadResult(statsPayload);
@@ -111,9 +111,9 @@
             return !fileDownloadDataStoreService.IsAvailable();
         }
 
-        private void DownloadFile(string downloadUrl, string fileName, int timeoutInSeconds)
+        private void DownloadFile(StatsPayload statsPayload)
         {
-            fileDownloaderService.DownloadFile(downloadUrl, fileName, timeoutInSeconds);
+            fileDownloaderService.DownloadFile(statsPayload);
         }
 
         private string GetDownloadDirectory()
@@ -180,7 +180,7 @@
         private StatsPayload NewStatsPayload(
             int downloadId,
             string downloadUrl,
-            string downloadTimeout,
+            int downloadTimeout,
             string downloadFileName)
         {
             return new StatsPayload(downloadId, downloadUrl, downloadTimeout, downloadFileName);

@@ -2,11 +2,11 @@
 {
     public class StatsPayload
     {
-        public StatsPayload(int downloadId, string downloadUrl, string downloadTimeoutSeconds, string downloadFileName)
+        public StatsPayload(int downloadId, string downloadUrl, int timeoutSeconds, string downloadFileName)
         {
             DownloadId = downloadId;
             DownloadUrl = downloadUrl;
-            DownloadTimeoutSeconds = downloadTimeoutSeconds;
+            TimeoutSeconds = timeoutSeconds;
             DownloadFileName = downloadFileName;
         }
 
@@ -14,8 +14,8 @@
 
         public int DownloadId { get; private set; }
 
-        public string DownloadTimeoutSeconds { get; private set; }
-
         public string DownloadUrl { get; private set; }
+
+        public int TimeoutSeconds { get; private set; }
     }
 }

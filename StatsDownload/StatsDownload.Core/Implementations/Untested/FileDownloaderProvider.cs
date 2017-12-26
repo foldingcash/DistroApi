@@ -5,12 +5,12 @@
 
     public class FileDownloaderProvider : IFileDownloaderService
     {
-        public void DownloadFile(string address, string fileName, int timeoutInSeconds)
+        public void DownloadFile(StatsPayload statsPayload)
         {
             using (var client = new WebClientWithTimeout())
             {
-                client.TimeoutInSeconds = timeoutInSeconds;
-                client.DownloadFile(address, fileName);
+                client.TimeoutInSeconds = statsPayload.TimeoutSeconds;
+                client.DownloadFile(statsPayload.DownloadUrl, statsPayload.DownloadFileName);
             }
         }
 

@@ -136,7 +136,11 @@
                         fileDownloadDataStoreServiceMock.NewFileDownloadStarted();
                         fileDownloadLoggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download started")));
-                        fileDownloaderServiceMock.DownloadFile("DownloadUrl", "DownloadFileName", 123);
+                        fileDownloaderServiceMock.DownloadFile(
+                            Arg.Is<StatsPayload>(
+                                payload =>
+                                payload.DownloadUrl == "DownloadUrl" && payload.DownloadFileName == "DownloadFileName"
+                                && payload.TimeoutSeconds == 123));
                         fileDownloadLoggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download completed")));
                         fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
@@ -153,7 +157,7 @@
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.StatsPayload.DownloadId, Is.EqualTo(100));
             Assert.That(actual.StatsPayload.DownloadUrl, Is.EqualTo("DownloadUrl"));
-            Assert.That(actual.StatsPayload.DownloadTimeoutSeconds, Is.EqualTo("DownloadTimeoutSeconds"));
+            Assert.That(actual.StatsPayload.TimeoutSeconds, Is.EqualTo(123));
             Assert.That(actual.StatsPayload.DownloadFileName, Is.EqualTo("DownloadFileName"));
         }
 

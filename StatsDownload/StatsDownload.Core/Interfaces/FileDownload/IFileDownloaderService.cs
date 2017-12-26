@@ -2,6 +2,6 @@
 {
     public interface IFileDownloaderService
     {
-        void DownloadFile(string address, string fileName, int timeoutInSeconds);
+        void DownloadFile(StatsPayload statsPayload);
     }
 }

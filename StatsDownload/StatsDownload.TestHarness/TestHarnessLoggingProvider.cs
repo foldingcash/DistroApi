@@ -26,7 +26,7 @@
                 + $"Failed Reason: {result.FailedReason}{Environment.NewLine}"
                 + $"Download Id: {result.StatsPayload.DownloadId}{Environment.NewLine}"
                 + $"Download URL: {result.StatsPayload.DownloadUrl}{Environment.NewLine}"
-                + $"Download Timeout: {result.StatsPayload.DownloadTimeoutSeconds}{Environment.NewLine}"
+                + $"Download Timeout: {result.StatsPayload.TimeoutSeconds}{Environment.NewLine}"
                 + $"Download Directory: {result.StatsPayload.DownloadFileName}{Environment.NewLine}");
         }
 
