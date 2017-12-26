@@ -21,6 +21,10 @@
             protected override WebRequest GetWebRequest(Uri address)
             {
                 WebRequest request = base.GetWebRequest(address);
+                if (request == null)
+                {
+                    return null;
+                }
                 request.Timeout = ConvertToMilliSeconds(TimeoutInSeconds);
                 return request;
             }
