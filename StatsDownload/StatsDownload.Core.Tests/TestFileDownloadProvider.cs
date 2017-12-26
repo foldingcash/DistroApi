@@ -9,9 +9,9 @@
     [TestFixture]
     public class TestFileDownloadProvider
     {
-        private IFileDownloadDataStoreService fileDownloadDataStoreServiceMock;
+        private IDownloadService downloadServiceMock;
 
-        private IFileDownloaderService fileDownloaderServiceMock;
+        private IFileDownloadDataStoreService fileDownloadDataStoreServiceMock;
 
         private IFileDownloadLoggingService fileDownloadLoggingServiceMock;
 
@@ -34,7 +34,7 @@
                     null,
                     fileDownloadLoggingServiceMock,
                     fileDownloadSettingsServiceMock,
-                    fileDownloaderServiceMock,
+                    downloadServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
                     fileNameServiceMock,
                     fileReaderServiceMock));
@@ -44,7 +44,7 @@
                     fileDownloadDataStoreServiceMock,
                     null,
                     fileDownloadSettingsServiceMock,
-                    fileDownloaderServiceMock,
+                    downloadServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
                     fileNameServiceMock,
                     fileReaderServiceMock));
@@ -54,7 +54,7 @@
                     fileDownloadDataStoreServiceMock,
                     fileDownloadLoggingServiceMock,
                     null,
-                    fileDownloaderServiceMock,
+                    downloadServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
                     fileNameServiceMock,
                     fileReaderServiceMock));
@@ -74,7 +74,7 @@
                     fileDownloadDataStoreServiceMock,
                     fileDownloadLoggingServiceMock,
                     fileDownloadSettingsServiceMock,
-                    fileDownloaderServiceMock,
+                    downloadServiceMock,
                     null,
                     fileNameServiceMock,
                     fileReaderServiceMock));
@@ -84,7 +84,7 @@
                     fileDownloadDataStoreServiceMock,
                     fileDownloadLoggingServiceMock,
                     fileDownloadSettingsServiceMock,
-                    fileDownloaderServiceMock,
+                    downloadServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
                     null,
                     fileReaderServiceMock));
@@ -94,7 +94,7 @@
                     fileDownloadDataStoreServiceMock,
                     fileDownloadLoggingServiceMock,
                     fileDownloadSettingsServiceMock,
-                    fileDownloaderServiceMock,
+                    downloadServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
                     fileNameServiceMock,
                     null));
@@ -154,7 +154,7 @@
                         fileDownloadDataStoreServiceMock.NewFileDownloadStarted();
                         fileDownloadLoggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download started")));
-                        fileDownloaderServiceMock.DownloadFile(
+                        downloadServiceMock.DownloadFile(
                             Arg.Is<StatsPayload>(
                                 payload =>
                                 payload.DownloadUrl == "DownloadUrl" && payload.DownloadFileName == "DownloadFileName"
@@ -193,7 +193,7 @@
             fileDownloadSettingsServiceMock.GetDownloadTimeout().Returns("DownloadTimeoutSeconds");
             fileDownloadSettingsServiceMock.GetDownloadDirectory().Returns("DownloadDirectory");
 
-            fileDownloaderServiceMock = Substitute.For<IFileDownloaderService>();
+            downloadServiceMock = Substitute.For<IDownloadService>();
 
             int timeout;
             fileDownloadTimeoutValidatorServiceMock = Substitute.For<IFileDownloadTimeoutValidatorService>();
@@ -214,7 +214,7 @@
                 fileDownloadDataStoreServiceMock,
                 fileDownloadLoggingServiceMock,
                 fileDownloadSettingsServiceMock,
-                fileDownloaderServiceMock,
+                downloadServiceMock,
                 fileDownloadTimeoutValidatorServiceMock,
                 fileNameServiceMock,
                 fileReaderServiceMock);
@@ -229,7 +229,7 @@
             IFileDownloadDataStoreService fileDownloadDataStoreService,
             IFileDownloadLoggingService fileDownloadLoggingService,
             IFileDownloadSettingsService fileDownloadSettingsService,
-            IFileDownloaderService fileDownloaderService,
+            IDownloadService downloadService,
             IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService,
             IFileNameService fileNameService,
             IFileReaderService fileReaderService)
@@ -238,7 +238,7 @@
                 fileDownloadDataStoreService,
                 fileDownloadLoggingService,
                 fileDownloadSettingsService,
-                fileDownloaderService,
+                downloadService,
                 fileDownloadTimeoutValidatorService,
                 fileNameService,
                 fileReaderService);

@@ -4,9 +4,9 @@
 
     public class FileDownloadProvider : IFileDownloadService
     {
-        private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
+        private readonly IDownloadService downloadService;
 
-        private readonly IFileDownloaderService fileDownloaderService;
+        private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
 
         private readonly IFileDownloadLoggingService fileDownloadLoggingService;
 
@@ -22,7 +22,7 @@
             IFileDownloadDataStoreService fileDownloadDataStoreService,
             IFileDownloadLoggingService fileDownloadLoggingService,
             IFileDownloadSettingsService fileDownloadSettingsService,
-            IFileDownloaderService fileDownloaderService,
+            IDownloadService downloadService,
             IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService,
             IFileNameService fileNameService,
             IFileReaderService fileReaderService)
@@ -42,9 +42,9 @@
                 throw NewArgumentNullException(nameof(fileDownloadSettingsService));
             }
 
-            if (IsNull(fileDownloaderService))
+            if (IsNull(downloadService))
             {
-                throw NewArgumentNullException(nameof(fileDownloaderService));
+                throw NewArgumentNullException(nameof(downloadService));
             }
 
             if (IsNull(fileDownloadTimeoutValidatorService))
@@ -65,7 +65,7 @@
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
             this.fileDownloadLoggingService = fileDownloadLoggingService;
             this.fileDownloadSettingsService = fileDownloadSettingsService;
-            this.fileDownloaderService = fileDownloaderService;
+            this.downloadService = downloadService;
             this.fileDownloadTimeoutValidatorService = fileDownloadTimeoutValidatorService;
             this.fileNameService = fileNameService;
             this.fileReaderService = fileReaderService;
@@ -111,7 +111,7 @@
 
         private void DownloadFile(StatsPayload statsPayload)
         {
-            fileDownloaderService.DownloadFile(statsPayload);
+            downloadService.DownloadFile(statsPayload);
         }
 
         private string GetDownloadDirectory()

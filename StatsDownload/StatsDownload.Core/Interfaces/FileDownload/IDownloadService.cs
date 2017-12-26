@@ -1,6 +1,6 @@
 ﻿namespace StatsDownload.Core
 {
-    public interface IFileDownloaderService
+    public interface IDownloadService
     {
         void DownloadFile(StatsPayload statsPayload);
     }

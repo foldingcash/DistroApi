@@ -22,7 +22,7 @@
                 Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
                 Component.For<IFileDownloadDataStoreService>().ImplementedBy<FileDownloadDataStoreProvider>(),
-                Component.For<IFileDownloaderService>().ImplementedBy<FileDownloaderProvider>(),
+                Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IFileDownloadTimeoutValidatorService>()
                     .ImplementedBy<FileDownloadTimeoutValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>());
