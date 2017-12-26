@@ -16,6 +16,8 @@
 
         public string DownloadUrl { get; private set; }
 
+        public string StatsData { get; set; }
+
         public int TimeoutSeconds { get; private set; }
     }
 }

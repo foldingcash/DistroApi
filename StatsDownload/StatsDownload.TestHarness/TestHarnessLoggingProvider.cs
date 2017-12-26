@@ -27,7 +27,8 @@
                 + $"Download Id: {result.StatsPayload.DownloadId}{Environment.NewLine}"
                 + $"Download URL: {result.StatsPayload.DownloadUrl}{Environment.NewLine}"
                 + $"Download Timeout: {result.StatsPayload.TimeoutSeconds}{Environment.NewLine}"
-                + $"Download Directory: {result.StatsPayload.DownloadFileName}{Environment.NewLine}");
+                + $"Download Directory: {result.StatsPayload.DownloadFileName}{Environment.NewLine}"
+                + $"Download Data (First 100): {result.StatsPayload.StatsData.Substring(0, 99)}");
         }
 
         public void LogVerbose(string message)

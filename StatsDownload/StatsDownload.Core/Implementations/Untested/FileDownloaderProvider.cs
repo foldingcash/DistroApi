@@ -16,7 +16,7 @@
 
         private class WebClientWithTimeout : WebClient
         {
-            public int TimeoutInSeconds { get; set; }
+            public int TimeoutInSeconds { private get; set; }
 
             protected override WebRequest GetWebRequest(Uri address)
             {

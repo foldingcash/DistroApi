@@ -21,6 +21,8 @@
 
         private IFileNameService fileNameServiceMock;
 
+        private IFileReaderService fileReaderServiceMock;
+
         private IFileDownloadService systemUnderTest;
 
         [Test]
@@ -34,7 +36,8 @@
                     fileDownloadSettingsServiceMock,
                     fileDownloaderServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
-                    fileNameServiceMock));
+                    fileNameServiceMock,
+                    fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -43,7 +46,8 @@
                     fileDownloadSettingsServiceMock,
                     fileDownloaderServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
-                    fileNameServiceMock));
+                    fileNameServiceMock,
+                    fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -52,7 +56,8 @@
                     null,
                     fileDownloaderServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
-                    fileNameServiceMock));
+                    fileNameServiceMock,
+                    fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -61,7 +66,8 @@
                     fileDownloadSettingsServiceMock,
                     null,
                     fileDownloadTimeoutValidatorServiceMock,
-                    fileNameServiceMock));
+                    fileNameServiceMock,
+                    fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -70,7 +76,8 @@
                     fileDownloadSettingsServiceMock,
                     fileDownloaderServiceMock,
                     null,
-                    fileNameServiceMock));
+                    fileNameServiceMock,
+                    fileReaderServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -79,6 +86,17 @@
                     fileDownloadSettingsServiceMock,
                     fileDownloaderServiceMock,
                     fileDownloadTimeoutValidatorServiceMock,
+                    null,
+                    fileReaderServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewFileDownloadProvider(
+                    fileDownloadDataStoreServiceMock,
+                    fileDownloadLoggingServiceMock,
+                    fileDownloadSettingsServiceMock,
+                    fileDownloaderServiceMock,
+                    fileDownloadTimeoutValidatorServiceMock,
+                    fileNameServiceMock,
                     null));
         }
 
@@ -143,6 +161,7 @@
                                 && payload.TimeoutSeconds == 123));
                         fileDownloadLoggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download completed")));
+                        fileReaderServiceMock.ReadFile(Arg.Any<StatsPayload>());
                         fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }
@@ -189,13 +208,16 @@
             fileNameServiceMock = Substitute.For<IFileNameService>();
             fileNameServiceMock.GetNewFilePath("DownloadDirectory").Returns("DownloadFileName");
 
+            fileReaderServiceMock = Substitute.For<IFileReaderService>();
+
             systemUnderTest = NewFileDownloadProvider(
                 fileDownloadDataStoreServiceMock,
                 fileDownloadLoggingServiceMock,
                 fileDownloadSettingsServiceMock,
                 fileDownloaderServiceMock,
                 fileDownloadTimeoutValidatorServiceMock,
-                fileNameServiceMock);
+                fileNameServiceMock,
+                fileReaderServiceMock);
         }
 
         private FileDownloadResult InvokeDownloadFile()
@@ -209,7 +231,8 @@
             IFileDownloadSettingsService fileDownloadSettingsService,
             IFileDownloaderService fileDownloaderService,
             IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService,
-            IFileNameService fileNameService)
+            IFileNameService fileNameService,
+            IFileReaderService fileReaderService)
         {
             return new FileDownloadProvider(
                 fileDownloadDataStoreService,
@@ -217,7 +240,8 @@
                 fileDownloadSettingsService,
                 fileDownloaderService,
                 fileDownloadTimeoutValidatorService,
-                fileNameService);
+                fileNameService,
+                fileReaderService);
         }
     }
 }

@@ -15,6 +15,7 @@
                 Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
                 Component.For<IFileNameService>().ImplementedBy<FileNameProvider>(),
+                Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
                 Component.For<IFileDownloadLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
                 Component.For<IDatabaseConnectionSettingsService, IFileDownloadSettingsService>()
                     .ImplementedBy<TestHarnessSettingsProvider>(),

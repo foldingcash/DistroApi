@@ -47,8 +47,10 @@
   <ItemGroup>
     <Compile Include="DataTransfer\StatsPayload.cs" />
     <Compile Include="Implementations\Untested\DateTimeProvider.cs" />
+    <Compile Include="Implementations\Untested\FileReaderProvider.cs" />
     <Compile Include="Interfaces\IDateTimeService.cs" />
     <Compile Include="Implementations\Untested\GuidProvider.cs" />
+    <Compile Include="Interfaces\IFileReaderService.cs" />
     <Compile Include="Interfaces\IGuidService.cs" />
     <Compile Include="Implementations\Tested\FileNameProvider.cs" />
     <Compile Include="Interfaces\IFileNameService.cs" />
