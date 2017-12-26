@@ -30,6 +30,8 @@
         {
             this.FileDownloadButton = new System.Windows.Forms.Button();
             this.LoggingTextBox = new System.Windows.Forms.TextBox();
+            this.StopServerButton = new System.Windows.Forms.Button();
+            this.StartServerButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // FileDownloadButton
@@ -51,11 +53,33 @@
             this.LoggingTextBox.Size = new System.Drawing.Size(506, 393);
             this.LoggingTextBox.TabIndex = 1;
             // 
+            // StopServerButton
+            // 
+            this.StopServerButton.Location = new System.Drawing.Point(12, 365);
+            this.StopServerButton.Name = "StopServerButton";
+            this.StopServerButton.Size = new System.Drawing.Size(197, 40);
+            this.StopServerButton.TabIndex = 2;
+            this.StopServerButton.Text = "Stop Server";
+            this.StopServerButton.UseVisualStyleBackColor = true;
+            this.StopServerButton.Click += new System.EventHandler(this.StopServerButton_Click);
+            // 
+            // StartServerButton
+            // 
+            this.StartServerButton.Location = new System.Drawing.Point(12, 319);
+            this.StartServerButton.Name = "StartServerButton";
+            this.StartServerButton.Size = new System.Drawing.Size(197, 40);
+            this.StartServerButton.TabIndex = 3;
+            this.StartServerButton.Text = "Start Server";
+            this.StartServerButton.UseVisualStyleBackColor = true;
+            this.StartServerButton.Click += new System.EventHandler(this.StartServerButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(733, 417);
+            this.Controls.Add(this.StartServerButton);
+            this.Controls.Add(this.StopServerButton);
             this.Controls.Add(this.LoggingTextBox);
             this.Controls.Add(this.FileDownloadButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -72,6 +96,8 @@
 
         private System.Windows.Forms.Button FileDownloadButton;
         private System.Windows.Forms.TextBox LoggingTextBox;
+        private System.Windows.Forms.Button StopServerButton;
+        private System.Windows.Forms.Button StartServerButton;
     }
 }
 

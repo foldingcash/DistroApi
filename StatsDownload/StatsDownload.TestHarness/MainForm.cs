@@ -1,6 +1,8 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System;
+    using System.ServiceModel;
+    using System.ServiceModel.Description;
     using System.Threading.Tasks;
     using System.Windows.Forms;
 
@@ -10,6 +12,8 @@
 
     public partial class MainForm : Form
     {
+        private ServiceHost host;
+
         public MainForm()
         {
             InitializeComponent();
@@ -66,6 +70,23 @@
             {
                 Log(exception.ToString());
             }
+        }
+
+        private void StartServerButton_Click(object sender, EventArgs e)
+        {
+            var baseAddress = "http://127.0.0.1";
+            host = new ServiceHost(typeof(TestHarnessFileServer), new Uri(baseAddress));
+            host.AddServiceEndpoint(typeof(ITestHarnessFileServer), new WebHttpBinding(), "")
+                .Behaviors.Add(new WebHttpBehavior());
+            var smb = new ServiceMetadataBehavior();
+            smb.HttpGetEnabled = true;
+            host.Description.Behaviors.Add(smb);
+            host.Open();
+        }
+
+        private void StopServerButton_Click(object sender, EventArgs e)
+        {
+            host?.Close();
         }
     }
 }
