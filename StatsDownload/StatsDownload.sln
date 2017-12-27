@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.TestHarness",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.SharpZipLib", "StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj", "{028E717E-7D47-41ED-AE08-23A40B68D68F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.FileServer.TestHarness", "StatsDownload.FileServer.TestHarness\StatsDownload.FileServer.TestHarness.csproj", "{F8F536D7-CFD1-4F46-890B-F53AEF11216A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{028E717E-7D47-41ED-AE08-23A40B68D68F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{028E717E-7D47-41ED-AE08-23A40B68D68F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{028E717E-7D47-41ED-AE08-23A40B68D68F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8F536D7-CFD1-4F46-890B-F53AEF11216A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8F536D7-CFD1-4F46-890B-F53AEF11216A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8F536D7-CFD1-4F46-890B-F53AEF11216A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8F536D7-CFD1-4F46-890B-F53AEF11216A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

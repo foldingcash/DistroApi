@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.TestHarness
+﻿namespace StatsDownload.FileServer.TestHarness
 {
     using System.IO;
     using System.ServiceModel;
