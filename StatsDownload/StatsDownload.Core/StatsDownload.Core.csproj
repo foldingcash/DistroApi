@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataTransfer\StatsPayload.cs" />
+    <Compile Include="DataTransfer\FilePayload.cs" />
     <Compile Include="Implementations\Untested\DateTimeProvider.cs" />
     <Compile Include="Implementations\Untested\FileReaderProvider.cs" />
     <Compile Include="Interfaces\FileDownload\IFileCompressionService.cs" />

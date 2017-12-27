@@ -2,6 +2,6 @@
 {
     public interface IFileReaderService
     {
-        void ReadFile(StatsPayload statsPayload);
+        void ReadFile(FilePayload filePayload);
     }
 }

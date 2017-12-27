@@ -2,6 +2,6 @@
 {
     public interface IFileCompressionService
     {
-        void DecompressFile(StatsPayload statsPayload);
+        void DecompressFile(FilePayload filePayload);
     }
 }

@@ -5,9 +5,13 @@
 
     public class FileNameProvider : IFileNameService
     {
-        private const string FileName = "daily_user_summary.txt.bz2";
+        private const string FileExtension = ".bz2";
 
-        private const string UncompressedFileName = "daily_user_summary.txt";
+        private const string FileName = "daily_user_summary.txt";
+
+        private const string UncompressedFileExtension = ".txt";
+
+        private const string UncompressedFileName = "daily_user_summary";
 
         private readonly IDateTimeService dateTimeService;
 
@@ -16,26 +20,29 @@
             this.dateTimeService = dateTimeService;
         }
 
-        public string GetFileDownloadPath(string directory)
+        public void SetDownloadFileDetails(string downloadDirectory, FilePayload filePayload)
         {
-            return GetFileDownloadPath(directory, FileName);
-        }
+            DateTime now = DateTimeNow();
 
-        public string GetUncompressedFileDownloadPath(string directory)
-        {
-            return GetFileDownloadPath(directory, UncompressedFileName);
+            string fileName = $"{now.ToFileTime()}.{FileName}";
+            string uncompressedFileName = $"{now.ToFileTime()}.{UncompressedFileName}";
+
+            filePayload.DownloadDirectory = downloadDirectory;
+            filePayload.DownloadFileName = fileName;
+            filePayload.DownloadFileExtension = FileExtension;
+            filePayload.DownloadFilePath = Path.Combine(downloadDirectory, $"{fileName}{FileExtension}");
+
+            filePayload.UncompressedDownloadDirectory = downloadDirectory;
+            filePayload.UncompressedDownloadFileName = uncompressedFileName;
+            filePayload.UncompressedDownloadFileExtension = UncompressedFileExtension;
+            filePayload.UncompressedDownloadFilePath = Path.Combine(
+                downloadDirectory,
+                $"{uncompressedFileName}{UncompressedFileExtension}");
         }
 
         private DateTime DateTimeNow()
         {
             return dateTimeService.DateTimeNow();
-        }
-
-        private string GetFileDownloadPath(string directory, string fileName)
-        {
-            DateTime dateTime = DateTimeNow();
-            string fileNameWithTime = $"{dateTime.ToFileTime()}.{fileName}";
-            return Path.Combine(directory, fileNameWithTime);
         }
     }
 }

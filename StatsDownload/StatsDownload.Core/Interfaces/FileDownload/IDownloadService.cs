@@ -2,6 +2,6 @@
 {
     public interface IDownloadService
     {
-        void DownloadFile(StatsPayload statsPayload);
+        void DownloadFile(FilePayload filePayload);
     }
 }

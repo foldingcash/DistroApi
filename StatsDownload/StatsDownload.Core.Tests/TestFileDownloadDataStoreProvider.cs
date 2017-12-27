@@ -23,7 +23,7 @@
 
         private IFileDownloadLoggingService fileDownloadLoggingServiceMock;
 
-        private StatsPayload statsPayload;
+        private FilePayload filePayload;
 
         private IFileDownloadDataStoreService systemUnderTest;
 
@@ -54,6 +54,48 @@
         public void FileDownloadFinished_WhenInvoked_FileDataUpload()
         {
             InvokeFileDownloadFinished();
+
+            Received.InOrder(
+                () =>
+                    {
+                        fileDownloadLoggingServiceMock.LogVerbose("FileDownloadFinished Invoked");
+                        databaseConnectionServiceMock.Open();
+                        databaseConnectionServiceMock.ExecuteStoredProcedure(
+                            "[FoldingCoin].[FileDownloadFinished]",
+                            Arg.Any<List<DbParameter>>());
+                        databaseConnectionServiceMock.Close();
+                    });
+        }
+
+        [Test]
+        public void FileDownloadFinished_WhenInvoked_ParametersAreProvided()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock.When(
+                service =>
+                service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]", Arg.Any<List<DbParameter>>()))
+                .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            InvokeFileDownloadFinished();
+
+            Assert.That(actualParameters.Count, Is.EqualTo(4));
+            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
+            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
+            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@FileName"));
+            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[1].Value, Is.EqualTo("UncompressedDownloadFileName"));
+            Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@FileExtension"));
+            Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[2].Value, Is.EqualTo("UncompressedDownloadFileExtension"));
+            Assert.That(actualParameters[3].ParameterName, Is.EqualTo("@FileData"));
+            Assert.That(actualParameters[3].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[3].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[3].Value, Is.EqualTo("UncompressedDownloadFileData"));
         }
 
         [Test]
@@ -153,9 +195,9 @@
             databaseConnectionServiceMock.CreateParameter("@DownloadId", DbType.Int32, ParameterDirection.Output)
                 .Returns(dbParameter);
 
-            StatsPayload actual = InvokeNewFileDownloadStarted();
+            InvokeNewFileDownloadStarted();
 
-            Assert.That(actual.DownloadId, Is.EqualTo(101));
+            Assert.That(filePayload.DownloadId, Is.EqualTo(101));
         }
 
         [SetUp]
@@ -198,7 +240,12 @@
                             return dbParameter;
                         });
 
-            statsPayload = new StatsPayload();
+            filePayload = new FilePayload
+                              {
+                                  DownloadId = 100, UncompressedDownloadFileName = "UncompressedDownloadFileName",
+                                  UncompressedDownloadFileExtension = "UncompressedDownloadFileExtension",
+                                  UncompressedDownloadFileData = "UncompressedDownloadFileData"
+                              };
         }
 
         [Test]
@@ -224,7 +271,7 @@
 
         private void InvokeFileDownloadFinished()
         {
-            systemUnderTest.FileDownloadFinished(statsPayload);
+            systemUnderTest.FileDownloadFinished(filePayload);
         }
 
         private bool InvokeIsAvailable()
@@ -232,9 +279,9 @@
             return systemUnderTest.IsAvailable();
         }
 
-        private StatsPayload InvokeNewFileDownloadStarted()
+        private void InvokeNewFileDownloadStarted()
         {
-            return systemUnderTest.NewFileDownloadStarted();
+            systemUnderTest.NewFileDownloadStarted(filePayload);
         }
 
         private void InvokeUpdateToLatest()

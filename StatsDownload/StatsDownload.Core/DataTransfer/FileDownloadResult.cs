@@ -2,10 +2,10 @@
 {
     public class FileDownloadResult
     {
-        public FileDownloadResult(StatsPayload statsPayload)
+        public FileDownloadResult(FilePayload filePayload)
         {
             Success = true;
-            StatsPayload = statsPayload;
+            FilePayload = filePayload;
         }
 
         public FileDownloadResult(FailedReason failedReason)
@@ -16,7 +16,7 @@
 
         public FailedReason FailedReason { get; private set; } = FailedReason.None;
 
-        public StatsPayload StatsPayload { get; private set; }
+        public FilePayload FilePayload { get; private set; }
 
         public bool Success { get; private set; }
     }

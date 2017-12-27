@@ -5,12 +5,12 @@
 
     public class DownloadProvider : IDownloadService
     {
-        public void DownloadFile(StatsPayload statsPayload)
+        public void DownloadFile(FilePayload filePayload)
         {
             using (var client = new WebClientWithTimeout())
             {
-                client.TimeoutInSeconds = statsPayload.TimeoutSeconds;
-                client.DownloadFile(statsPayload.DownloadUrl, statsPayload.DownloadFilePath);
+                client.TimeoutInSeconds = filePayload.TimeoutSeconds;
+                client.DownloadFile(filePayload.DownloadUrl, filePayload.DownloadFilePath);
             }
         }
 

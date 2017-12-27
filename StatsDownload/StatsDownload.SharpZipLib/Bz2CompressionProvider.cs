@@ -8,11 +8,11 @@
 
     public class Bz2CompressionProvider : IFileCompressionService
     {
-        public void DecompressFile(StatsPayload statsPayload)
+        public void DecompressFile(FilePayload filePayload)
         {
-            using (var sourceFile = new FileStream(statsPayload.DownloadFilePath, FileMode.Open))
+            using (var sourceFile = new FileStream(filePayload.DownloadFilePath, FileMode.Open))
             {
-                using (FileStream targetFile = File.Create(statsPayload.UncompressedDownloadFilePath))
+                using (FileStream targetFile = File.Create(filePayload.UncompressedDownloadFilePath))
                 {
                     BZip2.Decompress(sourceFile, targetFile, true);
                 }

@@ -94,12 +94,12 @@
                 }
 
                 UpdateToLatest();
-                StatsPayload statsPayload = NewStatsPayload();
+                FilePayload filePayload = NewStatsPayload();
                 LogVerbose($"Stats file download started: {DateTime.Now}");
-                DownloadFile(statsPayload);
+                DownloadFile(filePayload);
                 LogVerbose($"Stats file download completed: {DateTime.Now}");
-                UploadFile(statsPayload);
-                FileDownloadResult successResult = NewSuccessFileDownloadResult(statsPayload);
+                UploadFile(filePayload);
+                FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
                 LogResult(successResult);
 
                 return successResult;
@@ -118,20 +118,14 @@
             return !fileDownloadDataStoreService.IsAvailable();
         }
 
-        private void DownloadFile(StatsPayload statsPayload)
+        private void DownloadFile(FilePayload filePayload)
         {
-            downloadService.DownloadFile(statsPayload);
+            downloadService.DownloadFile(filePayload);
         }
 
         private string GetDownloadDirectory()
         {
             return fileDownloadSettingsService.GetDownloadDirectory();
-        }
-
-        private string GetDownloadFilePath()
-        {
-            string downloadDirectory = GetDownloadDirectory();
-            return fileNameService.GetFileDownloadPath(downloadDirectory);
         }
 
         private string GetDownloadTimeout()
@@ -142,12 +136,6 @@
         private string GetDownloadUrl()
         {
             return fileDownloadSettingsService.GetDownloadUrl();
-        }
-
-        private string GetUncompressedDownloadFilePath()
-        {
-            string downloadDirectory = GetDownloadDirectory();
-            return fileNameService.GetUncompressedFileDownloadPath(downloadDirectory);
         }
 
         private bool IsNull(object value)
@@ -185,34 +173,41 @@
             return new FileDownloadResult(failedReason);
         }
 
-        private StatsPayload NewFileDownloadStarted()
+        private void NewFileDownloadStarted(FilePayload filePayload)
         {
-            return fileDownloadDataStoreService.NewFileDownloadStarted();
+            fileDownloadDataStoreService.NewFileDownloadStarted(filePayload);
         }
 
-        private StatsPayload NewStatsPayload()
+        private FilePayload NewStatsPayload()
         {
-            StatsPayload statsPayload = NewFileDownloadStarted();
+            var filePayload = new FilePayload();
+
+            string downloadDirectory = GetDownloadDirectory();
+
+            SetDownloadFileDetails(downloadDirectory, filePayload);
+
+            NewFileDownloadStarted(filePayload);
 
             string downloadUrl = GetDownloadUrl();
             string downloadTimeout = GetDownloadTimeout();
-            string downloadFilePath = GetDownloadFilePath();
-            string uncompressedDownloadFilePath = GetUncompressedDownloadFilePath();
 
             int timeoutInSeconds;
             TryParseTimeout(downloadTimeout, out timeoutInSeconds);
 
-            statsPayload.DownloadUrl = downloadUrl;
-            statsPayload.TimeoutSeconds = timeoutInSeconds;
-            statsPayload.DownloadFilePath = downloadFilePath;
-            statsPayload.UncompressedDownloadFilePath = uncompressedDownloadFilePath;
+            filePayload.DownloadUrl = downloadUrl;
+            filePayload.TimeoutSeconds = timeoutInSeconds;
 
-            return statsPayload;
+            return filePayload;
         }
 
-        private FileDownloadResult NewSuccessFileDownloadResult(StatsPayload statsPayload)
+        private FileDownloadResult NewSuccessFileDownloadResult(FilePayload filePayload)
         {
-            return new FileDownloadResult(statsPayload);
+            return new FileDownloadResult(filePayload);
+        }
+
+        private void SetDownloadFileDetails(string downloadDirectory, FilePayload filePayload)
+        {
+            fileNameService.SetDownloadFileDetails(downloadDirectory, filePayload);
         }
 
         private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)
@@ -225,11 +220,11 @@
             fileDownloadDataStoreService.UpdateToLatest();
         }
 
-        private void UploadFile(StatsPayload statsPayload)
+        private void UploadFile(FilePayload filePayload)
         {
-            fileCompressionService.DecompressFile(statsPayload);
-            fileReaderService.ReadFile(statsPayload);
-            fileDownloadDataStoreService.FileDownloadFinished(statsPayload);
+            fileCompressionService.DecompressFile(filePayload);
+            fileReaderService.ReadFile(filePayload);
+            fileDownloadDataStoreService.FileDownloadFinished(filePayload);
         }
     }
 }

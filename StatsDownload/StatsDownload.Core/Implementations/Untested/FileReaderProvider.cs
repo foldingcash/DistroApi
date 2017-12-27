@@ -4,11 +4,11 @@
 
     public class FileReaderProvider : IFileReaderService
     {
-        public void ReadFile(StatsPayload statsPayload)
+        public void ReadFile(FilePayload filePayload)
         {
-            using (var reader = new StreamReader(statsPayload.UncompressedDownloadFilePath))
+            using (var reader = new StreamReader(filePayload.UncompressedDownloadFilePath))
             {
-                statsPayload.StatsData = reader.ReadToEnd();
+                filePayload.UncompressedDownloadFileData = reader.ReadToEnd();
             }
         }
     }

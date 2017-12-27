@@ -25,8 +25,6 @@
 
         private IFileReaderService fileReaderServiceMock;
 
-        private StatsPayload statsPayload;
-
         private IFileDownloadService systemUnderTest;
 
         [Test]
@@ -165,16 +163,12 @@
         [Test]
         public void DownloadFile_WhenInvoked_ResultIsSuccessAndContainsDownloadData()
         {
-            fileDownloadDataStoreServiceMock.NewFileDownloadStarted().Returns(statsPayload);
-
             FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.True);
-            Assert.That(actual.StatsPayload, Is.EqualTo(statsPayload));
-            Assert.That(actual.StatsPayload.DownloadUrl, Is.EqualTo("DownloadUrl"));
-            Assert.That(actual.StatsPayload.TimeoutSeconds, Is.EqualTo(123));
-            Assert.That(actual.StatsPayload.DownloadFilePath, Is.EqualTo("DownloadFilePath"));
-            Assert.That(actual.StatsPayload.UncompressedDownloadFilePath, Is.EqualTo("UncompressedDownloadFilePath"));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+            Assert.That(actual.FilePayload.DownloadUrl, Is.EqualTo("DownloadUrl"));
+            Assert.That(actual.FilePayload.TimeoutSeconds, Is.EqualTo(123));
         }
 
         [Test]
@@ -188,15 +182,16 @@
                         fileDownloadLoggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
                         fileDownloadDataStoreServiceMock.UpdateToLatest();
-                        fileDownloadDataStoreServiceMock.NewFileDownloadStarted();
+                        fileNameServiceMock.SetDownloadFileDetails("DownloadDirectory", Arg.Any<FilePayload>());
+                        fileDownloadDataStoreServiceMock.NewFileDownloadStarted(Arg.Any<FilePayload>());
                         fileDownloadLoggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download started")));
-                        downloadServiceMock.DownloadFile(statsPayload);
+                        downloadServiceMock.DownloadFile(Arg.Any<FilePayload>());
                         fileDownloadLoggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download completed")));
-                        fileCompressionServiceMock.DecompressFile(statsPayload);
-                        fileReaderServiceMock.ReadFile(statsPayload);
-                        fileDownloadDataStoreServiceMock.FileDownloadFinished(statsPayload);
+                        fileCompressionServiceMock.DecompressFile(Arg.Any<FilePayload>());
+                        fileReaderServiceMock.ReadFile(Arg.Any<FilePayload>());
+                        fileDownloadDataStoreServiceMock.FileDownloadFinished(Arg.Any<FilePayload>());
                         fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }
@@ -204,11 +199,8 @@
         [SetUp]
         public void SetUp()
         {
-            statsPayload = new StatsPayload { DownloadId = 100 };
-
             fileDownloadDataStoreServiceMock = Substitute.For<IFileDownloadDataStoreService>();
             fileDownloadDataStoreServiceMock.IsAvailable().Returns(true);
-            fileDownloadDataStoreServiceMock.NewFileDownloadStarted().Returns(statsPayload);
 
             fileDownloadLoggingServiceMock = Substitute.For<IFileDownloadLoggingService>();
 
@@ -230,9 +222,6 @@
                         });
 
             fileNameServiceMock = Substitute.For<IFileNameService>();
-            fileNameServiceMock.GetFileDownloadPath("DownloadDirectory").Returns("DownloadFilePath");
-            fileNameServiceMock.GetUncompressedFileDownloadPath("DownloadDirectory")
-                .Returns("UncompressedDownloadFilePath");
 
             fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
 
@@ -252,12 +241,6 @@
         private FileDownloadResult InvokeDownloadFile()
         {
             return systemUnderTest.DownloadStatsFile();
-        }
-
-        private bool IsExpectedPayload(StatsPayload payload)
-        {
-            return payload.DownloadUrl == "DownloadUrl" && payload.DownloadFilePath == "DownloadFilePath"
-                   && payload.TimeoutSeconds == 123;
         }
 
         private IFileDownloadService NewFileDownloadProvider(
