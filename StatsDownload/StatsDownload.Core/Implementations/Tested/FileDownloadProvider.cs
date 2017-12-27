@@ -12,21 +12,15 @@
 
         private readonly IFileDownloadLoggingService fileDownloadLoggingService;
 
-        private readonly IFileDownloadSettingsService fileDownloadSettingsService;
-
-        private readonly IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService;
-
-        private readonly IFileNameService fileNameService;
+        private readonly IFilePayloadSettingsService filePayloadSettingsService;
 
         private readonly IFileReaderService fileReaderService;
 
         public FileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
             IFileDownloadLoggingService fileDownloadLoggingService,
-            IFileDownloadSettingsService fileDownloadSettingsService,
             IDownloadService downloadService,
-            IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService,
-            IFileNameService fileNameService,
+            IFilePayloadSettingsService filePayloadSettingsService,
             IFileCompressionService fileCompressionService,
             IFileReaderService fileReaderService)
         {
@@ -40,24 +34,14 @@
                 throw NewArgumentNullException(nameof(fileDownloadLoggingService));
             }
 
-            if (IsNull(fileDownloadSettingsService))
-            {
-                throw NewArgumentNullException(nameof(fileDownloadSettingsService));
-            }
-
             if (IsNull(downloadService))
             {
                 throw NewArgumentNullException(nameof(downloadService));
             }
 
-            if (IsNull(fileDownloadTimeoutValidatorService))
+            if (IsNull(filePayloadSettingsService))
             {
-                throw NewArgumentNullException(nameof(fileDownloadTimeoutValidatorService));
-            }
-
-            if (IsNull(fileNameService))
-            {
-                throw NewArgumentNullException(nameof(fileNameService));
+                throw NewArgumentNullException(nameof(filePayloadSettingsService));
             }
 
             if (IsNull(fileCompressionService))
@@ -72,10 +56,8 @@
 
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
             this.fileDownloadLoggingService = fileDownloadLoggingService;
-            this.fileDownloadSettingsService = fileDownloadSettingsService;
             this.downloadService = downloadService;
-            this.fileDownloadTimeoutValidatorService = fileDownloadTimeoutValidatorService;
-            this.fileNameService = fileNameService;
+            this.filePayloadSettingsService = filePayloadSettingsService;
             this.fileCompressionService = fileCompressionService;
             this.fileReaderService = fileReaderService;
         }
@@ -123,21 +105,6 @@
             downloadService.DownloadFile(filePayload);
         }
 
-        private string GetDownloadDirectory()
-        {
-            return fileDownloadSettingsService.GetDownloadDirectory();
-        }
-
-        private string GetDownloadTimeout()
-        {
-            return fileDownloadSettingsService.GetDownloadTimeout();
-        }
-
-        private string GetDownloadUrl()
-        {
-            return fileDownloadSettingsService.GetDownloadUrl();
-        }
-
         private bool IsNull(object value)
         {
             return value == null;
@@ -181,22 +148,8 @@
         private FilePayload NewStatsPayload()
         {
             var filePayload = new FilePayload();
-
-            string downloadDirectory = GetDownloadDirectory();
-
-            SetDownloadFileDetails(downloadDirectory, filePayload);
-
+            SetDownloadFileDetails(filePayload);
             NewFileDownloadStarted(filePayload);
-
-            string downloadUrl = GetDownloadUrl();
-            string downloadTimeout = GetDownloadTimeout();
-
-            int timeoutInSeconds;
-            TryParseTimeout(downloadTimeout, out timeoutInSeconds);
-
-            filePayload.DownloadUrl = downloadUrl;
-            filePayload.TimeoutSeconds = timeoutInSeconds;
-
             return filePayload;
         }
 
@@ -205,14 +158,9 @@
             return new FileDownloadResult(filePayload);
         }
 
-        private void SetDownloadFileDetails(string downloadDirectory, FilePayload filePayload)
+        private void SetDownloadFileDetails(FilePayload filePayload)
         {
-            fileNameService.SetDownloadFileDetails(downloadDirectory, filePayload);
-        }
-
-        private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)
-        {
-            return fileDownloadTimeoutValidatorService.TryParseTimeout(unsafeTimeout, out timeoutInSeconds);
+            filePayloadSettingsService.SetFilePayloadDownloadDetails(filePayload);
         }
 
         private void UpdateToLatest()

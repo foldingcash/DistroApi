@@ -65,7 +65,7 @@
     <Compile Include="TestFileDownloadProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestFileDownloadTimeoutValidatorProvider.cs" />
-    <Compile Include="TestFileNameProvider.cs" />
+    <Compile Include="TestFilePayloadSettingsProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
