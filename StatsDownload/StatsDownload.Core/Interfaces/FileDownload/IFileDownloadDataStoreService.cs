@@ -2,9 +2,11 @@
 {
     public interface IFileDownloadDataStoreService
     {
+        void FileDownloadFinished(StatsPayload statsPayload);
+
         bool IsAvailable();
 
-        int NewFileDownloadStarted();
+        StatsPayload NewFileDownloadStarted();
 
         void UpdateToLatest();
     }

@@ -23,6 +23,8 @@
 
         private IFileDownloadLoggingService fileDownloadLoggingServiceMock;
 
+        private StatsPayload statsPayload;
+
         private IFileDownloadDataStoreService systemUnderTest;
 
         [Test]
@@ -46,6 +48,12 @@
                     databaseConnectionSettingsServiceMock,
                     databaseConnectionServiceFactoryMock,
                     null));
+        }
+
+        [Test]
+        public void FileDownloadFinished_WhenInvoked_FileDataUpload()
+        {
+            InvokeFileDownloadFinished();
         }
 
         [Test]
@@ -145,9 +153,9 @@
             databaseConnectionServiceMock.CreateParameter("@DownloadId", DbType.Int32, ParameterDirection.Output)
                 .Returns(dbParameter);
 
-            int actual = InvokeNewFileDownloadStarted();
+            StatsPayload actual = InvokeNewFileDownloadStarted();
 
-            Assert.That(actual, Is.EqualTo(101));
+            Assert.That(actual.DownloadId, Is.EqualTo(101));
         }
 
         [SetUp]
@@ -189,6 +197,8 @@
 
                             return dbParameter;
                         });
+
+            statsPayload = new StatsPayload();
         }
 
         [Test]
@@ -212,12 +222,17 @@
                     }));
         }
 
+        private void InvokeFileDownloadFinished()
+        {
+            systemUnderTest.FileDownloadFinished(statsPayload);
+        }
+
         private bool InvokeIsAvailable()
         {
             return systemUnderTest.IsAvailable();
         }
 
-        private int InvokeNewFileDownloadStarted()
+        private StatsPayload InvokeNewFileDownloadStarted()
         {
             return systemUnderTest.NewFileDownloadStarted();
         }

@@ -25,6 +25,8 @@
 
         private IFileReaderService fileReaderServiceMock;
 
+        private StatsPayload statsPayload;
+
         private IFileDownloadService systemUnderTest;
 
         [Test]
@@ -163,12 +165,12 @@
         [Test]
         public void DownloadFile_WhenInvoked_ResultIsSuccessAndContainsDownloadData()
         {
-            fileDownloadDataStoreServiceMock.NewFileDownloadStarted().Returns(100);
+            fileDownloadDataStoreServiceMock.NewFileDownloadStarted().Returns(statsPayload);
 
             FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.True);
-            Assert.That(actual.StatsPayload.DownloadId, Is.EqualTo(100));
+            Assert.That(actual.StatsPayload, Is.EqualTo(statsPayload));
             Assert.That(actual.StatsPayload.DownloadUrl, Is.EqualTo("DownloadUrl"));
             Assert.That(actual.StatsPayload.TimeoutSeconds, Is.EqualTo(123));
             Assert.That(actual.StatsPayload.DownloadFilePath, Is.EqualTo("DownloadFilePath"));
@@ -189,15 +191,12 @@
                         fileDownloadDataStoreServiceMock.NewFileDownloadStarted();
                         fileDownloadLoggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download started")));
-                        downloadServiceMock.DownloadFile(
-                            Arg.Is<StatsPayload>(
-                                payload =>
-                                payload.DownloadUrl == "DownloadUrl" && payload.DownloadFilePath == "DownloadFilePath"
-                                && payload.TimeoutSeconds == 123));
+                        downloadServiceMock.DownloadFile(statsPayload);
                         fileDownloadLoggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download completed")));
-                        fileCompressionServiceMock.DecompressFile(Arg.Any<StatsPayload>());
-                        fileReaderServiceMock.ReadFile(Arg.Any<StatsPayload>());
+                        fileCompressionServiceMock.DecompressFile(statsPayload);
+                        fileReaderServiceMock.ReadFile(statsPayload);
+                        fileDownloadDataStoreServiceMock.FileDownloadFinished(statsPayload);
                         fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }
@@ -205,8 +204,11 @@
         [SetUp]
         public void SetUp()
         {
+            statsPayload = new StatsPayload { DownloadId = 100 };
+
             fileDownloadDataStoreServiceMock = Substitute.For<IFileDownloadDataStoreService>();
             fileDownloadDataStoreServiceMock.IsAvailable().Returns(true);
+            fileDownloadDataStoreServiceMock.NewFileDownloadStarted().Returns(statsPayload);
 
             fileDownloadLoggingServiceMock = Substitute.For<IFileDownloadLoggingService>();
 
@@ -250,6 +252,12 @@
         private FileDownloadResult InvokeDownloadFile()
         {
             return systemUnderTest.DownloadStatsFile();
+        }
+
+        private bool IsExpectedPayload(StatsPayload payload)
+        {
+            return payload.DownloadUrl == "DownloadUrl" && payload.DownloadFilePath == "DownloadFilePath"
+                   && payload.TimeoutSeconds == 123;
         }
 
         private IFileDownloadService NewFileDownloadProvider(

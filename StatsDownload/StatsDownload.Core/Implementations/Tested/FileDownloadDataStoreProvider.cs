@@ -44,6 +44,11 @@
             this.fileDownloadLoggingService = fileDownloadLoggingService;
         }
 
+        public void FileDownloadFinished(StatsPayload statsPayload)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsAvailable()
         {
             LogMethodInvoked(nameof(IsAvailable));
@@ -60,13 +65,12 @@
             }
         }
 
-        public int NewFileDownloadStarted()
+        public StatsPayload NewFileDownloadStarted()
         {
             LogMethodInvoked(nameof(NewFileDownloadStarted));
             int downloadId = default(int);
             CreateDatabaseConnectionAndExecuteAction(service => { downloadId = NewFileDownloadStarted(service); });
-
-            return downloadId;
+            return new StatsPayload { DownloadId = downloadId };
         }
 
         public void UpdateToLatest()

@@ -128,7 +128,7 @@
             return fileDownloadSettingsService.GetDownloadDirectory();
         }
 
-        private string GetDownloadFileName()
+        private string GetDownloadFilePath()
         {
             string downloadDirectory = GetDownloadDirectory();
             return fileNameService.GetFileDownloadPath(downloadDirectory);
@@ -185,29 +185,29 @@
             return new FileDownloadResult(failedReason);
         }
 
-        private int NewFileDownloadStarted()
+        private StatsPayload NewFileDownloadStarted()
         {
             return fileDownloadDataStoreService.NewFileDownloadStarted();
         }
 
         private StatsPayload NewStatsPayload()
         {
-            int downloadId = NewFileDownloadStarted();
+            StatsPayload statsPayload = NewFileDownloadStarted();
 
             string downloadUrl = GetDownloadUrl();
             string downloadTimeout = GetDownloadTimeout();
-            string downloadFileName = GetDownloadFileName();
+            string downloadFilePath = GetDownloadFilePath();
             string uncompressedDownloadFilePath = GetUncompressedDownloadFilePath();
 
             int timeoutInSeconds;
             TryParseTimeout(downloadTimeout, out timeoutInSeconds);
 
-            return new StatsPayload(
-                downloadId,
-                downloadUrl,
-                timeoutInSeconds,
-                downloadFileName,
-                uncompressedDownloadFilePath);
+            statsPayload.DownloadUrl = downloadUrl;
+            statsPayload.TimeoutSeconds = timeoutInSeconds;
+            statsPayload.DownloadFilePath = downloadFilePath;
+            statsPayload.UncompressedDownloadFilePath = uncompressedDownloadFilePath;
+
+            return statsPayload;
         }
 
         private FileDownloadResult NewSuccessFileDownloadResult(StatsPayload statsPayload)
@@ -229,6 +229,7 @@
         {
             fileCompressionService.DecompressFile(statsPayload);
             fileReaderService.ReadFile(statsPayload);
+            fileDownloadDataStoreService.FileDownloadFinished(statsPayload);
         }
     }
 }
