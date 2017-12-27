@@ -45,16 +45,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTransfer\FilePayload.cs" />
     <Compile Include="Implementations\Untested\DateTimeProvider.cs" />
+    <Compile Include="Implementations\Untested\FileReaderProvider.cs" />
+    <Compile Include="Interfaces\FileDownload\IFileCompressionService.cs" />
     <Compile Include="Interfaces\IDateTimeService.cs" />
     <Compile Include="Implementations\Untested\GuidProvider.cs" />
+    <Compile Include="Interfaces\IFileReaderService.cs" />
     <Compile Include="Interfaces\IGuidService.cs" />
     <Compile Include="Implementations\Tested\FileNameProvider.cs" />
     <Compile Include="Interfaces\IFileNameService.cs" />
     <Compile Include="Implementations\Tested\FileDownloadTimeoutValidatorProvider.cs" />
     <Compile Include="Interfaces\FileDownload\IFileDownloadTimeoutValidatorService.cs" />
-    <Compile Include="Implementations\Untested\FileDownloaderProvider.cs" />
-    <Compile Include="Interfaces\FileDownload\IFileDownloaderService.cs" />
+    <Compile Include="Implementations\Untested\DownloadProvider.cs" />
+    <Compile Include="Interfaces\FileDownload\IDownloadService.cs" />
     <Compile Include="Interfaces\FileDownload\IFileDownloadSettingsService.cs" />
     <Compile Include="Implementations\Untested\SqlDatabaseConnectionProvider.cs" />
     <Compile Include="Enums\FailedReason.cs" />

@@ -6,6 +6,7 @@
     using Castle.Windsor;
 
     using StatsDownload.Core;
+    using StatsDownload.SharpZipLib;
 
     public class DependencyInstaller : IWindsorInstaller
     {
@@ -15,13 +16,15 @@
                 Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
                 Component.For<IFileNameService>().ImplementedBy<FileNameProvider>(),
+                Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
+                Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
                 Component.For<IFileDownloadLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
                 Component.For<IDatabaseConnectionSettingsService, IFileDownloadSettingsService>()
                     .ImplementedBy<TestHarnessSettingsProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
                 Component.For<IFileDownloadDataStoreService>().ImplementedBy<FileDownloadDataStoreProvider>(),
-                Component.For<IFileDownloaderService>().ImplementedBy<FileDownloaderProvider>(),
+                Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IFileDownloadTimeoutValidatorService>()
                     .ImplementedBy<FileDownloadTimeoutValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>());

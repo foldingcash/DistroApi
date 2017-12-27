@@ -9,6 +9,8 @@
     {
         private const string DatabaseConnectionSuccessfulLogMessage = "Database connection was successful";
 
+        private const string FileDownloadFinishedProcedureName = "[FoldingCoin].[FileDownloadFinished]";
+
         private readonly IDatabaseConnectionServiceFactory databaseConnectionServiceFactory;
 
         private readonly IDatabaseConnectionSettingsService databaseConnectionSettingsService;
@@ -44,6 +46,12 @@
             this.fileDownloadLoggingService = fileDownloadLoggingService;
         }
 
+        public void FileDownloadFinished(FilePayload filePayload)
+        {
+            LogMethodInvoked(nameof(FileDownloadFinished));
+            CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
+        }
+
         public bool IsAvailable()
         {
             LogMethodInvoked(nameof(IsAvailable));
@@ -60,13 +68,12 @@
             }
         }
 
-        public int NewFileDownloadStarted()
+        public void NewFileDownloadStarted(FilePayload filePayload)
         {
             LogMethodInvoked(nameof(NewFileDownloadStarted));
             int downloadId = default(int);
             CreateDatabaseConnectionAndExecuteAction(service => { downloadId = NewFileDownloadStarted(service); });
-
-            return downloadId;
+            filePayload.DownloadId = downloadId;
         }
 
         public void UpdateToLatest()
@@ -100,6 +107,37 @@
             {
                 CloseDatabaseConnection(databaseConnection);
             }
+        }
+
+        private void FileDownloadFinished(IDatabaseConnectionService databaseConnection, FilePayload filePayload)
+        {
+            DbParameter downloadId = databaseConnection.CreateParameter(
+                "@DownloadId",
+                DbType.Int32,
+                ParameterDirection.Input);
+            downloadId.Value = filePayload.DownloadId;
+
+            DbParameter fileName = databaseConnection.CreateParameter(
+                "@FileName",
+                DbType.String,
+                ParameterDirection.Input);
+            fileName.Value = filePayload.UncompressedDownloadFileName;
+
+            DbParameter fileExtension = databaseConnection.CreateParameter(
+                "@FileExtension",
+                DbType.String,
+                ParameterDirection.Input);
+            fileExtension.Value = filePayload.UncompressedDownloadFileExtension;
+
+            DbParameter fileData = databaseConnection.CreateParameter(
+                "@FileData",
+                DbType.String,
+                ParameterDirection.Input);
+            fileData.Value = filePayload.UncompressedDownloadFileData;
+
+            databaseConnection.ExecuteStoredProcedure(
+                FileDownloadFinishedProcedureName,
+                new List<DbParameter> { downloadId, fileName, fileExtension, fileData });
         }
 
         private string GetConnectionString()
