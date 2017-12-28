@@ -10,15 +10,15 @@
 
         private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
 
-        private readonly IFileDownloadLoggingService fileDownloadLoggingService;
-
         private readonly IFilePayloadSettingsService filePayloadSettingsService;
 
         private readonly IFileReaderService fileReaderService;
 
+        private readonly ILoggingService loggingService;
+
         public FileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
-            IFileDownloadLoggingService fileDownloadLoggingService,
+            ILoggingService loggingService,
             IDownloadService downloadService,
             IFilePayloadSettingsService filePayloadSettingsService,
             IFileCompressionService fileCompressionService,
@@ -29,9 +29,9 @@
                 throw NewArgumentNullException(nameof(fileDownloadDataStoreService));
             }
 
-            if (IsNull(fileDownloadLoggingService))
+            if (IsNull(loggingService))
             {
-                throw NewArgumentNullException(nameof(fileDownloadLoggingService));
+                throw NewArgumentNullException(nameof(loggingService));
             }
 
             if (IsNull(downloadService))
@@ -55,7 +55,7 @@
             }
 
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
-            this.fileDownloadLoggingService = fileDownloadLoggingService;
+            this.loggingService = loggingService;
             this.downloadService = downloadService;
             this.filePayloadSettingsService = filePayloadSettingsService;
             this.fileCompressionService = fileCompressionService;
@@ -112,7 +112,7 @@
 
         private void LogException(Exception exception)
         {
-            fileDownloadLoggingService.LogException(exception);
+            loggingService.LogException(exception);
         }
 
         private void LogMethodInvoked(string method)
@@ -122,12 +122,12 @@
 
         private void LogResult(FileDownloadResult result)
         {
-            fileDownloadLoggingService.LogResult(result);
+            loggingService.LogResult(result);
         }
 
         private void LogVerbose(string message)
         {
-            fileDownloadLoggingService.LogVerbose(message);
+            loggingService.LogVerbose(message);
         }
 
         private Exception NewArgumentNullException(string parameterName)

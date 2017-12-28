@@ -16,14 +16,7 @@
 
         public bool IsSecureConnection(FilePayload filePayload)
         {
-            Uri uri = filePayload.DownloadUri;
-
-            if (uri.Scheme == Uri.UriSchemeHttps)
-            {
-                return true;
-            }
-
-            return false;
+            return filePayload.DownloadUri.Scheme == Uri.UriSchemeHttps;
         }
 
         private void UpdateDownloadUri(FilePayload filePayload, string oldScheme, string newScheme)

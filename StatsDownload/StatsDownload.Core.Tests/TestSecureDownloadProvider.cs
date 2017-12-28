@@ -14,6 +14,8 @@
 
         private FilePayload filePayload;
 
+        private ILoggingService loggingServiceMock;
+
         private ISecureFilePayloadService secureFilePayloadServiceMock;
 
         private IDownloadService systemUnderTest;
@@ -21,13 +23,19 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewSecureDownloadProvider(null, secureFilePayloadServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewSecureDownloadProvider(downloadServiceMock, null));
+            Assert.Throws<ArgumentNullException>(
+                () => NewSecureDownloadProvider(null, secureFilePayloadServiceMock, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () => NewSecureDownloadProvider(downloadServiceMock, null, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () => NewSecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock, null));
         }
 
         [Test]
         public void DownloadFile_WhenSecureConnectionType_OnlyTrySecureDownload()
         {
+            var webException = new WebException();
+
             secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(true);
 
             var firstCall = true;
@@ -37,13 +45,14 @@
                         if (firstCall)
                         {
                             firstCall = false;
-                            throw new WebException();
+                            throw webException;
                         }
                     });
 
             systemUnderTest.DownloadFile(filePayload);
 
             secureFilePayloadServiceMock.DidNotReceive().DisableSecureFilePayload(Arg.Any<FilePayload>());
+            loggingServiceMock.Received().LogException(webException);
         }
 
         [Test]
@@ -106,6 +115,8 @@
         [Test]
         public void DownloadFile_WhenUnsecureConnectionTypeAndFirstDownloadThrowsWebException_TryUnsecureDownload()
         {
+            var webException = new WebException();
+
             secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(false);
 
             var firstCall = true;
@@ -115,7 +126,7 @@
                         if (firstCall)
                         {
                             firstCall = false;
-                            throw new WebException();
+                            throw webException;
                         }
                     });
 
@@ -126,6 +137,7 @@
                     {
                         secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
                         downloadServiceMock.DownloadFile(filePayload);
+                        loggingServiceMock.LogException(webException);
                         secureFilePayloadServiceMock.DisableSecureFilePayload(filePayload);
                         downloadServiceMock.DownloadFile(filePayload);
                     }));
@@ -140,14 +152,20 @@
 
             secureFilePayloadServiceMock = Substitute.For<ISecureFilePayloadService>();
 
-            systemUnderTest = NewSecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock);
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
+            systemUnderTest = NewSecureDownloadProvider(
+                downloadServiceMock,
+                secureFilePayloadServiceMock,
+                loggingServiceMock);
         }
 
         private IDownloadService NewSecureDownloadProvider(
             IDownloadService downloadService,
-            ISecureFilePayloadService secureFilePayloadService)
+            ISecureFilePayloadService secureFilePayloadService,
+            ILoggingService loggingService)
         {
-            return new SecureDownloadProvider(downloadService, secureFilePayloadService);
+            return new SecureDownloadProvider(downloadService, secureFilePayloadService, loggingService);
         }
     }
 }

@@ -18,7 +18,7 @@
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
-                Component.For<IFileDownloadLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
+                Component.For<ILoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
                 Component.For<IDatabaseConnectionSettingsService, IFileDownloadSettingsService>()
                     .ImplementedBy<TestHarnessSettingsProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),

@@ -15,11 +15,11 @@
 
         private IFileDownloadDataStoreService fileDownloadDataStoreServiceMock;
 
-        private IFileDownloadLoggingService fileDownloadLoggingServiceMock;
-
         private IFilePayloadSettingsService filePayloadSettingsServiceMock;
 
         private IFileReaderService fileReaderServiceMock;
+
+        private ILoggingService loggingServiceMock;
 
         private IFileDownloadService systemUnderTest;
 
@@ -30,7 +30,7 @@
                 () =>
                 NewFileDownloadProvider(
                     null,
-                    fileDownloadLoggingServiceMock,
+                    loggingServiceMock,
                     downloadServiceMock,
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
@@ -48,7 +48,7 @@
                 () =>
                 NewFileDownloadProvider(
                     fileDownloadDataStoreServiceMock,
-                    fileDownloadLoggingServiceMock,
+                    loggingServiceMock,
                     null,
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
@@ -57,7 +57,7 @@
                 () =>
                 NewFileDownloadProvider(
                     fileDownloadDataStoreServiceMock,
-                    fileDownloadLoggingServiceMock,
+                    loggingServiceMock,
                     downloadServiceMock,
                     null,
                     fileCompressionServiceMock,
@@ -66,7 +66,7 @@
                 () =>
                 NewFileDownloadProvider(
                     fileDownloadDataStoreServiceMock,
-                    fileDownloadLoggingServiceMock,
+                    loggingServiceMock,
                     downloadServiceMock,
                     filePayloadSettingsServiceMock,
                     null,
@@ -75,7 +75,7 @@
                 () =>
                 NewFileDownloadProvider(
                     fileDownloadDataStoreServiceMock,
-                    fileDownloadLoggingServiceMock,
+                    loggingServiceMock,
                     downloadServiceMock,
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
@@ -104,10 +104,10 @@
             Received.InOrder(
                 (() =>
                     {
-                        fileDownloadLoggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
+                        loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
-                        fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
-                        fileDownloadLoggingServiceMock.LogException(expected);
+                        loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
+                        loggingServiceMock.LogException(expected);
                     }));
         }
 
@@ -139,20 +139,20 @@
             Received.InOrder(
                 (() =>
                     {
-                        fileDownloadLoggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
+                        loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
                         fileDownloadDataStoreServiceMock.UpdateToLatest();
                         filePayloadSettingsServiceMock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>());
                         fileDownloadDataStoreServiceMock.NewFileDownloadStarted(Arg.Any<FilePayload>());
-                        fileDownloadLoggingServiceMock.LogVerbose(
+                        loggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download started")));
                         downloadServiceMock.DownloadFile(Arg.Any<FilePayload>());
-                        fileDownloadLoggingServiceMock.LogVerbose(
+                        loggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download completed")));
                         fileCompressionServiceMock.DecompressFile(Arg.Any<FilePayload>());
                         fileReaderServiceMock.ReadFile(Arg.Any<FilePayload>());
                         fileDownloadDataStoreServiceMock.FileDownloadFinished(Arg.Any<FilePayload>());
-                        fileDownloadLoggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
+                        loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }
 
@@ -162,7 +162,7 @@
             fileDownloadDataStoreServiceMock = Substitute.For<IFileDownloadDataStoreService>();
             fileDownloadDataStoreServiceMock.IsAvailable().Returns(true);
 
-            fileDownloadLoggingServiceMock = Substitute.For<IFileDownloadLoggingService>();
+            loggingServiceMock = Substitute.For<ILoggingService>();
 
             downloadServiceMock = Substitute.For<IDownloadService>();
 
@@ -174,7 +174,7 @@
 
             systemUnderTest = NewFileDownloadProvider(
                 fileDownloadDataStoreServiceMock,
-                fileDownloadLoggingServiceMock,
+                loggingServiceMock,
                 downloadServiceMock,
                 filePayloadSettingsServiceMock,
                 fileCompressionServiceMock,
@@ -188,7 +188,7 @@
 
         private IFileDownloadService NewFileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
-            IFileDownloadLoggingService fileDownloadLoggingService,
+            ILoggingService loggingService,
             IDownloadService downloadService,
             IFilePayloadSettingsService filePayloadSettingsService,
             IFileCompressionService fileCompressionService,
@@ -196,7 +196,7 @@
         {
             return new FileDownloadProvider(
                 fileDownloadDataStoreService,
-                fileDownloadLoggingService,
+                loggingService,
                 downloadService,
                 filePayloadSettingsService,
                 fileCompressionService,

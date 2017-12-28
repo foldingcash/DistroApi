@@ -7,11 +7,14 @@
     {
         private readonly IDownloadService downloadService;
 
+        private readonly ILoggingService loggingService;
+
         private readonly ISecureFilePayloadService secureFilePayloadService;
 
         public SecureDownloadProvider(
             IDownloadService downloadService,
-            ISecureFilePayloadService secureFilePayloadService)
+            ISecureFilePayloadService secureFilePayloadService,
+            ILoggingService loggingService)
         {
             if (IsNull(downloadService))
             {
@@ -23,8 +26,14 @@
                 throw NewArgumentNullException(nameof(secureFilePayloadService));
             }
 
+            if (IsNull(loggingService))
+            {
+                throw NewArgumentNullException(nameof(loggingService));
+            }
+
             this.downloadService = downloadService;
             this.secureFilePayloadService = secureFilePayloadService;
+            this.loggingService = loggingService;
         }
 
         public void DownloadFile(FilePayload filePayload)
@@ -36,8 +45,10 @@
                 secureFilePayloadService.EnableSecureFilePayload(filePayload);
                 downloadService.DownloadFile(filePayload);
             }
-            catch (WebException)
+            catch (WebException webException)
             {
+                loggingService.LogException(webException);
+
                 if (originalWasNotSecure)
                 {
                     secureFilePayloadService.DisableSecureFilePayload(filePayload);
