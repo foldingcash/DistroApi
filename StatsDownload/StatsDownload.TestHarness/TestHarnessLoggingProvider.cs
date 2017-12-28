@@ -15,8 +15,9 @@
 
         public void LogException(Exception exception)
         {
-            Log?.Invoke(exception.Message);
-            Log?.Invoke(exception.StackTrace);
+            Log?.Invoke($"Exception Type: {exception.GetType()}");
+            Log?.Invoke($"Exception Message: {exception.Message}");
+            Log?.Invoke($"Exception Stack-trace:{Environment.NewLine}{exception.StackTrace}");
         }
 
         public void LogResult(FileDownloadResult result)
@@ -25,7 +26,7 @@
                 $"Success: {result.Success}{Environment.NewLine}"
                 + $"Failed Reason: {result.FailedReason}{Environment.NewLine}"
                 + $"Download Id: {result.FilePayload?.DownloadId}{Environment.NewLine}"
-                + $"Download URL: {result.FilePayload?.DownloadUrl}{Environment.NewLine}"
+                + $"Download Url: {result.FilePayload?.DownloadUrl}{Environment.NewLine}"
                 + $"Download Timeout: {result.FilePayload?.TimeoutSeconds}{Environment.NewLine}"
                 + $"Download File Directory: {result.FilePayload?.DownloadDirectory}{Environment.NewLine}{Environment.NewLine}"
                 + $"Download File Name: {result.FilePayload?.DownloadFileName}{Environment.NewLine}{Environment.NewLine}"
