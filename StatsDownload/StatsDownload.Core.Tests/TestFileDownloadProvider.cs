@@ -91,6 +91,7 @@
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
@@ -120,6 +121,7 @@
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
@@ -142,10 +144,10 @@
                         loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
                         fileDownloadDataStoreServiceMock.UpdateToLatest();
-                        filePayloadSettingsServiceMock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>());
-                        fileDownloadDataStoreServiceMock.NewFileDownloadStarted(Arg.Any<FilePayload>());
                         loggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download started")));
+                        fileDownloadDataStoreServiceMock.NewFileDownloadStarted(Arg.Any<FilePayload>());
+                        filePayloadSettingsServiceMock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>());
                         downloadServiceMock.DownloadFile(Arg.Any<FilePayload>());
                         loggingServiceMock.LogVerbose(
                             Arg.Is<string>(value => value.StartsWith("Stats file download completed")));

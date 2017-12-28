@@ -8,10 +8,11 @@
             FilePayload = filePayload;
         }
 
-        public FileDownloadResult(FailedReason failedReason)
+        public FileDownloadResult(FailedReason failedReason, FilePayload filePayload)
         {
             Success = false;
             FailedReason = failedReason;
+            FilePayload = filePayload;
         }
 
         public FailedReason FailedReason { get; private set; } = FailedReason.None;

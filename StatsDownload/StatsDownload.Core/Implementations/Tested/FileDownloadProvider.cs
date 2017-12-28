@@ -64,20 +64,25 @@
 
         public FileDownloadResult DownloadStatsFile()
         {
+            FilePayload filePayload = NewStatsPayload();
+
             try
             {
                 LogMethodInvoked(nameof(DownloadStatsFile));
 
                 if (DataStoreUnavailable())
                 {
-                    FileDownloadResult failedResult = NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable);
+                    FileDownloadResult failedResult = NewFailedFileDownloadResult(
+                        FailedReason.DataStoreUnavailable,
+                        filePayload);
                     LogResult(failedResult);
                     return failedResult;
                 }
 
                 UpdateToLatest();
-                FilePayload filePayload = NewStatsPayload();
                 LogVerbose($"Stats file download started: {DateTime.Now}");
+                NewFileDownloadStarted(filePayload);
+                SetDownloadFileDetails(filePayload);
                 DownloadFile(filePayload);
                 LogVerbose($"Stats file download completed: {DateTime.Now}");
                 UploadFile(filePayload);
@@ -88,7 +93,7 @@
             }
             catch (Exception exception)
             {
-                FileDownloadResult result = NewFailedFileDownloadResult(FailedReason.UnexpectedException);
+                FileDownloadResult result = NewFailedFileDownloadResult(FailedReason.UnexpectedException, filePayload);
                 LogResult(result);
                 LogException(exception);
                 return result;
@@ -135,9 +140,9 @@
             return new ArgumentNullException(parameterName);
         }
 
-        private FileDownloadResult NewFailedFileDownloadResult(FailedReason failedReason)
+        private FileDownloadResult NewFailedFileDownloadResult(FailedReason failedReason, FilePayload filePayload)
         {
-            return new FileDownloadResult(failedReason);
+            return new FileDownloadResult(failedReason, filePayload);
         }
 
         private void NewFileDownloadStarted(FilePayload filePayload)
@@ -147,10 +152,7 @@
 
         private FilePayload NewStatsPayload()
         {
-            var filePayload = new FilePayload();
-            SetDownloadFileDetails(filePayload);
-            NewFileDownloadStarted(filePayload);
-            return filePayload;
+            return new FilePayload();
         }
 
         private FileDownloadResult NewSuccessFileDownloadResult(FilePayload filePayload)

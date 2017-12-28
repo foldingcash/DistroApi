@@ -4,6 +4,18 @@
 
     public class SecureHttpFilePayloadProvider : ISecureFilePayloadService
     {
+        private readonly ILoggingService loggingService;
+
+        public SecureHttpFilePayloadProvider(ILoggingService loggingService)
+        {
+            if (IsNull(loggingService))
+            {
+                throw NewArgumentNullException(nameof(loggingService));
+            }
+
+            this.loggingService = loggingService;
+        }
+
         public void DisableSecureFilePayload(FilePayload filePayload)
         {
             UpdateDownloadUri(filePayload, Uri.UriSchemeHttps, Uri.UriSchemeHttp);
@@ -19,13 +31,26 @@
             return filePayload.DownloadUri.Scheme == Uri.UriSchemeHttps;
         }
 
+        private bool IsNull(object value)
+        {
+            return value == null;
+        }
+
+        private Exception NewArgumentNullException(string parameterName)
+        {
+            return new ArgumentNullException(parameterName);
+        }
+
         private void UpdateDownloadUri(FilePayload filePayload, string oldScheme, string newScheme)
         {
             Uri uri = filePayload.DownloadUri;
 
             if (uri.Scheme == oldScheme)
             {
-                filePayload.DownloadUri = new Uri(uri.AbsoluteUri.Replace(oldScheme, newScheme));
+                var newUri = new Uri(uri.AbsoluteUri.Replace(oldScheme, newScheme));
+                loggingService.LogVerbose(
+                    $"Changing scheme {oldScheme} to {newScheme}{Environment.NewLine}Old Uri: {uri.AbsoluteUri}{Environment.NewLine}New Uri: {newUri.AbsoluteUri}");
+                filePayload.DownloadUri = newUri;
             }
         }
     }

@@ -5,13 +5,24 @@
 
     public class DownloadProvider : IDownloadService
     {
+        private readonly ILoggingService loggingService;
+
+        public DownloadProvider(ILoggingService loggingService)
+        {
+            this.loggingService = loggingService;
+        }
+
         public void DownloadFile(FilePayload filePayload)
         {
+            loggingService.LogVerbose($"Attempting to download file: {DateTime.Now}");
+
             using (var client = new WebClientWithTimeout())
             {
                 client.TimeoutInSeconds = filePayload.TimeoutSeconds;
                 client.DownloadFile(filePayload.DownloadUri, filePayload.DownloadFilePath);
             }
+
+            loggingService.LogVerbose($"File download complete: {DateTime.Now}");
         }
 
         private class WebClientWithTimeout : WebClient

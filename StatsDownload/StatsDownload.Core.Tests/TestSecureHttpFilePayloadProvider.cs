@@ -2,6 +2,8 @@
 {
     using System;
 
+    using NSubstitute;
+
     using NUnit.Framework;
 
     [TestFixture]
@@ -9,7 +11,15 @@
     {
         private FilePayload filePayload;
 
+        private ILoggingService loggingServiceMock;
+
         private ISecureFilePayloadService systemUnderTest;
+
+        [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewSecureHttpFilePayloadProvider(null));
+        }
 
         [Test]
         public void DisableSecureFilePayload_WhenHttpsConnection_ChangesToHttp()
@@ -19,6 +29,9 @@
             systemUnderTest.DisableSecureFilePayload(filePayload);
 
             Assert.That(filePayload.DownloadUri.Scheme, Is.EqualTo(Uri.UriSchemeHttp));
+            loggingServiceMock.Received()
+                .LogVerbose(
+                    $"Changing scheme https to http{Environment.NewLine}Old Uri: https://localhost/{Environment.NewLine}New Uri: http://localhost/");
         }
 
         [Test]
@@ -29,6 +42,9 @@
             systemUnderTest.EnableSecureFilePayload(filePayload);
 
             Assert.That(filePayload.DownloadUri.Scheme, Is.EqualTo(Uri.UriSchemeHttps));
+            loggingServiceMock.Received()
+                .LogVerbose(
+                    $"Changing scheme http to https{Environment.NewLine}Old Uri: http://localhost/{Environment.NewLine}New Uri: https://localhost/");
         }
 
         [Test]
@@ -56,7 +72,14 @@
         {
             filePayload = new FilePayload();
 
-            systemUnderTest = new SecureHttpFilePayloadProvider();
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
+            systemUnderTest = NewSecureHttpFilePayloadProvider(loggingServiceMock);
+        }
+
+        private ISecureFilePayloadService NewSecureHttpFilePayloadProvider(ILoggingService loggingService)
+        {
+            return new SecureHttpFilePayloadProvider(loggingService);
         }
     }
 }

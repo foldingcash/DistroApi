@@ -46,33 +46,12 @@
 
         public void SetFilePayloadDownloadDetails(FilePayload filePayload)
         {
+            DateTime now = DateTimeNow();
             string downloadDirectory = GetDownloadDirectory();
 
-            DateTime now = DateTimeNow();
-
-            string fileName = $"{now.ToFileTime()}.{FileName}";
-            string uncompressedFileName = $"{now.ToFileTime()}.{UncompressedFileName}";
-
-            filePayload.DownloadDirectory = downloadDirectory;
-            filePayload.DownloadFileName = fileName;
-            filePayload.DownloadFileExtension = FileExtension;
-            filePayload.DownloadFilePath = Path.Combine(downloadDirectory, $"{fileName}{FileExtension}");
-
-            filePayload.UncompressedDownloadDirectory = downloadDirectory;
-            filePayload.UncompressedDownloadFileName = uncompressedFileName;
-            filePayload.UncompressedDownloadFileExtension = UncompressedFileExtension;
-            filePayload.UncompressedDownloadFilePath = Path.Combine(
-                downloadDirectory,
-                $"{uncompressedFileName}{UncompressedFileExtension}");
-
-            string downloadTimeout = GetDownloadTimeout();
-            string downloadUri = GetDownloadUri();
-
-            int timeoutInSeconds;
-            TryParseTimeout(downloadTimeout, out timeoutInSeconds);
-
-            filePayload.DownloadUri = new Uri(downloadUri);
-            filePayload.TimeoutSeconds = timeoutInSeconds;
+            SetDownloadDetails(filePayload);
+            SetDownloadFileDetails(filePayload, now, downloadDirectory);
+            SetUncompressedDownloadFileDetails(filePayload, now, downloadDirectory);
         }
 
         private DateTime DateTimeNow()
@@ -103,6 +82,43 @@
         private Exception NewArgumentNullException(string parameterName)
         {
             return new ArgumentNullException(parameterName);
+        }
+
+        private void SetDownloadDetails(FilePayload filePayload)
+        {
+            string downloadTimeout = GetDownloadTimeout();
+            string downloadUri = GetDownloadUri();
+
+            int timeoutInSeconds;
+            TryParseTimeout(downloadTimeout, out timeoutInSeconds);
+
+            filePayload.DownloadUri = new Uri(downloadUri);
+            filePayload.TimeoutSeconds = timeoutInSeconds;
+        }
+
+        private void SetDownloadFileDetails(FilePayload filePayload, DateTime dateTime, string downloadDirectory)
+        {
+            string fileName = $"{dateTime.ToFileTime()}.{FileName}";
+
+            filePayload.DownloadDirectory = downloadDirectory;
+            filePayload.DownloadFileName = fileName;
+            filePayload.DownloadFileExtension = FileExtension;
+            filePayload.DownloadFilePath = Path.Combine(downloadDirectory, $"{fileName}{FileExtension}");
+        }
+
+        private void SetUncompressedDownloadFileDetails(
+            FilePayload filePayload,
+            DateTime dateTime,
+            string downloadDirectory)
+        {
+            string uncompressedFileName = $"{dateTime.ToFileTime()}.{UncompressedFileName}";
+
+            filePayload.UncompressedDownloadDirectory = downloadDirectory;
+            filePayload.UncompressedDownloadFileName = uncompressedFileName;
+            filePayload.UncompressedDownloadFileExtension = UncompressedFileExtension;
+            filePayload.UncompressedDownloadFilePath = Path.Combine(
+                downloadDirectory,
+                $"{uncompressedFileName}{UncompressedFileExtension}");
         }
 
         private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)
