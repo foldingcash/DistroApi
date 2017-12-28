@@ -46,7 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataTransfer\FilePayload.cs" />
-    <Compile Include="Implementations\Tested\SecureDownloadService.cs" />
+    <Compile Include="Implementations\Tested\SecureDownloadProvider.cs" />
+    <Compile Include="Implementations\Tested\SecureHttpFilePayloadProvider.cs" />
     <Compile Include="Implementations\Untested\DateTimeProvider.cs" />
     <Compile Include="Implementations\Untested\FileReaderProvider.cs" />
     <Compile Include="Interfaces\FileDownload\IFileCompressionService.cs" />
@@ -70,7 +71,6 @@
     <Compile Include="Interfaces\FileDownload\IFileDownloadDataStoreService.cs" />
     <Compile Include="Interfaces\FileDownload\IFileDownloadService.cs" />
     <Compile Include="Interfaces\FileDownload\IFileDownloadLoggingService.cs" />
-    <Compile Include="Interfaces\ISecureDetectionService.cs" />
     <Compile Include="Interfaces\ISecureFilePayloadService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Implementations\Tested\FileDownloadProvider.cs" />

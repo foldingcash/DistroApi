@@ -6,6 +6,6 @@
 
         string GetDownloadTimeout();
 
-        string GetDownloadUrl();
+        string GetDownloadUri();
     }
 }

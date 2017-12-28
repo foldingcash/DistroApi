@@ -19,6 +19,8 @@
 
         private IFilePayloadSettingsService systemUnderTest;
 
+        private Uri uri;
+
         [Test]
         public void SetFilePayloadDownloadDetails_WhenInvoked_DownloadDetailsAreSet()
         {
@@ -26,7 +28,7 @@
 
             systemUnderTest.SetFilePayloadDownloadDetails(filePayload);
 
-            Assert.That(filePayload.DownloadUrl, Is.EqualTo("DownloadUrl"));
+            Assert.That(filePayload.DownloadUri.AbsoluteUri, Is.EqualTo("http://localhost/"));
             Assert.That(filePayload.TimeoutSeconds, Is.EqualTo(123));
         }
 
@@ -71,7 +73,7 @@
             dateTimeServiceMock.DateTimeNow().Returns(dateTime);
 
             fileDownloadSettingsServiceMock = Substitute.For<IFileDownloadSettingsService>();
-            fileDownloadSettingsServiceMock.GetDownloadUrl().Returns("DownloadUrl");
+            fileDownloadSettingsServiceMock.GetDownloadUri().Returns("http://localhost");
             fileDownloadSettingsServiceMock.GetDownloadTimeout().Returns("DownloadTimeoutSeconds");
             fileDownloadSettingsServiceMock.GetDownloadDirectory().Returns("DownloadDirectory");
 

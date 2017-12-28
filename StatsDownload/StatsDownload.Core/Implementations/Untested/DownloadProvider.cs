@@ -10,7 +10,7 @@
             using (var client = new WebClientWithTimeout())
             {
                 client.TimeoutInSeconds = filePayload.TimeoutSeconds;
-                client.DownloadFile(filePayload.DownloadUrl, filePayload.DownloadFilePath);
+                client.DownloadFile(filePayload.DownloadUri, filePayload.DownloadFilePath);
             }
         }
 

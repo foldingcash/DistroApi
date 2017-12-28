@@ -51,12 +51,12 @@
                 $"{uncompressedFileName}{UncompressedFileExtension}");
 
             string downloadTimeout = GetDownloadTimeout();
-            string downloadUrl = GetDownloadUrl();
+            string downloadUri = GetDownloadUri();
 
             int timeoutInSeconds;
             TryParseTimeout(downloadTimeout, out timeoutInSeconds);
 
-            filePayload.DownloadUrl = downloadUrl;
+            filePayload.DownloadUri = new Uri(downloadUri);
             filePayload.TimeoutSeconds = timeoutInSeconds;
         }
 
@@ -75,9 +75,9 @@
             return fileDownloadSettingsService.GetDownloadTimeout();
         }
 
-        private string GetDownloadUrl()
+        private string GetDownloadUri()
         {
-            return fileDownloadSettingsService.GetDownloadUrl();
+            return fileDownloadSettingsService.GetDownloadUri();
         }
 
         private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)

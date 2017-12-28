@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core
 {
+    using System;
+
     public class FilePayload
     {
         public string DownloadDirectory { get; set; }
@@ -12,7 +14,7 @@
 
         public int DownloadId { get; set; }
 
-        public string DownloadUrl { get; set; }
+        public Uri DownloadUri { get; set; }
 
         public int TimeoutSeconds { get; set; }
 

@@ -24,9 +24,9 @@
             return ConfigurationManager.AppSettings["DownloadTimeoutSeconds"] ?? "100";
         }
 
-        public string GetDownloadUrl()
+        public string GetDownloadUri()
         {
-            return ConfigurationManager.AppSettings["DownloadUrl"];
+            return ConfigurationManager.AppSettings["DownloadUri"];
         }
     }
 }

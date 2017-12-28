@@ -8,13 +8,11 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class TestSecureDownloadService
+    public class TestSecureDownloadProvider
     {
         private IDownloadService downloadServiceMock;
 
         private FilePayload filePayload;
-
-        private ISecureDetectionService secureDetectionServiceMock;
 
         private ISecureFilePayloadService secureFilePayloadServiceMock;
 
@@ -23,7 +21,7 @@
         [Test]
         public void DownloadFile_WhenSecureConnectionType_OnlyTrySecureDownload()
         {
-            secureDetectionServiceMock.IsSecureConnection(filePayload).Returns(true);
+            secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(true);
 
             var firstCall = true;
             downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
@@ -46,7 +44,7 @@
         {
             var expected = new Exception();
 
-            secureDetectionServiceMock.IsSecureConnection(filePayload).Returns(true);
+            secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(true);
 
             var firstCall = true;
             downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
@@ -65,7 +63,7 @@
         [Test]
         public void DownloadFile_WhenUnsecureConnectionType_TrySecureDownloadFirst()
         {
-            secureDetectionServiceMock.IsSecureConnection(filePayload).Returns(false);
+            secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(false);
 
             systemUnderTest.DownloadFile(filePayload);
 
@@ -82,7 +80,7 @@
         {
             var expected = new Exception();
 
-            secureDetectionServiceMock.IsSecureConnection(filePayload).Returns(false);
+            secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(false);
 
             var firstCall = true;
             downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
@@ -101,7 +99,7 @@
         [Test]
         public void DownloadFile_WhenUnsecureConnectionTypeAndFirstDownloadThrowsWebException_TryUnsecureDownload()
         {
-            secureDetectionServiceMock.IsSecureConnection(filePayload).Returns(false);
+            secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(false);
 
             var firstCall = true;
             downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
@@ -133,14 +131,9 @@
 
             downloadServiceMock = Substitute.For<IDownloadService>();
 
-            secureDetectionServiceMock = Substitute.For<ISecureDetectionService>();
-
             secureFilePayloadServiceMock = Substitute.For<ISecureFilePayloadService>();
 
-            systemUnderTest = new SecureDownloadService(
-                downloadServiceMock,
-                secureDetectionServiceMock,
-                secureFilePayloadServiceMock);
+            systemUnderTest = new SecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock);
         }
     }
 }

@@ -2,27 +2,23 @@
 {
     using System.Net;
 
-    public class SecureDownloadService : IDownloadService
+    public class SecureDownloadProvider : IDownloadService
     {
         private readonly IDownloadService downloadService;
 
-        private readonly ISecureDetectionService secureDetectionService;
-
         private readonly ISecureFilePayloadService secureFilePayloadService;
 
-        public SecureDownloadService(
+        public SecureDownloadProvider(
             IDownloadService downloadService,
-            ISecureDetectionService secureDetectionService,
             ISecureFilePayloadService secureFilePayloadService)
         {
             this.downloadService = downloadService;
-            this.secureDetectionService = secureDetectionService;
             this.secureFilePayloadService = secureFilePayloadService;
         }
 
         public void DownloadFile(FilePayload filePayload)
         {
-            bool isOriginalSecure = secureDetectionService.IsSecureConnection(filePayload);
+            bool originalWasNotSecure = !secureFilePayloadService.IsSecureConnection(filePayload);
 
             try
             {
@@ -31,7 +27,7 @@
             }
             catch (WebException)
             {
-                if (!isOriginalSecure)
+                if (originalWasNotSecure)
                 {
                     secureFilePayloadService.DisableSecureFilePayload(filePayload);
                     downloadService.DownloadFile(filePayload);
