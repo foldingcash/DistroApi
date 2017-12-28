@@ -19,6 +19,13 @@
         private IDownloadService systemUnderTest;
 
         [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewSecureDownloadProvider(null, secureFilePayloadServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewSecureDownloadProvider(downloadServiceMock, null));
+        }
+
+        [Test]
         public void DownloadFile_WhenSecureConnectionType_OnlyTrySecureDownload()
         {
             secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(true);
@@ -133,7 +140,14 @@
 
             secureFilePayloadServiceMock = Substitute.For<ISecureFilePayloadService>();
 
-            systemUnderTest = new SecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock);
+            systemUnderTest = NewSecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock);
+        }
+
+        private IDownloadService NewSecureDownloadProvider(
+            IDownloadService downloadService,
+            ISecureFilePayloadService secureFilePayloadService)
+        {
+            return new SecureDownloadProvider(downloadService, secureFilePayloadService);
         }
     }
 }

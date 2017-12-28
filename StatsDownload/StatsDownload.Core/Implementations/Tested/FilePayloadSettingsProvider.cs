@@ -24,6 +24,21 @@
             IFileDownloadSettingsService fileDownloadSettingsService,
             IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService)
         {
+            if (IsNull(dateTimeService))
+            {
+                throw NewArgumentNullException(nameof(dateTimeService));
+            }
+
+            if (IsNull(fileDownloadSettingsService))
+            {
+                throw NewArgumentNullException(nameof(fileDownloadSettingsService));
+            }
+
+            if (IsNull(fileDownloadTimeoutValidatorService))
+            {
+                throw NewArgumentNullException(nameof(fileDownloadTimeoutValidatorService));
+            }
+
             this.dateTimeService = dateTimeService;
             this.fileDownloadSettingsService = fileDownloadSettingsService;
             this.fileDownloadTimeoutValidatorService = fileDownloadTimeoutValidatorService;
@@ -78,6 +93,16 @@
         private string GetDownloadUri()
         {
             return fileDownloadSettingsService.GetDownloadUri();
+        }
+
+        private bool IsNull(object value)
+        {
+            return value == null;
+        }
+
+        private Exception NewArgumentNullException(string parameterName)
+        {
+            return new ArgumentNullException(parameterName);
         }
 
         private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)

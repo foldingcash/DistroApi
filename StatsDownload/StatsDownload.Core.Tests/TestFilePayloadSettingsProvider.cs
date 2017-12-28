@@ -19,7 +19,20 @@
 
         private IFilePayloadSettingsService systemUnderTest;
 
-        private Uri uri;
+        [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewFilePayloadSettingsProvider(
+                    null,
+                    fileDownloadSettingsServiceMock,
+                    fileDownloadTimeoutValidatorServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () => NewFilePayloadSettingsProvider(dateTimeServiceMock, null, fileDownloadTimeoutValidatorServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () => NewFilePayloadSettingsProvider(dateTimeServiceMock, fileDownloadSettingsServiceMock, null));
+        }
 
         [Test]
         public void SetFilePayloadDownloadDetails_WhenInvoked_DownloadDetailsAreSet()
@@ -87,10 +100,21 @@
                             return true;
                         });
 
-            systemUnderTest = new FilePayloadSettingsProvider(
+            systemUnderTest = NewFilePayloadSettingsProvider(
                 dateTimeServiceMock,
                 fileDownloadSettingsServiceMock,
                 fileDownloadTimeoutValidatorServiceMock);
+        }
+
+        private IFilePayloadSettingsService NewFilePayloadSettingsProvider(
+            IDateTimeService dateTimeService,
+            IFileDownloadSettingsService fileDownloadSettingsService,
+            IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService)
+        {
+            return new FilePayloadSettingsProvider(
+                dateTimeService,
+                fileDownloadSettingsService,
+                fileDownloadTimeoutValidatorService);
         }
     }
 }
