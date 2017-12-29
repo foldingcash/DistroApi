@@ -21,9 +21,9 @@
 
         private IDatabaseConnectionSettingsService databaseConnectionSettingsServiceMock;
 
-        private IFileDownloadLoggingService fileDownloadLoggingServiceMock;
-
         private FilePayload filePayload;
+
+        private ILoggingService loggingServiceMock;
 
         private IFileDownloadDataStoreService systemUnderTest;
 
@@ -31,17 +31,9 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(
-                () =>
-                NewFileDownloadDataStoreProvider(
-                    null,
-                    databaseConnectionServiceFactoryMock,
-                    fileDownloadLoggingServiceMock));
+                () => NewFileDownloadDataStoreProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock));
             Assert.Throws<ArgumentNullException>(
-                () =>
-                NewFileDownloadDataStoreProvider(
-                    databaseConnectionSettingsServiceMock,
-                    null,
-                    fileDownloadLoggingServiceMock));
+                () => NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadDataStoreProvider(
@@ -58,7 +50,7 @@
             Received.InOrder(
                 () =>
                     {
-                        fileDownloadLoggingServiceMock.LogVerbose("FileDownloadFinished Invoked");
+                        loggingServiceMock.LogVerbose("FileDownloadFinished Invoked");
                         databaseConnectionServiceMock.Open();
                         databaseConnectionServiceMock.ExecuteStoredProcedure(
                             "[FoldingCoin].[FileDownloadFinished]",
@@ -106,9 +98,9 @@
             Received.InOrder(
                 (() =>
                     {
-                        fileDownloadLoggingServiceMock.LogVerbose("IsAvailable Invoked");
+                        loggingServiceMock.LogVerbose("IsAvailable Invoked");
                         databaseConnectionServiceMock.Open();
-                        fileDownloadLoggingServiceMock.LogVerbose("Database connection was successful");
+                        loggingServiceMock.LogVerbose("Database connection was successful");
                         databaseConnectionServiceMock.Close();
                     }));
         }
@@ -124,10 +116,10 @@
             Received.InOrder(
                 (() =>
                     {
-                        fileDownloadLoggingServiceMock.LogVerbose("IsAvailable Invoked");
+                        loggingServiceMock.LogVerbose("IsAvailable Invoked");
                         databaseConnectionServiceMock.Open();
                         databaseConnectionServiceMock.Close();
-                        fileDownloadLoggingServiceMock.LogException(expected);
+                        loggingServiceMock.LogException(expected);
                     }));
         }
 
@@ -157,9 +149,9 @@
             Received.InOrder(
                 (() =>
                     {
-                        fileDownloadLoggingServiceMock.LogVerbose("NewFileDownloadStarted Invoked");
+                        loggingServiceMock.LogVerbose("NewFileDownloadStarted Invoked");
                         databaseConnectionServiceMock.Open();
-                        fileDownloadLoggingServiceMock.LogVerbose("Database connection was successful");
+                        loggingServiceMock.LogVerbose("Database connection was successful");
                         databaseConnectionServiceMock.ExecuteStoredProcedure(
                             "[FoldingCoin].[NewFileDownloadStarted]",
                             Arg.Any<List<DbParameter>>());
@@ -210,12 +202,12 @@
             databaseConnectionServiceFactoryMock = Substitute.For<IDatabaseConnectionServiceFactory>();
             databaseConnectionServiceFactoryMock.Create("connectionString").Returns(databaseConnectionServiceMock);
 
-            fileDownloadLoggingServiceMock = Substitute.For<IFileDownloadLoggingService>();
+            loggingServiceMock = Substitute.For<ILoggingService>();
 
             systemUnderTest = NewFileDownloadDataStoreProvider(
                 databaseConnectionSettingsServiceMock,
                 databaseConnectionServiceFactoryMock,
-                fileDownloadLoggingServiceMock);
+                loggingServiceMock);
 
             databaseConnectionServiceMock.CreateParameter(
                 Arg.Any<string>(),
@@ -259,12 +251,11 @@
             Received.InOrder(
                 (() =>
                     {
-                        fileDownloadLoggingServiceMock.LogVerbose("UpdateToLatest Invoked");
+                        loggingServiceMock.LogVerbose("UpdateToLatest Invoked");
                         databaseConnectionServiceMock.Open();
-                        fileDownloadLoggingServiceMock.LogVerbose("Database connection was successful");
+                        loggingServiceMock.LogVerbose("Database connection was successful");
                         databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[UpdateToLatest]");
-                        fileDownloadLoggingServiceMock.LogVerbose(
-                            $"'{NumberOfRowsEffectedExpected}' rows were effected");
+                        loggingServiceMock.LogVerbose($"'{NumberOfRowsEffectedExpected}' rows were effected");
                         databaseConnectionServiceMock.Close();
                     }));
         }
@@ -292,12 +283,12 @@
         private IFileDownloadDataStoreService NewFileDownloadDataStoreProvider(
             IDatabaseConnectionSettingsService databaseConnectionSettingsService,
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
-            IFileDownloadLoggingService fileDownloadLoggingService)
+            ILoggingService loggingService)
         {
             return new FileDownloadDataStoreProvider(
                 databaseConnectionSettingsService,
                 databaseConnectionServiceFactory,
-                fileDownloadLoggingService);
+                loggingService);
         }
     }
 }

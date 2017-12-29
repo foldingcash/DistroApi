@@ -10,23 +10,17 @@
 
         private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
 
-        private readonly IFileDownloadLoggingService fileDownloadLoggingService;
-
-        private readonly IFileDownloadSettingsService fileDownloadSettingsService;
-
-        private readonly IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService;
-
-        private readonly IFileNameService fileNameService;
+        private readonly IFilePayloadSettingsService filePayloadSettingsService;
 
         private readonly IFileReaderService fileReaderService;
 
+        private readonly ILoggingService loggingService;
+
         public FileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
-            IFileDownloadLoggingService fileDownloadLoggingService,
-            IFileDownloadSettingsService fileDownloadSettingsService,
+            ILoggingService loggingService,
             IDownloadService downloadService,
-            IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService,
-            IFileNameService fileNameService,
+            IFilePayloadSettingsService filePayloadSettingsService,
             IFileCompressionService fileCompressionService,
             IFileReaderService fileReaderService)
         {
@@ -35,14 +29,9 @@
                 throw NewArgumentNullException(nameof(fileDownloadDataStoreService));
             }
 
-            if (IsNull(fileDownloadLoggingService))
+            if (IsNull(loggingService))
             {
-                throw NewArgumentNullException(nameof(fileDownloadLoggingService));
-            }
-
-            if (IsNull(fileDownloadSettingsService))
-            {
-                throw NewArgumentNullException(nameof(fileDownloadSettingsService));
+                throw NewArgumentNullException(nameof(loggingService));
             }
 
             if (IsNull(downloadService))
@@ -50,14 +39,9 @@
                 throw NewArgumentNullException(nameof(downloadService));
             }
 
-            if (IsNull(fileDownloadTimeoutValidatorService))
+            if (IsNull(filePayloadSettingsService))
             {
-                throw NewArgumentNullException(nameof(fileDownloadTimeoutValidatorService));
-            }
-
-            if (IsNull(fileNameService))
-            {
-                throw NewArgumentNullException(nameof(fileNameService));
+                throw NewArgumentNullException(nameof(filePayloadSettingsService));
             }
 
             if (IsNull(fileCompressionService))
@@ -71,31 +55,34 @@
             }
 
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
-            this.fileDownloadLoggingService = fileDownloadLoggingService;
-            this.fileDownloadSettingsService = fileDownloadSettingsService;
+            this.loggingService = loggingService;
             this.downloadService = downloadService;
-            this.fileDownloadTimeoutValidatorService = fileDownloadTimeoutValidatorService;
-            this.fileNameService = fileNameService;
+            this.filePayloadSettingsService = filePayloadSettingsService;
             this.fileCompressionService = fileCompressionService;
             this.fileReaderService = fileReaderService;
         }
 
         public FileDownloadResult DownloadStatsFile()
         {
+            FilePayload filePayload = NewStatsPayload();
+
             try
             {
                 LogMethodInvoked(nameof(DownloadStatsFile));
 
                 if (DataStoreUnavailable())
                 {
-                    FileDownloadResult failedResult = NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable);
+                    FileDownloadResult failedResult = NewFailedFileDownloadResult(
+                        FailedReason.DataStoreUnavailable,
+                        filePayload);
                     LogResult(failedResult);
                     return failedResult;
                 }
 
                 UpdateToLatest();
-                FilePayload filePayload = NewStatsPayload();
                 LogVerbose($"Stats file download started: {DateTime.Now}");
+                NewFileDownloadStarted(filePayload);
+                SetDownloadFileDetails(filePayload);
                 DownloadFile(filePayload);
                 LogVerbose($"Stats file download completed: {DateTime.Now}");
                 UploadFile(filePayload);
@@ -106,7 +93,7 @@
             }
             catch (Exception exception)
             {
-                FileDownloadResult result = NewFailedFileDownloadResult(FailedReason.UnexpectedException);
+                FileDownloadResult result = NewFailedFileDownloadResult(FailedReason.UnexpectedException, filePayload);
                 LogResult(result);
                 LogException(exception);
                 return result;
@@ -123,21 +110,6 @@
             downloadService.DownloadFile(filePayload);
         }
 
-        private string GetDownloadDirectory()
-        {
-            return fileDownloadSettingsService.GetDownloadDirectory();
-        }
-
-        private string GetDownloadTimeout()
-        {
-            return fileDownloadSettingsService.GetDownloadTimeout();
-        }
-
-        private string GetDownloadUrl()
-        {
-            return fileDownloadSettingsService.GetDownloadUrl();
-        }
-
         private bool IsNull(object value)
         {
             return value == null;
@@ -145,7 +117,7 @@
 
         private void LogException(Exception exception)
         {
-            fileDownloadLoggingService.LogException(exception);
+            loggingService.LogException(exception);
         }
 
         private void LogMethodInvoked(string method)
@@ -155,12 +127,12 @@
 
         private void LogResult(FileDownloadResult result)
         {
-            fileDownloadLoggingService.LogResult(result);
+            loggingService.LogResult(result);
         }
 
         private void LogVerbose(string message)
         {
-            fileDownloadLoggingService.LogVerbose(message);
+            loggingService.LogVerbose(message);
         }
 
         private Exception NewArgumentNullException(string parameterName)
@@ -168,9 +140,9 @@
             return new ArgumentNullException(parameterName);
         }
 
-        private FileDownloadResult NewFailedFileDownloadResult(FailedReason failedReason)
+        private FileDownloadResult NewFailedFileDownloadResult(FailedReason failedReason, FilePayload filePayload)
         {
-            return new FileDownloadResult(failedReason);
+            return new FileDownloadResult(failedReason, filePayload);
         }
 
         private void NewFileDownloadStarted(FilePayload filePayload)
@@ -180,24 +152,7 @@
 
         private FilePayload NewStatsPayload()
         {
-            var filePayload = new FilePayload();
-
-            string downloadDirectory = GetDownloadDirectory();
-
-            SetDownloadFileDetails(downloadDirectory, filePayload);
-
-            NewFileDownloadStarted(filePayload);
-
-            string downloadUrl = GetDownloadUrl();
-            string downloadTimeout = GetDownloadTimeout();
-
-            int timeoutInSeconds;
-            TryParseTimeout(downloadTimeout, out timeoutInSeconds);
-
-            filePayload.DownloadUrl = downloadUrl;
-            filePayload.TimeoutSeconds = timeoutInSeconds;
-
-            return filePayload;
+            return new FilePayload();
         }
 
         private FileDownloadResult NewSuccessFileDownloadResult(FilePayload filePayload)
@@ -205,14 +160,9 @@
             return new FileDownloadResult(filePayload);
         }
 
-        private void SetDownloadFileDetails(string downloadDirectory, FilePayload filePayload)
+        private void SetDownloadFileDetails(FilePayload filePayload)
         {
-            fileNameService.SetDownloadFileDetails(downloadDirectory, filePayload);
-        }
-
-        private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)
-        {
-            return fileDownloadTimeoutValidatorService.TryParseTimeout(unsafeTimeout, out timeoutInSeconds);
+            filePayloadSettingsService.SetFilePayloadDownloadDetails(filePayload);
         }
 
         private void UpdateToLatest()
