@@ -21,6 +21,8 @@
 
         private ILoggingService loggingServiceMock;
 
+        private IResourceCleanupService resourceCleanupServiceMock;
+
         private IFileDownloadService systemUnderTest;
 
         [Test]
@@ -34,7 +36,8 @@
                     downloadServiceMock,
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
-                    fileReaderServiceMock));
+                    fileReaderServiceMock,
+                    resourceCleanupServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -43,7 +46,8 @@
                     downloadServiceMock,
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
-                    fileReaderServiceMock));
+                    fileReaderServiceMock,
+                    resourceCleanupServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -52,7 +56,8 @@
                     null,
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
-                    fileReaderServiceMock));
+                    fileReaderServiceMock,
+                    resourceCleanupServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -61,7 +66,8 @@
                     downloadServiceMock,
                     null,
                     fileCompressionServiceMock,
-                    fileReaderServiceMock));
+                    fileReaderServiceMock,
+                    resourceCleanupServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -70,7 +76,8 @@
                     downloadServiceMock,
                     filePayloadSettingsServiceMock,
                     null,
-                    fileReaderServiceMock));
+                    fileReaderServiceMock,
+                    resourceCleanupServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -79,6 +86,17 @@
                     downloadServiceMock,
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
+                    null,
+                    resourceCleanupServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewFileDownloadProvider(
+                    fileDownloadDataStoreServiceMock,
+                    loggingServiceMock,
+                    downloadServiceMock,
+                    filePayloadSettingsServiceMock,
+                    fileCompressionServiceMock,
+                    fileReaderServiceMock,
                     null));
         }
 
@@ -154,6 +172,7 @@
                         fileCompressionServiceMock.DecompressFile(Arg.Any<FilePayload>());
                         fileReaderServiceMock.ReadFile(Arg.Any<FilePayload>());
                         fileDownloadDataStoreServiceMock.FileDownloadFinished(Arg.Any<FilePayload>());
+                        resourceCleanupServiceMock.Cleanup(Arg.Any<FilePayload>());
                         loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }
@@ -174,13 +193,16 @@
 
             fileReaderServiceMock = Substitute.For<IFileReaderService>();
 
+            resourceCleanupServiceMock = Substitute.For<IResourceCleanupService>();
+
             systemUnderTest = NewFileDownloadProvider(
                 fileDownloadDataStoreServiceMock,
                 loggingServiceMock,
                 downloadServiceMock,
                 filePayloadSettingsServiceMock,
                 fileCompressionServiceMock,
-                fileReaderServiceMock);
+                fileReaderServiceMock,
+                resourceCleanupServiceMock);
         }
 
         private FileDownloadResult InvokeDownloadFile()
@@ -194,7 +216,8 @@
             IDownloadService downloadService,
             IFilePayloadSettingsService filePayloadSettingsService,
             IFileCompressionService fileCompressionService,
-            IFileReaderService fileReaderService)
+            IFileReaderService fileReaderService,
+            IResourceCleanupService resourceCleanupService)
         {
             return new FileDownloadProvider(
                 fileDownloadDataStoreService,
@@ -202,7 +225,8 @@
                 downloadService,
                 filePayloadSettingsService,
                 fileCompressionService,
-                fileReaderService);
+                fileReaderService,
+                resourceCleanupService);
         }
     }
 }

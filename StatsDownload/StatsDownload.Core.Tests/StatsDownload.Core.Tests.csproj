@@ -66,6 +66,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDownloadSettingsValidatorProvider.cs" />
     <Compile Include="TestFilePayloadSettingsProvider.cs" />
+    <Compile Include="TestResourceCleanupProvider.cs" />
     <Compile Include="TestSecureDownloadProvider.cs" />
     <Compile Include="TestSecureHttpFilePayloadProvider.cs" />
   </ItemGroup>
