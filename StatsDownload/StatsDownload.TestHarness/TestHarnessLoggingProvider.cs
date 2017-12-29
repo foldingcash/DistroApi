@@ -28,6 +28,7 @@
                 + $"Download Id: {result.FilePayload?.DownloadId}{Environment.NewLine}"
                 + $"Download Uri: {result.FilePayload?.DownloadUri}{Environment.NewLine}"
                 + $"Download Timeout: {result.FilePayload?.TimeoutSeconds}{Environment.NewLine}"
+                + $"Accept Any Ssl Cert: {result.FilePayload?.AcceptAnySslCert}{Environment.NewLine}"
                 + $"Download File Directory: {result.FilePayload?.DownloadDirectory}{Environment.NewLine}{Environment.NewLine}"
                 + $"Download File Name: {result.FilePayload?.DownloadFileName}{Environment.NewLine}{Environment.NewLine}"
                 + $"Download File Extension: {result.FilePayload?.DownloadFileExtension}{Environment.NewLine}{Environment.NewLine}"

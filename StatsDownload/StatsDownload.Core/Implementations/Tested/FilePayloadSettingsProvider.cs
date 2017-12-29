@@ -15,33 +15,33 @@
 
         private readonly IDateTimeService dateTimeService;
 
-        private readonly IFileDownloadSettingsService fileDownloadSettingsService;
+        private readonly IDownloadSettingsService downloadSettingsService;
 
-        private readonly IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService;
+        private readonly IDownloadSettingsValidatorService downloadSettingsValidatorService;
 
         public FilePayloadSettingsProvider(
             IDateTimeService dateTimeService,
-            IFileDownloadSettingsService fileDownloadSettingsService,
-            IFileDownloadTimeoutValidatorService fileDownloadTimeoutValidatorService)
+            IDownloadSettingsService downloadSettingsService,
+            IDownloadSettingsValidatorService downloadSettingsValidatorService)
         {
             if (IsNull(dateTimeService))
             {
                 throw NewArgumentNullException(nameof(dateTimeService));
             }
 
-            if (IsNull(fileDownloadSettingsService))
+            if (IsNull(downloadSettingsService))
             {
-                throw NewArgumentNullException(nameof(fileDownloadSettingsService));
+                throw NewArgumentNullException(nameof(downloadSettingsService));
             }
 
-            if (IsNull(fileDownloadTimeoutValidatorService))
+            if (IsNull(downloadSettingsValidatorService))
             {
-                throw NewArgumentNullException(nameof(fileDownloadTimeoutValidatorService));
+                throw NewArgumentNullException(nameof(downloadSettingsValidatorService));
             }
 
             this.dateTimeService = dateTimeService;
-            this.fileDownloadSettingsService = fileDownloadSettingsService;
-            this.fileDownloadTimeoutValidatorService = fileDownloadTimeoutValidatorService;
+            this.downloadSettingsService = downloadSettingsService;
+            this.downloadSettingsValidatorService = downloadSettingsValidatorService;
         }
 
         public void SetFilePayloadDownloadDetails(FilePayload filePayload)
@@ -59,19 +59,24 @@
             return dateTimeService.DateTimeNow();
         }
 
+        private string GetAcceptAnySslCert()
+        {
+            return downloadSettingsService.GetAcceptAnySslCert();
+        }
+
         private string GetDownloadDirectory()
         {
-            return fileDownloadSettingsService.GetDownloadDirectory();
+            return downloadSettingsService.GetDownloadDirectory();
         }
 
         private string GetDownloadTimeout()
         {
-            return fileDownloadSettingsService.GetDownloadTimeout();
+            return downloadSettingsService.GetDownloadTimeout();
         }
 
         private string GetDownloadUri()
         {
-            return fileDownloadSettingsService.GetDownloadUri();
+            return downloadSettingsService.GetDownloadUri();
         }
 
         private bool IsNull(object value)
@@ -88,12 +93,17 @@
         {
             string downloadTimeout = GetDownloadTimeout();
             string downloadUri = GetDownloadUri();
+            string unsafeAcceptAnySslCert = GetAcceptAnySslCert();
 
             int timeoutInSeconds;
             TryParseTimeout(downloadTimeout, out timeoutInSeconds);
 
+            bool acceptAnySslCert;
+            TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out acceptAnySslCert);
+
             filePayload.DownloadUri = new Uri(downloadUri);
             filePayload.TimeoutSeconds = timeoutInSeconds;
+            filePayload.AcceptAnySslCert = acceptAnySslCert;
         }
 
         private void SetDownloadFileDetails(FilePayload filePayload, DateTime dateTime, string downloadDirectory)
@@ -121,9 +131,16 @@
                 $"{uncompressedFileName}{UncompressedFileExtension}");
         }
 
+        private bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
+        {
+            return downloadSettingsValidatorService.TryParseAcceptAnySslCert(
+                unsafeAcceptAnySslCert,
+                out acceptAnySslCert);
+        }
+
         private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)
         {
-            return fileDownloadTimeoutValidatorService.TryParseTimeout(unsafeTimeout, out timeoutInSeconds);
+            return downloadSettingsValidatorService.TryParseTimeout(unsafeTimeout, out timeoutInSeconds);
         }
     }
 }

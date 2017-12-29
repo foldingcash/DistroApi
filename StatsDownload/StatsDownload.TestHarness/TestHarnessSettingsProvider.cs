@@ -6,8 +6,13 @@
 
     using StatsDownload.Core;
 
-    public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IFileDownloadSettingsService
+    public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService
     {
+        public string GetAcceptAnySslCert()
+        {
+            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
+        }
+
         public string GetConnectionString()
         {
             return ConfigurationManager.ConnectionStrings["FoldingCoin"].ConnectionString;

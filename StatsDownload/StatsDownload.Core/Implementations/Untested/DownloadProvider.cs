@@ -18,8 +18,7 @@
 
             using (var client = new WebClientWithTimeout())
             {
-                client.TimeoutInSeconds = filePayload.TimeoutSeconds;
-                client.DownloadFile(filePayload.DownloadUri, filePayload.DownloadFilePath);
+                client.DownloadFile(filePayload);
             }
 
             loggingService.LogVerbose($"File download complete: {DateTime.Now}");
@@ -27,7 +26,16 @@
 
         private class WebClientWithTimeout : WebClient
         {
-            public int TimeoutInSeconds { private get; set; }
+            private bool acceptAnySslCert;
+
+            private int timeoutInSeconds;
+
+            public void DownloadFile(FilePayload filePayload)
+            {
+                timeoutInSeconds = filePayload.TimeoutSeconds;
+                acceptAnySslCert = filePayload.AcceptAnySslCert;
+                DownloadFile(filePayload.DownloadUri, filePayload.DownloadFilePath);
+            }
 
             protected override WebRequest GetWebRequest(Uri address)
             {
@@ -36,13 +44,20 @@
                 {
                     return null;
                 }
-                request.Timeout = ConvertToMilliSeconds(TimeoutInSeconds);
+                request.Timeout = ConvertToMilliSeconds(timeoutInSeconds);
+
+                if (acceptAnySslCert && request is HttpWebRequest)
+                {
+                    var httpWebRequest = request as HttpWebRequest;
+                    httpWebRequest.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
+                }
+
                 return request;
             }
 
-            private int ConvertToMilliSeconds(int timeoutInSeconds)
+            private int ConvertToMilliSeconds(int seconds)
             {
-                return timeoutInSeconds * 1000;
+                return seconds * 1000;
             }
         }
     }

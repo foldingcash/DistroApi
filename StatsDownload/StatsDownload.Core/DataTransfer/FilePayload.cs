@@ -4,6 +4,8 @@
 
     public class FilePayload
     {
+        public bool AcceptAnySslCert { get; set; }
+
         public string DownloadDirectory { get; set; }
 
         public string DownloadFileExtension { get; set; }
