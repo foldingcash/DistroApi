@@ -16,7 +16,7 @@
         {
             loggingService.LogVerbose($"Attempting to download file: {DateTime.Now}");
 
-            using (var client = new WebClientWithTimeout())
+            using (var client = new FilePayloadWebClient())
             {
                 client.DownloadFile(filePayload);
             }
@@ -24,7 +24,7 @@
             loggingService.LogVerbose($"File download complete: {DateTime.Now}");
         }
 
-        private class WebClientWithTimeout : WebClient
+        private class FilePayloadWebClient : WebClient
         {
             private bool acceptAnySslCert;
 
