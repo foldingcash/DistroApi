@@ -1,0 +1,10 @@
+﻿-- ipaddress - 0.0.0.0
+-- port - 41679
+-- certhash - 33a48090c1b581ff3aeb9d5bf542d77321e9a3fd
+-- appid - {f8f536d7-cfd1-4f46-890b-f53aef11216a}
+
+-- Check if the current port has a sslcert assigned to it, should see a file not found error message
+netsh http show sslcert ipport=0.0.0.0:41679
+
+-- Assign the sslcert to the ip:port for the app
+netsh http add sslcert ipport=0.0.0.0:41679 certhash=33a48090c1b581ff3aeb9d5bf542d77321e9a3fd appid={f8f536d7-cfd1-4f46-890b-f53aef11216a}
