@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataTransfer\FilePayload.cs" />
+    <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="Implementations\Tested\ResourceCleanupProvider.cs" />
     <Compile Include="Implementations\Tested\SecureDownloadProvider.cs" />
     <Compile Include="Implementations\Tested\SecureHttpFilePayloadProvider.cs" />

@@ -52,6 +52,11 @@
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
         }
 
+        public DateTime GetLastSuccessfulFileDownloadDateTime()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsAvailable()
         {
             LogMethodInvoked(nameof(IsAvailable));
