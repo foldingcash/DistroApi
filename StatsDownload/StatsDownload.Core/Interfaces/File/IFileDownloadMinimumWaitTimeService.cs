@@ -2,6 +2,6 @@
 {
     public interface IFileDownloadMinimumWaitTimeService
     {
-        bool IsMinimumWaitTimeMet();
+        bool IsMinimumWaitTimeMet(FilePayload filePayload);
     }
 }

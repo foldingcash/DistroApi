@@ -18,6 +18,8 @@
 
         public Uri DownloadUri { get; set; }
 
+        public TimeSpan MinimumWaitTime { get; set; }
+
         public int TimeoutSeconds { get; set; }
 
         public string UncompressedDownloadDirectory { get; set; }

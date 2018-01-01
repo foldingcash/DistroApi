@@ -74,6 +74,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CastleWindsor\WindsorContainer.cs" />
+    <Compile Include="TestHarnessMinimumWaitTimeProvider.cs" />
     <Compile Include="TestHarnessSettingsProvider.cs" />
     <Compile Include="TestHarnessLoggingProvider.cs" />
     <EmbeddedResource Include="MainForm.resx">

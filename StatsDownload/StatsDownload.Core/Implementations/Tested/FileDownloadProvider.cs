@@ -111,7 +111,7 @@
                 NewFileDownloadStarted(filePayload);
 
                 FailedReason failedReason;
-                if (IsFileDownloadNotReadyToRun(out failedReason))
+                if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
                 {
                     FileDownloadResult failedResult = NewFailedFileDownloadResult(failedReason, filePayload);
                     LogResult(failedResult);
@@ -157,14 +157,14 @@
             downloadService.DownloadFile(filePayload);
         }
 
-        private bool IsFileDownloadNotReadyToRun(out FailedReason failedReason)
+        private bool IsFileDownloadNotReadyToRun(FilePayload filePayload, out FailedReason failedReason)
         {
-            return !IsFileDownloadReadyToRun(out failedReason);
+            return !IsFileDownloadReadyToRun(filePayload, out failedReason);
         }
 
-        private bool IsFileDownloadReadyToRun(out FailedReason failedReason)
+        private bool IsFileDownloadReadyToRun(FilePayload filePayload, out FailedReason failedReason)
         {
-            if (IsMinimumWaitTimeNotMet())
+            if (IsMinimumWaitTimeNotMet(filePayload))
             {
                 failedReason = FailedReason.MinimumWaitTimeNotMet;
                 return false;
@@ -174,9 +174,9 @@
             return true;
         }
 
-        private bool IsMinimumWaitTimeNotMet()
+        private bool IsMinimumWaitTimeNotMet(FilePayload filePayload)
         {
-            return !fileDownloadMinimumWaitTimeService.IsMinimumWaitTimeMet();
+            return !fileDownloadMinimumWaitTimeService.IsMinimumWaitTimeMet(filePayload);
         }
 
         private bool IsNull(object value)

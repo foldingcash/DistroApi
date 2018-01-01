@@ -209,7 +209,7 @@
                         dateTimeServiceMock.DateTimeNow();
                         loggingServiceMock.LogVerbose($"Stats file download started: {dateTime}");
                         fileDownloadDataStoreServiceMock.NewFileDownloadStarted(Arg.Any<FilePayload>());
-                        fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet();
+                        fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>());
                         filePayloadSettingsServiceMock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>());
                         downloadServiceMock.DownloadFile(Arg.Any<FilePayload>());
                         dateTimeServiceMock.DateTimeNow();
@@ -225,7 +225,7 @@
         [Test]
         public void DownloadFile_WhenMinimumWaitTimeNotMet_LogsDownloadResult()
         {
-            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet().Returns(false);
+            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>()).Returns(false);
 
             InvokeDownloadFile();
 
@@ -235,7 +235,7 @@
         [Test]
         public void DownloadFile_WhenMinimumWaitTimeNotMet_ReturnsFailedResultWithReason()
         {
-            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet().Returns(false);
+            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>()).Returns(false);
 
             FileDownloadResult actual = InvokeDownloadFile();
 
@@ -265,7 +265,7 @@
             resourceCleanupServiceMock = Substitute.For<IResourceCleanupService>();
 
             fileDownloadMinimumWaitTimeServiceMock = Substitute.For<IFileDownloadMinimumWaitTimeService>();
-            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet().Returns(true);
+            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>()).Returns(true);
 
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
             dateTimeServiceMock.DateTimeNow().Returns(dateTime);
