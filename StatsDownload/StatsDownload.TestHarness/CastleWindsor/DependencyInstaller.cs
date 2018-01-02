@@ -13,6 +13,12 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
+                Component.For<ILoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
+                Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService>()
+                    .ImplementedBy<TestHarnessSettingsProvider>(),
+                Component.For<IFileDownloadMinimumWaitTimeService>().ImplementedBy<TestHarnessMinimumWaitTimeProvider>());
+
+            container.Register(
                 Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
                 Component.For<IFileDeleteService>().ImplementedBy<FileDeleteProvider>(),
@@ -20,9 +26,6 @@
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
-                Component.For<ILoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
-                Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService>()
-                    .ImplementedBy<TestHarnessSettingsProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
                 Component.For<IFileDownloadDataStoreService>().ImplementedBy<FileDownloadDataStoreProvider>(),
@@ -30,7 +33,9 @@
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
-                Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>());
+                Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),
+                Component.For<IFileDownloadMinimumWaitTimeService>()
+                    .ImplementedBy<FileDownloadMinimumWaitTimeProvider>());
         }
     }
 }
