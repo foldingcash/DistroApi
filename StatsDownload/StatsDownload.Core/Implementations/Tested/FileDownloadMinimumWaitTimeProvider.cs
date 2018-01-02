@@ -16,7 +16,7 @@
         public bool IsMinimumWaitTimeMet(FilePayload filePayload)
         {
             TimeSpan configuredWaitTime = filePayload.MinimumWaitTime;
-            DateTime lastSuccessfulRun = fileDownloadDataStoreService.GetLastSuccessfulFileDownloadDateTime();
+            DateTime lastSuccessfulRun = fileDownloadDataStoreService.GetLastFileDownloadDateTime();
             DateTime dateTimeNow = DateTime.Now;
 
             if (dateTimeNow - lastSuccessfulRun < MinimumWaitTime)

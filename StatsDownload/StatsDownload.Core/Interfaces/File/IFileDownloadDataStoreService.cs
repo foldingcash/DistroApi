@@ -11,7 +11,7 @@
         ///     If there is no last successful download, should return DateTime.MinValue.
         /// </summary>
         /// <returns></returns>
-        DateTime GetLastSuccessfulFileDownloadDateTime();
+        DateTime GetLastFileDownloadDateTime();
 
         bool IsAvailable();
 

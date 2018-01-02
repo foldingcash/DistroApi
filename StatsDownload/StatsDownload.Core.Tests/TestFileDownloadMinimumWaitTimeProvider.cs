@@ -19,8 +19,7 @@
         public void IsMinimumWaitTimeMet_WhenConfiguredLessThanMinimum_UsesMinimum()
         {
             filePayload.MinimumWaitTime = new TimeSpan(0, 50, 0);
-            fileDownloadDataStoreServiceMock.GetLastSuccessfulFileDownloadDateTime()
-                .Returns(DateTime.Now.AddMinutes(-59));
+            fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddMinutes(-59));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
 
@@ -31,7 +30,7 @@
         public void IsMinimumWaitTimeMet_WhenNotWaitedConfiguredTime_ReturnsFalse()
         {
             filePayload.MinimumWaitTime = new TimeSpan(2, 0, 0);
-            fileDownloadDataStoreServiceMock.GetLastSuccessfulFileDownloadDateTime()
+            fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime()
                 .Returns(DateTime.Now.AddHours(-1).AddMinutes(-59));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
@@ -42,8 +41,7 @@
         [Test]
         public void IsMinimumWaitTimeMet_WhenNotWaitedMinimumTime_ReturnsFalse()
         {
-            fileDownloadDataStoreServiceMock.GetLastSuccessfulFileDownloadDateTime()
-                .Returns(DateTime.Now.AddMinutes(-59));
+            fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddMinutes(-59));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
 
@@ -54,7 +52,7 @@
         public void IsMinimumWaitTimeMet_WhenWaitedConfiguredTime_ReturnsTrue()
         {
             filePayload.MinimumWaitTime = new TimeSpan(2, 0, 0);
-            fileDownloadDataStoreServiceMock.GetLastSuccessfulFileDownloadDateTime().Returns(DateTime.Now.AddHours(-2));
+            fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddHours(-2));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
 
@@ -64,7 +62,7 @@
         [Test]
         public void IsMinimumWaitTimeMet_WhenWaitedMinimumTime_ReturnsTrue()
         {
-            fileDownloadDataStoreServiceMock.GetLastSuccessfulFileDownloadDateTime().Returns(DateTime.Now.AddHours(-1));
+            fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddHours(-1));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
 
