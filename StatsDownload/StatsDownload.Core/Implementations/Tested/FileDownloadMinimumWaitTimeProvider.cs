@@ -6,7 +6,7 @@
     {
         private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
 
-        private readonly TimeSpan MinimumWaitTime = new TimeSpan(1, 0, 0);
+        private readonly TimeSpan MinimumWaitTimeSpan = new TimeSpan(1, 0, 0);
 
         public FileDownloadMinimumWaitTimeProvider(IFileDownloadDataStoreService fileDownloadDataStoreService)
         {
@@ -15,16 +15,16 @@
 
         public bool IsMinimumWaitTimeMet(FilePayload filePayload)
         {
-            TimeSpan configuredWaitTime = filePayload.MinimumWaitTime;
+            TimeSpan configuredMinimumWaitTimeSpan = filePayload.MinimumWaitTimeSpan;
             DateTime lastSuccessfulRun = fileDownloadDataStoreService.GetLastFileDownloadDateTime();
             DateTime dateTimeNow = DateTime.Now;
 
-            if (dateTimeNow - lastSuccessfulRun < MinimumWaitTime)
+            if (dateTimeNow - lastSuccessfulRun < MinimumWaitTimeSpan)
             {
                 return false;
             }
 
-            if (dateTimeNow - lastSuccessfulRun < configuredWaitTime)
+            if (dateTimeNow - lastSuccessfulRun < configuredMinimumWaitTimeSpan)
             {
                 return false;
             }

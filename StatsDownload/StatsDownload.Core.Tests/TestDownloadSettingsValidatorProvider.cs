@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using System;
+
     using NUnit.Framework;
 
     [TestFixture]
@@ -7,9 +9,13 @@
     {
         private static readonly string[] BadAcceptAnySslCertValues = { "anything else" };
 
+        private static readonly string[] BadMinimumWaitTimeInHoursValues = { "0", "101", "strings" };
+
         private static readonly string[] BadTimeoutValues = { "-1", "-2", "0", "99", "3601" };
 
         private static readonly string[] FalseAcceptAnySslCertValues = { "false", "FALSE" };
+
+        private static readonly string[] GoodMinimumWaitTimeInHoursValues = { "1", "100" };
 
         private static readonly string[] GoodTimeoutValues = { "100", "3600" };
 
@@ -73,6 +79,44 @@
         {
             bool output;
             bool actual = systemUnderTest.TryParseAcceptAnySslCert(input, out output);
+
+            Assert.That(actual, Is.True);
+        }
+
+        [TestCaseSource(nameof(BadMinimumWaitTimeInHoursValues))]
+        public void TryParseMinimumWaitTimeSpan_WhenBadValueIsProvided_ReturnsFalse(string input)
+        {
+            TimeSpan output;
+            bool actual = systemUnderTest.TryParseMinimumWaitTimeSpan(input, out output);
+
+            Assert.That(actual, Is.False);
+        }
+
+        [TestCaseSource(nameof(BadMinimumWaitTimeInHoursValues))]
+        public void TryParseMinimumWaitTimeSpan_WhenBadValueIsProvided_ReturnsParsedFalse(string input)
+        {
+            TimeSpan actual;
+            systemUnderTest.TryParseMinimumWaitTimeSpan(input, out actual);
+
+            Assert.That(actual, Is.EqualTo(TimeSpan.Zero));
+        }
+
+        [TestCase("100", 100)]
+        public void TryParseMinimumWaitTimeSpan_WhenGoodValueIsProvided_ReturnsParsedTrue(string input, int hours)
+        {
+            var expected = new TimeSpan(hours, 0, 0);
+
+            TimeSpan actual;
+            systemUnderTest.TryParseMinimumWaitTimeSpan(input, out actual);
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [TestCaseSource(nameof(GoodMinimumWaitTimeInHoursValues))]
+        public void TryParseMinimumWaitTimeSpan_WhenGoodValueIsProvided_ReturnsTrue(string input)
+        {
+            TimeSpan output;
+            bool actual = systemUnderTest.TryParseMinimumWaitTimeSpan(input, out output);
 
             Assert.That(actual, Is.True);
         }

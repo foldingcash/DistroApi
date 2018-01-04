@@ -6,18 +6,20 @@
     {
         private readonly IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService;
 
+        private readonly ITestHarnessSettingsService testHarnessSettingsService;
+
         public TestHarnessMinimumWaitTimeProvider(
-            IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService)
+            IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
+            ITestHarnessSettingsService testHarnessSettingsService)
         {
             this.fileDownloadMinimumWaitTimeService = fileDownloadMinimumWaitTimeService;
+            this.testHarnessSettingsService = testHarnessSettingsService;
         }
 
         public bool IsMinimumWaitTimeMet(FilePayload filePayload)
         {
-#if DEBUG
-            return true;
-#endif
-            return fileDownloadMinimumWaitTimeService.IsMinimumWaitTimeMet(filePayload);
+            return testHarnessSettingsService.IsMinimumWaitTimeMetDisabled()
+                   || fileDownloadMinimumWaitTimeService.IsMinimumWaitTimeMet(filePayload);
         }
     }
 }

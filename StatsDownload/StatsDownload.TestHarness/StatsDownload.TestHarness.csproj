@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="CastleWindsor\DependencyInstaller.cs" />
     <Compile Include="CastleWindsor\DependencyRegistration.cs" />
+    <Compile Include="ITestHarnessSettingsService.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

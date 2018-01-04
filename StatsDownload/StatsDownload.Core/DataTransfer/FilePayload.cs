@@ -18,7 +18,7 @@
 
         public Uri DownloadUri { get; set; }
 
-        public TimeSpan MinimumWaitTime { get; set; }
+        public TimeSpan MinimumWaitTimeSpan { get; set; }
 
         public int TimeoutSeconds { get; set; }
 

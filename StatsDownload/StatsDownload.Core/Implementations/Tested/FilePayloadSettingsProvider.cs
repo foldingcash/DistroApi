@@ -79,6 +79,11 @@
             return downloadSettingsService.GetDownloadUri();
         }
 
+        private string GetMinimumWaitTimeInHours()
+        {
+            return downloadSettingsService.GetMinimumWaitTimeInHours();
+        }
+
         private bool IsNull(object value)
         {
             return value == null;
@@ -94,6 +99,7 @@
             string downloadTimeout = GetDownloadTimeout();
             string downloadUri = GetDownloadUri();
             string unsafeAcceptAnySslCert = GetAcceptAnySslCert();
+            string unsafeMinimumWaitTimeInHours = GetMinimumWaitTimeInHours();
 
             int timeoutInSeconds;
             TryParseTimeout(downloadTimeout, out timeoutInSeconds);
@@ -101,9 +107,13 @@
             bool acceptAnySslCert;
             TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out acceptAnySslCert);
 
+            TimeSpan minimumWaitTimeSpan;
+            TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out minimumWaitTimeSpan);
+
             filePayload.DownloadUri = new Uri(downloadUri);
             filePayload.TimeoutSeconds = timeoutInSeconds;
             filePayload.AcceptAnySslCert = acceptAnySslCert;
+            filePayload.MinimumWaitTimeSpan = minimumWaitTimeSpan;
         }
 
         private void SetDownloadFileDetails(FilePayload filePayload, DateTime dateTime, string downloadDirectory)
@@ -136,6 +146,13 @@
             return downloadSettingsValidatorService.TryParseAcceptAnySslCert(
                 unsafeAcceptAnySslCert,
                 out acceptAnySslCert);
+        }
+
+        private void TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
+        {
+            downloadSettingsValidatorService.TryParseMinimumWaitTimeSpan(
+                unsafeMinimumWaitTimeInHours,
+                out minimumWaitTimeSpan);
         }
 
         private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)

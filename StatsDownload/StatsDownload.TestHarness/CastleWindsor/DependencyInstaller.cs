@@ -14,8 +14,8 @@
         {
             container.Register(
                 Component.For<ILoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
-                Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService>()
-                    .ImplementedBy<TestHarnessSettingsProvider>(),
+                Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService>
+                    ().ImplementedBy<TestHarnessSettingsProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>().ImplementedBy<TestHarnessMinimumWaitTimeProvider>());
 
             container.Register(

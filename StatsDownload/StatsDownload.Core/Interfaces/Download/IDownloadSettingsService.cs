@@ -9,5 +9,7 @@
         string GetDownloadTimeout();
 
         string GetDownloadUri();
+
+        string GetMinimumWaitTimeInHours();
     }
 }
