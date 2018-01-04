@@ -4,11 +4,15 @@
 
     public class FileDownloadProvider : IFileDownloadService
     {
+        private readonly IDateTimeService dateTimeService;
+
         private readonly IDownloadService downloadService;
 
         private readonly IFileCompressionService fileCompressionService;
 
         private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
+
+        private readonly IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService;
 
         private readonly IFilePayloadSettingsService filePayloadSettingsService;
 
@@ -25,7 +29,9 @@
             IFilePayloadSettingsService filePayloadSettingsService,
             IFileCompressionService fileCompressionService,
             IFileReaderService fileReaderService,
-            IResourceCleanupService resourceCleanupService)
+            IResourceCleanupService resourceCleanupService,
+            IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
+            IDateTimeService dateTimeService)
         {
             if (IsNull(fileDownloadDataStoreService))
             {
@@ -62,6 +68,16 @@
                 throw NewArgumentNullException(nameof(resourceCleanupService));
             }
 
+            if (IsNull(fileDownloadMinimumWaitTimeService))
+            {
+                throw NewArgumentNullException(nameof(fileDownloadMinimumWaitTimeService));
+            }
+
+            if (IsNull(dateTimeService))
+            {
+                throw NewArgumentNullException(nameof(dateTimeService));
+            }
+
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
             this.loggingService = loggingService;
             this.downloadService = downloadService;
@@ -69,6 +85,8 @@
             this.fileCompressionService = fileCompressionService;
             this.fileReaderService = fileReaderService;
             this.resourceCleanupService = resourceCleanupService;
+            this.fileDownloadMinimumWaitTimeService = fileDownloadMinimumWaitTimeService;
+            this.dateTimeService = dateTimeService;
         }
 
         public FileDownloadResult DownloadStatsFile()
@@ -89,11 +107,20 @@
                 }
 
                 UpdateToLatest();
-                LogVerbose($"Stats file download started: {DateTime.Now}");
+                LogVerbose($"Stats file download started: {DateTimeNow()}");
                 NewFileDownloadStarted(filePayload);
+
+                FailedReason failedReason;
+                if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
+                {
+                    FileDownloadResult failedResult = NewFailedFileDownloadResult(failedReason, filePayload);
+                    LogResult(failedResult);
+                    return failedResult;
+                }
+
                 SetDownloadFileDetails(filePayload);
                 DownloadFile(filePayload);
-                LogVerbose($"Stats file download completed: {DateTime.Now}");
+                LogVerbose($"Stats file download completed: {DateTimeNow()}");
                 UploadFile(filePayload);
                 Cleanup(filePayload);
                 FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
@@ -120,9 +147,36 @@
             return !fileDownloadDataStoreService.IsAvailable();
         }
 
+        private DateTime DateTimeNow()
+        {
+            return dateTimeService.DateTimeNow();
+        }
+
         private void DownloadFile(FilePayload filePayload)
         {
             downloadService.DownloadFile(filePayload);
+        }
+
+        private bool IsFileDownloadNotReadyToRun(FilePayload filePayload, out FailedReason failedReason)
+        {
+            return !IsFileDownloadReadyToRun(filePayload, out failedReason);
+        }
+
+        private bool IsFileDownloadReadyToRun(FilePayload filePayload, out FailedReason failedReason)
+        {
+            if (IsMinimumWaitTimeNotMet(filePayload))
+            {
+                failedReason = FailedReason.MinimumWaitTimeNotMet;
+                return false;
+            }
+
+            failedReason = FailedReason.None;
+            return true;
+        }
+
+        private bool IsMinimumWaitTimeNotMet(FilePayload filePayload)
+        {
+            return !fileDownloadMinimumWaitTimeService.IsMinimumWaitTimeMet(filePayload);
         }
 
         private bool IsNull(object value)

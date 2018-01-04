@@ -6,6 +6,8 @@
 
         DataStoreUnavailable,
 
-        UnexpectedException
+        UnexpectedException,
+
+        MinimumWaitTimeNotMet
     }
 }

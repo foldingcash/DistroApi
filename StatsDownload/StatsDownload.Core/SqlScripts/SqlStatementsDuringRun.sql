@@ -18,6 +18,9 @@ EXEC [FoldingCoin].[FileDownloadFinished] @DownloadId
 	,'.ext'
 	,'data';
 
+-- Use this function to get the last file download date time
+--SELECT [FoldingCoin].[GetLastFileDownloadDateTime]();
+
 -- Use this view to get the download Ids of the downloads ready for stats upload
 --SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload];
 

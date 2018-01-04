@@ -38,6 +38,13 @@
             sqlConnection = null;
         }
 
+        public object ExecuteScalar(string commandText)
+        {
+            DbCommand command = sqlConnection.CreateCommand();
+            command.CommandText = commandText;
+            return command.ExecuteScalar();
+        }
+
         public int ExecuteStoredProcedure(string storedProcedure, List<DbParameter> parameters)
         {
             DbCommand command = sqlConnection.CreateCommand();
