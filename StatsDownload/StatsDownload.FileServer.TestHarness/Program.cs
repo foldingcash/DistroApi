@@ -1,8 +1,6 @@
 ﻿namespace StatsDownload.FileServer.TestHarness
 {
     using System;
-    using System.ServiceModel;
-    using System.ServiceModel.Description;
 
     public class Program
     {
@@ -10,17 +8,9 @@
         {
             try
             {
-                var baseAddress = "http://127.0.0.1";
-                var host = new ServiceHost(typeof(TestHarnessFileServer), new Uri(baseAddress));
-                host.AddServiceEndpoint(typeof(ITestHarnessFileServer), new WebHttpBinding(), "")
-                    .Behaviors.Add(new WebHttpBehavior());
-                var smb = new ServiceMetadataBehavior();
-                smb.HttpGetEnabled = true;
-                host.Description.Behaviors.Add(smb);
-                host.Open();
+                DependencyRegistration.Register();
                 Console.WriteLine("Press {enter} to close server.");
                 Console.ReadLine();
-                host.Close();
             }
             catch (Exception exception)
             {
