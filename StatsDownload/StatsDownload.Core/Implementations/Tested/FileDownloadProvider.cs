@@ -16,13 +16,16 @@
 
         private readonly ILoggingService loggingService;
 
+        private readonly IResourceCleanupService resourceCleanupService;
+
         public FileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
             ILoggingService loggingService,
             IDownloadService downloadService,
             IFilePayloadSettingsService filePayloadSettingsService,
             IFileCompressionService fileCompressionService,
-            IFileReaderService fileReaderService)
+            IFileReaderService fileReaderService,
+            IResourceCleanupService resourceCleanupService)
         {
             if (IsNull(fileDownloadDataStoreService))
             {
@@ -54,12 +57,18 @@
                 throw NewArgumentNullException(nameof(fileReaderService));
             }
 
+            if (IsNull(resourceCleanupService))
+            {
+                throw NewArgumentNullException(nameof(resourceCleanupService));
+            }
+
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
             this.loggingService = loggingService;
             this.downloadService = downloadService;
             this.filePayloadSettingsService = filePayloadSettingsService;
             this.fileCompressionService = fileCompressionService;
             this.fileReaderService = fileReaderService;
+            this.resourceCleanupService = resourceCleanupService;
         }
 
         public FileDownloadResult DownloadStatsFile()
@@ -86,6 +95,7 @@
                 DownloadFile(filePayload);
                 LogVerbose($"Stats file download completed: {DateTime.Now}");
                 UploadFile(filePayload);
+                Cleanup(filePayload);
                 FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
                 LogResult(successResult);
 
@@ -98,6 +108,11 @@
                 LogException(exception);
                 return result;
             }
+        }
+
+        private void Cleanup(FilePayload filePayload)
+        {
+            resourceCleanupService.Cleanup(filePayload);
         }
 
         private bool DataStoreUnavailable()

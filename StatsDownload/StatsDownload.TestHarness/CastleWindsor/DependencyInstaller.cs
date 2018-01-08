@@ -15,6 +15,8 @@
             container.Register(
                 Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
+                Component.For<IFileDeleteService>().ImplementedBy<FileDeleteProvider>(),
+                Component.For<IResourceCleanupService>().ImplementedBy<ResourceCleanupProvider>(),
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
