@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="CastleWindsor\DependencyInstaller.cs" />
     <Compile Include="CastleWindsor\DependencyRegistration.cs" />
+    <Compile Include="ITestHarnessSettingsService.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +75,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CastleWindsor\WindsorContainer.cs" />
+    <Compile Include="TestHarnessMinimumWaitTimeProvider.cs" />
     <Compile Include="TestHarnessSettingsProvider.cs" />
     <Compile Include="TestHarnessLoggingProvider.cs" />
     <EmbeddedResource Include="MainForm.resx">

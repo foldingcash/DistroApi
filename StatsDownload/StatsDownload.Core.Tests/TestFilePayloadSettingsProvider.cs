@@ -19,6 +19,8 @@
 
         private IFilePayloadSettingsService systemUnderTest;
 
+        private TimeSpan timeSpan;
+
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
@@ -41,6 +43,7 @@
             Assert.That(filePayload.DownloadUri.AbsoluteUri, Is.EqualTo("http://localhost/"));
             Assert.That(filePayload.TimeoutSeconds, Is.EqualTo(123));
             Assert.That(filePayload.AcceptAnySslCert, Is.EqualTo(true));
+            Assert.That(filePayload.MinimumWaitTimeSpan, Is.EqualTo(timeSpan));
         }
 
         [Test]
@@ -79,6 +82,7 @@
         public void SetUp()
         {
             dateTime = DateTime.Now;
+            timeSpan = TimeSpan.MaxValue;
 
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
             dateTimeServiceMock.DateTimeNow().Returns(dateTime);
@@ -88,6 +92,7 @@
             downloadSettingsServiceMock.GetDownloadTimeout().Returns("DownloadTimeoutSeconds");
             downloadSettingsServiceMock.GetDownloadDirectory().Returns("DownloadDirectory");
             downloadSettingsServiceMock.GetAcceptAnySslCert().Returns("AcceptAnySslCert");
+            downloadSettingsServiceMock.GetMinimumWaitTimeInHours().Returns("MinimumWaitTimeInHours");
 
             int timeout;
             downloadSettingsValidatorServiceMock = Substitute.For<IDownloadSettingsValidatorService>();
@@ -104,6 +109,15 @@
                     callInfo =>
                         {
                             callInfo[1] = true;
+                            return true;
+                        });
+            TimeSpan minimumWaitTimeSpan;
+            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan(
+                "MinimumWaitTimeInHours",
+                out minimumWaitTimeSpan).Returns(
+                    callInfo =>
+                        {
+                            callInfo[1] = timeSpan;
                             return true;
                         });
 

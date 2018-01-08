@@ -91,6 +91,42 @@
         }
 
         [Test]
+        public void GetLastFileDownloadDateTime_WhenInvoked_GetsLastfileDownloadDateTime()
+        {
+            InvokeGetLastFileFownloadDateTime();
+
+            Received.InOrder(
+                () =>
+                    {
+                        loggingServiceMock.LogVerbose("GetLastFileDownloadDateTime Invoked");
+                        databaseConnectionServiceMock.Open();
+                        databaseConnectionServiceMock.ExecuteScalar(
+                            "SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()");
+                        databaseConnectionServiceMock.Close();
+                    });
+        }
+
+        [Test]
+        public void GetLastFileDownloadDateTime_WhenInvoked_ReturnsDateTime()
+        {
+            DateTime dateTime = DateTime.Now;
+            databaseConnectionServiceMock.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()")
+                .Returns(dateTime);
+
+            DateTime actual = InvokeGetLastFileFownloadDateTime();
+
+            Assert.That(actual, Is.EqualTo(dateTime));
+        }
+
+        [Test]
+        public void GetLastFileDownloadDateTime_WhenNoRowsReturned_ReturnsDefaultDateTime()
+        {
+            DateTime actual = InvokeGetLastFileFownloadDateTime();
+
+            Assert.That(actual, Is.EqualTo(default(DateTime)));
+        }
+
+        [Test]
         public void IsAvailable_Invoked_ConnectionOpenedThenClosed()
         {
             InvokeIsAvailable();
@@ -263,6 +299,11 @@
         private void InvokeFileDownloadFinished()
         {
             systemUnderTest.FileDownloadFinished(filePayload);
+        }
+
+        private DateTime InvokeGetLastFileFownloadDateTime()
+        {
+            return systemUnderTest.GetLastFileDownloadDateTime();
         }
 
         private bool InvokeIsAvailable()

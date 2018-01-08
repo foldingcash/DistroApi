@@ -9,11 +9,17 @@
     [TestFixture]
     public class TestFileDownloadProvider
     {
+        private DateTime dateTime;
+
+        private IDateTimeService dateTimeServiceMock;
+
         private IDownloadService downloadServiceMock;
 
         private IFileCompressionService fileCompressionServiceMock;
 
         private IFileDownloadDataStoreService fileDownloadDataStoreServiceMock;
+
+        private IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeServiceMock;
 
         private IFilePayloadSettingsService filePayloadSettingsServiceMock;
 
@@ -37,7 +43,9 @@
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
                     fileReaderServiceMock,
-                    resourceCleanupServiceMock));
+                    resourceCleanupServiceMock,
+                    fileDownloadMinimumWaitTimeServiceMock,
+                    dateTimeServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -47,7 +55,9 @@
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
                     fileReaderServiceMock,
-                    resourceCleanupServiceMock));
+                    resourceCleanupServiceMock,
+                    fileDownloadMinimumWaitTimeServiceMock,
+                    dateTimeServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -57,7 +67,9 @@
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
                     fileReaderServiceMock,
-                    resourceCleanupServiceMock));
+                    resourceCleanupServiceMock,
+                    fileDownloadMinimumWaitTimeServiceMock,
+                    dateTimeServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -67,7 +79,9 @@
                     null,
                     fileCompressionServiceMock,
                     fileReaderServiceMock,
-                    resourceCleanupServiceMock));
+                    resourceCleanupServiceMock,
+                    fileDownloadMinimumWaitTimeServiceMock,
+                    dateTimeServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -77,7 +91,9 @@
                     filePayloadSettingsServiceMock,
                     null,
                     fileReaderServiceMock,
-                    resourceCleanupServiceMock));
+                    resourceCleanupServiceMock,
+                    fileDownloadMinimumWaitTimeServiceMock,
+                    dateTimeServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -87,7 +103,9 @@
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
                     null,
-                    resourceCleanupServiceMock));
+                    resourceCleanupServiceMock,
+                    fileDownloadMinimumWaitTimeServiceMock,
+                    dateTimeServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadProvider(
@@ -97,6 +115,32 @@
                     filePayloadSettingsServiceMock,
                     fileCompressionServiceMock,
                     fileReaderServiceMock,
+                    null,
+                    fileDownloadMinimumWaitTimeServiceMock,
+                    dateTimeServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewFileDownloadProvider(
+                    fileDownloadDataStoreServiceMock,
+                    loggingServiceMock,
+                    downloadServiceMock,
+                    filePayloadSettingsServiceMock,
+                    fileCompressionServiceMock,
+                    fileReaderServiceMock,
+                    resourceCleanupServiceMock,
+                    null,
+                    dateTimeServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewFileDownloadProvider(
+                    fileDownloadDataStoreServiceMock,
+                    loggingServiceMock,
+                    downloadServiceMock,
+                    filePayloadSettingsServiceMock,
+                    fileCompressionServiceMock,
+                    fileReaderServiceMock,
+                    resourceCleanupServiceMock,
+                    fileDownloadMinimumWaitTimeServiceMock,
                     null));
         }
 
@@ -162,13 +206,14 @@
                         loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
                         fileDownloadDataStoreServiceMock.IsAvailable();
                         fileDownloadDataStoreServiceMock.UpdateToLatest();
-                        loggingServiceMock.LogVerbose(
-                            Arg.Is<string>(value => value.StartsWith("Stats file download started")));
+                        dateTimeServiceMock.DateTimeNow();
+                        loggingServiceMock.LogVerbose($"Stats file download started: {dateTime}");
                         fileDownloadDataStoreServiceMock.NewFileDownloadStarted(Arg.Any<FilePayload>());
+                        fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>());
                         filePayloadSettingsServiceMock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>());
                         downloadServiceMock.DownloadFile(Arg.Any<FilePayload>());
-                        loggingServiceMock.LogVerbose(
-                            Arg.Is<string>(value => value.StartsWith("Stats file download completed")));
+                        dateTimeServiceMock.DateTimeNow();
+                        loggingServiceMock.LogVerbose($"Stats file download completed: {dateTime}");
                         fileCompressionServiceMock.DecompressFile(Arg.Any<FilePayload>());
                         fileReaderServiceMock.ReadFile(Arg.Any<FilePayload>());
                         fileDownloadDataStoreServiceMock.FileDownloadFinished(Arg.Any<FilePayload>());
@@ -177,9 +222,33 @@
                     }));
         }
 
+        [Test]
+        public void DownloadFile_WhenMinimumWaitTimeNotMet_LogsDownloadResult()
+        {
+            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>()).Returns(false);
+
+            InvokeDownloadFile();
+
+            loggingServiceMock.Received().LogResult(Arg.Any<FileDownloadResult>());
+        }
+
+        [Test]
+        public void DownloadFile_WhenMinimumWaitTimeNotMet_ReturnsFailedResultWithReason()
+        {
+            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>()).Returns(false);
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.MinimumWaitTimeNotMet));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
         [SetUp]
         public void SetUp()
         {
+            dateTime = DateTime.Today;
+
             fileDownloadDataStoreServiceMock = Substitute.For<IFileDownloadDataStoreService>();
             fileDownloadDataStoreServiceMock.IsAvailable().Returns(true);
 
@@ -195,6 +264,12 @@
 
             resourceCleanupServiceMock = Substitute.For<IResourceCleanupService>();
 
+            fileDownloadMinimumWaitTimeServiceMock = Substitute.For<IFileDownloadMinimumWaitTimeService>();
+            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>()).Returns(true);
+
+            dateTimeServiceMock = Substitute.For<IDateTimeService>();
+            dateTimeServiceMock.DateTimeNow().Returns(dateTime);
+
             systemUnderTest = NewFileDownloadProvider(
                 fileDownloadDataStoreServiceMock,
                 loggingServiceMock,
@@ -202,7 +277,9 @@
                 filePayloadSettingsServiceMock,
                 fileCompressionServiceMock,
                 fileReaderServiceMock,
-                resourceCleanupServiceMock);
+                resourceCleanupServiceMock,
+                fileDownloadMinimumWaitTimeServiceMock,
+                dateTimeServiceMock);
         }
 
         private FileDownloadResult InvokeDownloadFile()
@@ -217,7 +294,9 @@
             IFilePayloadSettingsService filePayloadSettingsService,
             IFileCompressionService fileCompressionService,
             IFileReaderService fileReaderService,
-            IResourceCleanupService resourceCleanupService)
+            IResourceCleanupService resourceCleanupService,
+            IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
+            IDateTimeService dateTimeService)
         {
             return new FileDownloadProvider(
                 fileDownloadDataStoreService,
@@ -226,7 +305,9 @@
                 filePayloadSettingsService,
                 fileCompressionService,
                 fileReaderService,
-                resourceCleanupService);
+                resourceCleanupService,
+                fileDownloadMinimumWaitTimeService,
+                dateTimeService);
         }
     }
 }

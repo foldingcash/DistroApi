@@ -52,6 +52,15 @@
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
         }
 
+        public DateTime GetLastFileDownloadDateTime()
+        {
+            LogMethodInvoked(nameof(GetLastFileDownloadDateTime));
+            DateTime lastFileDownloadDateTime = default(DateTime);
+            CreateDatabaseConnectionAndExecuteAction(
+                service => { lastFileDownloadDateTime = GetLastFileDownloadDateTime(service); });
+            return lastFileDownloadDateTime;
+        }
+
         public bool IsAvailable()
         {
             LogMethodInvoked(nameof(IsAvailable));
@@ -143,6 +152,12 @@
         private string GetConnectionString()
         {
             return databaseConnectionSettingsService.GetConnectionString();
+        }
+
+        private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService service)
+        {
+            return service.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()") as DateTime?
+                   ?? default(DateTime);
         }
 
         private bool IsNull(object value)

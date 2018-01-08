@@ -14,7 +14,7 @@
 
         private string GetFilePath()
         {
-            return ConfigurationManager.AppSettings["TestHarnessFileServer.FilePath"]
+            return ConfigurationManager.AppSettings["FilePath"]
                    ?? Path.Combine(
                        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                        "MockFile",

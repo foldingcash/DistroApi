@@ -6,7 +6,9 @@
 
     using StatsDownload.Core;
 
-    public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService
+    public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService,
+                                               IDownloadSettingsService,
+                                               ITestHarnessSettingsService
     {
         public string GetAcceptAnySslCert()
         {
@@ -32,6 +34,18 @@
         public string GetDownloadUri()
         {
             return ConfigurationManager.AppSettings["DownloadUri"];
+        }
+
+        public string GetMinimumWaitTimeInHours()
+        {
+            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
+        }
+
+        public bool IsMinimumWaitTimeMetDisabled()
+        {
+            bool disableMinimumWaitTime;
+            bool.TryParse(ConfigurationManager.AppSettings["DisableMinimumWaitTime"], out disableMinimumWaitTime);
+            return disableMinimumWaitTime;
         }
     }
 }

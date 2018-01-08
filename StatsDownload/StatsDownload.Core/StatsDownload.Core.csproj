@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataTransfer\FilePayload.cs" />
+    <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="Implementations\Tested\ResourceCleanupProvider.cs" />
     <Compile Include="Implementations\Tested\SecureDownloadProvider.cs" />
     <Compile Include="Implementations\Tested\SecureHttpFilePayloadProvider.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Implementations\Untested\FileReaderProvider.cs" />
     <Compile Include="Interfaces\File\IFileCompressionService.cs" />
     <Compile Include="Interfaces\File\IFileDeleteService.cs" />
+    <Compile Include="Interfaces\File\IFileDownloadMinimumWaitTimeService.cs" />
     <Compile Include="Interfaces\IDateTimeService.cs" />
     <Compile Include="Implementations\Untested\GuidProvider.cs" />
     <Compile Include="Interfaces\File\IFileReaderService.cs" />

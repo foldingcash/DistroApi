@@ -234,6 +234,29 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('FoldingCoin.GetLastFileDownloadDateTime') IS NOT NULL
+BEGIN
+	DROP FUNCTION [FoldingCoin].[GetLastFileDownloadDateTime];
+END
+GO
+
+CREATE FUNCTION [FoldingCoin].[GetLastFileDownloadDateTime] ()
+RETURNS DATETIME
+AS
+BEGIN
+	DECLARE @DownloadDateTime DATETIME;
+
+	SET @DownloadDateTime = (
+			SELECT TOP (1) DownloadDateTime
+			FROM [FoldingCoin].[Downloads]
+			WHERE StatusId = FoldingCoin.GetFileDownloadFinishedStatusId()
+			ORDER BY DownloadDateTime DESC
+			);
+
+	RETURN @DownloadDateTime;
+END
+GO
+
 IF OBJECT_ID('FoldingCoin.GetFAHDataId') IS NOT NULL
 BEGIN
 	DROP PROCEDURE [FoldingCoin].[GetFAHDataId];
@@ -296,7 +319,7 @@ BEGIN
 	DECLARE @FileDownloadStartedStatusId INT;
 
 	SET @FileDownloadStartedStatusId = (
-			SELECT FoldingCoin.GetFileDownloadStartedStatusId()
+			SELECT [FoldingCoin].[GetFileDownloadStartedStatusId]()
 			);
 
 	INSERT INTO [FoldingCoin].[Files] (
@@ -729,5 +752,3 @@ BEGIN
 	RETURN 0;
 END
 GO
-
-
