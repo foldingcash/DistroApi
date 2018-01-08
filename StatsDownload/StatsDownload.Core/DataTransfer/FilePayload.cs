@@ -1,7 +1,11 @@
 ﻿namespace StatsDownload.Core
 {
+    using System;
+
     public class FilePayload
     {
+        public bool AcceptAnySslCert { get; set; }
+
         public string DownloadDirectory { get; set; }
 
         public string DownloadFileExtension { get; set; }
@@ -12,7 +16,7 @@
 
         public int DownloadId { get; set; }
 
-        public string DownloadUrl { get; set; }
+        public Uri DownloadUri { get; set; }
 
         public int TimeoutSeconds { get; set; }
 

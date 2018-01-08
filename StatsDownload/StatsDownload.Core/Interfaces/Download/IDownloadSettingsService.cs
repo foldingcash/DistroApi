@@ -1,11 +1,13 @@
 ﻿namespace StatsDownload.Core
 {
-    public interface IFileDownloadSettingsService
+    public interface IDownloadSettingsService
     {
+        string GetAcceptAnySslCert();
+
         string GetDownloadDirectory();
 
         string GetDownloadTimeout();
 
-        string GetDownloadUrl();
+        string GetDownloadUri();
     }
 }

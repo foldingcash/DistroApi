@@ -15,7 +15,7 @@
 
         private readonly IDatabaseConnectionSettingsService databaseConnectionSettingsService;
 
-        private readonly IFileDownloadLoggingService fileDownloadLoggingService;
+        private readonly ILoggingService loggingService;
 
         private readonly string NewFileDownloadStartedProcedureName = "[FoldingCoin].[NewFileDownloadStarted]";
 
@@ -24,7 +24,7 @@
         public FileDownloadDataStoreProvider(
             IDatabaseConnectionSettingsService databaseConnectionSettingsService,
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
-            IFileDownloadLoggingService fileDownloadLoggingService)
+            ILoggingService loggingService)
         {
             if (IsNull(databaseConnectionSettingsService))
             {
@@ -36,14 +36,14 @@
                 throw NewArgumentNullException(nameof(databaseConnectionServiceFactory));
             }
 
-            if (IsNull(fileDownloadLoggingService))
+            if (IsNull(loggingService))
             {
-                throw NewArgumentNullException(nameof(fileDownloadLoggingService));
+                throw NewArgumentNullException(nameof(loggingService));
             }
 
             this.databaseConnectionSettingsService = databaseConnectionSettingsService;
             this.databaseConnectionServiceFactory = databaseConnectionServiceFactory;
-            this.fileDownloadLoggingService = fileDownloadLoggingService;
+            this.loggingService = loggingService;
         }
 
         public void FileDownloadFinished(FilePayload filePayload)
@@ -152,7 +152,7 @@
 
         private void LogException(Exception exception)
         {
-            fileDownloadLoggingService.LogException(exception);
+            loggingService.LogException(exception);
         }
 
         private void LogMethodInvoked(string method)
@@ -162,7 +162,7 @@
 
         private void LogVerbose(string message)
         {
-            fileDownloadLoggingService.LogVerbose(message);
+            loggingService.LogVerbose(message);
         }
 
         private Exception NewArgumentNullException(string parameterName)

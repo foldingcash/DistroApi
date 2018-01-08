@@ -1,10 +1,15 @@
 ﻿namespace StatsDownload.Core
 {
-    public class FileDownloadTimeoutValidatorProvider : IFileDownloadTimeoutValidatorService
+    public class DownloadSettingsValidatorProvider : IDownloadSettingsValidatorService
     {
         private const int MaximumTimeout = 3600;
 
         private const int MinimumTimeout = 100;
+
+        public bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
+        {
+            return bool.TryParse(unsafeAcceptAnySslCert, out acceptAnySslCert);
+        }
 
         public bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)
         {

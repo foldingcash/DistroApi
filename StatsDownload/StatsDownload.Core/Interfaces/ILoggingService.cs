@@ -2,7 +2,7 @@
 {
     using System;
 
-    public interface IFileDownloadLoggingService
+    public interface ILoggingService
     {
         void LogException(Exception exception);
 
