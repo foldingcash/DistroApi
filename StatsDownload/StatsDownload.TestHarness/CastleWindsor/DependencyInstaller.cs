@@ -12,12 +12,18 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
+                Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
+                Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
+                Component.For<IFileNameService>().ImplementedBy<FileNameProvider>(),
                 Component.For<IFileDownloadLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
                 Component.For<IDatabaseConnectionSettingsService, IFileDownloadSettingsService>()
                     .ImplementedBy<TestHarnessSettingsProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
                 Component.For<IFileDownloadDataStoreService>().ImplementedBy<FileDownloadDataStoreProvider>(),
+                Component.For<IFileDownloaderService>().ImplementedBy<FileDownloaderProvider>(),
+                Component.For<IFileDownloadTimeoutValidatorService>()
+                    .ImplementedBy<FileDownloadTimeoutValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>());
         }
     }

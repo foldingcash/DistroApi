@@ -39,9 +39,7 @@
         {
             if (LoggingTextBox.Text.Length != 0)
             {
-                Log(
-                    @"----------------------------------------------------------------------------"
-                    + Environment.NewLine);
+                Log(new string('-', 147) + Environment.NewLine);
             }
         }
 
@@ -51,7 +49,7 @@
                 () =>
                     {
                         var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
-                        fileDownloadService.DownloadFile();
+                        fileDownloadService.DownloadStatsFile();
                         CreateSeparationInLog();
                     });
         }

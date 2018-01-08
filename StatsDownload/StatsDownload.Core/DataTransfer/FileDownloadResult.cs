@@ -2,13 +2,17 @@
 {
     public class FileDownloadResult
     {
-        public FileDownloadResult(int downloadId, string downloadUrl, string downloadTimeout, string downloadDirectory)
+        public FileDownloadResult(
+            int downloadId,
+            string downloadUrl,
+            string downloadTimeoutSeconds,
+            string downloadFileName)
         {
             Success = true;
             DownloadId = downloadId;
             DownloadUrl = downloadUrl;
-            DownloadTimeout = downloadTimeout;
-            DownloadDirectory = downloadDirectory;
+            DownloadTimeoutSeconds = downloadTimeoutSeconds;
+            DownloadFileName = downloadFileName;
         }
 
         public FileDownloadResult(FailedReason failedReason)
@@ -17,11 +21,11 @@
             FailedReason = failedReason;
         }
 
-        public string DownloadDirectory { get; private set; }
+        public string DownloadFileName { get; private set; }
 
         public int DownloadId { get; private set; }
 
-        public string DownloadTimeout { get; private set; }
+        public string DownloadTimeoutSeconds { get; private set; }
 
         public string DownloadUrl { get; private set; }
 

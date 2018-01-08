@@ -2,6 +2,6 @@
 {
     public interface IFileDownloadService
     {
-        FileDownloadResult DownloadFile();
+        FileDownloadResult DownloadStatsFile();
     }
 }
