@@ -49,6 +49,8 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -105,7 +107,12 @@
       <Project>{E7A915E2-603D-419F-8987-170CE7814ED4}</Project>
       <Name>StatsDownload.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj">
+      <Project>{028E717E-7D47-41ED-AE08-23A40B68D68F}</Project>
+      <Name>StatsDownload.SharpZipLib</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -21,7 +21,7 @@
 
         public string GetDownloadTimeout()
         {
-            return ConfigurationManager.AppSettings["DownloadTimeoutSeconds"];
+            return ConfigurationManager.AppSettings["DownloadTimeoutSeconds"] ?? "100";
         }
 
         public string GetDownloadUrl()

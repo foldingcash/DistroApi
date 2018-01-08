@@ -2,6 +2,6 @@
 {
     public interface IFileNameService
     {
-        string GetRandomFileNamePath(string directory);
+        void SetDownloadFileDetails(string downloadDirectory, FilePayload filePayload);
     }
 }
