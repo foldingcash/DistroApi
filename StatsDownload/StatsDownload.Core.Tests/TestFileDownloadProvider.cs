@@ -187,6 +187,16 @@
         }
 
         [Test]
+        public void DownloadFile_WhenExceptionThrown_ResourceCleanupInvoked()
+        {
+            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw new Exception(); });
+
+            InvokeDownloadFile();
+
+            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FilePayload>());
+        }
+
+        [Test]
         public void DownloadFile_WhenInvoked_ResultIsSuccessAndContainsDownloadData()
         {
             FileDownloadResult actual = InvokeDownloadFile();

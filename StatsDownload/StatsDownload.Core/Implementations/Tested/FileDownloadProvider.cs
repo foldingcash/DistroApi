@@ -133,6 +133,7 @@
                 FileDownloadResult result = NewFailedFileDownloadResult(FailedReason.UnexpectedException, filePayload);
                 LogResult(result);
                 LogException(exception);
+                Cleanup(filePayload);
                 return result;
             }
         }
