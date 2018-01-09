@@ -157,7 +157,19 @@
         }
 
         [Test]
-        public void DownloadFile_WhenExceptionThrown_DependenciesCalledInOrder()
+        public void DownloadFile_WhenExceptionThrown_ExceptionHandled()
+        {
+            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw new Exception(); });
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
+        [Test]
+        public void DownloadFile_WhenExceptionThrown_LogsException()
         {
             var expected = new Exception();
             fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw expected; });
@@ -172,18 +184,6 @@
                         loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                         loggingServiceMock.LogException(expected);
                     }));
-        }
-
-        [Test]
-        public void DownloadFile_WhenExceptionThrown_ExceptionHandled()
-        {
-            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw new Exception(); });
-
-            FileDownloadResult actual = InvokeDownloadFile();
-
-            Assert.That(actual.Success, Is.False);
-            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
-            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
