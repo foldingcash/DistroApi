@@ -30,10 +30,18 @@
             string uncompressedDownloadFilePath = filePayload.UncompressedDownloadFilePath;
 
             loggingService.LogVerbose($"{nameof(Cleanup)} Invoked");
-            loggingService.LogVerbose($"Deleting: {uncompressedDownloadFilePath}");
-            fileDeleteService.Delete(uncompressedDownloadFilePath);
-            loggingService.LogVerbose($"Deleting: {downloadFilePath}");
-            fileDeleteService.Delete(downloadFilePath);
+
+            if (fileDeleteService.Exists(uncompressedDownloadFilePath))
+            {
+                loggingService.LogVerbose($"Deleting: {uncompressedDownloadFilePath}");
+                fileDeleteService.Delete(uncompressedDownloadFilePath);
+            }
+
+            if (fileDeleteService.Exists(downloadFilePath))
+            {
+                loggingService.LogVerbose($"Deleting: {downloadFilePath}");
+                fileDeleteService.Delete(downloadFilePath);
+            }
         }
 
         private bool IsNull(object value)
