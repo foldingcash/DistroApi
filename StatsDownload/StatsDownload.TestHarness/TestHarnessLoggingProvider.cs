@@ -37,7 +37,7 @@
                 + $"Uncompressed Download File Name: {result.FilePayload?.UncompressedDownloadFileName}{Environment.NewLine}{Environment.NewLine}"
                 + $"Uncompressed Download File Extension: {result.FilePayload?.UncompressedDownloadFileExtension}{Environment.NewLine}{Environment.NewLine}"
                 + $"Uncompressed Download File Path: {result.FilePayload?.UncompressedDownloadFilePath}{Environment.NewLine}{Environment.NewLine}"
-                + $"Download Data (First 100): {result.FilePayload?.UncompressedDownloadFileData?.Substring(0, 99)}{Environment.NewLine}{Environment.NewLine}");
+                + $"Download Data (First 100): {result.FilePayload?.UncompressedDownloadFileData?.Substring(0, 99)}");
         }
 
         public void LogVerbose(string message)

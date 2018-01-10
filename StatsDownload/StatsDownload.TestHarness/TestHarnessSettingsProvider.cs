@@ -47,5 +47,12 @@
             bool.TryParse(ConfigurationManager.AppSettings["DisableMinimumWaitTime"], out disableMinimumWaitTime);
             return disableMinimumWaitTime;
         }
+
+        public bool IsSecureFilePayloadDisabled()
+        {
+            bool disableSecureFilePayload;
+            bool.TryParse(ConfigurationManager.AppSettings["DisableSecureFilePayload"], out disableSecureFilePayload);
+            return disableSecureFilePayload;
+        }
     }
 }

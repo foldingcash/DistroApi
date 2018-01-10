@@ -7,7 +7,7 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class TestSecureHttpFilePayloadProvider
+    public class TestSecureFilePayloadProvider
     {
         private FilePayload filePayload;
 
@@ -67,6 +67,16 @@
             Assert.That(actual, Is.False);
         }
 
+        [Test]
+        public void IsSecureConnection_WhenNotHttpTypeConnection_ReturnsTrue()
+        {
+            filePayload.DownloadUri = new Uri(@"C:\test.txt");
+
+            bool actual = systemUnderTest.IsSecureConnection(filePayload);
+
+            Assert.That(actual, Is.True);
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -79,7 +89,7 @@
 
         private ISecureFilePayloadService NewSecureHttpFilePayloadProvider(ILoggingService loggingService)
         {
-            return new SecureHttpFilePayloadProvider(loggingService);
+            return new SecureFilePayloadProvider(loggingService);
         }
     }
 }

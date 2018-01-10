@@ -1,27 +1,29 @@
 ﻿namespace StatsDownload.Core
 {
-    using System;
     using System.IO;
 
     public class FileReaderProvider : IFileReaderService
     {
+        private readonly IDateTimeService dateTimeService;
+
         private readonly ILoggingService loggingService;
 
-        public FileReaderProvider(ILoggingService loggingService)
+        public FileReaderProvider(ILoggingService loggingService, IDateTimeService dateTimeService)
         {
             this.loggingService = loggingService;
+            this.dateTimeService = dateTimeService;
         }
 
         public void ReadFile(FilePayload filePayload)
         {
-            loggingService.LogVerbose($"Attempting to read file contents: {DateTime.Now}");
+            loggingService.LogVerbose($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
 
             using (var reader = new StreamReader(filePayload.UncompressedDownloadFilePath))
             {
                 filePayload.UncompressedDownloadFileData = reader.ReadToEnd();
             }
 
-            loggingService.LogVerbose($"Reading file complete: {DateTime.Now}");
+            loggingService.LogVerbose($"Reading file complete: {dateTimeService.DateTimeNow()}");
         }
     }
 }

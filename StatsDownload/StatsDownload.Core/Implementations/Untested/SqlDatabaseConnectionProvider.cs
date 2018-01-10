@@ -7,12 +7,12 @@
 
     public class SqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
+        private DbConnection sqlConnection;
+
         public SqlDatabaseConnectionProvider(string connectionString)
         {
             sqlConnection = new SqlConnection(connectionString);
         }
-
-        private DbConnection sqlConnection { get; set; }
 
         public void Close()
         {
@@ -33,7 +33,6 @@
 
         public void Dispose()
         {
-            sqlConnection.Close();
             sqlConnection.Dispose();
             sqlConnection = null;
         }

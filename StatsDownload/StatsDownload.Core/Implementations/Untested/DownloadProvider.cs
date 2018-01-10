@@ -5,23 +5,26 @@
 
     public class DownloadProvider : IDownloadService
     {
+        private readonly IDateTimeService dateTimeService;
+
         private readonly ILoggingService loggingService;
 
-        public DownloadProvider(ILoggingService loggingService)
+        public DownloadProvider(ILoggingService loggingService, IDateTimeService dateTimeService)
         {
             this.loggingService = loggingService;
+            this.dateTimeService = dateTimeService;
         }
 
         public void DownloadFile(FilePayload filePayload)
         {
-            loggingService.LogVerbose($"Attempting to download file: {DateTime.Now}");
+            loggingService.LogVerbose($"Attempting to download file: {dateTimeService.DateTimeNow()}");
 
             using (var client = new FilePayloadWebClient())
             {
                 client.DownloadFile(filePayload);
             }
 
-            loggingService.LogVerbose($"File download complete: {DateTime.Now}");
+            loggingService.LogVerbose($"File download complete: {dateTimeService.DateTimeNow()}");
         }
 
         private class FilePayloadWebClient : WebClient
