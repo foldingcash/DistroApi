@@ -69,7 +69,7 @@
     <Compile Include="TestFilePayloadSettingsProvider.cs" />
     <Compile Include="TestResourceCleanupProvider.cs" />
     <Compile Include="TestSecureDownloadProvider.cs" />
-    <Compile Include="TestSecureHttpFilePayloadProvider.cs" />
+    <Compile Include="TestSecureFilePayloadProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
