@@ -16,6 +16,10 @@
         Stream GetFile();
 
         [OperationContract]
+        [WebGet(UriTemplate = "/timeout.bz2")]
+        Stream GetTimeoutFile();
+
+        [OperationContract]
         [WebGet(UriTemplate = "/uncompressable.bz2")]
         Stream GetUncompressableFile();
     }

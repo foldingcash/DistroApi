@@ -49,7 +49,7 @@
                         }
                     });
 
-            systemUnderTest.DownloadFile(filePayload);
+            Assert.Throws(Is.EqualTo(webException), () => systemUnderTest.DownloadFile(filePayload));
 
             secureFilePayloadServiceMock.DidNotReceive().DisableSecureFilePayload(Arg.Any<FilePayload>());
             loggingServiceMock.Received().LogException(webException);
