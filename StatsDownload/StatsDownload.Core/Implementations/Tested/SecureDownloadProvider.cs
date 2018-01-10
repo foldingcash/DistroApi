@@ -54,6 +54,10 @@
                     secureFilePayloadService.DisableSecureFilePayload(filePayload);
                     downloadService.DownloadFile(filePayload);
                 }
+                else
+                {
+                    throw;
+                }
             }
         }
 
