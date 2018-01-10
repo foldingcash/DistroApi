@@ -33,6 +33,11 @@
 
         public bool IsSecureConnection(FilePayload filePayload)
         {
+            if (testHarnessSettingsService.IsSecureFilePayloadDisabled())
+            {
+                return true;
+            }
+
             return secureFilePayloadService.IsSecureConnection(filePayload);
         }
     }
