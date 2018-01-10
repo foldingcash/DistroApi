@@ -3,5 +3,7 @@
     public interface ITestHarnessSettingsService
     {
         bool IsMinimumWaitTimeMetDisabled();
+
+        bool IsSecureFilePayloadDisabled();
     }
 }
