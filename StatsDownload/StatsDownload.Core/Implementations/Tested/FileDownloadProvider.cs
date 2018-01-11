@@ -8,15 +8,13 @@
 
         private readonly IDownloadService downloadService;
 
-        private readonly IFileCompressionService fileCompressionService;
-
         private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
 
         private readonly IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService;
 
         private readonly IFilePayloadSettingsService filePayloadSettingsService;
 
-        private readonly IFileReaderService fileReaderService;
+        private readonly IFilePayloadUploadService filePayloadUploadService;
 
         private readonly ILoggingService loggingService;
 
@@ -27,11 +25,10 @@
             ILoggingService loggingService,
             IDownloadService downloadService,
             IFilePayloadSettingsService filePayloadSettingsService,
-            IFileCompressionService fileCompressionService,
-            IFileReaderService fileReaderService,
             IResourceCleanupService resourceCleanupService,
             IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
-            IDateTimeService dateTimeService)
+            IDateTimeService dateTimeService,
+            IFilePayloadUploadService filePayloadUploadService)
         {
             if (IsNull(fileDownloadDataStoreService))
             {
@@ -53,16 +50,6 @@
                 throw NewArgumentNullException(nameof(filePayloadSettingsService));
             }
 
-            if (IsNull(fileCompressionService))
-            {
-                throw NewArgumentNullException(nameof(fileCompressionService));
-            }
-
-            if (IsNull(fileReaderService))
-            {
-                throw NewArgumentNullException(nameof(fileReaderService));
-            }
-
             if (IsNull(resourceCleanupService))
             {
                 throw NewArgumentNullException(nameof(resourceCleanupService));
@@ -82,11 +69,10 @@
             this.loggingService = loggingService;
             this.downloadService = downloadService;
             this.filePayloadSettingsService = filePayloadSettingsService;
-            this.fileCompressionService = fileCompressionService;
-            this.fileReaderService = fileReaderService;
             this.resourceCleanupService = resourceCleanupService;
             this.fileDownloadMinimumWaitTimeService = fileDownloadMinimumWaitTimeService;
             this.dateTimeService = dateTimeService;
+            this.filePayloadUploadService = filePayloadUploadService;
         }
 
         public FileDownloadResult DownloadStatsFile()
@@ -242,9 +228,7 @@
 
         private void UploadFile(FilePayload filePayload)
         {
-            fileCompressionService.DecompressFile(filePayload);
-            fileReaderService.ReadFile(filePayload);
-            fileDownloadDataStoreService.FileDownloadFinished(filePayload);
+            filePayloadUploadService.UploadFile(filePayload);
         }
     }
 }
