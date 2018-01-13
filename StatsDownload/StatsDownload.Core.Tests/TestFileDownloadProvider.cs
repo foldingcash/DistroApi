@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
+    using System.Net;
 
     using NSubstitute;
 
@@ -145,7 +146,7 @@
         }
 
         [Test]
-        public void DownloadFile_WhenDataStoreIsNotAvailable_ReturnsFailedResultWithReason()
+        public void DownloadFile_WhenDataStoreIsNotAvailable_ReturnsFailedResultDataStoreUnavailable()
         {
             SetUpWhenDataStoreIsNotAvailable();
 
@@ -164,18 +165,6 @@
             FileDownloadResult actual = InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
-        }
-
-        [Test]
-        public void DownloadFile_WhenExceptionThrown_ExceptionHandled()
-        {
-            SetUpWhenExceptionThrown();
-
-            FileDownloadResult actual = InvokeDownloadFile();
-
-            Assert.That(actual.Success, Is.False);
-            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
-            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
@@ -206,9 +195,115 @@
         }
 
         [Test]
+        public void DownloadFile_WhenExceptionThrown_ReturnsFailedResultUnexpectedException()
+        {
+            SetUpWhenExceptionThrown();
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
+        [Test]
         public void DownloadFile_WhenExceptionThrown_SendsEmail()
         {
             SetUpWhenExceptionThrown();
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            fileDownloadEmailServiceMock.Received().SendEmail(actual);
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadFails_LogsException()
+        {
+            WebException exception = SetUpFileDownloadFails();
+
+            InvokeDownloadFile();
+
+            Received.InOrder(
+                (() =>
+                    {
+                        loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
+                        loggingServiceMock.LogException(exception);
+                    }));
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadFails_ResourceCleanupInvoked()
+        {
+            SetUpFileDownloadFails();
+
+            InvokeDownloadFile();
+
+            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FilePayload>());
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadFails_ReturnsFailedResultUnexpectedException()
+        {
+            SetUpFileDownloadFails();
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadFails_SendsEmail()
+        {
+            SetUpFileDownloadFails();
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            fileDownloadEmailServiceMock.Received().SendEmail(actual);
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadTimeout_LogsException()
+        {
+            WebException exception = SetUpFileDownloadTimeout();
+
+            InvokeDownloadFile();
+
+            Received.InOrder(
+                (() =>
+                    {
+                        loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
+                        loggingServiceMock.LogException(exception);
+                    }));
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadTimeout_ResourceCleanupInvoked()
+        {
+            SetUpFileDownloadTimeout();
+
+            InvokeDownloadFile();
+
+            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FilePayload>());
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadTimeout_ReturnsFailedResultFileDownloadTimeout()
+        {
+            SetUpFileDownloadTimeout();
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadTimeout));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadTimeout_SendsEmail()
+        {
+            SetUpFileDownloadTimeout();
 
             FileDownloadResult actual = InvokeDownloadFile();
 
@@ -260,7 +355,7 @@
         }
 
         [Test]
-        public void DownloadFile_WhenMinimumWaitTimeNotMet_ReturnsFailedResultWithReason()
+        public void DownloadFile_WhenMinimumWaitTimeNotMet_ReturnsFailedResultMinimumWaitTimeNotMet()
         {
             SetUpWhenMinimumWaitTimeNotMet();
 
@@ -345,6 +440,20 @@
                 dateTimeService,
                 filePayloadUploadService,
                 fileDownloadEmailService);
+        }
+
+        private WebException SetUpFileDownloadFails()
+        {
+            var exception = new WebException();
+            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
+            return exception;
+        }
+
+        private WebException SetUpFileDownloadTimeout()
+        {
+            var exception = new WebException("timeout", WebExceptionStatus.Timeout);
+            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
+            return exception;
         }
 
         private void SetUpWhenDataStoreIsNotAvailable()
