@@ -6,8 +6,6 @@
     {
         private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
 
-        private readonly TimeSpan MinimumWaitTimeSpan = new TimeSpan(1, 0, 0);
-
         public FileDownloadMinimumWaitTimeProvider(IFileDownloadDataStoreService fileDownloadDataStoreService)
         {
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
@@ -19,7 +17,7 @@
             DateTime lastSuccessfulRun = fileDownloadDataStoreService.GetLastFileDownloadDateTime();
             DateTime dateTimeNow = DateTime.Now;
 
-            if (dateTimeNow - lastSuccessfulRun < MinimumWaitTimeSpan)
+            if (dateTimeNow - lastSuccessfulRun < MinimumWait.TimeSpan)
             {
                 return false;
             }
