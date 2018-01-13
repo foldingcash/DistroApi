@@ -100,7 +100,7 @@
             using (
                 var smtpClient = new SmtpClient
                                      {
-                                         Host = settingsService.GetHostName(), Port = port, EnableSsl = true,
+                                         Host = settingsService.GetSmtpHost(), Port = port, EnableSsl = true,
                                          DeliveryMethod = SmtpDeliveryMethod.Network, UseDefaultCredentials = false,
                                          Credentials =
                                              NewNetworkCredential(fromAddress.Address, settingsService.GetPassword())

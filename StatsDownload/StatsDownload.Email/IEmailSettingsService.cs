@@ -6,12 +6,12 @@
 
         string GetFromDisplayName();
 
-        string GetHostName();
-
         string GetPassword();
 
         string GetPort();
 
         string GetReceivers();
+
+        string GetSmtpHost();
     }
 }
