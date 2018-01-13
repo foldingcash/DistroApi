@@ -8,6 +8,8 @@
 
         UnexpectedException,
 
-        MinimumWaitTimeNotMet
+        MinimumWaitTimeNotMet,
+
+        FileDownloadTimeout
     }
 }
