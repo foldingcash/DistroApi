@@ -55,6 +55,11 @@
 
                 using (SmtpClient smtpClient = NewSmtpClient(sb, fromAddress))
                 {
+                    sb.AppendLine("Sending email:");
+                    sb.AppendLine($"Subject: {subject}");
+                    sb.AppendLine($"Body: {body}");
+                    sb.AppendLine();
+
                     foreach (string address in receivers)
                     {
                         MailAddress toAddress = NewMailAddress(address);
