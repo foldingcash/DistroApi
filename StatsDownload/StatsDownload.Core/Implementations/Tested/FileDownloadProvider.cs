@@ -8,30 +8,30 @@
 
         private readonly IDownloadService downloadService;
 
-        private readonly IFileCompressionService fileCompressionService;
-
         private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
+
+        private readonly IFileDownloadEmailService fileDownloadEmailService;
 
         private readonly IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService;
 
         private readonly IFilePayloadSettingsService filePayloadSettingsService;
 
-        private readonly IFileReaderService fileReaderService;
+        private readonly IFilePayloadUploadService filePayloadUploadService;
 
-        private readonly ILoggingService loggingService;
+        private readonly IFileDownloadLoggingService loggingService;
 
         private readonly IResourceCleanupService resourceCleanupService;
 
         public FileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
-            ILoggingService loggingService,
+            IFileDownloadLoggingService loggingService,
             IDownloadService downloadService,
             IFilePayloadSettingsService filePayloadSettingsService,
-            IFileCompressionService fileCompressionService,
-            IFileReaderService fileReaderService,
             IResourceCleanupService resourceCleanupService,
             IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
-            IDateTimeService dateTimeService)
+            IDateTimeService dateTimeService,
+            IFilePayloadUploadService filePayloadUploadService,
+            IFileDownloadEmailService fileDownloadEmailService)
         {
             if (IsNull(fileDownloadDataStoreService))
             {
@@ -53,16 +53,6 @@
                 throw NewArgumentNullException(nameof(filePayloadSettingsService));
             }
 
-            if (IsNull(fileCompressionService))
-            {
-                throw NewArgumentNullException(nameof(fileCompressionService));
-            }
-
-            if (IsNull(fileReaderService))
-            {
-                throw NewArgumentNullException(nameof(fileReaderService));
-            }
-
             if (IsNull(resourceCleanupService))
             {
                 throw NewArgumentNullException(nameof(resourceCleanupService));
@@ -78,15 +68,25 @@
                 throw NewArgumentNullException(nameof(dateTimeService));
             }
 
+            if (IsNull(filePayloadUploadService))
+            {
+                throw NewArgumentNullException(nameof(filePayloadUploadService));
+            }
+
+            if (IsNull(fileDownloadEmailService))
+            {
+                throw NewArgumentNullException(nameof(fileDownloadEmailService));
+            }
+
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
             this.loggingService = loggingService;
             this.downloadService = downloadService;
             this.filePayloadSettingsService = filePayloadSettingsService;
-            this.fileCompressionService = fileCompressionService;
-            this.fileReaderService = fileReaderService;
             this.resourceCleanupService = resourceCleanupService;
             this.fileDownloadMinimumWaitTimeService = fileDownloadMinimumWaitTimeService;
             this.dateTimeService = dateTimeService;
+            this.filePayloadUploadService = filePayloadUploadService;
+            this.fileDownloadEmailService = fileDownloadEmailService;
         }
 
         public FileDownloadResult DownloadStatsFile()
@@ -103,6 +103,7 @@
                         FailedReason.DataStoreUnavailable,
                         filePayload);
                     LogResult(failedResult);
+                    SendEmail(failedResult);
                     return failedResult;
                 }
 
@@ -115,6 +116,7 @@
                 {
                     FileDownloadResult failedResult = NewFailedFileDownloadResult(failedReason, filePayload);
                     LogResult(failedResult);
+                    SendEmail(failedResult);
                     return failedResult;
                 }
 
@@ -130,11 +132,14 @@
             }
             catch (Exception exception)
             {
-                FileDownloadResult result = NewFailedFileDownloadResult(FailedReason.UnexpectedException, filePayload);
-                LogResult(result);
+                FileDownloadResult exceptionResult = NewFailedFileDownloadResult(
+                    FailedReason.UnexpectedException,
+                    filePayload);
+                LogResult(exceptionResult);
                 LogException(exception);
                 Cleanup(filePayload);
-                return result;
+                SendEmail(exceptionResult);
+                return exceptionResult;
             }
         }
 
@@ -230,6 +235,11 @@
             return new FileDownloadResult(filePayload);
         }
 
+        private void SendEmail(FileDownloadResult fileDownloadResult)
+        {
+            fileDownloadEmailService.SendEmail(fileDownloadResult);
+        }
+
         private void SetDownloadFileDetails(FilePayload filePayload)
         {
             filePayloadSettingsService.SetFilePayloadDownloadDetails(filePayload);
@@ -242,9 +252,7 @@
 
         private void UploadFile(FilePayload filePayload)
         {
-            fileCompressionService.DecompressFile(filePayload);
-            fileReaderService.ReadFile(filePayload);
-            fileDownloadDataStoreService.FileDownloadFinished(filePayload);
+            filePayloadUploadService.UploadFile(filePayload);
         }
     }
 }

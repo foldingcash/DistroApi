@@ -110,6 +110,14 @@
       <Project>{E7A915E2-603D-419F-8987-170CE7814ED4}</Project>
       <Name>StatsDownload.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">
+      <Project>{3F8412A3-CC11-4D84-8BC3-FD81ACF81CDF}</Project>
+      <Name>StatsDownload.Email</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StatsDownload.Logging\StatsDownload.Logging.csproj">
+      <Project>{1CA1F9A2-EAD1-4190-9E7E-6691773CEBE4}</Project>
+      <Name>StatsDownload.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj">
       <Project>{028E717E-7D47-41ED-AE08-23A40B68D68F}</Project>
       <Name>StatsDownload.SharpZipLib</Name>
