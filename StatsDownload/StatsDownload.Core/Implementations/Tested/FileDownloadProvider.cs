@@ -18,13 +18,13 @@
 
         private readonly IFilePayloadUploadService filePayloadUploadService;
 
-        private readonly ILoggingService loggingService;
+        private readonly IFileDownloadLoggingService loggingService;
 
         private readonly IResourceCleanupService resourceCleanupService;
 
         public FileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
-            ILoggingService loggingService,
+            IFileDownloadLoggingService loggingService,
             IDownloadService downloadService,
             IFilePayloadSettingsService filePayloadSettingsService,
             IResourceCleanupService resourceCleanupService,

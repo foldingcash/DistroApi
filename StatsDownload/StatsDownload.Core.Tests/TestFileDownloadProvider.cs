@@ -25,7 +25,7 @@
 
         private IFilePayloadUploadService filePayloadUploadServiceMock;
 
-        private ILoggingService loggingServiceMock;
+        private IFileDownloadLoggingService loggingServiceMock;
 
         private IResourceCleanupService resourceCleanupServiceMock;
 
@@ -289,7 +289,7 @@
             fileDownloadDataStoreServiceMock = Substitute.For<IFileDownloadDataStoreService>();
             fileDownloadDataStoreServiceMock.IsAvailable().Returns(true);
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
+            loggingServiceMock = Substitute.For<IFileDownloadLoggingService>();
 
             downloadServiceMock = Substitute.For<IDownloadService>();
 
@@ -326,7 +326,7 @@
 
         private IFileDownloadService NewFileDownloadProvider(
             IFileDownloadDataStoreService fileDownloadDataStoreService,
-            ILoggingService loggingService,
+            IFileDownloadLoggingService loggingService,
             IDownloadService downloadService,
             IFilePayloadSettingsService filePayloadSettingsService,
             IResourceCleanupService resourceCleanupService,

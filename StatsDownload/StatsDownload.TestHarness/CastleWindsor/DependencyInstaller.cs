@@ -7,6 +7,7 @@
 
     using StatsDownload.Core;
     using StatsDownload.Email;
+    using StatsDownload.Logging;
     using StatsDownload.SharpZipLib;
 
     public class DependencyInstaller : IWindsorInstaller
@@ -14,7 +15,8 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
-                Component.For<ILoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
+                Component.For<ILoggingService, IFileDownloadLoggingService>()
+                    .ImplementedBy<TestHarnessLoggingProvider>(),
                 Component
                     .For
                     <IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService,

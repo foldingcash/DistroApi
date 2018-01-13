@@ -3,8 +3,9 @@
     using System;
 
     using StatsDownload.Core;
+    using StatsDownload.Logging;
 
-    public class TestHarnessLoggingProvider : ILoggingService
+    public class TestHarnessLoggingProvider : ILoggingService, IFileDownloadLoggingService
     {
         public TestHarnessLoggingProvider(MainForm mainForm)
         {

@@ -79,7 +79,7 @@
     <Compile Include="Implementations\Tested\FileDownloadDataStoreProvider.cs" />
     <Compile Include="Interfaces\File\IFileDownloadDataStoreService.cs" />
     <Compile Include="Interfaces\File\IFileDownloadService.cs" />
-    <Compile Include="Interfaces\ILoggingService.cs" />
+    <Compile Include="Interfaces\IFileDownloadLoggingService.cs" />
     <Compile Include="Interfaces\IResourceCleanupService.cs" />
     <Compile Include="Interfaces\ISecureFilePayloadService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -98,6 +98,10 @@
     <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">
       <Project>{3F8412A3-CC11-4D84-8BC3-FD81ACF81CDF}</Project>
       <Name>StatsDownload.Email</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StatsDownload.Logging\StatsDownload.Logging.csproj">
+      <Project>{1CA1F9A2-EAD1-4190-9E7E-6691773CEBE4}</Project>
+      <Name>StatsDownload.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

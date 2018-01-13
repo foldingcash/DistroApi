@@ -85,6 +85,10 @@
       <Project>{3F8412A3-CC11-4D84-8BC3-FD81ACF81CDF}</Project>
       <Name>StatsDownload.Email</Name>
     </ProjectReference>
+    <ProjectReference Include="..\StatsDownload.Logging\StatsDownload.Logging.csproj">
+      <Project>{1ca1f9a2-ead1-4190-9e7e-6691773cebe4}</Project>
+      <Name>StatsDownload.Logging</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

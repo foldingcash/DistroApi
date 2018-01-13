@@ -5,6 +5,8 @@
     using System.Data;
     using System.Data.Common;
 
+    using StatsDownload.Logging;
+
     public class FileDownloadDataStoreProvider : IFileDownloadDataStoreService
     {
         private const string DatabaseConnectionSuccessfulLogMessage = "Database connection was successful";

@@ -2,6 +2,8 @@
 {
     using System.IO;
 
+    using StatsDownload.Logging;
+
     public class FileReaderProvider : IFileReaderService
     {
         private readonly IDateTimeService dateTimeService;
