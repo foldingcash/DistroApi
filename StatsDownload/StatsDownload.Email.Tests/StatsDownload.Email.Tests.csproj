@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3F8412A3-CC11-4D84-8BC3-FD81ACF81CDF}</ProjectGuid>
+    <ProjectGuid>{F051A757-B4B7-408D-BD2D-51C7E30BA257}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StatsDownload.Email</RootNamespace>
-    <AssemblyName>StatsDownload.Email</AssemblyName>
+    <RootNamespace>StatsDownload.Email.Tests</RootNamespace>
+    <AssemblyName>StatsDownload.Email.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,13 +44,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EmailProvider.cs" />
-    <Compile Include="EmailResult.cs" />
-    <Compile Include="EmailSettingsValidatorProvider.cs" />
-    <Compile Include="IEmailSettingsService.cs" />
-    <Compile Include="IEmailService.cs" />
-    <Compile Include="IEmailSettingsValidatorService.cs" />
+    <Compile Include="TestEmailSettingsValidatorProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">
+      <Project>{3f8412a3-cc11-4d84-8bc3-fd81acf81cdf}</Project>
+      <Name>StatsDownload.Email</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

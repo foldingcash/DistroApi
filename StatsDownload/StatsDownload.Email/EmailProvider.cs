@@ -1,26 +1,49 @@
 ﻿namespace StatsDownload.Email
 {
     using System;
+    using System.Collections.Generic;
     using System.Net;
     using System.Net.Mail;
 
     public class EmailProvider : IEmailService
     {
-        private readonly IEmailCredentials credentials;
+        private readonly IEmailSettingsValidatorService emailSettingsValidatorService;
 
-        public EmailProvider(IEmailCredentials credentials)
+        private readonly IEmailSettingsService settingsService;
+
+        public EmailProvider(
+            IEmailSettingsService settingsService,
+            IEmailSettingsValidatorService emailSettingsValidatorService)
         {
-            this.credentials = credentials;
+            if (settingsService == null)
+            {
+                throw new ArgumentNullException(nameof(settingsService));
+            }
+
+            if (emailSettingsValidatorService == null)
+            {
+                throw new ArgumentNullException(nameof(emailSettingsValidatorService));
+            }
+
+            this.settingsService = settingsService;
+            this.emailSettingsValidatorService = emailSettingsValidatorService;
         }
 
-        public EmailResult SendEmail(string name, string email, string subject, string body)
+        public EmailResult SendEmail(string subject, string body)
         {
             try
             {
-                MailAddress fromAddress = NewMailAddress(credentials.Address, credentials.DisplayName);
-                MailAddress toAddress = NewMailAddress(email, name);
+                MailAddress fromAddress = NewMailAddress(
+                    settingsService.GetFromAddress(),
+                    settingsService.GetFromDisplayName());
 
-                SendMessage(fromAddress, toAddress, subject, body);
+                IEnumerable<string> receivers = ParseReceivers(settingsService.GetReceivers());
+
+                foreach (string address in receivers)
+                {
+                    MailAddress toAddress = NewMailAddress(address);
+                    SendMessage(fromAddress, toAddress, subject, body);
+                }
 
                 return NewEmailResult();
             }
@@ -45,6 +68,11 @@
             return new MailAddress(address, displayName);
         }
 
+        private MailAddress NewMailAddress(string address)
+        {
+            return new MailAddress(address);
+        }
+
         private MailMessage NewMailMessage(MailAddress fromAddress, MailAddress toAddress, string subject, string body)
         {
             return new MailMessage(fromAddress, toAddress) { Subject = subject, Body = body };
@@ -55,14 +83,27 @@
             return new NetworkCredential(userName, password);
         }
 
+        private int ParsePort(string unsafePort)
+        {
+            return emailSettingsValidatorService.ParsePort(unsafePort);
+        }
+
+        private IEnumerable<string> ParseReceivers(string unsafeReceivers)
+        {
+            return emailSettingsValidatorService.ParseReceivers(unsafeReceivers);
+        }
+
         private void SendMessage(MailAddress fromAddress, MailAddress toAddress, string subject, string body)
         {
+            int port = ParsePort(settingsService.GetPort());
+
             using (
                 var smtpClient = new SmtpClient
                                      {
-                                         Host = credentials.HostName, Port = credentials.Port, EnableSsl = true,
+                                         Host = settingsService.GetHostName(), Port = port, EnableSsl = true,
                                          DeliveryMethod = SmtpDeliveryMethod.Network, UseDefaultCredentials = false,
-                                         Credentials = NewNetworkCredential(fromAddress.Address, credentials.Password)
+                                         Credentials =
+                                             NewNetworkCredential(fromAddress.Address, settingsService.GetPassword())
                                      })
             {
                 using (MailMessage mailMessage = NewMailMessage(fromAddress, toAddress, subject, body))

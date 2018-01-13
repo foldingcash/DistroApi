@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestFileDownloadDataStoreProvider.cs" />
+    <Compile Include="TestFileDownloadEmailProvider.cs" />
     <Compile Include="TestFileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="TestFileDownloadProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,6 +80,10 @@
     <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj">
       <Project>{E7A915E2-603D-419F-8987-170CE7814ED4}</Project>
       <Name>StatsDownload.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">
+      <Project>{3F8412A3-CC11-4D84-8BC3-FD81ACF81CDF}</Project>
+      <Name>StatsDownload.Email</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataTransfer\FilePayload.cs" />
+    <Compile Include="Implementations\Tested\FileDownloadEmailProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="Implementations\Tested\FilePayloadUploadProvider.cs" />
     <Compile Include="Implementations\Tested\ResourceCleanupProvider.cs" />
@@ -93,7 +94,12 @@
     <Content Include="SqlScripts\FoldingCoinStoredProceduresV1.sql" />
     <Content Include="SqlScripts\SqlStatementsDuringRun.sql" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">
+      <Project>{3F8412A3-CC11-4D84-8BC3-FD81ACF81CDF}</Project>
+      <Name>StatsDownload.Email</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
