@@ -8,6 +8,9 @@
     {
         private const string FileDownloadFailBodyStart = "There was a problem downloading the file payload.";
 
+        private const string FileDownloadFailDecompressionBodyStart =
+            "There was a problem decompressing the file payload.";
+
         private const string FileDownloadFailSubject = "File Download Failed";
 
         private readonly IEmailService emailService;
@@ -41,13 +44,18 @@
                 SendEmail(
                     FileDownloadFailSubject,
                     FileDownloadFailBodyStart
-                    + " There was a timeout when downloading the file payload. If a timeout occurs again when trying to download the file payload, then you can try increasing the download timeout.");
+                    + " There was a timeout when downloading the file payload. If a timeout occurs again, then you can try increasing the configurable download timeout.");
             }
-            else if (fileDownloadResult.FailedReason == FailedReason.UnexpectedException)
+            else if (fileDownloadResult.FailedReason == FailedReason.FileDownloadFailedDecompression)
             {
                 SendEmail(
                     FileDownloadFailSubject,
-                    "There was a catastrophic problem downloading the file payload. Check the log for more information.");
+                    FileDownloadFailDecompressionBodyStart
+                    + " The file has been moved to a failed directory for review. If this problem occurs again, then you should contact your technical advisor to review the logs and failed files.");
+            }
+            else if (fileDownloadResult.FailedReason == FailedReason.UnexpectedException)
+            {
+                SendEmail(FileDownloadFailSubject, FileDownloadFailBodyStart + " Check the log for more information.");
             }
         }
 
