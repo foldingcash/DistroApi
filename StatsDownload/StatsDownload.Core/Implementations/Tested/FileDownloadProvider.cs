@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.Core
 {
     using System;
+    using System.Net;
 
     public class FileDownloadProvider : IFileDownloadService
     {
@@ -132,9 +133,7 @@
             }
             catch (Exception exception)
             {
-                FileDownloadResult exceptionResult = NewFailedFileDownloadResult(
-                    FailedReason.UnexpectedException,
-                    filePayload);
+                FileDownloadResult exceptionResult = NewFailedFileDownloadResult(exception, filePayload);
                 LogResult(exceptionResult);
                 LogException(exception);
                 Cleanup(filePayload);
@@ -213,6 +212,16 @@
         private Exception NewArgumentNullException(string parameterName)
         {
             return new ArgumentNullException(parameterName);
+        }
+
+        private FileDownloadResult NewFailedFileDownloadResult(Exception exception, FilePayload filePayload)
+        {
+            var webException = exception as WebException;
+            if (webException?.Status == WebExceptionStatus.Timeout)
+            {
+                return NewFailedFileDownloadResult(FailedReason.FileDownloadTimeout, filePayload);
+            }
+            return NewFailedFileDownloadResult(FailedReason.UnexpectedException, filePayload);
         }
 
         private FileDownloadResult NewFailedFileDownloadResult(FailedReason failedReason, FilePayload filePayload)
