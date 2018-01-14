@@ -29,7 +29,6 @@
                     FileDownloadFailBodyStart
                     + " The data store is unavailable, ensure the data store is available and configured correctly and try again.");
             }
-
             else if (fileDownloadResult.FailedReason == FailedReason.MinimumWaitTimeNotMet)
             {
                 TimeSpan minimumWaitTimeSpan = MinimumWait.TimeSpan;
