@@ -29,14 +29,14 @@
         public void Cleanup(FilePayload filePayload)
         {
             string downloadFilePath = filePayload.DownloadFilePath;
-            string uncompressedDownloadFilePath = filePayload.UncompressedDownloadFilePath;
+            string decompressedDownloadFilePath = filePayload.DecompressedDownloadFilePath;
 
             loggingService.LogVerbose($"{nameof(Cleanup)} Invoked");
 
-            if (fileDeleteService.Exists(uncompressedDownloadFilePath))
+            if (fileDeleteService.Exists(decompressedDownloadFilePath))
             {
-                loggingService.LogVerbose($"Deleting: {uncompressedDownloadFilePath}");
-                fileDeleteService.Delete(uncompressedDownloadFilePath);
+                loggingService.LogVerbose($"Deleting: {decompressedDownloadFilePath}");
+                fileDeleteService.Delete(decompressedDownloadFilePath);
             }
 
             if (fileDeleteService.Exists(downloadFilePath))

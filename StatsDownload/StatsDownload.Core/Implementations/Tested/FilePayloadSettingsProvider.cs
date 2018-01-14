@@ -5,13 +5,13 @@
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
     {
+        private const string DecompressedFileExtension = ".txt";
+
+        private const string DecompressedFileName = "daily_user_summary";
+
         private const string FileExtension = ".bz2";
 
         private const string FileName = "daily_user_summary.txt";
-
-        private const string UncompressedFileExtension = ".txt";
-
-        private const string UncompressedFileName = "daily_user_summary";
 
         private readonly IDateTimeService dateTimeService;
 
@@ -51,7 +51,7 @@
 
             SetDownloadDetails(filePayload);
             SetDownloadFileDetails(filePayload, now, downloadDirectory);
-            SetUncompressedDownloadFileDetails(filePayload, now, downloadDirectory);
+            SetDecompressedDownloadFileDetails(filePayload, now, downloadDirectory);
         }
 
         private DateTime DateTimeNow()
@@ -94,6 +94,21 @@
             return new ArgumentNullException(parameterName);
         }
 
+        private void SetDecompressedDownloadFileDetails(
+            FilePayload filePayload,
+            DateTime dateTime,
+            string downloadDirectory)
+        {
+            string decompressedFileName = $"{dateTime.ToFileTime()}.{DecompressedFileName}";
+
+            filePayload.DecompressedDownloadDirectory = downloadDirectory;
+            filePayload.DecompressedDownloadFileName = decompressedFileName;
+            filePayload.DecompressedDownloadFileExtension = DecompressedFileExtension;
+            filePayload.DecompressedDownloadFilePath = Path.Combine(
+                downloadDirectory,
+                $"{decompressedFileName}{DecompressedFileExtension}");
+        }
+
         private void SetDownloadDetails(FilePayload filePayload)
         {
             string downloadTimeout = GetDownloadTimeout();
@@ -124,21 +139,6 @@
             filePayload.DownloadFileName = fileName;
             filePayload.DownloadFileExtension = FileExtension;
             filePayload.DownloadFilePath = Path.Combine(downloadDirectory, $"{fileName}{FileExtension}");
-        }
-
-        private void SetUncompressedDownloadFileDetails(
-            FilePayload filePayload,
-            DateTime dateTime,
-            string downloadDirectory)
-        {
-            string uncompressedFileName = $"{dateTime.ToFileTime()}.{UncompressedFileName}";
-
-            filePayload.UncompressedDownloadDirectory = downloadDirectory;
-            filePayload.UncompressedDownloadFileName = uncompressedFileName;
-            filePayload.UncompressedDownloadFileExtension = UncompressedFileExtension;
-            filePayload.UncompressedDownloadFilePath = Path.Combine(
-                downloadDirectory,
-                $"{uncompressedFileName}{UncompressedFileExtension}");
         }
 
         private bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)

@@ -12,7 +12,7 @@
         {
             using (var sourceFile = new FileStream(filePayload.DownloadFilePath, FileMode.Open))
             {
-                using (FileStream targetFile = File.Create(filePayload.UncompressedDownloadFilePath))
+                using (FileStream targetFile = File.Create(filePayload.DecompressedDownloadFilePath))
                 {
                     BZip2.Decompress(sourceFile, targetFile, true);
                 }

@@ -9,6 +9,17 @@
 
     public class TestHarnessFileServer : ITestHarnessFileServer
     {
+        public Stream GetDecompressableFile()
+        {
+            var memoryStream = new MemoryStream();
+            const string Decompressable = "decompressable";
+            byte[] decompressableBytes = Encoding.ASCII.GetBytes(Decompressable);
+            memoryStream.Write(decompressableBytes, 0, decompressableBytes.Length);
+            memoryStream.Flush();
+            memoryStream.Position = 0;
+            return memoryStream;
+        }
+
         public Stream GetFailDownloadFile()
         {
             throw new NotImplementedException();
@@ -25,17 +36,6 @@
             int sleepInSeconds = GetSleepInSeconds();
             Thread.Sleep(sleepInSeconds * 1000);
             return GetFile();
-        }
-
-        public Stream GetUncompressableFile()
-        {
-            var memoryStream = new MemoryStream();
-            const string Uncompressable = "uncompressable";
-            byte[] uncompressableBytes = Encoding.ASCII.GetBytes(Uncompressable);
-            memoryStream.Write(uncompressableBytes, 0, uncompressableBytes.Length);
-            memoryStream.Flush();
-            memoryStream.Position = 0;
-            return memoryStream;
         }
 
         private string GetFilePath()

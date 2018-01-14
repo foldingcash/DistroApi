@@ -20,6 +20,17 @@
         private IResourceCleanupService systemUnderTest;
 
         [Test]
+        public void Cleanup_WhenDecompressedFileDoesNotExist_DoesNotTryDelete()
+        {
+            fileDeleteServiceMock.Exists("DencompressedDownloadFilePath").Returns(false);
+
+            systemUnderTest.Cleanup(filePayload);
+
+            loggingServiceMock.DidNotReceive().LogVerbose("Deleting: DencompressedDownloadFilePath");
+            fileDeleteServiceMock.DidNotReceive().Delete("DencompressedDownloadFilePath");
+        }
+
+        [Test]
         public void Cleanup_WhenFileDoesNotExist_DoesNotTryDelete()
         {
             fileDeleteServiceMock.Exists("DownloadFilePath").Returns(false);
@@ -39,24 +50,13 @@
                 () =>
                     {
                         loggingServiceMock.LogVerbose("Cleanup Invoked");
-                        fileDeleteServiceMock.Exists("UncompressedDownloadFilePath");
-                        loggingServiceMock.LogVerbose("Deleting: UncompressedDownloadFilePath");
-                        fileDeleteServiceMock.Delete("UncompressedDownloadFilePath");
+                        fileDeleteServiceMock.Exists("DencompressedDownloadFilePath");
+                        loggingServiceMock.LogVerbose("Deleting: DencompressedDownloadFilePath");
+                        fileDeleteServiceMock.Delete("DencompressedDownloadFilePath");
                         fileDeleteServiceMock.Exists("DownloadFilePath");
                         loggingServiceMock.LogVerbose("Deleting: DownloadFilePath");
                         fileDeleteServiceMock.Delete("DownloadFilePath");
                     });
-        }
-
-        [Test]
-        public void Cleanup_WhenUncompressedFileDoesNotExist_DoesNotTryDelete()
-        {
-            fileDeleteServiceMock.Exists("UncompressedDownloadFilePath").Returns(false);
-
-            systemUnderTest.Cleanup(filePayload);
-
-            loggingServiceMock.DidNotReceive().LogVerbose("Deleting: UncompressedDownloadFilePath");
-            fileDeleteServiceMock.DidNotReceive().Delete("UncompressedDownloadFilePath");
         }
 
         [Test]
@@ -71,10 +71,10 @@
         {
             filePayload = new FilePayload();
             filePayload.DownloadFilePath = "DownloadFilePath";
-            filePayload.UncompressedDownloadFilePath = "UncompressedDownloadFilePath";
+            filePayload.DecompressedDownloadFilePath = "DencompressedDownloadFilePath";
 
             fileDeleteServiceMock = Substitute.For<IFileDeleteService>();
-            fileDeleteServiceMock.Exists("UncompressedDownloadFilePath").Returns(true);
+            fileDeleteServiceMock.Exists("DencompressedDownloadFilePath").Returns(true);
             fileDeleteServiceMock.Exists("DownloadFilePath").Returns(true);
 
             loggingServiceMock = Substitute.For<ILoggingService>();

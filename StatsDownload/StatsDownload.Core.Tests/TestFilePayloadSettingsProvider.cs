@@ -34,6 +34,23 @@
         }
 
         [Test]
+        public void SetFilePayloadDownloadDetails_WhenInvoked_DecompressedDownloadFileDetailsAreSet()
+        {
+            var filePayload = new FilePayload();
+
+            systemUnderTest.SetFilePayloadDownloadDetails(filePayload);
+
+            Assert.That(filePayload.DecompressedDownloadDirectory, Is.EqualTo("DownloadDirectory"));
+            Assert.That(
+                filePayload.DecompressedDownloadFileName,
+                Is.EqualTo($"{dateTime.ToFileTime()}.daily_user_summary"));
+            Assert.That(filePayload.DecompressedDownloadFileExtension, Is.EqualTo(".txt"));
+            Assert.That(
+                filePayload.DecompressedDownloadFilePath,
+                Is.EqualTo($"DownloadDirectory\\{dateTime.ToFileTime()}.daily_user_summary.txt"));
+        }
+
+        [Test]
         public void SetFilePayloadDownloadDetails_WhenInvoked_DownloadDetailsAreSet()
         {
             var filePayload = new FilePayload();
@@ -59,23 +76,6 @@
             Assert.That(
                 filePayload.DownloadFilePath,
                 Is.EqualTo($"DownloadDirectory\\{dateTime.ToFileTime()}.daily_user_summary.txt.bz2"));
-        }
-
-        [Test]
-        public void SetFilePayloadDownloadDetails_WhenInvoked_UncompressedDownloadFileDetailsAreSet()
-        {
-            var filePayload = new FilePayload();
-
-            systemUnderTest.SetFilePayloadDownloadDetails(filePayload);
-
-            Assert.That(filePayload.UncompressedDownloadDirectory, Is.EqualTo("DownloadDirectory"));
-            Assert.That(
-                filePayload.UncompressedDownloadFileName,
-                Is.EqualTo($"{dateTime.ToFileTime()}.daily_user_summary"));
-            Assert.That(filePayload.UncompressedDownloadFileExtension, Is.EqualTo(".txt"));
-            Assert.That(
-                filePayload.UncompressedDownloadFilePath,
-                Is.EqualTo($"DownloadDirectory\\{dateTime.ToFileTime()}.daily_user_summary.txt"));
         }
 
         [SetUp]

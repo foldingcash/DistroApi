@@ -20,9 +20,9 @@
         {
             loggingService.LogVerbose($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
 
-            using (var reader = new StreamReader(filePayload.UncompressedDownloadFilePath))
+            using (var reader = new StreamReader(filePayload.DecompressedDownloadFilePath))
             {
-                filePayload.UncompressedDownloadFileData = reader.ReadToEnd();
+                filePayload.DecompressedDownloadFileData = reader.ReadToEnd();
             }
 
             loggingService.LogVerbose($"Reading file complete: {dateTimeService.DateTimeNow()}");
