@@ -13,5 +13,10 @@
         {
             return File.Exists(path);
         }
+
+        public void Move(string sourcePath, string destinationPath)
+        {
+            File.Move(sourcePath, destinationPath);
+        }
     }
 }

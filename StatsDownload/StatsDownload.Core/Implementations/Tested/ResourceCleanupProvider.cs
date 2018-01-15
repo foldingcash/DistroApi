@@ -26,10 +26,13 @@
             this.loggingService = loggingService;
         }
 
-        public void Cleanup(FilePayload filePayload)
+        public void Cleanup(FileDownloadResult fileDownloadResult)
         {
+            FilePayload filePayload = fileDownloadResult.FilePayload;
+
             string downloadFilePath = filePayload.DownloadFilePath;
             string decompressedDownloadFilePath = filePayload.DecompressedDownloadFilePath;
+            string failedDownloadFilePath = filePayload.FailedDownloadFilePath;
 
             loggingService.LogVerbose($"{nameof(Cleanup)} Invoked");
 
@@ -41,8 +44,16 @@
 
             if (fileService.Exists(downloadFilePath))
             {
-                loggingService.LogVerbose($"Deleting: {downloadFilePath}");
-                fileService.Delete(downloadFilePath);
+                if (fileDownloadResult.FailedReason == FailedReason.FileDownloadFailedDecompression)
+                {
+                    loggingService.LogVerbose($"Moving: {downloadFilePath} to {failedDownloadFilePath}");
+                    fileService.Move(downloadFilePath, failedDownloadFilePath);
+                }
+                else
+                {
+                    loggingService.LogVerbose($"Deleting: {downloadFilePath}");
+                    fileService.Delete(downloadFilePath);
+                }
             }
         }
 

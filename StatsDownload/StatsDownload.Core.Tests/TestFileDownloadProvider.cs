@@ -191,7 +191,7 @@
 
             InvokeDownloadFile();
 
-            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FilePayload>());
+            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FileDownloadResult>());
         }
 
         [Test]
@@ -236,9 +236,9 @@
         {
             SetUpFileDownloadFails();
 
-            InvokeDownloadFile();
+            FileDownloadResult actual = InvokeDownloadFile();
 
-            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FilePayload>());
+            resourceCleanupServiceMock.Received().Cleanup(actual);
         }
 
         [Test]
@@ -285,7 +285,7 @@
 
             InvokeDownloadFile();
 
-            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FilePayload>());
+            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FileDownloadResult>());
         }
 
         [Test]
@@ -339,7 +339,7 @@
                         dateTimeServiceMock.DateTimeNow();
                         loggingServiceMock.LogVerbose($"Stats file download completed: {dateTime}");
                         filePayloadUploadServiceMock.UploadFile(Arg.Any<FilePayload>());
-                        resourceCleanupServiceMock.Cleanup(Arg.Any<FilePayload>());
+                        resourceCleanupServiceMock.Cleanup(Arg.Any<FileDownloadResult>());
                         loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }

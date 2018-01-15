@@ -2,6 +2,6 @@
 {
     public interface IResourceCleanupService
     {
-        void Cleanup(FilePayload filePayload);
+        void Cleanup(FileDownloadResult fileDownloadResult);
     }
 }

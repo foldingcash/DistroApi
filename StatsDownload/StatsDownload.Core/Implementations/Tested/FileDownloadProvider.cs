@@ -125,8 +125,8 @@
                 DownloadFile(filePayload);
                 LogVerbose($"Stats file download completed: {DateTimeNow()}");
                 UploadFile(filePayload);
-                Cleanup(filePayload);
                 FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
+                Cleanup(successResult);
                 LogResult(successResult);
 
                 return successResult;
@@ -136,15 +136,15 @@
                 FileDownloadResult exceptionResult = NewFailedFileDownloadResult(exception, filePayload);
                 LogResult(exceptionResult);
                 LogException(exception);
-                Cleanup(filePayload);
+                Cleanup(exceptionResult);
                 SendEmail(exceptionResult);
                 return exceptionResult;
             }
         }
 
-        private void Cleanup(FilePayload filePayload)
+        private void Cleanup(FileDownloadResult fileDownloadResult)
         {
-            resourceCleanupService.Cleanup(filePayload);
+            resourceCleanupService.Cleanup(fileDownloadResult);
         }
 
         private bool DataStoreUnavailable()
