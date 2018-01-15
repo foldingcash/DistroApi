@@ -1,6 +1,6 @@
 ﻿namespace StatsDownload.Core
 {
-    public interface IFileDeleteService
+    public interface IFileService
     {
         void Delete(string path);
 

@@ -2,7 +2,7 @@
 {
     using System.IO;
 
-    public class FileDeleteProvider : IFileDeleteService
+    public class FileProvider : IFileService
     {
         public void Delete(string path)
         {

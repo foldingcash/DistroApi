@@ -6,15 +6,15 @@
 
     public class ResourceCleanupProvider : IResourceCleanupService
     {
-        private readonly IFileDeleteService fileDeleteService;
+        private readonly IFileService fileService;
 
         private readonly ILoggingService loggingService;
 
-        public ResourceCleanupProvider(IFileDeleteService fileDeleteService, ILoggingService loggingService)
+        public ResourceCleanupProvider(IFileService fileService, ILoggingService loggingService)
         {
-            if (IsNull(fileDeleteService))
+            if (IsNull(fileService))
             {
-                throw NewArgumentNullException(nameof(fileDeleteService));
+                throw NewArgumentNullException(nameof(fileService));
             }
 
             if (IsNull(loggingService))
@@ -22,7 +22,7 @@
                 throw NewArgumentNullException(nameof(loggingService));
             }
 
-            this.fileDeleteService = fileDeleteService;
+            this.fileService = fileService;
             this.loggingService = loggingService;
         }
 
@@ -33,16 +33,16 @@
 
             loggingService.LogVerbose($"{nameof(Cleanup)} Invoked");
 
-            if (fileDeleteService.Exists(decompressedDownloadFilePath))
+            if (fileService.Exists(decompressedDownloadFilePath))
             {
                 loggingService.LogVerbose($"Deleting: {decompressedDownloadFilePath}");
-                fileDeleteService.Delete(decompressedDownloadFilePath);
+                fileService.Delete(decompressedDownloadFilePath);
             }
 
-            if (fileDeleteService.Exists(downloadFilePath))
+            if (fileService.Exists(downloadFilePath))
             {
                 loggingService.LogVerbose($"Deleting: {downloadFilePath}");
-                fileDeleteService.Delete(downloadFilePath);
+                fileService.Delete(downloadFilePath);
             }
         }
 
