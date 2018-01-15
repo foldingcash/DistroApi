@@ -78,6 +78,18 @@
                 Is.EqualTo($"DownloadDirectory\\{dateTime.ToFileTime()}.daily_user_summary.txt.bz2"));
         }
 
+        [Test]
+        public void SetFilePayloadDownloadDetails_WhenInvoked_FailedDownloadFileDetailsAreSet()
+        {
+            var filePayload = new FilePayload();
+
+            systemUnderTest.SetFilePayloadDownloadDetails(filePayload);
+
+            Assert.That(
+                filePayload.FailedDownloadFilePath,
+                Is.EqualTo($"DownloadDirectory\\FileDownloadFailed\\{dateTime.ToFileTime()}.daily_user_summary.txt.bz2"));
+        }
+
         [SetUp]
         public void SetUp()
         {

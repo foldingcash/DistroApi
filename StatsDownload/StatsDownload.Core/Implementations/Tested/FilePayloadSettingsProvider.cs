@@ -52,6 +52,7 @@
             SetDownloadDetails(filePayload);
             SetDownloadFileDetails(filePayload, now, downloadDirectory);
             SetDecompressedDownloadFileDetails(filePayload, now, downloadDirectory);
+            SetFailedDownloadFileDetails(filePayload, now, downloadDirectory);
         }
 
         private DateTime DateTimeNow()
@@ -67,6 +68,16 @@
         private string GetDownloadDirectory()
         {
             return downloadSettingsService.GetDownloadDirectory();
+        }
+
+        private string GetDownloadFileName(DateTime dateTime)
+        {
+            return $"{dateTime.ToFileTime()}.{FileName}";
+        }
+
+        private string GetDownloadFileNameWithExtension(DateTime dateTime)
+        {
+            return $"{dateTime.ToFileTime()}.{FileName}{FileExtension}";
         }
 
         private string GetDownloadTimeout()
@@ -133,12 +144,17 @@
 
         private void SetDownloadFileDetails(FilePayload filePayload, DateTime dateTime, string downloadDirectory)
         {
-            string fileName = $"{dateTime.ToFileTime()}.{FileName}";
-
             filePayload.DownloadDirectory = downloadDirectory;
-            filePayload.DownloadFileName = fileName;
+            filePayload.DownloadFileName = GetDownloadFileName(dateTime);
             filePayload.DownloadFileExtension = FileExtension;
-            filePayload.DownloadFilePath = Path.Combine(downloadDirectory, $"{fileName}{FileExtension}");
+            filePayload.DownloadFilePath = Path.Combine(downloadDirectory, GetDownloadFileNameWithExtension(dateTime));
+        }
+
+        private void SetFailedDownloadFileDetails(FilePayload filePayload, DateTime dateTime, string downloadDirectory)
+        {
+            string downloadFileName = GetDownloadFileNameWithExtension(dateTime);
+
+            filePayload.FailedDownloadFilePath = Path.Combine(downloadDirectory, "FileDownloadFailed", downloadFileName);
         }
 
         private bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
