@@ -16,6 +16,13 @@
 
         public void Move(string sourcePath, string destinationPath)
         {
+            string destinationDirectory = Path.GetDirectoryName(destinationPath);
+
+            if (!Directory.Exists(destinationDirectory))
+            {
+                Directory.CreateDirectory(destinationDirectory);
+            }
+
             File.Move(sourcePath, destinationPath);
         }
     }
