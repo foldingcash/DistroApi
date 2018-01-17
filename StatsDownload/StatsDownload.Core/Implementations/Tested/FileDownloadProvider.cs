@@ -221,6 +221,10 @@
             {
                 return NewFailedFileDownloadResult(FailedReason.FileDownloadTimeout, filePayload);
             }
+            if (exception is FileDownloadFailedDecompressionException)
+            {
+                return NewFailedFileDownloadResult(FailedReason.FileDownloadFailedDecompression, filePayload);
+            }
             return NewFailedFileDownloadResult(FailedReason.UnexpectedException, filePayload);
         }
 

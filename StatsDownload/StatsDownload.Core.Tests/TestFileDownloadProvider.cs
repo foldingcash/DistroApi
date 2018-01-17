@@ -217,6 +217,19 @@
         }
 
         [Test]
+        public void DownloadFile_WhenFileDownloadFailedDecompressions_ReturnsFileDownloadFailedDecompression()
+        {
+            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable())
+                .Do(info => { throw new FileDownloadFailedDecompressionException(); });
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadFailedDecompression));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
+        [Test]
         public void DownloadFile_WhenFileDownloadFails_LogsException()
         {
             WebException exception = SetUpFileDownloadFails();
