@@ -19,7 +19,7 @@
 
         public string GetConnectionString()
         {
-            return ConfigurationManager.ConnectionStrings["FoldingCoin"].ConnectionString;
+            return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
         }
 
         public string GetDownloadDirectory()

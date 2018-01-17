@@ -109,6 +109,7 @@
             try
             {
                 string connectionString = GetConnectionString();
+                EnsureValidConnectionString(connectionString);
                 databaseConnection = CreateDatabaseConnection(connectionString);
                 OpenDatabaseConnection(databaseConnection);
                 LogVerbose(DatabaseConnectionSuccessfulLogMessage);
@@ -117,6 +118,19 @@
             finally
             {
                 CloseDatabaseConnection(databaseConnection);
+            }
+        }
+
+        private void EnsureValidConnectionString(string connectionString)
+        {
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentException("Argument is empty", nameof(connectionString));
             }
         }
 

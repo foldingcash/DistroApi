@@ -171,12 +171,31 @@
             Assert.That(actual, Is.False);
         }
 
+        [TestCase(null)]
+        [TestCase("")]
+        public void IsAvailable_WhenInvalidConnectionString_ReturnsFalse(string connectionString)
+        {
+            databaseConnectionSettingsServiceMock.GetConnectionString().Returns(connectionString);
+
+            bool actual = InvokeIsAvailable();
+
+            Assert.That(actual, Is.False);
+        }
+
         [Test]
         public void IsAvailable_WhenInvoked_ReturnsTrue()
         {
             bool actual = InvokeIsAvailable();
 
             Assert.That(actual, Is.True);
+        }
+
+        [Test]
+        public void NewFileDownloadStarted_WhenEmptyString_ThrowsArgumentException()
+        {
+            databaseConnectionSettingsServiceMock.GetConnectionString().Returns(string.Empty);
+
+            Assert.Throws<ArgumentException>(InvokeNewFileDownloadStarted);
         }
 
         [Test]
@@ -228,6 +247,14 @@
             InvokeNewFileDownloadStarted();
 
             Assert.That(filePayload.DownloadId, Is.EqualTo(101));
+        }
+
+        [Test]
+        public void NewFileDownloadStarted_WhenNullConnectionString_ThrowsArgumentNullException()
+        {
+            databaseConnectionSettingsServiceMock.GetConnectionString().Returns((string)null);
+
+            Assert.Throws<ArgumentNullException>(InvokeNewFileDownloadStarted);
         }
 
         [SetUp]
