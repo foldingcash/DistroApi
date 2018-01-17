@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="DataTransfer\FilePayload.cs" />
     <Compile Include="DataTransfer\MinimumWait.cs" />
+    <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
     <Compile Include="Implementations\Tested\FileDownloadEmailProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="Implementations\Tested\FilePayloadUploadProvider.cs" />
@@ -54,10 +55,10 @@
     <Compile Include="Implementations\Tested\SecureDownloadProvider.cs" />
     <Compile Include="Implementations\Tested\SecureFilePayloadProvider.cs" />
     <Compile Include="Implementations\Untested\DateTimeProvider.cs" />
-    <Compile Include="Implementations\Untested\FileDeleteProvider.cs" />
+    <Compile Include="Implementations\Untested\FileProvider.cs" />
     <Compile Include="Implementations\Untested\FileReaderProvider.cs" />
     <Compile Include="Interfaces\File\IFileCompressionService.cs" />
-    <Compile Include="Interfaces\File\IFileDeleteService.cs" />
+    <Compile Include="Interfaces\File\IFileService.cs" />
     <Compile Include="Interfaces\File\IFileDownloadEmailService.cs" />
     <Compile Include="Interfaces\File\IFileDownloadMinimumWaitTimeService.cs" />
     <Compile Include="Interfaces\File\IFilePayloadUploadService.cs" />

@@ -191,7 +191,7 @@
 
             InvokeDownloadFile();
 
-            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FilePayload>());
+            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FileDownloadResult>());
         }
 
         [Test]
@@ -217,6 +217,19 @@
         }
 
         [Test]
+        public void DownloadFile_WhenFileDownloadFailedDecompressions_ReturnsFileDownloadFailedDecompression()
+        {
+            fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable())
+                .Do(info => { throw new FileDownloadFailedDecompressionException(); });
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadFailedDecompression));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
+        [Test]
         public void DownloadFile_WhenFileDownloadFails_LogsException()
         {
             WebException exception = SetUpFileDownloadFails();
@@ -236,9 +249,9 @@
         {
             SetUpFileDownloadFails();
 
-            InvokeDownloadFile();
+            FileDownloadResult actual = InvokeDownloadFile();
 
-            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FilePayload>());
+            resourceCleanupServiceMock.Received().Cleanup(actual);
         }
 
         [Test]
@@ -285,7 +298,7 @@
 
             InvokeDownloadFile();
 
-            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FilePayload>());
+            resourceCleanupServiceMock.Received().Cleanup(Arg.Any<FileDownloadResult>());
         }
 
         [Test]
@@ -339,7 +352,7 @@
                         dateTimeServiceMock.DateTimeNow();
                         loggingServiceMock.LogVerbose($"Stats file download completed: {dateTime}");
                         filePayloadUploadServiceMock.UploadFile(Arg.Any<FilePayload>());
-                        resourceCleanupServiceMock.Cleanup(Arg.Any<FilePayload>());
+                        resourceCleanupServiceMock.Cleanup(Arg.Any<FileDownloadResult>());
                         loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                     }));
         }

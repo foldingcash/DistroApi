@@ -8,6 +8,10 @@
     public interface ITestHarnessFileServer
     {
         [OperationContract]
+        [WebGet(UriTemplate = "/decompressable.bz2")]
+        Stream GetDecompressableFile();
+
+        [OperationContract]
         [WebGet(UriTemplate = "/fail_download.bz2")]
         Stream GetFailDownloadFile();
 
@@ -18,9 +22,5 @@
         [OperationContract]
         [WebGet(UriTemplate = "/timeout.bz2")]
         Stream GetTimeoutFile();
-
-        [OperationContract]
-        [WebGet(UriTemplate = "/uncompressable.bz2")]
-        Stream GetUncompressableFile();
     }
 }

@@ -6,10 +6,12 @@
 
         DataStoreUnavailable,
 
-        UnexpectedException,
-
         MinimumWaitTimeNotMet,
 
-        FileDownloadTimeout
+        FileDownloadTimeout,
+
+        FileDownloadFailedDecompression,
+
+        UnexpectedException
     }
 }

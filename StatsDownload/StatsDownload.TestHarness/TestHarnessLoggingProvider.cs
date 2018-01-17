@@ -34,11 +34,11 @@
                 + $"Download File Name: {result.FilePayload?.DownloadFileName}{Environment.NewLine}{Environment.NewLine}"
                 + $"Download File Extension: {result.FilePayload?.DownloadFileExtension}{Environment.NewLine}{Environment.NewLine}"
                 + $"Download File Path: {result.FilePayload?.DownloadFilePath}{Environment.NewLine}{Environment.NewLine}"
-                + $"Uncompressed Download File Directory: {result.FilePayload?.UncompressedDownloadDirectory}{Environment.NewLine}{Environment.NewLine}"
-                + $"Uncompressed Download File Name: {result.FilePayload?.UncompressedDownloadFileName}{Environment.NewLine}{Environment.NewLine}"
-                + $"Uncompressed Download File Extension: {result.FilePayload?.UncompressedDownloadFileExtension}{Environment.NewLine}{Environment.NewLine}"
-                + $"Uncompressed Download File Path: {result.FilePayload?.UncompressedDownloadFilePath}{Environment.NewLine}{Environment.NewLine}"
-                + $"Download Data (First 100): {result.FilePayload?.UncompressedDownloadFileData?.Substring(0, 99)}");
+                + $"Decompressed Download File Directory: {result.FilePayload?.DecompressedDownloadDirectory}{Environment.NewLine}{Environment.NewLine}"
+                + $"Decompressed Download File Name: {result.FilePayload?.DecompressedDownloadFileName}{Environment.NewLine}{Environment.NewLine}"
+                + $"Decompressed Download File Extension: {result.FilePayload?.DecompressedDownloadFileExtension}{Environment.NewLine}{Environment.NewLine}"
+                + $"Decompressed Download File Path: {result.FilePayload?.DecompressedDownloadFilePath}{Environment.NewLine}{Environment.NewLine}"
+                + $"Download Data (First 100): {result.FilePayload?.DecompressedDownloadFileData?.Substring(0, 99)}");
         }
 
         public void LogVerbose(string message)

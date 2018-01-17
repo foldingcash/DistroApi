@@ -5,13 +5,13 @@
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
     {
+        private const string DecompressedFileExtension = ".txt";
+
+        private const string DecompressedFileName = "daily_user_summary";
+
         private const string FileExtension = ".bz2";
 
         private const string FileName = "daily_user_summary.txt";
-
-        private const string UncompressedFileExtension = ".txt";
-
-        private const string UncompressedFileName = "daily_user_summary";
 
         private readonly IDateTimeService dateTimeService;
 
@@ -51,7 +51,8 @@
 
             SetDownloadDetails(filePayload);
             SetDownloadFileDetails(filePayload, now, downloadDirectory);
-            SetUncompressedDownloadFileDetails(filePayload, now, downloadDirectory);
+            SetDecompressedDownloadFileDetails(filePayload, now, downloadDirectory);
+            SetFailedDownloadFileDetails(filePayload, now, downloadDirectory);
         }
 
         private DateTime DateTimeNow()
@@ -67,6 +68,16 @@
         private string GetDownloadDirectory()
         {
             return downloadSettingsService.GetDownloadDirectory();
+        }
+
+        private string GetDownloadFileName(DateTime dateTime)
+        {
+            return $"{dateTime.ToFileTime()}.{FileName}";
+        }
+
+        private string GetDownloadFileNameWithExtension(DateTime dateTime)
+        {
+            return $"{dateTime.ToFileTime()}.{FileName}{FileExtension}";
         }
 
         private string GetDownloadTimeout()
@@ -94,6 +105,21 @@
             return new ArgumentNullException(parameterName);
         }
 
+        private void SetDecompressedDownloadFileDetails(
+            FilePayload filePayload,
+            DateTime dateTime,
+            string downloadDirectory)
+        {
+            string decompressedFileName = $"{dateTime.ToFileTime()}.{DecompressedFileName}";
+
+            filePayload.DecompressedDownloadDirectory = downloadDirectory;
+            filePayload.DecompressedDownloadFileName = decompressedFileName;
+            filePayload.DecompressedDownloadFileExtension = DecompressedFileExtension;
+            filePayload.DecompressedDownloadFilePath = Path.Combine(
+                downloadDirectory,
+                $"{decompressedFileName}{DecompressedFileExtension}");
+        }
+
         private void SetDownloadDetails(FilePayload filePayload)
         {
             string downloadTimeout = GetDownloadTimeout();
@@ -118,27 +144,17 @@
 
         private void SetDownloadFileDetails(FilePayload filePayload, DateTime dateTime, string downloadDirectory)
         {
-            string fileName = $"{dateTime.ToFileTime()}.{FileName}";
-
             filePayload.DownloadDirectory = downloadDirectory;
-            filePayload.DownloadFileName = fileName;
+            filePayload.DownloadFileName = GetDownloadFileName(dateTime);
             filePayload.DownloadFileExtension = FileExtension;
-            filePayload.DownloadFilePath = Path.Combine(downloadDirectory, $"{fileName}{FileExtension}");
+            filePayload.DownloadFilePath = Path.Combine(downloadDirectory, GetDownloadFileNameWithExtension(dateTime));
         }
 
-        private void SetUncompressedDownloadFileDetails(
-            FilePayload filePayload,
-            DateTime dateTime,
-            string downloadDirectory)
+        private void SetFailedDownloadFileDetails(FilePayload filePayload, DateTime dateTime, string downloadDirectory)
         {
-            string uncompressedFileName = $"{dateTime.ToFileTime()}.{UncompressedFileName}";
+            string downloadFileName = GetDownloadFileNameWithExtension(dateTime);
 
-            filePayload.UncompressedDownloadDirectory = downloadDirectory;
-            filePayload.UncompressedDownloadFileName = uncompressedFileName;
-            filePayload.UncompressedDownloadFileExtension = UncompressedFileExtension;
-            filePayload.UncompressedDownloadFilePath = Path.Combine(
-                downloadDirectory,
-                $"{uncompressedFileName}{UncompressedFileExtension}");
+            filePayload.FailedDownloadFilePath = Path.Combine(downloadDirectory, "FileDownloadFailed", downloadFileName);
         }
 
         private bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
