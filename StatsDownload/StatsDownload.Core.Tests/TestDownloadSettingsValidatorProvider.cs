@@ -9,11 +9,15 @@
     {
         private static readonly string[] BadAcceptAnySslCertValues = { "anything else" };
 
+        private static readonly string[] BadDownloadUriValues = { null };
+
         private static readonly string[] BadMinimumWaitTimeInHoursValues = { "0", "101", "strings" };
 
         private static readonly string[] BadTimeoutValues = { "-1", "-2", "0", "99", "3601" };
 
         private static readonly string[] FalseAcceptAnySslCertValues = { "false", "FALSE" };
+
+        private static readonly string[] GoodDownloadUriValues = { "http://localhost/", @"C://file.txt" };
 
         private static readonly string[] GoodMinimumWaitTimeInHoursValues = { "1", "100" };
 
@@ -79,6 +83,33 @@
         {
             bool output;
             bool actual = systemUnderTest.TryParseAcceptAnySslCert(input, out output);
+
+            Assert.That(actual, Is.True);
+        }
+
+        [TestCaseSource(nameof(BadDownloadUriValues))]
+        public void TryParseDownloadUri_WhenBadValueIsProvided_ReturnsFalse(string input)
+        {
+            Uri downloadUri;
+            bool actual = systemUnderTest.TryParseDownloadUri(input, out downloadUri);
+
+            Assert.That(actual, Is.False);
+        }
+
+        [TestCaseSource(nameof(GoodDownloadUriValues))]
+        public void TryParseDownloadUri_WhenGoodValueIsProvided_ReturnsParsedUri(string input)
+        {
+            Uri actual;
+            systemUnderTest.TryParseDownloadUri(input, out actual);
+
+            Assert.That(actual.OriginalString, Is.EqualTo(input));
+        }
+
+        [TestCaseSource(nameof(GoodDownloadUriValues))]
+        public void TryParseDownloadUri_WhenGoodValueIsProvided_ReturnsTrue(string input)
+        {
+            Uri downloadUri;
+            bool actual = systemUnderTest.TryParseDownloadUri(input, out downloadUri);
 
             Assert.That(actual, Is.True);
         }

@@ -123,7 +123,7 @@
         private void SetDownloadDetails(FilePayload filePayload)
         {
             string downloadTimeout = GetDownloadTimeout();
-            string downloadUri = GetDownloadUri();
+            string unsafeDownloadUri = GetDownloadUri();
             string unsafeAcceptAnySslCert = GetAcceptAnySslCert();
             string unsafeMinimumWaitTimeInHours = GetMinimumWaitTimeInHours();
 
@@ -136,7 +136,10 @@
             TimeSpan minimumWaitTimeSpan;
             TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out minimumWaitTimeSpan);
 
-            filePayload.DownloadUri = new Uri(downloadUri);
+            Uri downloadUri;
+            TryParseDownloadUri(unsafeDownloadUri, out downloadUri);
+
+            filePayload.DownloadUri = downloadUri;
             filePayload.TimeoutSeconds = timeoutInSeconds;
             filePayload.AcceptAnySslCert = acceptAnySslCert;
             filePayload.MinimumWaitTimeSpan = minimumWaitTimeSpan;
@@ -162,6 +165,11 @@
             return downloadSettingsValidatorService.TryParseAcceptAnySslCert(
                 unsafeAcceptAnySslCert,
                 out acceptAnySslCert);
+        }
+
+        private void TryParseDownloadUri(string unsafeDownloadUri, out Uri downloadUri)
+        {
+            downloadSettingsValidatorService.TryParseDownloadUri(unsafeDownloadUri, out downloadUri);
         }
 
         private void TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)

@@ -17,6 +17,11 @@
             return bool.TryParse(unsafeAcceptAnySslCert, out acceptAnySslCert);
         }
 
+        public bool TryParseDownloadUri(string unsafeDownloadUri, out Uri downloadUri)
+        {
+            return Uri.TryCreate(unsafeDownloadUri, UriKind.RelativeOrAbsolute, out downloadUri);
+        }
+
         public bool TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
         {
             int minimumWaitTimeInHours;

@@ -21,6 +21,8 @@
 
         private TimeSpan timeSpan;
 
+        private Uri uri;
+
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
@@ -95,12 +97,13 @@
         {
             dateTime = DateTime.Now;
             timeSpan = TimeSpan.MaxValue;
+            uri = new Uri("http://localhost");
 
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
             dateTimeServiceMock.DateTimeNow().Returns(dateTime);
 
             downloadSettingsServiceMock = Substitute.For<IDownloadSettingsService>();
-            downloadSettingsServiceMock.GetDownloadUri().Returns("http://localhost");
+            downloadSettingsServiceMock.GetDownloadUri().Returns("DownloadUri");
             downloadSettingsServiceMock.GetDownloadTimeout().Returns("DownloadTimeoutSeconds");
             downloadSettingsServiceMock.GetDownloadDirectory().Returns("DownloadDirectory");
             downloadSettingsServiceMock.GetAcceptAnySslCert().Returns("AcceptAnySslCert");
@@ -132,6 +135,13 @@
                             callInfo[1] = timeSpan;
                             return true;
                         });
+            Uri downloadUri;
+            downloadSettingsValidatorServiceMock.TryParseDownloadUri("DownloadUri", out downloadUri).Returns(
+                callInfo =>
+                    {
+                        callInfo[1] = uri;
+                        return true;
+                    });
 
             systemUnderTest = NewFilePayloadSettingsProvider(
                 dateTimeServiceMock,
