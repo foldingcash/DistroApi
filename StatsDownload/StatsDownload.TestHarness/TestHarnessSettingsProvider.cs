@@ -30,7 +30,7 @@
 
         public string GetDownloadTimeout()
         {
-            return ConfigurationManager.AppSettings["DownloadTimeoutSeconds"] ?? "100";
+            return ConfigurationManager.AppSettings["DownloadTimeoutSeconds"];
         }
 
         public string GetDownloadUri()
