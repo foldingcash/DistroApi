@@ -225,6 +225,10 @@
             {
                 return NewFailedFileDownloadResult(FailedReason.FileDownloadFailedDecompression, filePayload);
             }
+            if (exception is FileDownloadArgumentException)
+            {
+                return NewFailedFileDownloadResult(FailedReason.RequiredSettingsInvalid, filePayload);
+            }
             return NewFailedFileDownloadResult(FailedReason.UnexpectedException, filePayload);
         }
 

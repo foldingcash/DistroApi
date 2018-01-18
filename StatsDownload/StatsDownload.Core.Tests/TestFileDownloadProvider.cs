@@ -277,6 +277,18 @@
         }
 
         [Test]
+        public void DownloadFile_WhenFileDownloadSettingsInvalid_ReturnsFailedReasonRequiredSettingsInvalid()
+        {
+            filePayloadSettingsServiceMock.When(mock => mock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>()))
+                .Throw<FileDownloadArgumentException>();
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.RequiredSettingsInvalid));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
+        [Test]
         public void DownloadFile_WhenFileDownloadTimeout_LogsException()
         {
             WebException exception = SetUpFileDownloadTimeout();
