@@ -134,28 +134,28 @@
             string unsafeAcceptAnySslCert = GetAcceptAnySslCert();
             string unsafeMinimumWaitTimeInHours = GetMinimumWaitTimeInHours();
 
+            Uri downloadUri;
+            if (!TryParseDownloadUri(unsafeDownloadUri, out downloadUri))
+            {
+                throw new FileDownloadArgumentException();
+            }
+
             int timeoutInSeconds;
             if (!TryParseTimeout(downloadTimeout, out timeoutInSeconds))
             {
-                throw new FileDownloadArgumentException();
+                timeoutInSeconds = 100;
             }
 
             bool acceptAnySslCert;
             if (!TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out acceptAnySslCert))
             {
-                throw new FileDownloadArgumentException();
+                acceptAnySslCert = false;
             }
 
             TimeSpan minimumWaitTimeSpan;
             if (!TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out minimumWaitTimeSpan))
             {
-                throw new FileDownloadArgumentException();
-            }
-
-            Uri downloadUri;
-            if (!TryParseDownloadUri(unsafeDownloadUri, out downloadUri))
-            {
-                throw new FileDownloadArgumentException();
+                minimumWaitTimeSpan = MinimumWait.TimeSpan;
             }
 
             filePayload.DownloadUri = downloadUri;

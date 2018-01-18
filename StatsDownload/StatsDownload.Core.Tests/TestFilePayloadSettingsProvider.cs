@@ -47,21 +47,21 @@
         }
 
         [Test]
-        public void SetFilePayloadDownloadDetails_WhenInvalidAcceptAnySslCert_ThrowsFileDownloadArgumentException()
+        public void SetFilePayloadDownloadDetails_WhenInvalidAcceptAnySslCert_ReturnsDefault()
         {
             bool acceptAnySslCert;
             downloadSettingsValidatorServiceMock.TryParseAcceptAnySslCert("AcceptAnySslCert", out acceptAnySslCert)
-                .Returns(
-                    callInfo => false);
+                .Returns(callInfo => false);
 
             var filePayload = new FilePayload();
 
-            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+            InvokeSetFilePayloadDownloadDetails(filePayload);
+
+            Assert.That(filePayload.AcceptAnySslCert, Is.False);
         }
 
         [Test]
-        public void SetFilePayloadDownloadDetails_WhenInvalidDownloadTimeoutSeconds_ThrowsFileDownloadArgumentException(
-            )
+        public void SetFilePayloadDownloadDetails_WhenInvalidDownloadTimeoutSeconds_ReturnsDefault()
         {
             int timeout;
             downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
@@ -69,7 +69,9 @@
 
             var filePayload = new FilePayload();
 
-            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+            InvokeSetFilePayloadDownloadDetails(filePayload);
+
+            Assert.That(filePayload.TimeoutSeconds, Is.EqualTo(100));
         }
 
         [Test]
@@ -85,8 +87,7 @@
         }
 
         [Test]
-        public void SetFilePayloadDownloadDetails_WhenInvalidMinimumWaitTimeInHours_ThrowsFileDownloadArgumentException(
-            )
+        public void SetFilePayloadDownloadDetails_WhenInvalidMinimumWaitTimeInHours_ReturnsDefault()
         {
             TimeSpan minimumWaitTimeSpan;
             downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan(
@@ -95,7 +96,9 @@
 
             var filePayload = new FilePayload();
 
-            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+            InvokeSetFilePayloadDownloadDetails(filePayload);
+
+            Assert.That(filePayload.MinimumWaitTimeSpan, Is.EqualTo(MinimumWait.TimeSpan));
         }
 
         [Test]
