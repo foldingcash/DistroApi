@@ -49,9 +49,10 @@
         [Test]
         public void SetFilePayloadDownloadDetails_WhenInvalidAcceptAnySslCert_ThrowsFileDownloadArgumentException()
         {
-            int timeout;
-            downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
-                .Returns(callInfo => false);
+            bool acceptAnySslCert;
+            downloadSettingsValidatorServiceMock.TryParseAcceptAnySslCert("AcceptAnySslCert", out acceptAnySslCert)
+                .Returns(
+                    callInfo => false);
 
             var filePayload = new FilePayload();
 
