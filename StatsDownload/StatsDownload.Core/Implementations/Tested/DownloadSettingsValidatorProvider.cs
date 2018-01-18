@@ -12,6 +12,18 @@
 
         private const int MinimumWaitTimeInHours = 1;
 
+        private readonly IDirectoryService directoryService;
+
+        public DownloadSettingsValidatorProvider(IDirectoryService directoryService)
+        {
+            this.directoryService = directoryService;
+        }
+
+        public bool IsValidDownloadDirectory(string unsafeDownloadDirectory)
+        {
+            return directoryService.Exists(unsafeDownloadDirectory);
+        }
+
         public bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
         {
             return bool.TryParse(unsafeAcceptAnySslCert, out acceptAnySslCert);

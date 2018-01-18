@@ -2,6 +2,8 @@
 {
     using System;
 
+    using NSubstitute;
+
     using NUnit.Framework;
 
     [TestFixture]
@@ -25,12 +27,36 @@
 
         private static readonly string[] TrueAcceptAnySslCertValues = { "true", "TRUE" };
 
+        private IDirectoryService directoryServiceMock;
+
         private IDownloadSettingsValidatorService systemUnderTest;
+
+        [Test]
+        public void IsValidDownloadDirectory_WhenDirectoryDoesNotExist_ReturnsFalse()
+        {
+            directoryServiceMock.Exists("DownloadDirectory").Returns(false);
+
+            bool actual = systemUnderTest.IsValidDownloadDirectory("DownloadDirectory");
+
+            Assert.That(actual, Is.False);
+        }
+
+        [Test]
+        public void IsValidDownloadDirectory_WhenDirectoryExists_ReturnsTrue()
+        {
+            directoryServiceMock.Exists("DownloadDirectory").Returns(true);
+
+            bool actual = systemUnderTest.IsValidDownloadDirectory("DownloadDirectory");
+
+            Assert.That(actual, Is.True);
+        }
 
         [SetUp]
         public void SetUp()
         {
-            systemUnderTest = new DownloadSettingsValidatorProvider();
+            directoryServiceMock = Substitute.For<IDirectoryService>();
+
+            systemUnderTest = new DownloadSettingsValidatorProvider(directoryServiceMock);
         }
 
         [TestCaseSource(nameof(BadAcceptAnySslCertValues))]

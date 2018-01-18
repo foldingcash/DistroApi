@@ -36,6 +36,17 @@
         }
 
         [Test]
+        public void SetFilePayloadDownloadDetails_WhenDownloadDirectoryDoesNotExist_ThrowsFileDownloadArgumentException(
+            )
+        {
+            downloadSettingsValidatorServiceMock.IsValidDownloadDirectory("DownloadDirectory").Returns(false);
+
+            var filePayload = new FilePayload();
+
+            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+        }
+
+        [Test]
         public void SetFilePayloadDownloadDetails_WhenInvalidAcceptAnySslCert_ThrowsFileDownloadArgumentException()
         {
             int timeout;
@@ -66,6 +77,20 @@
             Uri downloadUri;
             downloadSettingsValidatorServiceMock.TryParseDownloadUri("DownloadUri", out downloadUri)
                 .Returns(callInfo => false);
+
+            var filePayload = new FilePayload();
+
+            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+        }
+
+        [Test]
+        public void SetFilePayloadDownloadDetails_WhenInvalidMinimumWaitTimeInHours_ThrowsFileDownloadArgumentException(
+            )
+        {
+            TimeSpan minimumWaitTimeSpan;
+            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan(
+                "MinimumWaitTimeInHours",
+                out minimumWaitTimeSpan).Returns(callInfo => false);
 
             var filePayload = new FilePayload();
 
@@ -129,20 +154,6 @@
                 Is.EqualTo($"DownloadDirectory\\FileDownloadFailed\\{dateTime.ToFileTime()}.daily_user_summary.txt.bz2"));
         }
 
-        [Test]
-        public void SetFilePayloadDownloadDetails_WhenInvalidMinimumWaitTimeInHours_ThrowsFileDownloadArgumentException()
-        {
-            TimeSpan minimumWaitTimeSpan;
-            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan(
-                "MinimumWaitTimeInHours",
-                out minimumWaitTimeSpan).Returns(
-                    callInfo => false);
-
-            var filePayload = new FilePayload();
-
-            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
-        }
-
         [SetUp]
         public void SetUp()
         {
@@ -194,6 +205,7 @@
                         callInfo[1] = uri;
                         return true;
                     });
+            downloadSettingsValidatorServiceMock.IsValidDownloadDirectory("DownloadDirectory").Returns(true);
 
             systemUnderTest = NewFilePayloadSettingsProvider(
                 dateTimeServiceMock,

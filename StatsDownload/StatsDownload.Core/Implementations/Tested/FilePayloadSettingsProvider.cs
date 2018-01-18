@@ -67,7 +67,14 @@
 
         private string GetDownloadDirectory()
         {
-            return downloadSettingsService.GetDownloadDirectory();
+            string downloadDirectory = downloadSettingsService.GetDownloadDirectory();
+
+            if (!downloadSettingsValidatorService.IsValidDownloadDirectory(downloadDirectory))
+            {
+                throw new FileDownloadArgumentException();
+            }
+
+            return downloadDirectory;
         }
 
         private string GetDownloadFileName(DateTime dateTime)

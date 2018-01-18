@@ -4,6 +4,8 @@
 
     public interface IDownloadSettingsValidatorService
     {
+        bool IsValidDownloadDirectory(string unsafeDownloadDirectory);
+
         bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert);
 
         bool TryParseDownloadUri(string unsafeDownloadUri, out Uri downloadUri);
