@@ -36,6 +36,43 @@
         }
 
         [Test]
+        public void SetFilePayloadDownloadDetails_WhenInvalidAcceptAnySslCert_ThrowsFileDownloadArgumentException()
+        {
+            int timeout;
+            downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
+                .Returns(callInfo => false);
+
+            var filePayload = new FilePayload();
+
+            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+        }
+
+        [Test]
+        public void SetFilePayloadDownloadDetails_WhenInvalidDownloadTimeoutSeconds_ThrowsFileDownloadArgumentException(
+            )
+        {
+            int timeout;
+            downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
+                .Returns(callInfo => false);
+
+            var filePayload = new FilePayload();
+
+            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+        }
+
+        [Test]
+        public void SetFilePayloadDownloadDetails_WhenInvalidDownloadUri_ThrowsFileDownloadArgumentException()
+        {
+            Uri downloadUri;
+            downloadSettingsValidatorServiceMock.TryParseDownloadUri("DownloadUri", out downloadUri)
+                .Returns(callInfo => false);
+
+            var filePayload = new FilePayload();
+
+            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+        }
+
+        [Test]
         public void SetFilePayloadDownloadDetails_WhenInvoked_DecompressedDownloadFileDetailsAreSet()
         {
             var filePayload = new FilePayload();
@@ -92,6 +129,20 @@
                 Is.EqualTo($"DownloadDirectory\\FileDownloadFailed\\{dateTime.ToFileTime()}.daily_user_summary.txt.bz2"));
         }
 
+        [Test]
+        public void SetFilePayloadDownloadDetails_WhenInvalidMinimumWaitTimeInHours_ThrowsFileDownloadArgumentException()
+        {
+            TimeSpan minimumWaitTimeSpan;
+            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan(
+                "MinimumWaitTimeInHours",
+                out minimumWaitTimeSpan).Returns(
+                    callInfo => false);
+
+            var filePayload = new FilePayload();
+
+            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -109,8 +160,9 @@
             downloadSettingsServiceMock.GetAcceptAnySslCert().Returns("AcceptAnySslCert");
             downloadSettingsServiceMock.GetMinimumWaitTimeInHours().Returns("MinimumWaitTimeInHours");
 
-            int timeout;
             downloadSettingsValidatorServiceMock = Substitute.For<IDownloadSettingsValidatorService>();
+
+            int timeout;
             downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
                 .Returns(
                     callInfo =>
@@ -147,6 +199,11 @@
                 dateTimeServiceMock,
                 downloadSettingsServiceMock,
                 downloadSettingsValidatorServiceMock);
+        }
+
+        private void InvokeSetFilePayloadDownloadDetails(FilePayload filePayload)
+        {
+            systemUnderTest.SetFilePayloadDownloadDetails(filePayload);
         }
 
         private IFilePayloadSettingsService NewFilePayloadSettingsProvider(

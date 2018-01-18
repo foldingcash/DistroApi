@@ -128,16 +128,28 @@
             string unsafeMinimumWaitTimeInHours = GetMinimumWaitTimeInHours();
 
             int timeoutInSeconds;
-            TryParseTimeout(downloadTimeout, out timeoutInSeconds);
+            if (!TryParseTimeout(downloadTimeout, out timeoutInSeconds))
+            {
+                throw new FileDownloadArgumentException();
+            }
 
             bool acceptAnySslCert;
-            TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out acceptAnySslCert);
+            if (!TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out acceptAnySslCert))
+            {
+                throw new FileDownloadArgumentException();
+            }
 
             TimeSpan minimumWaitTimeSpan;
-            TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out minimumWaitTimeSpan);
+            if (!TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out minimumWaitTimeSpan))
+            {
+                throw new FileDownloadArgumentException();
+            }
 
             Uri downloadUri;
-            TryParseDownloadUri(unsafeDownloadUri, out downloadUri);
+            if (!TryParseDownloadUri(unsafeDownloadUri, out downloadUri))
+            {
+                throw new FileDownloadArgumentException();
+            }
 
             filePayload.DownloadUri = downloadUri;
             filePayload.TimeoutSeconds = timeoutInSeconds;
@@ -167,14 +179,14 @@
                 out acceptAnySslCert);
         }
 
-        private void TryParseDownloadUri(string unsafeDownloadUri, out Uri downloadUri)
+        private bool TryParseDownloadUri(string unsafeDownloadUri, out Uri downloadUri)
         {
-            downloadSettingsValidatorService.TryParseDownloadUri(unsafeDownloadUri, out downloadUri);
+            return downloadSettingsValidatorService.TryParseDownloadUri(unsafeDownloadUri, out downloadUri);
         }
 
-        private void TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
+        private bool TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
         {
-            downloadSettingsValidatorService.TryParseMinimumWaitTimeSpan(
+            return downloadSettingsValidatorService.TryParseMinimumWaitTimeSpan(
                 unsafeMinimumWaitTimeInHours,
                 out minimumWaitTimeSpan);
         }

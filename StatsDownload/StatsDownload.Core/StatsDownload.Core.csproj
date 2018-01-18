@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="DataTransfer\FilePayload.cs" />
     <Compile Include="DataTransfer\MinimumWait.cs" />
+    <Compile Include="Exceptions\FileDownloadArgumentException.cs" />
     <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
     <Compile Include="Implementations\Tested\FileDownloadEmailProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
