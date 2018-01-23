@@ -6,6 +6,8 @@
 
     using NUnit.Framework;
 
+    using StatsDownload.Logging;
+
     [TestFixture]
     public class TestFilePayloadSettingsProvider
     {
@@ -16,6 +18,8 @@
         private IDownloadSettingsService downloadSettingsServiceMock;
 
         private IDownloadSettingsValidatorService downloadSettingsValidatorServiceMock;
+
+        private ILoggingService loggingServiceMock;
 
         private IFilePayloadSettingsService systemUnderTest;
 
@@ -28,11 +32,20 @@
         {
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFilePayloadSettingsProvider(null, downloadSettingsServiceMock, downloadSettingsValidatorServiceMock));
+                NewFilePayloadSettingsProvider(null, downloadSettingsServiceMock, downloadSettingsValidatorServiceMock,
+                    loggingServiceMock));
             Assert.Throws<ArgumentNullException>(
-                () => NewFilePayloadSettingsProvider(dateTimeServiceMock, null, downloadSettingsValidatorServiceMock));
+                () =>
+                NewFilePayloadSettingsProvider(dateTimeServiceMock, null, downloadSettingsValidatorServiceMock,
+                    loggingServiceMock));
             Assert.Throws<ArgumentNullException>(
-                () => NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock, null));
+                () =>
+                NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock, null,
+                    loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock,
+                    downloadSettingsValidatorServiceMock, null));
         }
 
         [Test]
@@ -59,6 +72,8 @@
             InvokeSetFilePayloadDownloadDetails(filePayload);
 
             Assert.That(filePayload.AcceptAnySslCert, Is.False);
+            loggingServiceMock.Received()
+                              .LogVerbose("The accept any SSL cert configuration was invalid, using the default value.");
         }
 
         [Test]
@@ -73,6 +88,8 @@
             InvokeSetFilePayloadDownloadDetails(filePayload);
 
             Assert.That(filePayload.TimeoutSeconds, Is.EqualTo(100));
+            loggingServiceMock.Received()
+                              .LogVerbose("The download timeout configuration was invalid, using the default value.");
         }
 
         [Test]
@@ -101,6 +118,8 @@
             InvokeSetFilePayloadDownloadDetails(filePayload);
 
             Assert.That(filePayload.MinimumWaitTimeSpan, Is.EqualTo(MinimumWait.TimeSpan));
+            loggingServiceMock.Received()
+                              .LogVerbose("The minimum wait time configuration was invalid, using the default value.");
         }
 
         [Test]
@@ -204,8 +223,10 @@
             });
             downloadSettingsValidatorServiceMock.IsValidDownloadDirectory("DownloadDirectory").Returns(true);
 
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
             systemUnderTest = NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock,
-                downloadSettingsValidatorServiceMock);
+                downloadSettingsValidatorServiceMock, loggingServiceMock);
         }
 
         private void InvokeSetFilePayloadDownloadDetails(FilePayload filePayload)
@@ -217,10 +238,11 @@
                                                                            IDownloadSettingsService
                                                                                downloadSettingsService,
                                                                            IDownloadSettingsValidatorService
-                                                                               downloadSettingsValidatorService)
+                                                                               downloadSettingsValidatorService,
+                                                                           ILoggingService loggingService)
         {
             return new FilePayloadSettingsProvider(dateTimeService, downloadSettingsService,
-                downloadSettingsValidatorService);
+                downloadSettingsValidatorService, loggingService);
         }
     }
 }

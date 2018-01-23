@@ -3,6 +3,8 @@
     using System;
     using System.IO;
 
+    using StatsDownload.Logging;
+
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
     {
         private const string DecompressedFileExtension = ".txt";
@@ -19,9 +21,12 @@
 
         private readonly IDownloadSettingsValidatorService downloadSettingsValidatorService;
 
+        private readonly ILoggingService loggingService;
+
         public FilePayloadSettingsProvider(IDateTimeService dateTimeService,
                                            IDownloadSettingsService downloadSettingsService,
-                                           IDownloadSettingsValidatorService downloadSettingsValidatorService)
+                                           IDownloadSettingsValidatorService downloadSettingsValidatorService,
+                                           ILoggingService loggingService)
         {
             if (IsNull(dateTimeService))
             {
@@ -38,9 +43,15 @@
                 throw NewArgumentNullException(nameof(downloadSettingsValidatorService));
             }
 
+            if (IsNull(loggingService))
+            {
+                throw NewArgumentNullException(nameof(loggingService));
+            }
+
             this.dateTimeService = dateTimeService;
             this.downloadSettingsService = downloadSettingsService;
             this.downloadSettingsValidatorService = downloadSettingsValidatorService;
+            this.loggingService = loggingService;
         }
 
         public void SetFilePayloadDownloadDetails(FilePayload filePayload)
@@ -145,18 +156,21 @@
             if (!TryParseTimeout(downloadTimeout, out timeoutInSeconds))
             {
                 timeoutInSeconds = 100;
+                loggingService.LogVerbose("The download timeout configuration was invalid, using the default value.");
             }
 
             bool acceptAnySslCert;
             if (!TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out acceptAnySslCert))
             {
                 acceptAnySslCert = false;
+                loggingService.LogVerbose("The accept any SSL cert configuration was invalid, using the default value.");
             }
 
             TimeSpan minimumWaitTimeSpan;
             if (!TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out minimumWaitTimeSpan))
             {
                 minimumWaitTimeSpan = MinimumWait.TimeSpan;
+                loggingService.LogVerbose("The minimum wait time configuration was invalid, using the default value.");
             }
 
             filePayload.DownloadUri = downloadUri;
