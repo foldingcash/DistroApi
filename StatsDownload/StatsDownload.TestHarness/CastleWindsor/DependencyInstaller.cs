@@ -16,7 +16,7 @@
         {
             container.Register(
                 Component.For<ILoggingService, IFileDownloadLoggingService>()
-                    .ImplementedBy<TestHarnessLoggingProvider>(),
+                         .ImplementedBy<TestHarnessLoggingProvider>(),
                 Component
                     .For
                     <IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService,
@@ -24,10 +24,10 @@
                 Component.For<IFileDownloadMinimumWaitTimeService>().ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>());
 
-            container.Register(
-                Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
+            container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
+                Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>(),
                 Component.For<IResourceCleanupService>().ImplementedBy<ResourceCleanupProvider>(),
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
@@ -41,7 +41,7 @@
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
-                    .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),
+                         .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),
                 Component.For<IFileDownloadEmailService>().ImplementedBy<FileDownloadEmailProvider>(),
                 Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),

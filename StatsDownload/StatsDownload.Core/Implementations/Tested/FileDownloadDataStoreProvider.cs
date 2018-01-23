@@ -23,10 +23,9 @@
 
         private readonly string UpdateToLatestStoredProcedureName = "[FoldingCoin].[UpdateToLatest]";
 
-        public FileDownloadDataStoreProvider(
-            IDatabaseConnectionSettingsService databaseConnectionSettingsService,
-            IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
-            ILoggingService loggingService)
+        public FileDownloadDataStoreProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
+                                             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
+                                             ILoggingService loggingService)
         {
             if (IsNull(databaseConnectionSettingsService))
             {
@@ -109,6 +108,7 @@
             try
             {
                 string connectionString = GetConnectionString();
+                EnsureValidConnectionString(connectionString);
                 databaseConnection = CreateDatabaseConnection(connectionString);
                 OpenDatabaseConnection(databaseConnection);
                 LogVerbose(DatabaseConnectionSuccessfulLogMessage);
@@ -120,34 +120,38 @@
             }
         }
 
+        private void EnsureValidConnectionString(string connectionString)
+        {
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentException("Argument is empty", nameof(connectionString));
+            }
+        }
+
         private void FileDownloadFinished(IDatabaseConnectionService databaseConnection, FilePayload filePayload)
         {
-            DbParameter downloadId = databaseConnection.CreateParameter(
-                "@DownloadId",
-                DbType.Int32,
+            DbParameter downloadId = databaseConnection.CreateParameter("@DownloadId", DbType.Int32,
                 ParameterDirection.Input);
             downloadId.Value = filePayload.DownloadId;
 
-            DbParameter fileName = databaseConnection.CreateParameter(
-                "@FileName",
-                DbType.String,
+            DbParameter fileName = databaseConnection.CreateParameter("@FileName", DbType.String,
                 ParameterDirection.Input);
             fileName.Value = filePayload.DecompressedDownloadFileName;
 
-            DbParameter fileExtension = databaseConnection.CreateParameter(
-                "@FileExtension",
-                DbType.String,
+            DbParameter fileExtension = databaseConnection.CreateParameter("@FileExtension", DbType.String,
                 ParameterDirection.Input);
             fileExtension.Value = filePayload.DecompressedDownloadFileExtension;
 
-            DbParameter fileData = databaseConnection.CreateParameter(
-                "@FileData",
-                DbType.String,
+            DbParameter fileData = databaseConnection.CreateParameter("@FileData", DbType.String,
                 ParameterDirection.Input);
             fileData.Value = filePayload.DecompressedDownloadFileData;
 
-            databaseConnection.ExecuteStoredProcedure(
-                FileDownloadFinishedProcedureName,
+            databaseConnection.ExecuteStoredProcedure(FileDownloadFinishedProcedureName,
                 new List<DbParameter> { downloadId, fileName, fileExtension, fileData });
         }
 
@@ -189,13 +193,10 @@
 
         private int NewFileDownloadStarted(IDatabaseConnectionService databaseConnection)
         {
-            DbParameter downloadId = databaseConnection.CreateParameter(
-                "@DownloadId",
-                DbType.Int32,
+            DbParameter downloadId = databaseConnection.CreateParameter("@DownloadId", DbType.Int32,
                 ParameterDirection.Output);
 
-            databaseConnection.ExecuteStoredProcedure(
-                NewFileDownloadStartedProcedureName,
+            databaseConnection.ExecuteStoredProcedure(NewFileDownloadStartedProcedureName,
                 new List<DbParameter> { downloadId });
 
             return (int)downloadId.Value;

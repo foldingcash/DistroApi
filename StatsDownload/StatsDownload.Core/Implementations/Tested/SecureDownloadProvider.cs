@@ -13,10 +13,8 @@
 
         private readonly ISecureFilePayloadService secureFilePayloadService;
 
-        public SecureDownloadProvider(
-            IDownloadService downloadService,
-            ISecureFilePayloadService secureFilePayloadService,
-            ILoggingService loggingService)
+        public SecureDownloadProvider(IDownloadService downloadService,
+                                      ISecureFilePayloadService secureFilePayloadService, ILoggingService loggingService)
         {
             if (IsNull(downloadService))
             {

@@ -7,10 +7,8 @@
     using StatsDownload.Core;
     using StatsDownload.Email;
 
-    public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService,
-                                               IDownloadSettingsService,
-                                               ITestHarnessSettingsService,
-                                               IEmailSettingsService
+    public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
+                                               ITestHarnessSettingsService, IEmailSettingsService
     {
         public string GetAcceptAnySslCert()
         {
@@ -19,7 +17,7 @@
 
         public string GetConnectionString()
         {
-            return ConfigurationManager.ConnectionStrings["FoldingCoin"].ConnectionString;
+            return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
         }
 
         public string GetDownloadDirectory()
@@ -30,7 +28,7 @@
 
         public string GetDownloadTimeout()
         {
-            return ConfigurationManager.AppSettings["DownloadTimeoutSeconds"] ?? "100";
+            return ConfigurationManager.AppSettings["DownloadTimeoutSeconds"];
         }
 
         public string GetDownloadUri()

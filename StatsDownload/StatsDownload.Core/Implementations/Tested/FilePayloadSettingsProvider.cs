@@ -3,6 +3,8 @@
     using System;
     using System.IO;
 
+    using StatsDownload.Logging;
+
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
     {
         private const string DecompressedFileExtension = ".txt";
@@ -19,10 +21,12 @@
 
         private readonly IDownloadSettingsValidatorService downloadSettingsValidatorService;
 
-        public FilePayloadSettingsProvider(
-            IDateTimeService dateTimeService,
-            IDownloadSettingsService downloadSettingsService,
-            IDownloadSettingsValidatorService downloadSettingsValidatorService)
+        private readonly ILoggingService loggingService;
+
+        public FilePayloadSettingsProvider(IDateTimeService dateTimeService,
+                                           IDownloadSettingsService downloadSettingsService,
+                                           IDownloadSettingsValidatorService downloadSettingsValidatorService,
+                                           ILoggingService loggingService)
         {
             if (IsNull(dateTimeService))
             {
@@ -39,9 +43,15 @@
                 throw NewArgumentNullException(nameof(downloadSettingsValidatorService));
             }
 
+            if (IsNull(loggingService))
+            {
+                throw NewArgumentNullException(nameof(loggingService));
+            }
+
             this.dateTimeService = dateTimeService;
             this.downloadSettingsService = downloadSettingsService;
             this.downloadSettingsValidatorService = downloadSettingsValidatorService;
+            this.loggingService = loggingService;
         }
 
         public void SetFilePayloadDownloadDetails(FilePayload filePayload)
@@ -67,7 +77,14 @@
 
         private string GetDownloadDirectory()
         {
-            return downloadSettingsService.GetDownloadDirectory();
+            string downloadDirectory = downloadSettingsService.GetDownloadDirectory();
+
+            if (!downloadSettingsValidatorService.IsValidDownloadDirectory(downloadDirectory))
+            {
+                throw NewFileDownloadArgumentException("Download directory is invalid");
+            }
+
+            return downloadDirectory;
         }
 
         private string GetDownloadFileName(DateTime dateTime)
@@ -105,38 +122,58 @@
             return new ArgumentNullException(parameterName);
         }
 
-        private void SetDecompressedDownloadFileDetails(
-            FilePayload filePayload,
-            DateTime dateTime,
-            string downloadDirectory)
+        private Exception NewFileDownloadArgumentException(string message)
+        {
+            return new FileDownloadArgumentException(message);
+        }
+
+        private void SetDecompressedDownloadFileDetails(FilePayload filePayload, DateTime dateTime,
+                                                        string downloadDirectory)
         {
             string decompressedFileName = $"{dateTime.ToFileTime()}.{DecompressedFileName}";
 
             filePayload.DecompressedDownloadDirectory = downloadDirectory;
             filePayload.DecompressedDownloadFileName = decompressedFileName;
             filePayload.DecompressedDownloadFileExtension = DecompressedFileExtension;
-            filePayload.DecompressedDownloadFilePath = Path.Combine(
-                downloadDirectory,
+            filePayload.DecompressedDownloadFilePath = Path.Combine(downloadDirectory,
                 $"{decompressedFileName}{DecompressedFileExtension}");
         }
 
         private void SetDownloadDetails(FilePayload filePayload)
         {
             string downloadTimeout = GetDownloadTimeout();
-            string downloadUri = GetDownloadUri();
+            string unsafeDownloadUri = GetDownloadUri();
             string unsafeAcceptAnySslCert = GetAcceptAnySslCert();
             string unsafeMinimumWaitTimeInHours = GetMinimumWaitTimeInHours();
 
+            Uri downloadUri;
+            if (!TryParseDownloadUri(unsafeDownloadUri, out downloadUri))
+            {
+                throw NewFileDownloadArgumentException("Download Uri is invalid");
+            }
+
             int timeoutInSeconds;
-            TryParseTimeout(downloadTimeout, out timeoutInSeconds);
+            if (!TryParseTimeout(downloadTimeout, out timeoutInSeconds))
+            {
+                timeoutInSeconds = 100;
+                loggingService.LogVerbose("The download timeout configuration was invalid, using the default value.");
+            }
 
             bool acceptAnySslCert;
-            TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out acceptAnySslCert);
+            if (!TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out acceptAnySslCert))
+            {
+                acceptAnySslCert = false;
+                loggingService.LogVerbose("The accept any SSL cert configuration was invalid, using the default value.");
+            }
 
             TimeSpan minimumWaitTimeSpan;
-            TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out minimumWaitTimeSpan);
+            if (!TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out minimumWaitTimeSpan))
+            {
+                minimumWaitTimeSpan = MinimumWait.TimeSpan;
+                loggingService.LogVerbose("The minimum wait time configuration was invalid, using the default value.");
+            }
 
-            filePayload.DownloadUri = new Uri(downloadUri);
+            filePayload.DownloadUri = downloadUri;
             filePayload.TimeoutSeconds = timeoutInSeconds;
             filePayload.AcceptAnySslCert = acceptAnySslCert;
             filePayload.MinimumWaitTimeSpan = minimumWaitTimeSpan;
@@ -159,15 +196,18 @@
 
         private bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
         {
-            return downloadSettingsValidatorService.TryParseAcceptAnySslCert(
-                unsafeAcceptAnySslCert,
+            return downloadSettingsValidatorService.TryParseAcceptAnySslCert(unsafeAcceptAnySslCert,
                 out acceptAnySslCert);
         }
 
-        private void TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
+        private bool TryParseDownloadUri(string unsafeDownloadUri, out Uri downloadUri)
         {
-            downloadSettingsValidatorService.TryParseMinimumWaitTimeSpan(
-                unsafeMinimumWaitTimeInHours,
+            return downloadSettingsValidatorService.TryParseDownloadUri(unsafeDownloadUri, out downloadUri);
+        }
+
+        private bool TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
+        {
+            return downloadSettingsValidatorService.TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours,
                 out minimumWaitTimeSpan);
         }
 
