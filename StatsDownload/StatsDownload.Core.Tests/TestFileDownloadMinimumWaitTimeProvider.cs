@@ -31,7 +31,7 @@
         {
             filePayload.MinimumWaitTimeSpan = new TimeSpan(2, 0, 0);
             fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime()
-                .Returns(DateTime.Now.AddHours(-1).AddMinutes(-59));
+                                            .Returns(DateTime.Now.AddHours(-1).AddMinutes(-59));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
 

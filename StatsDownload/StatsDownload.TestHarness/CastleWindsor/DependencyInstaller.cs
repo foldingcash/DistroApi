@@ -16,7 +16,7 @@
         {
             container.Register(
                 Component.For<ILoggingService, IFileDownloadLoggingService>()
-                    .ImplementedBy<TestHarnessLoggingProvider>(),
+                         .ImplementedBy<TestHarnessLoggingProvider>(),
                 Component
                     .For
                     <IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService,
@@ -42,7 +42,7 @@
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
-                    .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),
+                         .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),
                 Component.For<IFileDownloadEmailService>().ImplementedBy<FileDownloadEmailProvider>(),
                 Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),

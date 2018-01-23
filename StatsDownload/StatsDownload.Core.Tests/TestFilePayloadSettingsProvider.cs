@@ -51,7 +51,7 @@
         {
             bool acceptAnySslCert;
             downloadSettingsValidatorServiceMock.TryParseAcceptAnySslCert("AcceptAnySslCert", out acceptAnySslCert)
-                .Returns(callInfo => false);
+                                                .Returns(callInfo => false);
 
             var filePayload = new FilePayload();
 
@@ -65,7 +65,7 @@
         {
             int timeout;
             downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
-                .Returns(callInfo => false);
+                                                .Returns(callInfo => false);
 
             var filePayload = new FilePayload();
 
@@ -79,7 +79,7 @@
         {
             Uri downloadUri;
             downloadSettingsValidatorServiceMock.TryParseDownloadUri("DownloadUri", out downloadUri)
-                .Returns(callInfo => false);
+                                                .Returns(callInfo => false);
 
             var filePayload = new FilePayload();
 
@@ -179,36 +179,36 @@
 
             int timeout;
             downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
-                .Returns(
-                    callInfo =>
-                        {
-                            callInfo[1] = 123;
-                            return true;
-                        });
+                                                .Returns(
+                                                    callInfo =>
+                                                    {
+                                                        callInfo[1] = 123;
+                                                        return true;
+                                                    });
             bool acceptAnySslCert;
             downloadSettingsValidatorServiceMock.TryParseAcceptAnySslCert("AcceptAnySslCert", out acceptAnySslCert)
-                .Returns(
-                    callInfo =>
-                        {
-                            callInfo[1] = true;
-                            return true;
-                        });
+                                                .Returns(
+                                                    callInfo =>
+                                                    {
+                                                        callInfo[1] = true;
+                                                        return true;
+                                                    });
             TimeSpan minimumWaitTimeSpan;
             downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan(
                 "MinimumWaitTimeInHours",
                 out minimumWaitTimeSpan).Returns(
                     callInfo =>
-                        {
-                            callInfo[1] = timeSpan;
-                            return true;
-                        });
+                    {
+                        callInfo[1] = timeSpan;
+                        return true;
+                    });
             Uri downloadUri;
             downloadSettingsValidatorServiceMock.TryParseDownloadUri("DownloadUri", out downloadUri).Returns(
                 callInfo =>
-                    {
-                        callInfo[1] = uri;
-                        return true;
-                    });
+                {
+                    callInfo[1] = uri;
+                    return true;
+                });
             downloadSettingsValidatorServiceMock.IsValidDownloadDirectory("DownloadDirectory").Returns(true);
 
             systemUnderTest = NewFilePayloadSettingsProvider(

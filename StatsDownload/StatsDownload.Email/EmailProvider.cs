@@ -138,10 +138,10 @@
             sb.AppendLine();
 
             return new SmtpClient
-                       {
-                           Host = host, Port = port, EnableSsl = enableSsl, DeliveryMethod = deliveryMethod,
-                           UseDefaultCredentials = useDefaultCredentials, Credentials = credentials
-                       };
+                   {
+                       Host = host, Port = port, EnableSsl = enableSsl, DeliveryMethod = deliveryMethod,
+                       UseDefaultCredentials = useDefaultCredentials, Credentials = credentials
+                   };
         }
 
         private int ParsePort(string unsafePort)

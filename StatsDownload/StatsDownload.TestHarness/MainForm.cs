@@ -47,11 +47,11 @@
         {
             await RunActionAsync(
                 () =>
-                    {
-                        var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
-                        fileDownloadService.DownloadStatsFile();
-                        CreateSeparationInLog();
-                    });
+                {
+                    var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
+                    fileDownloadService.DownloadStatsFile();
+                    CreateSeparationInLog();
+                });
         }
 
         private async Task RunActionAsync(Action action)

@@ -51,14 +51,14 @@
 
             Received.InOrder(
                 () =>
-                    {
-                        loggingServiceMock.LogVerbose("FileDownloadFinished Invoked");
-                        databaseConnectionServiceMock.Open();
-                        databaseConnectionServiceMock.ExecuteStoredProcedure(
-                            "[FoldingCoin].[FileDownloadFinished]",
-                            Arg.Any<List<DbParameter>>());
-                        databaseConnectionServiceMock.Close();
-                    });
+                {
+                    loggingServiceMock.LogVerbose("FileDownloadFinished Invoked");
+                    databaseConnectionServiceMock.Open();
+                    databaseConnectionServiceMock.ExecuteStoredProcedure(
+                        "[FoldingCoin].[FileDownloadFinished]",
+                        Arg.Any<List<DbParameter>>());
+                    databaseConnectionServiceMock.Close();
+                });
         }
 
         [Test]
@@ -69,7 +69,7 @@
             databaseConnectionServiceMock.When(
                 service =>
                 service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]", Arg.Any<List<DbParameter>>()))
-                .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             InvokeFileDownloadFinished();
 
@@ -99,13 +99,12 @@
 
             Received.InOrder(
                 () =>
-                    {
-                        loggingServiceMock.LogVerbose("GetLastFileDownloadDateTime Invoked");
-                        databaseConnectionServiceMock.Open();
-                        databaseConnectionServiceMock.ExecuteScalar(
-                            "SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()");
-                        databaseConnectionServiceMock.Close();
-                    });
+                {
+                    loggingServiceMock.LogVerbose("GetLastFileDownloadDateTime Invoked");
+                    databaseConnectionServiceMock.Open();
+                    databaseConnectionServiceMock.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()");
+                    databaseConnectionServiceMock.Close();
+                });
         }
 
         [Test]
@@ -113,7 +112,7 @@
         {
             DateTime dateTime = DateTime.Now;
             databaseConnectionServiceMock.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()")
-                .Returns(dateTime);
+                                         .Returns(dateTime);
 
             DateTime actual = InvokeGetLastFileFownloadDateTime();
 
@@ -135,12 +134,12 @@
 
             Received.InOrder(
                 (() =>
-                    {
-                        loggingServiceMock.LogVerbose("IsAvailable Invoked");
-                        databaseConnectionServiceMock.Open();
-                        loggingServiceMock.LogVerbose("Database connection was successful");
-                        databaseConnectionServiceMock.Close();
-                    }));
+                {
+                    loggingServiceMock.LogVerbose("IsAvailable Invoked");
+                    databaseConnectionServiceMock.Open();
+                    loggingServiceMock.LogVerbose("Database connection was successful");
+                    databaseConnectionServiceMock.Close();
+                }));
         }
 
         [Test]
@@ -153,12 +152,12 @@
 
             Received.InOrder(
                 (() =>
-                    {
-                        loggingServiceMock.LogVerbose("IsAvailable Invoked");
-                        databaseConnectionServiceMock.Open();
-                        databaseConnectionServiceMock.Close();
-                        loggingServiceMock.LogException(expected);
-                    }));
+                {
+                    loggingServiceMock.LogVerbose("IsAvailable Invoked");
+                    databaseConnectionServiceMock.Open();
+                    databaseConnectionServiceMock.Close();
+                    loggingServiceMock.LogException(expected);
+                }));
         }
 
         [Test]
@@ -205,15 +204,15 @@
 
             Received.InOrder(
                 (() =>
-                    {
-                        loggingServiceMock.LogVerbose("NewFileDownloadStarted Invoked");
-                        databaseConnectionServiceMock.Open();
-                        loggingServiceMock.LogVerbose("Database connection was successful");
-                        databaseConnectionServiceMock.ExecuteStoredProcedure(
-                            "[FoldingCoin].[NewFileDownloadStarted]",
-                            Arg.Any<List<DbParameter>>());
-                        databaseConnectionServiceMock.Close();
-                    }));
+                {
+                    loggingServiceMock.LogVerbose("NewFileDownloadStarted Invoked");
+                    databaseConnectionServiceMock.Open();
+                    loggingServiceMock.LogVerbose("Database connection was successful");
+                    databaseConnectionServiceMock.ExecuteStoredProcedure(
+                        "[FoldingCoin].[NewFileDownloadStarted]",
+                        Arg.Any<List<DbParameter>>());
+                    databaseConnectionServiceMock.Close();
+                }));
         }
 
         [Test]
@@ -224,7 +223,7 @@
             databaseConnectionServiceMock.When(
                 service =>
                 service.ExecuteStoredProcedure("[FoldingCoin].[NewFileDownloadStarted]", Arg.Any<List<DbParameter>>()))
-                .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             InvokeNewFileDownloadStarted();
 
@@ -242,7 +241,7 @@
 
             databaseConnectionServiceMock.ClearSubstitute();
             databaseConnectionServiceMock.CreateParameter("@DownloadId", DbType.Int32, ParameterDirection.Output)
-                .Returns(dbParameter);
+                                         .Returns(dbParameter);
 
             InvokeNewFileDownloadStarted();
 
@@ -279,50 +278,50 @@
                 Arg.Any<DbType>(),
                 Arg.Any<ParameterDirection>()).Returns(
                     info =>
+                    {
+                        var parameterName = info.Arg<string>();
+                        var dbType = info.Arg<DbType>();
+                        var direction = info.Arg<ParameterDirection>();
+
+                        var dbParameter = Substitute.For<DbParameter>();
+                        dbParameter.ParameterName.Returns(parameterName);
+                        dbParameter.DbType.Returns(dbType);
+                        dbParameter.Direction.Returns(direction);
+
+                        if (dbType.Equals(DbType.Int32))
                         {
-                            var parameterName = info.Arg<string>();
-                            var dbType = info.Arg<DbType>();
-                            var direction = info.Arg<ParameterDirection>();
+                            dbParameter.Value.Returns(default(int));
+                        }
 
-                            var dbParameter = Substitute.For<DbParameter>();
-                            dbParameter.ParameterName.Returns(parameterName);
-                            dbParameter.DbType.Returns(dbType);
-                            dbParameter.Direction.Returns(direction);
-
-                            if (dbType.Equals(DbType.Int32))
-                            {
-                                dbParameter.Value.Returns(default(int));
-                            }
-
-                            return dbParameter;
-                        });
+                        return dbParameter;
+                    });
 
             filePayload = new FilePayload
-                              {
-                                  DownloadId = 100, DecompressedDownloadFileName = "DecompressedDownloadFileName",
-                                  DecompressedDownloadFileExtension = "DecompressedDownloadFileExtension",
-                                  DecompressedDownloadFileData = "DecompressedDownloadFileData"
-                              };
+                          {
+                              DownloadId = 100, DecompressedDownloadFileName = "DecompressedDownloadFileName",
+                              DecompressedDownloadFileExtension = "DecompressedDownloadFileExtension",
+                              DecompressedDownloadFileData = "DecompressedDownloadFileData"
+                          };
         }
 
         [Test]
         public void UpdateToLatest_WhenInvoked_DatabaseUpdatedToLatest()
         {
             databaseConnectionServiceMock.ExecuteStoredProcedure(Arg.Any<string>())
-                .Returns(NumberOfRowsEffectedExpected);
+                                         .Returns(NumberOfRowsEffectedExpected);
 
             InvokeUpdateToLatest();
 
             Received.InOrder(
                 (() =>
-                    {
-                        loggingServiceMock.LogVerbose("UpdateToLatest Invoked");
-                        databaseConnectionServiceMock.Open();
-                        loggingServiceMock.LogVerbose("Database connection was successful");
-                        databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[UpdateToLatest]");
-                        loggingServiceMock.LogVerbose($"'{NumberOfRowsEffectedExpected}' rows were effected");
-                        databaseConnectionServiceMock.Close();
-                    }));
+                {
+                    loggingServiceMock.LogVerbose("UpdateToLatest Invoked");
+                    databaseConnectionServiceMock.Open();
+                    loggingServiceMock.LogVerbose("Database connection was successful");
+                    databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[UpdateToLatest]");
+                    loggingServiceMock.LogVerbose($"'{NumberOfRowsEffectedExpected}' rows were effected");
+                    databaseConnectionServiceMock.Close();
+                }));
         }
 
         private void InvokeFileDownloadFinished()

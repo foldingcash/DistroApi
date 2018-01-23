@@ -32,8 +32,8 @@
 
             Assert.That(filePayload.DownloadUri.Scheme, Is.EqualTo(Uri.UriSchemeHttp));
             loggingServiceMock.Received()
-                .LogVerbose(
-                    $"Changing scheme https to http{Environment.NewLine}Old Uri: https://localhost/{Environment.NewLine}New Uri: http://localhost/");
+                              .LogVerbose(
+                                  $"Changing scheme https to http{Environment.NewLine}Old Uri: https://localhost/{Environment.NewLine}New Uri: http://localhost/");
         }
 
         [Test]
@@ -45,8 +45,8 @@
 
             Assert.That(filePayload.DownloadUri.Scheme, Is.EqualTo(Uri.UriSchemeHttps));
             loggingServiceMock.Received()
-                .LogVerbose(
-                    $"Changing scheme http to https{Environment.NewLine}Old Uri: http://localhost/{Environment.NewLine}New Uri: https://localhost/");
+                              .LogVerbose(
+                                  $"Changing scheme http to https{Environment.NewLine}Old Uri: http://localhost/{Environment.NewLine}New Uri: https://localhost/");
         }
 
         [Test]

@@ -176,12 +176,12 @@
 
             Received.InOrder(
                 (() =>
-                    {
-                        loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
-                        fileDownloadDataStoreServiceMock.IsAvailable();
-                        loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
-                        loggingServiceMock.LogException(expected);
-                    }));
+                {
+                    loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
+                    fileDownloadDataStoreServiceMock.IsAvailable();
+                    loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
+                    loggingServiceMock.LogException(expected);
+                }));
         }
 
         [Test]
@@ -220,7 +220,7 @@
         public void DownloadFile_WhenFileDownloadFailedDecompressions_ReturnsFileDownloadFailedDecompression()
         {
             fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable())
-                .Do(info => { throw new FileDownloadFailedDecompressionException(); });
+                                            .Do(info => { throw new FileDownloadFailedDecompressionException(); });
 
             FileDownloadResult actual = InvokeDownloadFile();
 
@@ -238,10 +238,10 @@
 
             Received.InOrder(
                 (() =>
-                    {
-                        loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
-                        loggingServiceMock.LogException(exception);
-                    }));
+                {
+                    loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
+                    loggingServiceMock.LogException(exception);
+                }));
         }
 
         [Test]
@@ -280,7 +280,7 @@
         public void DownloadFile_WhenFileDownloadSettingsInvalid_ReturnsFailedReasonRequiredSettingsInvalid()
         {
             filePayloadSettingsServiceMock.When(mock => mock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>()))
-                .Throw<FileDownloadArgumentException>();
+                                          .Throw<FileDownloadArgumentException>();
             FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
@@ -297,10 +297,10 @@
 
             Received.InOrder(
                 (() =>
-                    {
-                        loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
-                        loggingServiceMock.LogException(exception);
-                    }));
+                {
+                    loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
+                    loggingServiceMock.LogException(exception);
+                }));
         }
 
         [Test]
@@ -351,22 +351,22 @@
 
             Received.InOrder(
                 (() =>
-                    {
-                        loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
-                        fileDownloadDataStoreServiceMock.IsAvailable();
-                        fileDownloadDataStoreServiceMock.UpdateToLatest();
-                        dateTimeServiceMock.DateTimeNow();
-                        loggingServiceMock.LogVerbose($"Stats file download started: {dateTime}");
-                        fileDownloadDataStoreServiceMock.NewFileDownloadStarted(Arg.Any<FilePayload>());
-                        fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>());
-                        filePayloadSettingsServiceMock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>());
-                        downloadServiceMock.DownloadFile(Arg.Any<FilePayload>());
-                        dateTimeServiceMock.DateTimeNow();
-                        loggingServiceMock.LogVerbose($"Stats file download completed: {dateTime}");
-                        filePayloadUploadServiceMock.UploadFile(Arg.Any<FilePayload>());
-                        resourceCleanupServiceMock.Cleanup(Arg.Any<FileDownloadResult>());
-                        loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
-                    }));
+                {
+                    loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
+                    fileDownloadDataStoreServiceMock.IsAvailable();
+                    fileDownloadDataStoreServiceMock.UpdateToLatest();
+                    dateTimeServiceMock.DateTimeNow();
+                    loggingServiceMock.LogVerbose($"Stats file download started: {dateTime}");
+                    fileDownloadDataStoreServiceMock.NewFileDownloadStarted(Arg.Any<FilePayload>());
+                    fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>());
+                    filePayloadSettingsServiceMock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>());
+                    downloadServiceMock.DownloadFile(Arg.Any<FilePayload>());
+                    dateTimeServiceMock.DateTimeNow();
+                    loggingServiceMock.LogVerbose($"Stats file download completed: {dateTime}");
+                    filePayloadUploadServiceMock.UploadFile(Arg.Any<FilePayload>());
+                    resourceCleanupServiceMock.Cleanup(Arg.Any<FileDownloadResult>());
+                    loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
+                }));
         }
 
         [Test]

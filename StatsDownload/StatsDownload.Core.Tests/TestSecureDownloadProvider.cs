@@ -43,13 +43,13 @@
             var firstCall = true;
             downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
                 info =>
+                {
+                    if (firstCall)
                     {
-                        if (firstCall)
-                        {
-                            firstCall = false;
-                            throw webException;
-                        }
-                    });
+                        firstCall = false;
+                        throw webException;
+                    }
+                });
 
             Assert.Throws(Is.EqualTo(webException), () => systemUnderTest.DownloadFile(filePayload));
 
@@ -67,13 +67,13 @@
             var firstCall = true;
             downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
                 info =>
+                {
+                    if (firstCall)
                     {
-                        if (firstCall)
-                        {
-                            firstCall = false;
-                            throw expected;
-                        }
-                    });
+                        firstCall = false;
+                        throw expected;
+                    }
+                });
 
             Assert.Throws(Is.EqualTo(expected), () => systemUnderTest.DownloadFile(filePayload));
         }
@@ -87,10 +87,10 @@
 
             Received.InOrder(
                 (() =>
-                    {
-                        secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
-                        downloadServiceMock.DownloadFile(filePayload);
-                    }));
+                {
+                    secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
+                    downloadServiceMock.DownloadFile(filePayload);
+                }));
         }
 
         [Test]
@@ -103,13 +103,13 @@
             var firstCall = true;
             downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
                 info =>
+                {
+                    if (firstCall)
                     {
-                        if (firstCall)
-                        {
-                            firstCall = false;
-                            throw expected;
-                        }
-                    });
+                        firstCall = false;
+                        throw expected;
+                    }
+                });
 
             Assert.Throws(Is.EqualTo(expected), () => systemUnderTest.DownloadFile(filePayload));
         }
@@ -124,25 +124,25 @@
             var firstCall = true;
             downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
                 info =>
+                {
+                    if (firstCall)
                     {
-                        if (firstCall)
-                        {
-                            firstCall = false;
-                            throw webException;
-                        }
-                    });
+                        firstCall = false;
+                        throw webException;
+                    }
+                });
 
             systemUnderTest.DownloadFile(filePayload);
 
             Received.InOrder(
                 (() =>
-                    {
-                        secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
-                        downloadServiceMock.DownloadFile(filePayload);
-                        loggingServiceMock.LogException(webException);
-                        secureFilePayloadServiceMock.DisableSecureFilePayload(filePayload);
-                        downloadServiceMock.DownloadFile(filePayload);
-                    }));
+                {
+                    secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
+                    downloadServiceMock.DownloadFile(filePayload);
+                    loggingServiceMock.LogException(webException);
+                    secureFilePayloadServiceMock.DisableSecureFilePayload(filePayload);
+                    downloadServiceMock.DownloadFile(filePayload);
+                }));
         }
 
         [SetUp]

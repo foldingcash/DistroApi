@@ -41,11 +41,11 @@
 
             Received.InOrder(
                 () =>
-                    {
-                        fileCompressionServiceMock.DecompressFile(filePayload);
-                        fileReaderServiceMock.ReadFile(filePayload);
-                        fileDownloadDataStoreServiceMock.FileDownloadFinished(filePayload);
-                    });
+                {
+                    fileCompressionServiceMock.DecompressFile(filePayload);
+                    fileReaderServiceMock.ReadFile(filePayload);
+                    fileDownloadDataStoreServiceMock.FileDownloadFinished(filePayload);
+                });
         }
 
         private void InvokeUploadFile()
