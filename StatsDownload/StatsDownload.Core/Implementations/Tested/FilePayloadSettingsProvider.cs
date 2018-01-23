@@ -71,7 +71,7 @@
 
             if (!downloadSettingsValidatorService.IsValidDownloadDirectory(downloadDirectory))
             {
-                throw new FileDownloadArgumentException();
+                throw NewFileDownloadArgumentException("Download directory is invalid");
             }
 
             return downloadDirectory;
@@ -112,6 +112,11 @@
             return new ArgumentNullException(parameterName);
         }
 
+        private Exception NewFileDownloadArgumentException(string message)
+        {
+            return new FileDownloadArgumentException(message);
+        }
+
         private void SetDecompressedDownloadFileDetails(
             FilePayload filePayload,
             DateTime dateTime,
@@ -137,7 +142,7 @@
             Uri downloadUri;
             if (!TryParseDownloadUri(unsafeDownloadUri, out downloadUri))
             {
-                throw new FileDownloadArgumentException();
+                throw NewFileDownloadArgumentException("Download Uri is invalid");
             }
 
             int timeoutInSeconds;

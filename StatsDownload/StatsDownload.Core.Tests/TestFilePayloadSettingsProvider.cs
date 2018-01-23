@@ -43,7 +43,9 @@
 
             var filePayload = new FilePayload();
 
-            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+            var actual =
+                Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+            Assert.That(actual.Message, Is.EqualTo("Download directory is invalid"));
         }
 
         [Test]
@@ -83,7 +85,9 @@
 
             var filePayload = new FilePayload();
 
-            Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+            var actual =
+                Assert.Throws<FileDownloadArgumentException>(() => InvokeSetFilePayloadDownloadDetails(filePayload));
+            Assert.That(actual.Message, Is.EqualTo("Download Uri is invalid"));
         }
 
         [Test]
