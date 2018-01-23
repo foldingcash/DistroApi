@@ -7,10 +7,8 @@
     using StatsDownload.Core;
     using StatsDownload.Email;
 
-    public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService,
-                                               IDownloadSettingsService,
-                                               ITestHarnessSettingsService,
-                                               IEmailSettingsService
+    public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
+                                               ITestHarnessSettingsService, IEmailSettingsService
     {
         public string GetAcceptAnySslCert()
         {

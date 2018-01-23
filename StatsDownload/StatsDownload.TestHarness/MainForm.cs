@@ -45,13 +45,12 @@
 
         private async void FileDownloadButton_Click(object sender, EventArgs e)
         {
-            await RunActionAsync(
-                () =>
-                {
-                    var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
-                    fileDownloadService.DownloadStatsFile();
-                    CreateSeparationInLog();
-                });
+            await RunActionAsync(() =>
+            {
+                var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
+                fileDownloadService.DownloadStatsFile();
+                CreateSeparationInLog();
+            });
         }
 
         private async Task RunActionAsync(Action action)

@@ -19,10 +19,9 @@
 
         private readonly IDownloadSettingsValidatorService downloadSettingsValidatorService;
 
-        public FilePayloadSettingsProvider(
-            IDateTimeService dateTimeService,
-            IDownloadSettingsService downloadSettingsService,
-            IDownloadSettingsValidatorService downloadSettingsValidatorService)
+        public FilePayloadSettingsProvider(IDateTimeService dateTimeService,
+                                           IDownloadSettingsService downloadSettingsService,
+                                           IDownloadSettingsValidatorService downloadSettingsValidatorService)
         {
             if (IsNull(dateTimeService))
             {
@@ -117,18 +116,15 @@
             return new FileDownloadArgumentException(message);
         }
 
-        private void SetDecompressedDownloadFileDetails(
-            FilePayload filePayload,
-            DateTime dateTime,
-            string downloadDirectory)
+        private void SetDecompressedDownloadFileDetails(FilePayload filePayload, DateTime dateTime,
+                                                        string downloadDirectory)
         {
             string decompressedFileName = $"{dateTime.ToFileTime()}.{DecompressedFileName}";
 
             filePayload.DecompressedDownloadDirectory = downloadDirectory;
             filePayload.DecompressedDownloadFileName = decompressedFileName;
             filePayload.DecompressedDownloadFileExtension = DecompressedFileExtension;
-            filePayload.DecompressedDownloadFilePath = Path.Combine(
-                downloadDirectory,
+            filePayload.DecompressedDownloadFilePath = Path.Combine(downloadDirectory,
                 $"{decompressedFileName}{DecompressedFileExtension}");
         }
 
@@ -186,8 +182,7 @@
 
         private bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
         {
-            return downloadSettingsValidatorService.TryParseAcceptAnySslCert(
-                unsafeAcceptAnySslCert,
+            return downloadSettingsValidatorService.TryParseAcceptAnySslCert(unsafeAcceptAnySslCert,
                 out acceptAnySslCert);
         }
 
@@ -198,8 +193,7 @@
 
         private bool TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
         {
-            return downloadSettingsValidatorService.TryParseMinimumWaitTimeSpan(
-                unsafeMinimumWaitTimeInHours,
+            return downloadSettingsValidatorService.TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours,
                 out minimumWaitTimeSpan);
         }
 

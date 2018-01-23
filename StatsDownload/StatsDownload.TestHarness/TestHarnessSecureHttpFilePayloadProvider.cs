@@ -8,9 +8,8 @@
 
         private readonly ITestHarnessSettingsService testHarnessSettingsService;
 
-        public TestHarnessSecureHttpFilePayloadProvider(
-            ISecureFilePayloadService secureFilePayloadService,
-            ITestHarnessSettingsService testHarnessSettingsService)
+        public TestHarnessSecureHttpFilePayloadProvider(ISecureFilePayloadService secureFilePayloadService,
+                                                        ITestHarnessSettingsService testHarnessSettingsService)
         {
             this.secureFilePayloadService = secureFilePayloadService;
             this.testHarnessSettingsService = testHarnessSettingsService;

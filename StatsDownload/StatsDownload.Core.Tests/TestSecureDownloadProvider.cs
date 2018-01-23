@@ -41,15 +41,14 @@
             secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(true);
 
             var firstCall = true;
-            downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
-                info =>
+            downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(info =>
+            {
+                if (firstCall)
                 {
-                    if (firstCall)
-                    {
-                        firstCall = false;
-                        throw webException;
-                    }
-                });
+                    firstCall = false;
+                    throw webException;
+                }
+            });
 
             Assert.Throws(Is.EqualTo(webException), () => systemUnderTest.DownloadFile(filePayload));
 
@@ -65,15 +64,14 @@
             secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(true);
 
             var firstCall = true;
-            downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
-                info =>
+            downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(info =>
+            {
+                if (firstCall)
                 {
-                    if (firstCall)
-                    {
-                        firstCall = false;
-                        throw expected;
-                    }
-                });
+                    firstCall = false;
+                    throw expected;
+                }
+            });
 
             Assert.Throws(Is.EqualTo(expected), () => systemUnderTest.DownloadFile(filePayload));
         }
@@ -85,12 +83,11 @@
 
             systemUnderTest.DownloadFile(filePayload);
 
-            Received.InOrder(
-                (() =>
-                {
-                    secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
-                    downloadServiceMock.DownloadFile(filePayload);
-                }));
+            Received.InOrder((() =>
+            {
+                secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
+                downloadServiceMock.DownloadFile(filePayload);
+            }));
         }
 
         [Test]
@@ -101,15 +98,14 @@
             secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(false);
 
             var firstCall = true;
-            downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
-                info =>
+            downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(info =>
+            {
+                if (firstCall)
                 {
-                    if (firstCall)
-                    {
-                        firstCall = false;
-                        throw expected;
-                    }
-                });
+                    firstCall = false;
+                    throw expected;
+                }
+            });
 
             Assert.Throws(Is.EqualTo(expected), () => systemUnderTest.DownloadFile(filePayload));
         }
@@ -122,27 +118,25 @@
             secureFilePayloadServiceMock.IsSecureConnection(filePayload).Returns(false);
 
             var firstCall = true;
-            downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(
-                info =>
+            downloadServiceMock.When(service => service.DownloadFile(filePayload)).Do(info =>
+            {
+                if (firstCall)
                 {
-                    if (firstCall)
-                    {
-                        firstCall = false;
-                        throw webException;
-                    }
-                });
+                    firstCall = false;
+                    throw webException;
+                }
+            });
 
             systemUnderTest.DownloadFile(filePayload);
 
-            Received.InOrder(
-                (() =>
-                {
-                    secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
-                    downloadServiceMock.DownloadFile(filePayload);
-                    loggingServiceMock.LogException(webException);
-                    secureFilePayloadServiceMock.DisableSecureFilePayload(filePayload);
-                    downloadServiceMock.DownloadFile(filePayload);
-                }));
+            Received.InOrder((() =>
+            {
+                secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
+                downloadServiceMock.DownloadFile(filePayload);
+                loggingServiceMock.LogException(webException);
+                secureFilePayloadServiceMock.DisableSecureFilePayload(filePayload);
+                downloadServiceMock.DownloadFile(filePayload);
+            }));
         }
 
         [SetUp]
@@ -156,16 +150,13 @@
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
-            systemUnderTest = NewSecureDownloadProvider(
-                downloadServiceMock,
-                secureFilePayloadServiceMock,
+            systemUnderTest = NewSecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock,
                 loggingServiceMock);
         }
 
-        private IDownloadService NewSecureDownloadProvider(
-            IDownloadService downloadService,
-            ISecureFilePayloadService secureFilePayloadService,
-            ILoggingService loggingService)
+        private IDownloadService NewSecureDownloadProvider(IDownloadService downloadService,
+                                                           ISecureFilePayloadService secureFilePayloadService,
+                                                           ILoggingService loggingService)
         {
             return new SecureDownloadProvider(downloadService, secureFilePayloadService, loggingService);
         }

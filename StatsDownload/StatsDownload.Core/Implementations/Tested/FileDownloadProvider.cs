@@ -23,16 +23,13 @@
 
         private readonly IResourceCleanupService resourceCleanupService;
 
-        public FileDownloadProvider(
-            IFileDownloadDataStoreService fileDownloadDataStoreService,
-            IFileDownloadLoggingService loggingService,
-            IDownloadService downloadService,
-            IFilePayloadSettingsService filePayloadSettingsService,
-            IResourceCleanupService resourceCleanupService,
-            IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
-            IDateTimeService dateTimeService,
-            IFilePayloadUploadService filePayloadUploadService,
-            IFileDownloadEmailService fileDownloadEmailService)
+        public FileDownloadProvider(IFileDownloadDataStoreService fileDownloadDataStoreService,
+                                    IFileDownloadLoggingService loggingService, IDownloadService downloadService,
+                                    IFilePayloadSettingsService filePayloadSettingsService,
+                                    IResourceCleanupService resourceCleanupService,
+                                    IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
+                                    IDateTimeService dateTimeService, IFilePayloadUploadService filePayloadUploadService,
+                                    IFileDownloadEmailService fileDownloadEmailService)
         {
             if (IsNull(fileDownloadDataStoreService))
             {
@@ -100,8 +97,7 @@
 
                 if (DataStoreUnavailable())
                 {
-                    FileDownloadResult failedResult = NewFailedFileDownloadResult(
-                        FailedReason.DataStoreUnavailable,
+                    FileDownloadResult failedResult = NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable,
                         filePayload);
                     LogResult(failedResult);
                     SendEmail(failedResult);

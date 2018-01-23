@@ -36,8 +36,7 @@
         }
 
         [Test]
-        public void SetFilePayloadDownloadDetails_WhenDownloadDirectoryDoesNotExist_ThrowsFileDownloadArgumentException(
-            )
+        public void SetFilePayloadDownloadDetails_WhenDownloadDirectoryDoesNotExist_ThrowsFileDownloadArgumentException()
         {
             downloadSettingsValidatorServiceMock.IsValidDownloadDirectory("DownloadDirectory").Returns(false);
 
@@ -94,8 +93,7 @@
         public void SetFilePayloadDownloadDetails_WhenInvalidMinimumWaitTimeInHours_ReturnsDefault()
         {
             TimeSpan minimumWaitTimeSpan;
-            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan(
-                "MinimumWaitTimeInHours",
+            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan("MinimumWaitTimeInHours",
                 out minimumWaitTimeSpan).Returns(callInfo => false);
 
             var filePayload = new FilePayload();
@@ -113,12 +111,10 @@
             systemUnderTest.SetFilePayloadDownloadDetails(filePayload);
 
             Assert.That(filePayload.DecompressedDownloadDirectory, Is.EqualTo("DownloadDirectory"));
-            Assert.That(
-                filePayload.DecompressedDownloadFileName,
+            Assert.That(filePayload.DecompressedDownloadFileName,
                 Is.EqualTo($"{dateTime.ToFileTime()}.daily_user_summary"));
             Assert.That(filePayload.DecompressedDownloadFileExtension, Is.EqualTo(".txt"));
-            Assert.That(
-                filePayload.DecompressedDownloadFilePath,
+            Assert.That(filePayload.DecompressedDownloadFilePath,
                 Is.EqualTo($"DownloadDirectory\\{dateTime.ToFileTime()}.daily_user_summary.txt"));
         }
 
@@ -145,8 +141,7 @@
             Assert.That(filePayload.DownloadDirectory, Is.EqualTo("DownloadDirectory"));
             Assert.That(filePayload.DownloadFileName, Is.EqualTo($"{dateTime.ToFileTime()}.daily_user_summary.txt"));
             Assert.That(filePayload.DownloadFileExtension, Is.EqualTo(".bz2"));
-            Assert.That(
-                filePayload.DownloadFilePath,
+            Assert.That(filePayload.DownloadFilePath,
                 Is.EqualTo($"DownloadDirectory\\{dateTime.ToFileTime()}.daily_user_summary.txt.bz2"));
         }
 
@@ -157,8 +152,7 @@
 
             systemUnderTest.SetFilePayloadDownloadDetails(filePayload);
 
-            Assert.That(
-                filePayload.FailedDownloadFilePath,
+            Assert.That(filePayload.FailedDownloadFilePath,
                 Is.EqualTo($"DownloadDirectory\\FileDownloadFailed\\{dateTime.ToFileTime()}.daily_user_summary.txt.bz2"));
         }
 
@@ -183,41 +177,34 @@
 
             int timeout;
             downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
-                                                .Returns(
-                                                    callInfo =>
-                                                    {
-                                                        callInfo[1] = 123;
-                                                        return true;
-                                                    });
+                                                .Returns(callInfo =>
+                                                {
+                                                    callInfo[1] = 123;
+                                                    return true;
+                                                });
             bool acceptAnySslCert;
             downloadSettingsValidatorServiceMock.TryParseAcceptAnySslCert("AcceptAnySslCert", out acceptAnySslCert)
-                                                .Returns(
-                                                    callInfo =>
-                                                    {
-                                                        callInfo[1] = true;
-                                                        return true;
-                                                    });
+                                                .Returns(callInfo =>
+                                                {
+                                                    callInfo[1] = true;
+                                                    return true;
+                                                });
             TimeSpan minimumWaitTimeSpan;
-            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan(
-                "MinimumWaitTimeInHours",
-                out minimumWaitTimeSpan).Returns(
-                    callInfo =>
-                    {
-                        callInfo[1] = timeSpan;
-                        return true;
-                    });
-            Uri downloadUri;
-            downloadSettingsValidatorServiceMock.TryParseDownloadUri("DownloadUri", out downloadUri).Returns(
-                callInfo =>
+            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan("MinimumWaitTimeInHours",
+                out minimumWaitTimeSpan).Returns(callInfo =>
                 {
-                    callInfo[1] = uri;
+                    callInfo[1] = timeSpan;
                     return true;
                 });
+            Uri downloadUri;
+            downloadSettingsValidatorServiceMock.TryParseDownloadUri("DownloadUri", out downloadUri).Returns(callInfo =>
+            {
+                callInfo[1] = uri;
+                return true;
+            });
             downloadSettingsValidatorServiceMock.IsValidDownloadDirectory("DownloadDirectory").Returns(true);
 
-            systemUnderTest = NewFilePayloadSettingsProvider(
-                dateTimeServiceMock,
-                downloadSettingsServiceMock,
+            systemUnderTest = NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock,
                 downloadSettingsValidatorServiceMock);
         }
 
@@ -226,14 +213,13 @@
             systemUnderTest.SetFilePayloadDownloadDetails(filePayload);
         }
 
-        private IFilePayloadSettingsService NewFilePayloadSettingsProvider(
-            IDateTimeService dateTimeService,
-            IDownloadSettingsService downloadSettingsService,
-            IDownloadSettingsValidatorService downloadSettingsValidatorService)
+        private IFilePayloadSettingsService NewFilePayloadSettingsProvider(IDateTimeService dateTimeService,
+                                                                           IDownloadSettingsService
+                                                                               downloadSettingsService,
+                                                                           IDownloadSettingsValidatorService
+                                                                               downloadSettingsValidatorService)
         {
-            return new FilePayloadSettingsProvider(
-                dateTimeService,
-                downloadSettingsService,
+            return new FilePayloadSettingsProvider(dateTimeService, downloadSettingsService,
                 downloadSettingsValidatorService);
         }
     }

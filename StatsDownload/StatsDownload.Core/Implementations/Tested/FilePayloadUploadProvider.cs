@@ -8,10 +8,9 @@
 
         private readonly IFileReaderService fileReaderService;
 
-        public FilePayloadUploadProvider(
-            IFileCompressionService fileCompressionService,
-            IFileReaderService fileReaderService,
-            IFileDownloadDataStoreService fileDownloadDataStoreService)
+        public FilePayloadUploadProvider(IFileCompressionService fileCompressionService,
+                                         IFileReaderService fileReaderService,
+                                         IFileDownloadDataStoreService fileDownloadDataStoreService)
         {
             this.fileCompressionService = fileCompressionService;
             this.fileReaderService = fileReaderService;
