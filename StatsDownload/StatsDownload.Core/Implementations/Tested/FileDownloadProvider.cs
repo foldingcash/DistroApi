@@ -128,7 +128,6 @@
                 FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
                 Cleanup(successResult);
                 LogResult(successResult);
-
                 return successResult;
             }
             catch (Exception exception)

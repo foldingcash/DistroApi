@@ -67,6 +67,17 @@
         }
 
         [Test]
+        public void SendEmail_WhenInvokedWithRequiredSettingsInvalid_SendsEmail()
+        {
+            systemUnderTest.SendEmail(new FileDownloadResult(FailedReason.RequiredSettingsInvalid, new FilePayload()));
+
+            emailServiceMock.Received()
+                .SendEmail(
+                    "File Download Failed",
+                    "There was a problem downloading the file payload. The required settings are invalid; check the logs for more information. Ensure the settings are complete and accurate, then try again.");
+        }
+
+        [Test]
         public void SendEmail_WhenInvokedWithUnexpectedException_SendsEmail()
         {
             systemUnderTest.SendEmail(new FileDownloadResult(FailedReason.UnexpectedException, new FilePayload()));
