@@ -5,6 +5,21 @@
 
     public class EmailSettingsValidatorProvider : IEmailSettingsValidatorService
     {
+        public string ParseFromAddress(string unsafeFromAddress)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ParseFromDisplayName(string unsafeFromDisplayName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ParsePassword(string unsafePassword)
+        {
+            throw new NotImplementedException();
+        }
+
         public int ParsePort(string unsafePort)
         {
             int port;
@@ -29,6 +44,11 @@
             }
 
             return unsafeReceivers.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public string ParseSmtpHost(string unsafeSmtpHost)
+        {
+            throw new NotImplementedException();
         }
     }
 }

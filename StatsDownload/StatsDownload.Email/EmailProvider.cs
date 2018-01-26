@@ -46,8 +46,7 @@
 
             try
             {
-                MailAddress fromAddress = NewMailAddress(settingsService.GetFromAddress(),
-                    settingsService.GetFromDisplayName());
+                MailAddress fromAddress = NewMailAddress();
 
                 IEnumerable<string> receivers = ParseReceivers(settingsService.GetReceivers());
 
@@ -96,6 +95,14 @@
             return new EmailResult(exception);
         }
 
+        private MailAddress NewMailAddress()
+        {
+            string fromAddress = ParseFromAddress(settingsService.GetFromAddress());
+            string displayName = ParseFromDisplayName(settingsService.GetFromDisplayName());
+
+            return NewMailAddress(fromAddress, displayName);
+        }
+
         private MailAddress NewMailAddress(string address, string displayName)
         {
             return new MailAddress(address, displayName);
@@ -118,9 +125,9 @@
 
         private SmtpClient NewSmtpClient(StringBuilder sb, MailAddress fromAddress)
         {
-            string host = settingsService.GetSmtpHost();
+            string host = ParseSmtpHost(settingsService.GetSmtpHost());
             int port = ParsePort(settingsService.GetPort());
-            string password = settingsService.GetPassword();
+            string password = ParsePassword(settingsService.GetPassword());
             ICredentialsByHost credentials = NewNetworkCredential(fromAddress.Address, password);
             var deliveryMethod = SmtpDeliveryMethod.Network;
             var enableSsl = true;
@@ -146,6 +153,21 @@
                    };
         }
 
+        private string ParseFromAddress(string unsafeFromAddress)
+        {
+            return emailSettingsValidatorService.ParseFromAddress(unsafeFromAddress);
+        }
+
+        private string ParseFromDisplayName(string unsafeFromDisplayName)
+        {
+            return emailSettingsValidatorService.ParseFromDisplayName(unsafeFromDisplayName);
+        }
+
+        private string ParsePassword(string unsafePassword)
+        {
+            return emailSettingsValidatorService.ParsePassword(unsafePassword);
+        }
+
         private int ParsePort(string unsafePort)
         {
             return emailSettingsValidatorService.ParsePort(unsafePort);
@@ -154,6 +176,11 @@
         private IEnumerable<string> ParseReceivers(string unsafeReceivers)
         {
             return emailSettingsValidatorService.ParseReceivers(unsafeReceivers);
+        }
+
+        private string ParseSmtpHost(string unsafeSmtpHost)
+        {
+            return emailSettingsValidatorService.ParseSmtpHost(unsafeSmtpHost);
         }
 
         private void SendMessage(StringBuilder sb, SmtpClient smtpClient, MailAddress fromAddress, MailAddress toAddress,
