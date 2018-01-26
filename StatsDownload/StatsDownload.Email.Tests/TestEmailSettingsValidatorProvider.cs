@@ -10,6 +10,51 @@
     {
         private IEmailSettingsValidatorService systemUnderTest;
 
+        [TestCase("")]
+        [TestCase(null)]
+        public void ParseFromAddress_WhenInvalidFromAddress_ThrowsEmailArgumentException(string unsafeFromAddress)
+        {
+            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParseFromAddress(unsafeFromAddress)));
+        }
+
+        [TestCase("user@domain.com")]
+        public void ParseFromAddress_WhenValidFromAddress_ReturnsFromAddress(string unsafeFromAddress)
+        {
+            string actual = systemUnderTest.ParseFromAddress(unsafeFromAddress);
+
+            Assert.That(actual, Is.EqualTo(unsafeFromAddress));
+        }
+
+        [TestCase("")]
+        [TestCase(null)]
+        public void ParseFromDisplayName_WhenInvalidSmtpHost_ThrowsEmailArgumentException(string unsafeSmtpHost)
+        {
+            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParseSmtpHost(unsafeSmtpHost)));
+        }
+
+        [TestCase("Display Name")]
+        public void ParseFromDisplayName_WhenValidFromDisplayName_ReturnsFromDisplayName(string unsafeFromDisplayName)
+        {
+            string actual = systemUnderTest.ParseFromDisplayName(unsafeFromDisplayName);
+
+            Assert.That(actual, Is.EqualTo(unsafeFromDisplayName));
+        }
+
+        [TestCase("")]
+        [TestCase(null)]
+        public void ParsePassword_WhenInvalidPassword_ThrowsEmailArgumentException(string unsafePassword)
+        {
+            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParsePassword(unsafePassword)));
+        }
+
+        [TestCase("password")]
+        public void ParsePassword_WhenValidPassword_ReturnsPassword(string unsafePassword)
+        {
+            string actual = systemUnderTest.ParsePassword(unsafePassword);
+
+            Assert.That(actual, Is.EqualTo(unsafePassword));
+        }
+
         [TestCase("-1")]
         [TestCase("0")]
         [TestCase("65536")]
@@ -61,6 +106,21 @@
             Assert.That(actual, Is.Not.Null);
             Assert.That(actual.Count(), Is.EqualTo(2));
             Assert.That(actual.First(), Is.EqualTo("user@domain.tld"));
+        }
+
+        [TestCase("")]
+        [TestCase(null)]
+        public void ParseSmtpHost_WhenInvalidSmtpHost_ThrowsEmailArgumentException(string unsafeSmtpHost)
+        {
+            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParseSmtpHost(unsafeSmtpHost)));
+        }
+
+        [TestCase("google.com")]
+        public void ParseSmtpHost_WhenValidSmtpHost_ReturnsSmtpHost(string unsafeSmtpHost)
+        {
+            string actual = systemUnderTest.ParseSmtpHost(unsafeSmtpHost);
+
+            Assert.That(actual, Is.EqualTo(unsafeSmtpHost));
         }
 
         [SetUp]

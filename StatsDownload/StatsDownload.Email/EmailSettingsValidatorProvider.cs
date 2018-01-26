@@ -7,17 +7,32 @@
     {
         public string ParseFromAddress(string unsafeFromAddress)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(unsafeFromAddress))
+            {
+                throw new EmailArgumentException(nameof(unsafeFromAddress), "A from email address was not provided");
+            }
+
+            return unsafeFromAddress;
         }
 
         public string ParseFromDisplayName(string unsafeFromDisplayName)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(unsafeFromDisplayName))
+            {
+                throw new EmailArgumentException(nameof(unsafeFromDisplayName), "A from display name was not provided");
+            }
+
+            return unsafeFromDisplayName;
         }
 
         public string ParsePassword(string unsafePassword)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(unsafePassword))
+            {
+                throw new EmailArgumentException(nameof(unsafePassword), "A password was not provided");
+            }
+
+            return unsafePassword;
         }
 
         public int ParsePort(string unsafePort)
@@ -48,7 +63,12 @@
 
         public string ParseSmtpHost(string unsafeSmtpHost)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(unsafeSmtpHost))
+            {
+                throw new EmailArgumentException(nameof(unsafeSmtpHost), "A SMTP host was not provided");
+            }
+
+            return unsafeSmtpHost;
         }
     }
 }
