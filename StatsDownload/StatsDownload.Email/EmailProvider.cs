@@ -67,12 +67,31 @@
                 LogVerbose(sb);
                 return NewEmailResult();
             }
+            catch (EmailArgumentException emailArgumentException)
+            {
+                LogVerbose(sb);
+                LogException(emailArgumentException);
+                LogEmailArgumentExceptionVerbose(emailArgumentException);
+                return NewEmailResult(emailArgumentException);
+            }
             catch (Exception ex)
             {
                 LogVerbose(sb);
                 LogException(ex);
                 return NewEmailResult(ex);
             }
+        }
+
+        private void LogEmailArgumentExceptionVerbose(EmailArgumentException emailArgumentException)
+        {
+            var builder = new StringBuilder();
+
+            builder.AppendLine("There was a problem with the email settings.");
+            builder.AppendLine("Ensure all of the email settings are configured and valid before trying again.");
+            builder.AppendLine();
+            builder.AppendLine($"Exception message: {emailArgumentException.Message}");
+
+            LogVerbose(builder);
         }
 
         private void LogException(Exception exception)
