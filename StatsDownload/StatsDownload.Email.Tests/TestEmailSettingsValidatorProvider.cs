@@ -1,6 +1,5 @@
 ﻿namespace StatsDownload.Email.Tests
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -14,15 +13,17 @@
         [TestCase("-1")]
         [TestCase("0")]
         [TestCase("65536")]
-        public void ParsePort_WhenInvokedWithInvalidIntPort_ThrowsArgumentOutOfRangeException(string unsafePort)
+        public void ParsePort_WhenInvokedWithInvalidIntPort_ThrowsEmailArgumentException(string unsafePort)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => systemUnderTest.ParsePort(unsafePort));
+            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParsePort(unsafePort));
         }
 
         [TestCase("NaN")]
-        public void ParsePort_WhenInvokedWithInvalidPort_ThrowsArgumentException(string unsafePort)
+        [TestCase(null)]
+        [TestCase("")]
+        public void ParsePort_WhenInvokedWithInvalidPort_ThrowsEmailArgumentException(string unsafePort)
         {
-            Assert.Throws<ArgumentException>(() => systemUnderTest.ParsePort(unsafePort));
+            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParsePort(unsafePort));
         }
 
         [TestCase("1", 1)]
@@ -34,11 +35,18 @@
             Assert.That(actual, Is.EqualTo(expected));
         }
 
+        [TestCase(null)]
+        [TestCase("")]
+        public void ParseReceivers_WhenInvokedWithInvalidReceiver_ThrowsEmailArgumentException(string unsafeReceivers)
+        {
+            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParseReceivers(unsafeReceivers)));
+        }
+
         [TestCase("user@domain.tld")]
         [TestCase("user@domain.tld;")]
-        public void ParseReceivers_WhenInvokedWithOneReceiver_ReturnsReceiver(string receiver)
+        public void ParseReceivers_WhenInvokedWithOneReceiver_ReturnsReceiver(string unsafeReceivers)
         {
-            IEnumerable<string> actual = systemUnderTest.ParseReceivers(receiver);
+            IEnumerable<string> actual = systemUnderTest.ParseReceivers(unsafeReceivers);
 
             Assert.That(actual, Is.Not.Null);
             Assert.That(actual.Count(), Is.EqualTo(1));
