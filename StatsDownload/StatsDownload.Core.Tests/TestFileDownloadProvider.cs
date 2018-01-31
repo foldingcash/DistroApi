@@ -214,13 +214,23 @@
         [Test]
         public void DownloadFile_WhenFileDownloadSettingsInvalid_ReturnsFailedReasonRequiredSettingsInvalid()
         {
-            filePayloadSettingsServiceMock.When(mock => mock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>()))
-                                          .Throw<FileDownloadArgumentException>();
+            SetUpFileDownloadSettingsInvalid();
+
             FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.RequiredSettingsInvalid));
             Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadSettingsInvalid_UpdatesDownloadToError()
+        {
+            SetUpFileDownloadSettingsInvalid();
+
+            InvokeDownloadFile();
+
+            fileDownloadDataStoreServiceMock.Received().FileDownloadError(Arg.Any<FilePayload>());
         }
 
         [Test]
@@ -334,6 +344,16 @@
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
         }
 
+        [Test]
+        public void DownloadFile_WhenMinimumWaitTimeNotMet_UpdatesDownloadToError()
+        {
+            SetUpWhenMinimumWaitTimeNotMet();
+
+            InvokeDownloadFile();
+
+            fileDownloadDataStoreServiceMock.Received().FileDownloadError(Arg.Any<FilePayload>());
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -392,6 +412,12 @@
             var exception = new WebException();
             fileDownloadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
             return exception;
+        }
+
+        private void SetUpFileDownloadSettingsInvalid()
+        {
+            filePayloadSettingsServiceMock.When(mock => mock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>()))
+                                          .Throw<FileDownloadArgumentException>();
         }
 
         private WebException SetUpFileDownloadTimeout()

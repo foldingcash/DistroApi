@@ -47,6 +47,11 @@
             this.loggingService = loggingService;
         }
 
+        public void FileDownloadError(FilePayload filePayload)
+        {
+            throw new NotImplementedException();
+        }
+
         public void FileDownloadFinished(FilePayload filePayload)
         {
             LogMethodInvoked(nameof(FileDownloadFinished));
