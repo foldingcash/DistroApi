@@ -54,6 +54,14 @@
         }
 
         [Test]
+        public void GetErrorMessage_WhenNoFailedReason_ReturnsEmptyMessage()
+        {
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.None, new FilePayload());
+
+            Assert.That(actual, Is.Empty);
+        }
+
+        [Test]
         public void GetErrorMessage_WhenRequiredSettingsInvalid_ReturnsRequiredSettingsInvalidMessage()
         {
             string actual = systemUnderTest.GetErrorMessage(FailedReason.RequiredSettingsInvalid, new FilePayload());

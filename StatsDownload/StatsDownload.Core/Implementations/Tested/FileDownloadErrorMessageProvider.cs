@@ -38,7 +38,11 @@
                 return FileDownloadFailDecompressionBodyStart
                        + " The file has been moved to a failed directory for review. If this problem occurs again, then you should contact your technical advisor to review the logs and failed files.";
             }
-            return FileDownloadFailBodyStart + " Check the log for more information.";
+            if (failedReason == FailedReason.UnexpectedException)
+            {
+                return FileDownloadFailBodyStart + " Check the log for more information.";
+            }
+            return string.Empty;
         }
     }
 }
