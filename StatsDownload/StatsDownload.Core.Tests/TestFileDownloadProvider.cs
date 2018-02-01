@@ -230,7 +230,7 @@
 
             InvokeDownloadFile();
 
-            fileDownloadDataStoreServiceMock.Received().FileDownloadError(Arg.Any<FilePayload>());
+            fileDownloadDataStoreServiceMock.Received().FileDownloadError(Arg.Any<FileDownloadResult>());
         }
 
         [Test]
@@ -351,7 +351,7 @@
 
             InvokeDownloadFile();
 
-            fileDownloadDataStoreServiceMock.Received().FileDownloadError(Arg.Any<FilePayload>());
+            fileDownloadDataStoreServiceMock.Received().FileDownloadError(Arg.Any<FileDownloadResult>());
         }
 
         [SetUp]

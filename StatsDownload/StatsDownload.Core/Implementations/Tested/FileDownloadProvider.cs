@@ -113,7 +113,7 @@
                 {
                     FileDownloadResult failedResult = NewFailedFileDownloadResult(failedReason, filePayload);
                     LogResult(failedResult);
-                    FileDownloadError(filePayload);
+                    FileDownloadError(failedResult);
                     SendEmail(failedResult);
                     return failedResult;
                 }
@@ -132,7 +132,7 @@
                 FileDownloadResult exceptionResult = NewFailedFileDownloadResult(exception, filePayload);
                 LogResult(exceptionResult);
                 LogException(exception);
-                FileDownloadError(filePayload);
+                FileDownloadError(exceptionResult);
                 Cleanup(exceptionResult);
                 SendEmail(exceptionResult);
                 return exceptionResult;
@@ -159,9 +159,9 @@
             downloadService.DownloadFile(filePayload);
         }
 
-        private void FileDownloadError(FilePayload filePayload)
+        private void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
-            fileDownloadDataStoreService.FileDownloadError(filePayload);
+            fileDownloadDataStoreService.FileDownloadError(fileDownloadResult);
         }
 
         private bool IsFileDownloadNotReadyToRun(FilePayload filePayload, out FailedReason failedReason)

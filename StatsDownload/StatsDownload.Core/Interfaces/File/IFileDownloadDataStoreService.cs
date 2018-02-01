@@ -4,7 +4,7 @@
 
     public interface IFileDownloadDataStoreService
     {
-        void FileDownloadError(FilePayload filePayload);
+        void FileDownloadError(FileDownloadResult fileDownloadResult);
 
         void FileDownloadFinished(FilePayload filePayload);
 

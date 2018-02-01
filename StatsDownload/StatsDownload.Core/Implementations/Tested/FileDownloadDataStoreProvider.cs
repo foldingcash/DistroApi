@@ -47,7 +47,7 @@
             this.loggingService = loggingService;
         }
 
-        public void FileDownloadError(FilePayload filePayload)
+        public void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
             throw new NotImplementedException();
         }
