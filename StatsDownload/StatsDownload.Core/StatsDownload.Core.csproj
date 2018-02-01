@@ -68,6 +68,7 @@
     <Compile Include="Implementations\Untested\GuidProvider.cs" />
     <Compile Include="Interfaces\File\IFileReaderService.cs" />
     <Compile Include="Interfaces\IDirectoryService.cs" />
+    <Compile Include="Interfaces\IFileDownloadErrorMessageService.cs" />
     <Compile Include="Interfaces\IGuidService.cs" />
     <Compile Include="Implementations\Tested\FilePayloadSettingsProvider.cs" />
     <Compile Include="Interfaces\File\IFilePayloadSettingsService.cs" />

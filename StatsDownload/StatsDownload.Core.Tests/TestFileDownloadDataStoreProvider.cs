@@ -23,6 +23,10 @@
 
         private IDatabaseConnectionSettingsService databaseConnectionSettingsServiceMock;
 
+        private IFileDownloadErrorMessageService fileDownloadErrorMessageServiceMock;
+
+        private FileDownloadResult fileDownloadResult;
+
         private FilePayload filePayload;
 
         private ILoggingService loggingServiceMock;
@@ -33,13 +37,64 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(
-                () => NewFileDownloadDataStoreProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock));
+                () =>
+                NewFileDownloadDataStoreProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock,
+                    fileDownloadErrorMessageServiceMock));
             Assert.Throws<ArgumentNullException>(
-                () => NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock));
+                () =>
+                NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock,
+                    fileDownloadErrorMessageServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
-                    databaseConnectionServiceFactoryMock, null));
+                    databaseConnectionServiceFactoryMock, null, fileDownloadErrorMessageServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
+                    databaseConnectionServiceFactoryMock, loggingServiceMock, null));
+        }
+
+        [Test]
+        public void FileDownloadError_WhenInvoked_ParametersAreProvided()
+        {
+            fileDownloadErrorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException)
+                                               .Returns("ErrorMessage");
+            fileDownloadResult = new FileDownloadResult(FailedReason.UnexpectedException, filePayload);
+
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock.When(
+                service =>
+                service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]", Arg.Any<List<DbParameter>>()))
+                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            InvokeFileDownloadError();
+
+            Assert.That(actualParameters.Count, Is.EqualTo(2));
+            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
+            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
+            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@ErrorMessage"));
+            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[1].Value, Is.EqualTo("ErrorMessage"));
+        }
+
+        [Test]
+        public void FileDownloadError_WhenInvoked_UpdatesFileDownloadToError()
+        {
+            InvokeFileDownloadError();
+
+            Received.InOrder((() =>
+            {
+                loggingServiceMock.LogVerbose("FileDownloadError Invoked");
+                databaseConnectionServiceMock.Open();
+                loggingServiceMock.LogVerbose("Database connection was successful");
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]",
+                    Arg.Any<List<DbParameter>>());
+                databaseConnectionServiceMock.Close();
+            }));
         }
 
         [Test]
@@ -259,8 +314,10 @@
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
+            fileDownloadErrorMessageServiceMock = Substitute.For<IFileDownloadErrorMessageService>();
+
             systemUnderTest = NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
-                databaseConnectionServiceFactoryMock, loggingServiceMock);
+                databaseConnectionServiceFactoryMock, loggingServiceMock, fileDownloadErrorMessageServiceMock);
 
             databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
                 Arg.Any<ParameterDirection>()).Returns(info =>
@@ -289,6 +346,8 @@
                               DecompressedDownloadFileExtension = "DecompressedDownloadFileExtension",
                               DecompressedDownloadFileData = "DecompressedDownloadFileData"
                           };
+
+            fileDownloadResult = new FileDownloadResult(filePayload);
         }
 
         [Test]
@@ -308,6 +367,11 @@
                 loggingServiceMock.LogVerbose($"'{NumberOfRowsEffectedExpected}' rows were effected");
                 databaseConnectionServiceMock.Close();
             }));
+        }
+
+        private void InvokeFileDownloadError()
+        {
+            systemUnderTest.FileDownloadError(fileDownloadResult);
         }
 
         private void InvokeFileDownloadFinished()
@@ -337,10 +401,11 @@
 
         private IFileDownloadDataStoreService NewFileDownloadDataStoreProvider(
             IDatabaseConnectionSettingsService databaseConnectionSettingsService,
-            IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService)
+            IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService,
+            IFileDownloadErrorMessageService fileDownloadErrorMessageService)
         {
             return new FileDownloadDataStoreProvider(databaseConnectionSettingsService, databaseConnectionServiceFactory,
-                loggingService);
+                loggingService, fileDownloadErrorMessageService);
         }
     }
 }
