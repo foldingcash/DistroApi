@@ -153,13 +153,16 @@
         private void FileDownloadError(IDatabaseConnectionService databaseConnection,
                                        FileDownloadResult fileDownloadResult)
         {
+            FilePayload filePayload = fileDownloadResult.FilePayload;
+
             DbParameter downloadId = databaseConnection.CreateParameter("@DownloadId", DbType.Int32,
                 ParameterDirection.Input);
-            downloadId.Value = fileDownloadResult.FilePayload.DownloadId;
+            downloadId.Value = filePayload.DownloadId;
 
             DbParameter errorMessage = databaseConnection.CreateParameter("@ErrorMessage", DbType.String,
                 ParameterDirection.Input);
-            errorMessage.Value = fileDownloadErrorMessageService.GetErrorMessage(fileDownloadResult.FailedReason);
+            errorMessage.Value = fileDownloadErrorMessageService.GetErrorMessage(fileDownloadResult.FailedReason,
+                filePayload);
 
             databaseConnection.ExecuteStoredProcedure(FileDownloadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });

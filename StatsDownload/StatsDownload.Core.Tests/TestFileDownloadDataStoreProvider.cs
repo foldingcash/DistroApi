@@ -57,7 +57,7 @@
         [Test]
         public void FileDownloadError_WhenInvoked_ParametersAreProvided()
         {
-            fileDownloadErrorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException)
+            fileDownloadErrorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload)
                                                .Returns("ErrorMessage");
             fileDownloadResult = new FileDownloadResult(FailedReason.UnexpectedException, filePayload);
 

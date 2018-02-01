@@ -2,6 +2,6 @@
 {
     public interface IFileDownloadErrorMessageService
     {
-        string GetErrorMessage(FailedReason failedReason);
+        string GetErrorMessage(FailedReason failedReason, FilePayload filePayload);
     }
 }
