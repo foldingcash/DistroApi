@@ -50,6 +50,7 @@
     <Compile Include="Exceptions\FileDownloadArgumentException.cs" />
     <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
     <Compile Include="Implementations\Tested\FileDownloadEmailProvider.cs" />
+    <Compile Include="Implementations\Tested\FileDownloadErrorMessageProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="Implementations\Tested\FilePayloadUploadProvider.cs" />
     <Compile Include="Implementations\Tested\ResourceCleanupProvider.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Implementations\Untested\GuidProvider.cs" />
     <Compile Include="Interfaces\File\IFileReaderService.cs" />
     <Compile Include="Interfaces\IDirectoryService.cs" />
+    <Compile Include="Interfaces\IFileDownloadErrorMessageService.cs" />
     <Compile Include="Interfaces\IGuidService.cs" />
     <Compile Include="Implementations\Tested\FilePayloadSettingsProvider.cs" />
     <Compile Include="Interfaces\File\IFilePayloadSettingsService.cs" />

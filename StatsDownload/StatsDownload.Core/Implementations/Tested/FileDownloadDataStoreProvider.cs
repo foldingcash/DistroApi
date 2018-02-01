@@ -11,11 +11,15 @@
     {
         private const string DatabaseConnectionSuccessfulLogMessage = "Database connection was successful";
 
+        private const string FileDownloadErrorProcedureName = "[FoldingCoin].[FileDownloadError]";
+
         private const string FileDownloadFinishedProcedureName = "[FoldingCoin].[FileDownloadFinished]";
 
         private readonly IDatabaseConnectionServiceFactory databaseConnectionServiceFactory;
 
         private readonly IDatabaseConnectionSettingsService databaseConnectionSettingsService;
+
+        private readonly IFileDownloadErrorMessageService fileDownloadErrorMessageService;
 
         private readonly ILoggingService loggingService;
 
@@ -25,7 +29,8 @@
 
         public FileDownloadDataStoreProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
                                              IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
-                                             ILoggingService loggingService)
+                                             ILoggingService loggingService,
+                                             IFileDownloadErrorMessageService fileDownloadErrorMessageService)
         {
             if (IsNull(databaseConnectionSettingsService))
             {
@@ -42,9 +47,21 @@
                 throw NewArgumentNullException(nameof(loggingService));
             }
 
+            if (IsNull(fileDownloadErrorMessageService))
+            {
+                throw NewArgumentNullException(nameof(fileDownloadErrorMessageService));
+            }
+
             this.databaseConnectionSettingsService = databaseConnectionSettingsService;
             this.databaseConnectionServiceFactory = databaseConnectionServiceFactory;
             this.loggingService = loggingService;
+            this.fileDownloadErrorMessageService = fileDownloadErrorMessageService;
+        }
+
+        public void FileDownloadError(FileDownloadResult fileDownloadResult)
+        {
+            LogMethodInvoked(nameof(FileDownloadError));
+            CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadError(service, fileDownloadResult); });
         }
 
         public void FileDownloadFinished(FilePayload filePayload)
@@ -131,6 +148,24 @@
             {
                 throw new ArgumentException("Argument is empty", nameof(connectionString));
             }
+        }
+
+        private void FileDownloadError(IDatabaseConnectionService databaseConnection,
+                                       FileDownloadResult fileDownloadResult)
+        {
+            FilePayload filePayload = fileDownloadResult.FilePayload;
+
+            DbParameter downloadId = databaseConnection.CreateParameter("@DownloadId", DbType.Int32,
+                ParameterDirection.Input);
+            downloadId.Value = filePayload.DownloadId;
+
+            DbParameter errorMessage = databaseConnection.CreateParameter("@ErrorMessage", DbType.String,
+                ParameterDirection.Input);
+            errorMessage.Value = fileDownloadErrorMessageService.GetErrorMessage(fileDownloadResult.FailedReason,
+                filePayload);
+
+            databaseConnection.ExecuteStoredProcedure(FileDownloadErrorProcedureName,
+                new List<DbParameter> { downloadId, errorMessage });
         }
 
         private void FileDownloadFinished(IDatabaseConnectionService databaseConnection, FilePayload filePayload)
