@@ -5,10 +5,12 @@
     using System.Reflection;
 
     using StatsDownload.Core;
+    using StatsDownload.Email;
 
     public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService,
                                                IDownloadSettingsService,
-                                               ITestHarnessSettingsService
+                                               ITestHarnessSettingsService,
+                                               IEmailSettingsService
     {
         public string GetAcceptAnySslCert()
         {
@@ -36,9 +38,39 @@
             return ConfigurationManager.AppSettings["DownloadUri"];
         }
 
+        public string GetFromAddress()
+        {
+            return ConfigurationManager.AppSettings["FromAddress"];
+        }
+
+        public string GetFromDisplayName()
+        {
+            return ConfigurationManager.AppSettings["DisplayName"];
+        }
+
         public string GetMinimumWaitTimeInHours()
         {
             return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
+        }
+
+        public string GetPassword()
+        {
+            return ConfigurationManager.AppSettings["Password"];
+        }
+
+        public string GetPort()
+        {
+            return ConfigurationManager.AppSettings["Port"];
+        }
+
+        public string GetReceivers()
+        {
+            return ConfigurationManager.AppSettings["Receivers"];
+        }
+
+        public string GetSmtpHost()
+        {
+            return ConfigurationManager.AppSettings["SmtpHost"];
         }
 
         public bool IsMinimumWaitTimeMetDisabled()

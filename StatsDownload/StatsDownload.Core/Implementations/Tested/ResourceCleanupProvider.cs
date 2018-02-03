@@ -2,6 +2,8 @@
 {
     using System;
 
+    using StatsDownload.Logging;
+
     public class ResourceCleanupProvider : IResourceCleanupService
     {
         private readonly IFileDeleteService fileDeleteService;

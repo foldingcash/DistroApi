@@ -10,6 +10,8 @@
 
     using NUnit.Framework;
 
+    using StatsDownload.Logging;
+
     [TestFixture]
     public class TestFileDownloadDataStoreProvider
     {

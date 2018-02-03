@@ -3,6 +3,8 @@
     using System;
     using System.Net;
 
+    using StatsDownload.Logging;
+
     public class DownloadProvider : IDownloadService
     {
         private readonly IDateTimeService dateTimeService;

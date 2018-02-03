@@ -6,6 +6,8 @@
     using Castle.Windsor;
 
     using StatsDownload.Core;
+    using StatsDownload.Email;
+    using StatsDownload.Logging;
     using StatsDownload.SharpZipLib;
 
     public class DependencyInstaller : IWindsorInstaller
@@ -13,9 +15,12 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
-                Component.For<ILoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
-                Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService>
-                    ().ImplementedBy<TestHarnessSettingsProvider>(),
+                Component.For<ILoggingService, IFileDownloadLoggingService>()
+                    .ImplementedBy<TestHarnessLoggingProvider>(),
+                Component
+                    .For
+                    <IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService,
+                        IEmailSettingsService>().ImplementedBy<TestHarnessSettingsProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>().ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>());
 
@@ -36,7 +41,11 @@
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
-                    .ImplementedBy<FileDownloadMinimumWaitTimeProvider>());
+                    .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),
+                Component.For<IFileDownloadEmailService>().ImplementedBy<FileDownloadEmailProvider>(),
+                Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
+                Component.For<IEmailService>().ImplementedBy<EmailProvider>(),
+                Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>());
         }
     }
 }
