@@ -41,9 +41,7 @@
         private string GetFilePath()
         {
             return ConfigurationManager.AppSettings["FilePath"]
-                   ?? Path.Combine(
-                       Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                       "MockFile",
+                   ?? Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "MockFile",
                        "TestHarnessStatsFile.txt.bz2");
         }
 

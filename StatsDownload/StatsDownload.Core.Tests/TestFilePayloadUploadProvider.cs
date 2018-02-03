@@ -28,9 +28,7 @@
 
             fileDownloadDataStoreServiceMock = Substitute.For<IFileDownloadDataStoreService>();
 
-            systemUnderTest = new FilePayloadUploadProvider(
-                fileCompressionServiceMock,
-                fileReaderServiceMock,
+            systemUnderTest = new FilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock,
                 fileDownloadDataStoreServiceMock);
         }
 
@@ -39,13 +37,12 @@
         {
             InvokeUploadFile();
 
-            Received.InOrder(
-                () =>
-                    {
-                        fileCompressionServiceMock.DecompressFile(filePayload);
-                        fileReaderServiceMock.ReadFile(filePayload);
-                        fileDownloadDataStoreServiceMock.FileDownloadFinished(filePayload);
-                    });
+            Received.InOrder(() =>
+            {
+                fileCompressionServiceMock.DecompressFile(filePayload);
+                fileReaderServiceMock.ReadFile(filePayload);
+                fileDownloadDataStoreServiceMock.FileDownloadFinished(filePayload);
+            });
         }
 
         private void InvokeUploadFile()

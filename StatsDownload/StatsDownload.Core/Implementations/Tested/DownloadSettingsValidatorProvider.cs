@@ -12,9 +12,26 @@
 
         private const int MinimumWaitTimeInHours = 1;
 
+        private readonly IDirectoryService directoryService;
+
+        public DownloadSettingsValidatorProvider(IDirectoryService directoryService)
+        {
+            this.directoryService = directoryService;
+        }
+
+        public bool IsValidDownloadDirectory(string unsafeDownloadDirectory)
+        {
+            return directoryService.Exists(unsafeDownloadDirectory);
+        }
+
         public bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
         {
             return bool.TryParse(unsafeAcceptAnySslCert, out acceptAnySslCert);
+        }
+
+        public bool TryParseDownloadUri(string unsafeDownloadUri, out Uri downloadUri)
+        {
+            return Uri.TryCreate(unsafeDownloadUri, UriKind.RelativeOrAbsolute, out downloadUri);
         }
 
         public bool TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)

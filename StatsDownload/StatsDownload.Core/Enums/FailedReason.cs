@@ -8,6 +8,8 @@
 
         MinimumWaitTimeNotMet,
 
+        RequiredSettingsInvalid,
+
         FileDownloadTimeout,
 
         FileDownloadFailedDecompression,

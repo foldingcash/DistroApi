@@ -92,9 +92,8 @@
             systemUnderTest = NewResourceCleanupProvider(fileServiceMock, loggingServiceMock);
         }
 
-        private IResourceCleanupService NewResourceCleanupProvider(
-            IFileService fileService,
-            ILoggingService loggingService)
+        private IResourceCleanupService NewResourceCleanupProvider(IFileService fileService,
+                                                                   ILoggingService loggingService)
         {
             return new ResourceCleanupProvider(fileService, loggingService);
         }
