@@ -17,7 +17,7 @@
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(unsafePort),
-                    "The port should be between 1 and 65535, inclusive.");
+                    "The port should be between 1 and 65535, inclusive");
             }
 
             return port;
