@@ -27,6 +27,17 @@
         }
 
         [Test]
+        public void SendEmail_WhenInvokedWithFileDownloadTimeout_SendsEmail()
+        {
+            systemUnderTest.SendEmail(new FileDownloadResult(FailedReason.FileDownloadTimeout, new FilePayload()));
+
+            emailServiceMock.Received()
+                .SendEmail(
+                    "File Download Failed",
+                    "There was a problem downloading the file payload. There was a timeout when downloading the file payload. If a timeout occurs again when trying to download the file payload, then you can try increasing the download timeout.");
+        }
+
+        [Test]
         public void SendEmail_WhenInvokedWithMinimumWaitTimeNotMet_SendsEmail()
         {
             var configuredWaitTime = new TimeSpan(1, 0, 0, 0);

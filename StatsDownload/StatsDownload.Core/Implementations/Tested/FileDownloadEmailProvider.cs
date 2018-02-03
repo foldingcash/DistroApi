@@ -36,6 +36,13 @@
                     FileDownloadFailBodyStart
                     + $" The file download service was run before the minimum wait time {minimumWaitTimeSpan} or the configured wait time {configuredWaitTime}. Configure to run the service less often or decrease your configured wait time and try again.");
             }
+            else if (fileDownloadResult.FailedReason == FailedReason.FileDownloadTimeout)
+            {
+                SendEmail(
+                    FileDownloadFailSubject,
+                    FileDownloadFailBodyStart
+                    + " There was a timeout when downloading the file payload. If a timeout occurs again when trying to download the file payload, then you can try increasing the download timeout.");
+            }
             else if (fileDownloadResult.FailedReason == FailedReason.UnexpectedException)
             {
                 SendEmail(
