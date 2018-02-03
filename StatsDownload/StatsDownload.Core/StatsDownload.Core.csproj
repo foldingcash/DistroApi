@@ -49,7 +49,7 @@
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="Implementations\Tested\ResourceCleanupProvider.cs" />
     <Compile Include="Implementations\Tested\SecureDownloadProvider.cs" />
-    <Compile Include="Implementations\Tested\SecureHttpFilePayloadProvider.cs" />
+    <Compile Include="Implementations\Tested\SecureFilePayloadProvider.cs" />
     <Compile Include="Implementations\Untested\DateTimeProvider.cs" />
     <Compile Include="Implementations\Untested\FileDeleteProvider.cs" />
     <Compile Include="Implementations\Untested\FileReaderProvider.cs" />

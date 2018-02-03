@@ -2,11 +2,11 @@
 {
     using System;
 
-    public class SecureHttpFilePayloadProvider : ISecureFilePayloadService
+    public class SecureFilePayloadProvider : ISecureFilePayloadService
     {
         private readonly ILoggingService loggingService;
 
-        public SecureHttpFilePayloadProvider(ILoggingService loggingService)
+        public SecureFilePayloadProvider(ILoggingService loggingService)
         {
             if (IsNull(loggingService))
             {
@@ -28,7 +28,7 @@
 
         public bool IsSecureConnection(FilePayload filePayload)
         {
-            return filePayload.DownloadUri.Scheme == Uri.UriSchemeHttps;
+            return filePayload.DownloadUri.Scheme != Uri.UriSchemeHttp;
         }
 
         private bool IsNull(object value)

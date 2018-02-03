@@ -39,7 +39,7 @@
         {
             if (LoggingTextBox.Text.Length != 0)
             {
-                Log(new string('-', 147) + Environment.NewLine);
+                Log(new string('-', 147));
             }
         }
 
