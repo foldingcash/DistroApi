@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmailArgumentException.cs" />
     <Compile Include="EmailProvider.cs" />
     <Compile Include="EmailResult.cs" />
     <Compile Include="EmailSettingsValidatorProvider.cs" />
