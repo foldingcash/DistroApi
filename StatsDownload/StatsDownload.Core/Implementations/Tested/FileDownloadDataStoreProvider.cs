@@ -132,19 +132,19 @@
                 "@FileName",
                 DbType.String,
                 ParameterDirection.Input);
-            fileName.Value = filePayload.UncompressedDownloadFileName;
+            fileName.Value = filePayload.DecompressedDownloadFileName;
 
             DbParameter fileExtension = databaseConnection.CreateParameter(
                 "@FileExtension",
                 DbType.String,
                 ParameterDirection.Input);
-            fileExtension.Value = filePayload.UncompressedDownloadFileExtension;
+            fileExtension.Value = filePayload.DecompressedDownloadFileExtension;
 
             DbParameter fileData = databaseConnection.CreateParameter(
                 "@FileData",
                 DbType.String,
                 ParameterDirection.Input);
-            fileData.Value = filePayload.UncompressedDownloadFileData;
+            fileData.Value = filePayload.DecompressedDownloadFileData;
 
             databaseConnection.ExecuteStoredProcedure(
                 FileDownloadFinishedProcedureName,

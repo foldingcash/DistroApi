@@ -10,12 +10,19 @@
     {
         public void DecompressFile(FilePayload filePayload)
         {
-            using (var sourceFile = new FileStream(filePayload.DownloadFilePath, FileMode.Open))
+            try
             {
-                using (FileStream targetFile = File.Create(filePayload.UncompressedDownloadFilePath))
+                using (var sourceFile = new FileStream(filePayload.DownloadFilePath, FileMode.Open))
                 {
-                    BZip2.Decompress(sourceFile, targetFile, true);
+                    using (FileStream targetFile = File.Create(filePayload.DecompressedDownloadFilePath))
+                    {
+                        BZip2.Decompress(sourceFile, targetFile, true);
+                    }
                 }
+            }
+            catch (BZip2Exception bZip2Exception)
+            {
+                throw new FileDownloadFailedDecompressionException("BZip2 Failed Decompression", bZip2Exception);
             }
         }
     }

@@ -6,15 +6,15 @@
 
     public class ResourceCleanupProvider : IResourceCleanupService
     {
-        private readonly IFileDeleteService fileDeleteService;
+        private readonly IFileService fileService;
 
         private readonly ILoggingService loggingService;
 
-        public ResourceCleanupProvider(IFileDeleteService fileDeleteService, ILoggingService loggingService)
+        public ResourceCleanupProvider(IFileService fileService, ILoggingService loggingService)
         {
-            if (IsNull(fileDeleteService))
+            if (IsNull(fileService))
             {
-                throw NewArgumentNullException(nameof(fileDeleteService));
+                throw NewArgumentNullException(nameof(fileService));
             }
 
             if (IsNull(loggingService))
@@ -22,27 +22,38 @@
                 throw NewArgumentNullException(nameof(loggingService));
             }
 
-            this.fileDeleteService = fileDeleteService;
+            this.fileService = fileService;
             this.loggingService = loggingService;
         }
 
-        public void Cleanup(FilePayload filePayload)
+        public void Cleanup(FileDownloadResult fileDownloadResult)
         {
+            FilePayload filePayload = fileDownloadResult.FilePayload;
+
             string downloadFilePath = filePayload.DownloadFilePath;
-            string uncompressedDownloadFilePath = filePayload.UncompressedDownloadFilePath;
+            string decompressedDownloadFilePath = filePayload.DecompressedDownloadFilePath;
+            string failedDownloadFilePath = filePayload.FailedDownloadFilePath;
 
             loggingService.LogVerbose($"{nameof(Cleanup)} Invoked");
 
-            if (fileDeleteService.Exists(uncompressedDownloadFilePath))
+            if (fileService.Exists(decompressedDownloadFilePath))
             {
-                loggingService.LogVerbose($"Deleting: {uncompressedDownloadFilePath}");
-                fileDeleteService.Delete(uncompressedDownloadFilePath);
+                loggingService.LogVerbose($"Deleting: {decompressedDownloadFilePath}");
+                fileService.Delete(decompressedDownloadFilePath);
             }
 
-            if (fileDeleteService.Exists(downloadFilePath))
+            if (fileService.Exists(downloadFilePath))
             {
-                loggingService.LogVerbose($"Deleting: {downloadFilePath}");
-                fileDeleteService.Delete(downloadFilePath);
+                if (fileDownloadResult.FailedReason == FailedReason.FileDownloadFailedDecompression)
+                {
+                    loggingService.LogVerbose($"Moving: {downloadFilePath} to {failedDownloadFilePath}");
+                    fileService.Move(downloadFilePath, failedDownloadFilePath);
+                }
+                else
+                {
+                    loggingService.LogVerbose($"Deleting: {downloadFilePath}");
+                    fileService.Delete(downloadFilePath);
+                }
             }
         }
 

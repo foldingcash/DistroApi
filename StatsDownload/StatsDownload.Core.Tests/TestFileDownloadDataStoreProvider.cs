@@ -81,15 +81,15 @@
             Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@FileName"));
             Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[1].Value, Is.EqualTo("UncompressedDownloadFileName"));
+            Assert.That(actualParameters[1].Value, Is.EqualTo("DecompressedDownloadFileName"));
             Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@FileExtension"));
             Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[2].Value, Is.EqualTo("UncompressedDownloadFileExtension"));
+            Assert.That(actualParameters[2].Value, Is.EqualTo("DecompressedDownloadFileExtension"));
             Assert.That(actualParameters[3].ParameterName, Is.EqualTo("@FileData"));
             Assert.That(actualParameters[3].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[3].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[3].Value, Is.EqualTo("UncompressedDownloadFileData"));
+            Assert.That(actualParameters[3].Value, Is.EqualTo("DecompressedDownloadFileData"));
         }
 
         [Test]
@@ -272,9 +272,9 @@
 
             filePayload = new FilePayload
                               {
-                                  DownloadId = 100, UncompressedDownloadFileName = "UncompressedDownloadFileName",
-                                  UncompressedDownloadFileExtension = "UncompressedDownloadFileExtension",
-                                  UncompressedDownloadFileData = "UncompressedDownloadFileData"
+                                  DownloadId = 100, DecompressedDownloadFileName = "DecompressedDownloadFileName",
+                                  DecompressedDownloadFileExtension = "DecompressedDownloadFileExtension",
+                                  DecompressedDownloadFileData = "DecompressedDownloadFileData"
                               };
         }
 

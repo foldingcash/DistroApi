@@ -11,82 +11,92 @@
     [TestFixture]
     public class TestResourceCleanupProvider
     {
-        private IFileDeleteService fileDeleteServiceMock;
+        private FileDownloadResult fileDownloadResult;
 
         private FilePayload filePayload;
+
+        private IFileService fileServiceMock;
 
         private ILoggingService loggingServiceMock;
 
         private IResourceCleanupService systemUnderTest;
 
         [Test]
+        public void Cleanup_WhenDecompressedFileDoesNotExist_DoesNotTryDelete()
+        {
+            fileServiceMock.Exists("DecompressedDownloadFilePath").Returns(false);
+
+            systemUnderTest.Cleanup(fileDownloadResult);
+
+            loggingServiceMock.DidNotReceive().LogVerbose("Deleting: DecompressedDownloadFilePath");
+            fileServiceMock.DidNotReceive().Delete("DecompressedDownloadFilePath");
+        }
+
+        [Test]
         public void Cleanup_WhenFileDoesNotExist_DoesNotTryDelete()
         {
-            fileDeleteServiceMock.Exists("DownloadFilePath").Returns(false);
+            fileServiceMock.Exists("DownloadFilePath").Returns(false);
 
-            systemUnderTest.Cleanup(filePayload);
+            systemUnderTest.Cleanup(fileDownloadResult);
 
             loggingServiceMock.DidNotReceive().LogVerbose("Deleting: DownloadFilePath");
-            fileDeleteServiceMock.DidNotReceive().Delete("DownloadFilePath");
+            fileServiceMock.DidNotReceive().Delete("DownloadFilePath");
+        }
+
+        [Test]
+        public void CleanUp_WhenFileDownloadFailedDecompression_MovesDownloadFile()
+        {
+            fileDownloadResult = new FileDownloadResult(FailedReason.FileDownloadFailedDecompression, filePayload);
+
+            systemUnderTest.Cleanup(fileDownloadResult);
+
+            loggingServiceMock.Received().LogVerbose("Moving: DownloadFilePath to FailedDownloadFilePath");
+            fileServiceMock.Received().Move("DownloadFilePath", "FailedDownloadFilePath");
         }
 
         [Test]
         public void Cleanup_WhenInvoked_PerformsCleanup()
         {
-            systemUnderTest.Cleanup(filePayload);
+            systemUnderTest.Cleanup(fileDownloadResult);
 
-            Received.InOrder(
-                () =>
-                    {
-                        loggingServiceMock.LogVerbose("Cleanup Invoked");
-                        fileDeleteServiceMock.Exists("UncompressedDownloadFilePath");
-                        loggingServiceMock.LogVerbose("Deleting: UncompressedDownloadFilePath");
-                        fileDeleteServiceMock.Delete("UncompressedDownloadFilePath");
-                        fileDeleteServiceMock.Exists("DownloadFilePath");
-                        loggingServiceMock.LogVerbose("Deleting: DownloadFilePath");
-                        fileDeleteServiceMock.Delete("DownloadFilePath");
-                    });
-        }
-
-        [Test]
-        public void Cleanup_WhenUncompressedFileDoesNotExist_DoesNotTryDelete()
-        {
-            fileDeleteServiceMock.Exists("UncompressedDownloadFilePath").Returns(false);
-
-            systemUnderTest.Cleanup(filePayload);
-
-            loggingServiceMock.DidNotReceive().LogVerbose("Deleting: UncompressedDownloadFilePath");
-            fileDeleteServiceMock.DidNotReceive().Delete("UncompressedDownloadFilePath");
+            loggingServiceMock.Received().LogVerbose("Cleanup Invoked");
+            fileServiceMock.Received().Exists("DecompressedDownloadFilePath");
+            loggingServiceMock.Received().LogVerbose("Deleting: DecompressedDownloadFilePath");
+            fileServiceMock.Received().Delete("DecompressedDownloadFilePath");
+            fileServiceMock.Received().Exists("DownloadFilePath");
+            loggingServiceMock.Received().LogVerbose("Deleting: DownloadFilePath");
+            fileServiceMock.Received().Delete("DownloadFilePath");
         }
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => NewResourceCleanupProvider(null, loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewResourceCleanupProvider(fileDeleteServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() => NewResourceCleanupProvider(fileServiceMock, null));
         }
 
         [SetUp]
         public void SetUp()
         {
-            filePayload = new FilePayload();
+            fileDownloadResult = new FileDownloadResult(filePayload = new FilePayload());
             filePayload.DownloadFilePath = "DownloadFilePath";
-            filePayload.UncompressedDownloadFilePath = "UncompressedDownloadFilePath";
+            filePayload.DecompressedDownloadFilePath = "DecompressedDownloadFilePath";
+            filePayload.FailedDownloadFilePath = "FailedDownloadFilePath";
 
-            fileDeleteServiceMock = Substitute.For<IFileDeleteService>();
-            fileDeleteServiceMock.Exists("UncompressedDownloadFilePath").Returns(true);
-            fileDeleteServiceMock.Exists("DownloadFilePath").Returns(true);
+            fileServiceMock = Substitute.For<IFileService>();
+            fileServiceMock.Exists("DecompressedDownloadFilePath").Returns(true);
+            fileServiceMock.Exists("DownloadFilePath").Returns(true);
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
-            systemUnderTest = NewResourceCleanupProvider(fileDeleteServiceMock, loggingServiceMock);
+            systemUnderTest = NewResourceCleanupProvider(fileServiceMock, loggingServiceMock);
         }
 
         private IResourceCleanupService NewResourceCleanupProvider(
-            IFileDeleteService fileDeleteService,
+            IFileService fileService,
             ILoggingService loggingService)
         {
-            return new ResourceCleanupProvider(fileDeleteService, loggingService);
+            return new ResourceCleanupProvider(fileService, loggingService);
         }
     }
 }
