@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="TestFileDownloadDataStoreProvider.cs" />
     <Compile Include="TestFileDownloadEmailProvider.cs" />
+    <Compile Include="TestFileDownloadErrorMessageProvider.cs" />
     <Compile Include="TestFileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="TestFileDownloadProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,7 +1,5 @@
 ﻿namespace StatsDownload.Core
 {
-    using System;
-
     using StatsDownload.Email;
 
     public class FileDownloadEmailProvider : IFileDownloadEmailService
@@ -15,51 +13,23 @@
 
         private readonly IEmailService emailService;
 
-        public FileDownloadEmailProvider(IEmailService emailService)
+        private readonly IFileDownloadErrorMessageService fileDownloadErrorMessageService;
+
+        public FileDownloadEmailProvider(IEmailService emailService,
+                                         IFileDownloadErrorMessageService fileDownloadErrorMessageService)
         {
             this.emailService = emailService;
+            this.fileDownloadErrorMessageService = fileDownloadErrorMessageService;
         }
 
         public void SendEmail(FileDownloadResult fileDownloadResult)
         {
             FailedReason failedReason = fileDownloadResult.FailedReason;
 
-            if (failedReason == FailedReason.DataStoreUnavailable)
-            {
-                SendEmail(FileDownloadFailSubject,
-                    FileDownloadFailBodyStart
-                    + " The data store is unavailable, ensure the data store is available and configured correctly and try again.");
-            }
-            else if (failedReason == FailedReason.RequiredSettingsInvalid)
-            {
-                SendEmail(FileDownloadFailSubject,
-                    FileDownloadFailBodyStart
-                    + " The required settings are invalid; check the logs for more information. Ensure the settings are complete and accurate, then try again.");
-            }
-            else if (failedReason == FailedReason.MinimumWaitTimeNotMet)
-            {
-                TimeSpan minimumWaitTimeSpan = MinimumWait.TimeSpan;
-                TimeSpan configuredWaitTime = fileDownloadResult.FilePayload.MinimumWaitTimeSpan;
-                SendEmail(FileDownloadFailSubject,
-                    FileDownloadFailBodyStart
-                    + $" The file download service was run before the minimum wait time {minimumWaitTimeSpan} or the configured wait time {configuredWaitTime}. Configure to run the service less often or decrease your configured wait time and try again.");
-            }
-            else if (failedReason == FailedReason.FileDownloadTimeout)
-            {
-                SendEmail(FileDownloadFailSubject,
-                    FileDownloadFailBodyStart
-                    + " There was a timeout when downloading the file payload. If a timeout occurs again, then you can try increasing the configurable download timeout.");
-            }
-            else if (failedReason == FailedReason.FileDownloadFailedDecompression)
-            {
-                SendEmail(FileDownloadFailSubject,
-                    FileDownloadFailDecompressionBodyStart
-                    + " The file has been moved to a failed directory for review. If this problem occurs again, then you should contact your technical advisor to review the logs and failed files.");
-            }
-            else if (failedReason == FailedReason.UnexpectedException)
-            {
-                SendEmail(FileDownloadFailSubject, FileDownloadFailBodyStart + " Check the log for more information.");
-            }
+            string errorMessage = fileDownloadErrorMessageService.GetErrorMessage(failedReason,
+                fileDownloadResult.FilePayload);
+
+            SendEmail(FileDownloadFailSubject, errorMessage);
         }
 
         private void SendEmail(string subject, string body)
