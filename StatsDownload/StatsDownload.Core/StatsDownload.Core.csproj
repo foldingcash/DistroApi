@@ -94,9 +94,6 @@
     <Compile Include="DataTransfer\FileDownloadResult.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SqlScripts\Folding Coin.pdf" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="SqlScripts\FoldingCoinSchemaV1.sql" />
     <Content Include="SqlScripts\FoldingCoinStoredProceduresV1.sql" />
     <Content Include="SqlScripts\SqlStatementsDuringRun.sql" />
