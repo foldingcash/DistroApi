@@ -35,6 +35,13 @@
             }
         }
 
+        private void CreateFileDownloadServiceAndPerformAction(Action<IFileDownloadService> fileDownloadServiceAction)
+        {
+            var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
+            fileDownloadServiceAction?.Invoke(fileDownloadService);
+            CreateSeparationInLog();
+        }
+
         private void CreateSeparationInLog()
         {
             if (LoggingTextBox.Text.Length != 0)
@@ -45,12 +52,9 @@
 
         private async void FileDownloadButton_Click(object sender, EventArgs e)
         {
-            await RunActionAsync(() =>
-            {
-                var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
-                fileDownloadService.DownloadStatsFile();
-                CreateSeparationInLog();
-            });
+            await
+                RunActionAsync(
+                    () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
         }
 
         private async Task RunActionAsync(Action action)
@@ -65,6 +69,13 @@
             {
                 Log(exception.ToString());
             }
+        }
+
+        private async void UploadStatsButton_Click(object sender, EventArgs e)
+        {
+            await
+                RunActionAsync(
+                    () => { CreateFileDownloadServiceAndPerformAction(service => { service.UploadStatsFile(); }); });
         }
     }
 }
