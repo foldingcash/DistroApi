@@ -42,9 +42,9 @@
             CreateSeparationInLog();
         }
 
-        private void CreateFileUploadServiceAndPerformAction(Action<IFileUploadService> fileUploadServiceAction)
+        private void CreateFileUploadServiceAndPerformAction(Action<IStatsUploadService> fileUploadServiceAction)
         {
-            var fileUploadService = WindsorContainer.Instance.Resolve<IFileUploadService>();
+            var fileUploadService = WindsorContainer.Instance.Resolve<IStatsUploadService>();
             fileUploadServiceAction?.Invoke(fileUploadService);
             CreateSeparationInLog();
         }

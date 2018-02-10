@@ -34,7 +34,7 @@
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
-                Component.For<IFileDownloadDataStoreService>().ImplementedBy<FileDownloadDataStoreProvider>(),
+                Component.For<IFileDownloadDataStoreService>().ImplementedBy<DataStoreProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
@@ -42,7 +42,7 @@
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),
-                Component.For<IFileDownloadErrorMessageService>().ImplementedBy<FileDownloadErrorMessageProvider>(),
+                Component.For<IErrorMessageService>().ImplementedBy<ErrorMessageProvider>(),
                 Component.For<IFileDownloadEmailService>().ImplementedBy<FileDownloadEmailProvider>(),
                 Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),

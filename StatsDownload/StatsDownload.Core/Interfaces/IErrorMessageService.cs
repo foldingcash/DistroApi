@@ -1,6 +1,6 @@
 ﻿namespace StatsDownload.Core
 {
-    public interface IFileDownloadErrorMessageService
+    public interface IErrorMessageService
     {
         string GetErrorMessage(FailedReason failedReason, FilePayload filePayload);
     }

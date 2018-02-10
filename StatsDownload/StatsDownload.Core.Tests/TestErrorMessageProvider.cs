@@ -5,9 +5,9 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class TestFileDownloadErrorMessageProvider
+    public class TestErrorMessageProvider
     {
-        private IFileDownloadErrorMessageService systemUnderTest;
+        private IErrorMessageService systemUnderTest;
 
         [Test]
         public void GetErrorMessage_WhenDataStoreUnavailable_ReturnsDataStoreUnavailableMessage()
@@ -83,7 +83,7 @@
         [SetUp]
         public void SetUp()
         {
-            systemUnderTest = new FileDownloadErrorMessageProvider();
+            systemUnderTest = new ErrorMessageProvider();
         }
     }
 }
