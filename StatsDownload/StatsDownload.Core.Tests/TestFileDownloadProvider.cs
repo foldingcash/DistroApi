@@ -83,7 +83,7 @@
         }
 
         [Test]
-        public void DownloadFile_WhenDataStoreIsNotAvailable_ReturnsFailedResultDataStoreUnavailable()
+        public void DownloadFile_WhenDataStoreIsNotAvailable_ReturnsDataStoreUnavailableResult()
         {
             SetUpWhenDataStoreIsNotAvailable();
 

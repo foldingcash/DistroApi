@@ -11,7 +11,7 @@
     {
         private IEmailService emailServiceMock;
 
-        private IFileDownloadErrorMessageService fileDownloadErrorMessageServiceMock;
+        private IErrorMessageService errorMessageServiceMock;
 
         private IFileDownloadEmailService systemUnderTest;
 
@@ -19,8 +19,8 @@
         public void SendEmail_WhenInvoked_SendsEmail()
         {
             var filePayload = new FilePayload();
-            fileDownloadErrorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload)
-                                               .Returns("ErrorMessage");
+            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload)
+                                   .Returns("ErrorMessage");
 
             systemUnderTest.SendEmail(new FileDownloadResult(FailedReason.UnexpectedException, filePayload));
 
@@ -32,9 +32,9 @@
         {
             emailServiceMock = Substitute.For<IEmailService>();
 
-            fileDownloadErrorMessageServiceMock = Substitute.For<IFileDownloadErrorMessageService>();
+            errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
-            systemUnderTest = new FileDownloadEmailProvider(emailServiceMock, fileDownloadErrorMessageServiceMock);
+            systemUnderTest = new FileDownloadEmailProvider(emailServiceMock, errorMessageServiceMock);
         }
     }
 }

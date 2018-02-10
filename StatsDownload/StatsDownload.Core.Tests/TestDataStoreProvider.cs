@@ -13,7 +13,7 @@
     using StatsDownload.Logging;
 
     [TestFixture]
-    public class TestFileDownloadDataStoreProvider
+    public class TestDataStoreProvider
     {
         private const int NumberOfRowsEffectedExpected = 5;
 
@@ -23,7 +23,7 @@
 
         private IDatabaseConnectionSettingsService databaseConnectionSettingsServiceMock;
 
-        private IFileDownloadErrorMessageService fileDownloadErrorMessageServiceMock;
+        private IErrorMessageService errorMessageServiceMock;
 
         private FileDownloadResult fileDownloadResult;
 
@@ -39,15 +39,15 @@
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadDataStoreProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock,
-                    fileDownloadErrorMessageServiceMock));
+                    errorMessageServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock,
-                    fileDownloadErrorMessageServiceMock));
+                    errorMessageServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
-                    databaseConnectionServiceFactoryMock, null, fileDownloadErrorMessageServiceMock));
+                    databaseConnectionServiceFactoryMock, null, errorMessageServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
                 NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
@@ -57,8 +57,8 @@
         [Test]
         public void FileDownloadError_WhenInvoked_ParametersAreProvided()
         {
-            fileDownloadErrorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload)
-                                               .Returns("ErrorMessage");
+            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload)
+                                   .Returns("ErrorMessage");
             fileDownloadResult = new FileDownloadResult(FailedReason.UnexpectedException, filePayload);
 
             List<DbParameter> actualParameters = default(List<DbParameter>);
@@ -314,10 +314,10 @@
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
-            fileDownloadErrorMessageServiceMock = Substitute.For<IFileDownloadErrorMessageService>();
+            errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
             systemUnderTest = NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
-                databaseConnectionServiceFactoryMock, loggingServiceMock, fileDownloadErrorMessageServiceMock);
+                databaseConnectionServiceFactoryMock, loggingServiceMock, errorMessageServiceMock);
 
             databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
                 Arg.Any<ParameterDirection>()).Returns(info =>
@@ -402,10 +402,10 @@
         private IFileDownloadDataStoreService NewFileDownloadDataStoreProvider(
             IDatabaseConnectionSettingsService databaseConnectionSettingsService,
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService,
-            IFileDownloadErrorMessageService fileDownloadErrorMessageService)
+            IErrorMessageService errorMessageService)
         {
-            return new FileDownloadDataStoreProvider(databaseConnectionSettingsService, databaseConnectionServiceFactory,
-                loggingService, fileDownloadErrorMessageService);
+            return new DataStoreProvider(databaseConnectionSettingsService, databaseConnectionServiceFactory,
+                loggingService, errorMessageService);
         }
     }
 }
