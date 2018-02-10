@@ -30,6 +30,7 @@
         {
             this.FileDownloadButton = new System.Windows.Forms.Button();
             this.LoggingTextBox = new System.Windows.Forms.TextBox();
+            this.UploadStatsButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // FileDownloadButton
@@ -38,7 +39,7 @@
             this.FileDownloadButton.Name = "FileDownloadButton";
             this.FileDownloadButton.Size = new System.Drawing.Size(197, 40);
             this.FileDownloadButton.TabIndex = 0;
-            this.FileDownloadButton.Text = "Download Stats File";
+            this.FileDownloadButton.Text = "File Download";
             this.FileDownloadButton.UseVisualStyleBackColor = true;
             this.FileDownloadButton.Click += new System.EventHandler(this.FileDownloadButton_Click);
             // 
@@ -51,11 +52,22 @@
             this.LoggingTextBox.Size = new System.Drawing.Size(506, 393);
             this.LoggingTextBox.TabIndex = 1;
             // 
+            // UploadStatsButton
+            // 
+            this.UploadStatsButton.Location = new System.Drawing.Point(12, 58);
+            this.UploadStatsButton.Name = "UploadStatsButton";
+            this.UploadStatsButton.Size = new System.Drawing.Size(197, 40);
+            this.UploadStatsButton.TabIndex = 2;
+            this.UploadStatsButton.Text = "Stats Upload";
+            this.UploadStatsButton.UseVisualStyleBackColor = true;
+            this.UploadStatsButton.Click += new System.EventHandler(this.UploadStatsButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(733, 417);
+            this.Controls.Add(this.UploadStatsButton);
             this.Controls.Add(this.LoggingTextBox);
             this.Controls.Add(this.FileDownloadButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -72,6 +84,7 @@
 
         private System.Windows.Forms.Button FileDownloadButton;
         private System.Windows.Forms.TextBox LoggingTextBox;
+        private System.Windows.Forms.Button UploadStatsButton;
     }
 }
 

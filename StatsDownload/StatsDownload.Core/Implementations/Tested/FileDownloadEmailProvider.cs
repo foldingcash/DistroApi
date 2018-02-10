@@ -13,21 +13,19 @@
 
         private readonly IEmailService emailService;
 
-        private readonly IFileDownloadErrorMessageService fileDownloadErrorMessageService;
+        private readonly IErrorMessageService errorMessageService;
 
-        public FileDownloadEmailProvider(IEmailService emailService,
-                                         IFileDownloadErrorMessageService fileDownloadErrorMessageService)
+        public FileDownloadEmailProvider(IEmailService emailService, IErrorMessageService errorMessageService)
         {
             this.emailService = emailService;
-            this.fileDownloadErrorMessageService = fileDownloadErrorMessageService;
+            this.errorMessageService = errorMessageService;
         }
 
         public void SendEmail(FileDownloadResult fileDownloadResult)
         {
             FailedReason failedReason = fileDownloadResult.FailedReason;
 
-            string errorMessage = fileDownloadErrorMessageService.GetErrorMessage(failedReason,
-                fileDownloadResult.FilePayload);
+            string errorMessage = errorMessageService.GetErrorMessage(failedReason, fileDownloadResult.FilePayload);
 
             SendEmail(FileDownloadFailSubject, errorMessage);
         }

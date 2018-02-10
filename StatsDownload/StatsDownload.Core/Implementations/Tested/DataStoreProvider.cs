@@ -7,7 +7,7 @@
 
     using StatsDownload.Logging;
 
-    public class FileDownloadDataStoreProvider : IFileDownloadDataStoreService
+    public class DataStoreProvider : IFileDownloadDataStoreService, IStatsUploadDataStoreService
     {
         private const string DatabaseConnectionSuccessfulLogMessage = "Database connection was successful";
 
@@ -19,7 +19,7 @@
 
         private readonly IDatabaseConnectionSettingsService databaseConnectionSettingsService;
 
-        private readonly IFileDownloadErrorMessageService fileDownloadErrorMessageService;
+        private readonly IErrorMessageService errorMessageService;
 
         private readonly ILoggingService loggingService;
 
@@ -27,10 +27,9 @@
 
         private readonly string UpdateToLatestStoredProcedureName = "[FoldingCoin].[UpdateToLatest]";
 
-        public FileDownloadDataStoreProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
-                                             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
-                                             ILoggingService loggingService,
-                                             IFileDownloadErrorMessageService fileDownloadErrorMessageService)
+        public DataStoreProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
+                                 IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
+                                 ILoggingService loggingService, IErrorMessageService errorMessageService)
         {
             if (IsNull(databaseConnectionSettingsService))
             {
@@ -47,15 +46,15 @@
                 throw NewArgumentNullException(nameof(loggingService));
             }
 
-            if (IsNull(fileDownloadErrorMessageService))
+            if (IsNull(errorMessageService))
             {
-                throw NewArgumentNullException(nameof(fileDownloadErrorMessageService));
+                throw NewArgumentNullException(nameof(errorMessageService));
             }
 
             this.databaseConnectionSettingsService = databaseConnectionSettingsService;
             this.databaseConnectionServiceFactory = databaseConnectionServiceFactory;
             this.loggingService = loggingService;
-            this.fileDownloadErrorMessageService = fileDownloadErrorMessageService;
+            this.errorMessageService = errorMessageService;
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
@@ -161,8 +160,7 @@
 
             DbParameter errorMessage = databaseConnection.CreateParameter("@ErrorMessage", DbType.String,
                 ParameterDirection.Input);
-            errorMessage.Value = fileDownloadErrorMessageService.GetErrorMessage(fileDownloadResult.FailedReason,
-                filePayload);
+            errorMessage.Value = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason, filePayload);
 
             databaseConnection.ExecuteStoredProcedure(FileDownloadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });
