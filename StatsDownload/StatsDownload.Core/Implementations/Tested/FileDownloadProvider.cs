@@ -139,11 +139,6 @@
             }
         }
 
-        public FileUploadResult UploadStatsFile()
-        {
-            throw new NotImplementedException();
-        }
-
         private void Cleanup(FileDownloadResult fileDownloadResult)
         {
             resourceCleanupService.Cleanup(fileDownloadResult);

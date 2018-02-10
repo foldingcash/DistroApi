@@ -3,7 +3,5 @@
     public interface IFileDownloadService
     {
         FileDownloadResult DownloadStatsFile();
-
-        FileUploadResult UploadStatsFile();
     }
 }

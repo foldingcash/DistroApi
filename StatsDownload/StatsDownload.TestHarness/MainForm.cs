@@ -42,6 +42,13 @@
             CreateSeparationInLog();
         }
 
+        private void CreateFileUploadServiceAndPerformAction(Action<IFileUploadService> fileUploadServiceAction)
+        {
+            var fileUploadService = WindsorContainer.Instance.Resolve<IFileUploadService>();
+            fileUploadServiceAction?.Invoke(fileUploadService);
+            CreateSeparationInLog();
+        }
+
         private void CreateSeparationInLog()
         {
             if (LoggingTextBox.Text.Length != 0)
@@ -75,7 +82,7 @@
         {
             await
                 RunActionAsync(
-                    () => { CreateFileDownloadServiceAndPerformAction(service => { service.UploadStatsFile(); }); });
+                    () => { CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFile(); }); });
         }
     }
 }
