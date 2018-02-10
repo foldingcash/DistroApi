@@ -15,7 +15,7 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
-                Component.For<ILoggingService, IFileDownloadLoggingService>()
+                Component.For<ILoggingService, IFileDownloadLoggingService, IStatsUploadLoggingService>()
                          .ImplementedBy<TestHarnessLoggingProvider>(),
                 Component
                     .For
@@ -34,11 +34,13 @@
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
-                Component.For<IFileDownloadDataStoreService>().ImplementedBy<DataStoreProvider>(),
+                Component.For<IFileDownloadDataStoreService, IStatsUploadDataStoreService>()
+                         .ImplementedBy<DataStoreProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
+                Component.For<IStatsUploadService>().ImplementedBy<StatsUploadProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),

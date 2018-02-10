@@ -20,7 +20,7 @@
             try
             {
                 loggingService.LogVerbose($"{nameof(UploadStatsFile)} Invoked");
-                if (DataStoreIsUnavailable())
+                if (DataStoreUnavailable())
                 {
                     return new StatsUploadResult(FailedReason.DataStoreUnavailable);
                 }
@@ -34,7 +34,7 @@
             }
         }
 
-        private bool DataStoreIsUnavailable()
+        private bool DataStoreUnavailable()
         {
             return !statsUploadDataStoreService.IsAvailable();
         }
