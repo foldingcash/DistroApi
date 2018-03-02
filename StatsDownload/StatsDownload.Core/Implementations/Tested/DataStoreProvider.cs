@@ -57,6 +57,11 @@
             this.errorMessageService = errorMessageService;
         }
 
+        public void AddUserData(UserData userData)
+        {
+            throw new NotImplementedException();
+        }
+
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
             LogMethodInvoked(nameof(FileDownloadError));
@@ -67,6 +72,16 @@
         {
             LogMethodInvoked(nameof(FileDownloadFinished));
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
+        }
+
+        public List<int> GetDownloadsReadyForUpload()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetFileData(int downloadId)
+        {
+            throw new NotImplementedException();
         }
 
         public DateTime GetLastFileDownloadDateTime()
@@ -100,6 +115,16 @@
             int downloadId = default(int);
             CreateDatabaseConnectionAndExecuteAction(service => { downloadId = NewFileDownloadStarted(service); });
             filePayload.DownloadId = downloadId;
+        }
+
+        public void StartStatsUpload(int downloadId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StatsUploadFinished(int downloadId)
+        {
+            throw new NotImplementedException();
         }
 
         public void UpdateToLatest()
