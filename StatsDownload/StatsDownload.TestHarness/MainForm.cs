@@ -57,6 +57,12 @@
             }
         }
 
+        private void EnableButtons(bool enable)
+        {
+            FileDownloadButton.Enabled = enable;
+            UploadStatsButton.Enabled = enable;
+        }
+
         private async void FileDownloadButton_Click(object sender, EventArgs e)
         {
             await
@@ -68,9 +74,9 @@
         {
             try
             {
-                FileDownloadButton.Enabled = false;
+                EnableButtons(false);
                 await Task.Run(action);
-                FileDownloadButton.Enabled = true;
+                EnableButtons(true);
             }
             catch (Exception exception)
             {
