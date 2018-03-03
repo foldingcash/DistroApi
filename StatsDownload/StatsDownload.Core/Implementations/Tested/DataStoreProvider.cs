@@ -7,13 +7,15 @@
 
     using StatsDownload.Logging;
 
-    public class DataStoreProvider : IFileDownloadDataStoreService, IStatsUploadDataStoreService
+    public class DataStoreProvider : IDataStoreService
     {
         private const string DatabaseConnectionSuccessfulLogMessage = "Database connection was successful";
 
         private const string FileDownloadErrorProcedureName = "[FoldingCoin].[FileDownloadError]";
 
         private const string FileDownloadFinishedProcedureName = "[FoldingCoin].[FileDownloadFinished]";
+
+        private const string StartStatsUploadProcedureName = "[FoldingCoin].[StartStatsUpload]";
 
         private readonly IDatabaseConnectionServiceFactory databaseConnectionServiceFactory;
 
@@ -59,7 +61,6 @@
 
         public void AddUserData(UserData userData)
         {
-            throw new NotImplementedException();
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
@@ -76,7 +77,11 @@
 
         public List<int> GetDownloadsReadyForUpload()
         {
-            throw new NotImplementedException();
+            LogMethodInvoked(nameof(GetDownloadsReadyForUpload));
+            List<int> downloadsReadyForUpload = default(List<int>);
+            CreateDatabaseConnectionAndExecuteAction(
+                service => downloadsReadyForUpload = GetDownloadsReadyForUpload(service));
+            return downloadsReadyForUpload;
         }
 
         public string GetFileData(int downloadId)
@@ -119,12 +124,12 @@
 
         public void StartStatsUpload(int downloadId)
         {
-            throw new NotImplementedException();
+            LogMethodInvoked(nameof(StartStatsUpload));
+            CreateDatabaseConnectionAndExecuteAction(service => StartStatsUpload(service, downloadId));
         }
 
         public void StatsUploadFinished(int downloadId)
         {
-            throw new NotImplementedException();
         }
 
         public void UpdateToLatest()
@@ -161,6 +166,14 @@
             }
         }
 
+        private DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection, int downloadId)
+        {
+            DbParameter downloadIdParameter = databaseConnection.CreateParameter("@DownloadId", DbType.Int32,
+                ParameterDirection.Input);
+            downloadIdParameter.Value = downloadId;
+            return downloadIdParameter;
+        }
+
         private void EnsureValidConnectionString(string connectionString)
         {
             if (connectionString == null)
@@ -193,9 +206,7 @@
 
         private void FileDownloadFinished(IDatabaseConnectionService databaseConnection, FilePayload filePayload)
         {
-            DbParameter downloadId = databaseConnection.CreateParameter("@DownloadId", DbType.Int32,
-                ParameterDirection.Input);
-            downloadId.Value = filePayload.DownloadId;
+            DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, filePayload.DownloadId);
 
             DbParameter fileName = databaseConnection.CreateParameter("@FileName", DbType.String,
                 ParameterDirection.Input);
@@ -218,9 +229,23 @@
             return databaseConnectionSettingsService.GetConnectionString();
         }
 
-        private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService service)
+        private List<int> GetDownloadsReadyForUpload(IDatabaseConnectionService databaseConnection)
         {
-            return service.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()") as DateTime?
+            DbDataReader reader =
+                databaseConnection.ExecuteReader("SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]");
+            var downloadsReadyForUpload = new List<int>();
+
+            while (reader.Read())
+            {
+                downloadsReadyForUpload.Add(reader.GetInt32(0));
+            }
+
+            return downloadsReadyForUpload;
+        }
+
+        private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
+        {
+            return databaseConnection.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()") as DateTime?
                    ?? default(DateTime);
         }
 
@@ -260,9 +285,16 @@
             return (int)downloadId.Value;
         }
 
-        private void OpenDatabaseConnection(IDatabaseConnectionService databaseConnectionService)
+        private void OpenDatabaseConnection(IDatabaseConnectionService databaseConnection)
         {
-            databaseConnectionService.Open();
+            databaseConnection.Open();
+        }
+
+        private void StartStatsUpload(IDatabaseConnectionService databaseConnection, int downloadId)
+        {
+            DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
+
+            databaseConnection.ExecuteStoredProcedure(StartStatsUploadProcedureName, new List<DbParameter> { download });
         }
 
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)

@@ -23,6 +23,8 @@
 
         private IDatabaseConnectionSettingsService databaseConnectionSettingsServiceMock;
 
+        private DbDataReader dbDataReaderMock;
+
         private IErrorMessageService errorMessageServiceMock;
 
         private FileDownloadResult fileDownloadResult;
@@ -31,7 +33,7 @@
 
         private ILoggingService loggingServiceMock;
 
-        private IFileDownloadDataStoreService systemUnderTest;
+        private IDataStoreService systemUnderTest;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
@@ -141,6 +143,41 @@
             Assert.That(actualParameters[3].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[3].Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters[3].Value, Is.EqualTo("DecompressedDownloadFileData"));
+        }
+
+        [Test]
+        public void GetDownloadsReadyForUpload_WhenInvoked_GetsDownloadsReadyForUpload()
+        {
+            systemUnderTest.GetDownloadsReadyForUpload();
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogVerbose("GetDownloadsReadyForUpload Invoked");
+                databaseConnectionServiceMock.Open();
+                databaseConnectionServiceMock.ExecuteReader(
+                    "SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]");
+                databaseConnectionServiceMock.Close();
+            });
+        }
+
+        [Test]
+        public void GetDownloadsReadyForUpload_WhenInvoked_ReturnsDownloadIds()
+        {
+            List<int> actual = systemUnderTest.GetDownloadsReadyForUpload();
+
+            Assert.That(actual.Count, Is.EqualTo(3));
+            Assert.That(actual[1], Is.EqualTo(200));
+        }
+
+        [Test]
+        public void GetDownloadsReadyForUpload_WhenNoFilesReadyForUpload_ReturnsEmptyList()
+        {
+            dbDataReaderMock.ClearSubstitute();
+            dbDataReaderMock.Read().Returns(false);
+
+            List<int> actual = systemUnderTest.GetDownloadsReadyForUpload();
+
+            Assert.That(actual.Count, Is.EqualTo(0));
         }
 
         [Test]
@@ -348,6 +385,48 @@
                           };
 
             fileDownloadResult = new FileDownloadResult(filePayload);
+
+            dbDataReaderMock = Substitute.For<DbDataReader>();
+            dbDataReaderMock.Read().Returns(true, true, true, false);
+            dbDataReaderMock.GetInt32(0).Returns(100, 200, 300);
+
+            databaseConnectionServiceMock.ExecuteReader("SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]")
+                                         .Returns(dbDataReaderMock);
+        }
+
+        [Test]
+        public void StartStatsUpload_WhenInvoked_ParameterIsProvided()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock.When(
+                service =>
+                service.ExecuteStoredProcedure("[FoldingCoin].[StartStatsUpload]", Arg.Any<List<DbParameter>>()))
+                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            systemUnderTest.StartStatsUpload(100);
+
+            Assert.That(actualParameters.Count, Is.EqualTo(1));
+            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
+            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
+            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+        }
+
+        [Test]
+        public void StartStatsUpload_WhenInvoked_StartsStatsUpload()
+        {
+            systemUnderTest.StartStatsUpload(1);
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogVerbose("StartStatsUpload Invoked");
+                databaseConnectionServiceMock.Open();
+                loggingServiceMock.LogVerbose("Database connection was successful");
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[StartStatsUpload]",
+                    Arg.Any<List<DbParameter>>());
+                databaseConnectionServiceMock.Close();
+            });
         }
 
         [Test]
@@ -399,7 +478,7 @@
             systemUnderTest.UpdateToLatest();
         }
 
-        private IFileDownloadDataStoreService NewFileDownloadDataStoreProvider(
+        private IDataStoreService NewFileDownloadDataStoreProvider(
             IDatabaseConnectionSettingsService databaseConnectionSettingsService,
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService,
             IErrorMessageService errorMessageService)

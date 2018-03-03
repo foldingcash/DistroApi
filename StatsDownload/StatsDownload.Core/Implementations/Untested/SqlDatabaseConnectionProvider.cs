@@ -37,6 +37,13 @@
             sqlConnection = null;
         }
 
+        public DbDataReader ExecuteReader(string commandText)
+        {
+            DbCommand command = sqlConnection.CreateCommand();
+            command.CommandText = commandText;
+            return command.ExecuteReader();
+        }
+
         public object ExecuteScalar(string commandText)
         {
             DbCommand command = sqlConnection.CreateCommand();
