@@ -253,13 +253,13 @@
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
             DbParameter fileName = databaseConnection.CreateParameter("@FileName", DbType.String,
-                ParameterDirection.Output);
+                ParameterDirection.Output, -1);
 
             DbParameter fileExtension = databaseConnection.CreateParameter("@FileExtension", DbType.String,
-                ParameterDirection.Output);
+                ParameterDirection.Output, -1);
 
             DbParameter fileData = databaseConnection.CreateParameter("@FileData", DbType.String,
-                ParameterDirection.Output);
+                ParameterDirection.Output, -1);
 
             databaseConnection.ExecuteStoredProcedure(GetFileDataProcedureName,
                 new List<DbParameter> { download, fileName, fileExtension, fileData });

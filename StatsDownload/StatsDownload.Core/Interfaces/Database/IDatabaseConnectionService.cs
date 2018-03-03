@@ -11,6 +11,8 @@
 
         DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction);
 
+        DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction, int size);
+
         DbDataReader ExecuteReader(string commandText);
 
         object ExecuteScalar(string commandText);

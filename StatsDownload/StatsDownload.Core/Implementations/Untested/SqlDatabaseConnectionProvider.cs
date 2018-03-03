@@ -31,6 +31,19 @@
             }
         }
 
+        public DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction, int size)
+        {
+            using (DbCommand command = sqlConnection.CreateCommand())
+            {
+                DbParameter parameter = command.CreateParameter();
+                parameter.ParameterName = parameterName;
+                parameter.DbType = dbType;
+                parameter.Direction = direction;
+                parameter.Size = size;
+                return parameter;
+            }
+        }
+
         public void Dispose()
         {
             sqlConnection.Dispose();
