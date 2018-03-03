@@ -70,6 +70,7 @@
     <Compile Include="TestDownloadSettingsValidatorProvider.cs" />
     <Compile Include="TestFilePayloadSettingsProvider.cs" />
     <Compile Include="TestFilePayloadUploadProvider.cs" />
+    <Compile Include="TestStatsFileParserProvider.cs" />
     <Compile Include="TestStatsUploadProvider.cs" />
     <Compile Include="TestResourceCleanupProvider.cs" />
     <Compile Include="TestSecureDownloadProvider.cs" />

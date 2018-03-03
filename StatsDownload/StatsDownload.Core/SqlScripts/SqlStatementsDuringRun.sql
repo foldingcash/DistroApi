@@ -24,6 +24,9 @@ EXEC [FoldingCoin].[FileDownloadFinished] @DownloadId
 -- Use this view to get the download Ids of the downloads ready for stats upload
 --SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload];
 
+-- Use this to update the download status to show the stats upload has started
+EXEC [FoldingCoin].[StartStatsUpload] @DownloadId;
+
 -- Output parameters
 DECLARE @FileName NVARCHAR(50);
 DECLARE @FileExtension NVARCHAR(5);
@@ -37,9 +40,6 @@ EXEC [FoldingCoin].[GetFileData] @DownloadId
 
 -- The file name, extension, and data
 --SELECT @FileName, @FileExtension, @FileData;
-
--- Use this to update the download status to show the stats upload has started
-EXEC [FoldingCoin].[StartStatsUpload] @DownloadId;
 
 -- If there is a problem during the stats upload process that prevents the file from being processed at all, update to stats upload error
 --EXEC [FoldingCoin].[StatsUploadError] @DownloadId, 'Stats Upload Error Message'
