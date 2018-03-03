@@ -214,12 +214,15 @@
             Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@FileName"));
             Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Output));
+            Assert.That(actualParameters[1].Size, Is.EqualTo(-1));
             Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@FileExtension"));
             Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Output));
+            Assert.That(actualParameters[2].Size, Is.EqualTo(-1));
             Assert.That(actualParameters[3].ParameterName, Is.EqualTo("@FileData"));
             Assert.That(actualParameters[3].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[3].Direction, Is.EqualTo(ParameterDirection.Output));
+            Assert.That(actualParameters[3].Size, Is.EqualTo(-1));
         }
 
         [Test]
@@ -229,7 +232,7 @@
             dbParameter.Value.Returns("FileData");
 
             databaseConnectionServiceMock.ClearSubstitute();
-            databaseConnectionServiceMock.CreateParameter("@FileData", DbType.String, ParameterDirection.Output)
+            databaseConnectionServiceMock.CreateParameter("@FileData", DbType.String, ParameterDirection.Output, -1)
                                          .Returns(dbParameter);
             databaseConnectionServiceMock.CreateParameter("@DownloadId", DbType.Int32, ParameterDirection.Input)
                                          .Returns(Substitute.For<DbParameter>());
@@ -426,6 +429,28 @@
                     dbParameter.ParameterName.Returns(parameterName);
                     dbParameter.DbType.Returns(dbType);
                     dbParameter.Direction.Returns(direction);
+
+                    if (dbType.Equals(DbType.Int32))
+                    {
+                        dbParameter.Value.Returns(default(int));
+                    }
+
+                    return dbParameter;
+                });
+
+            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
+                Arg.Any<ParameterDirection>(), Arg.Any<int>()).Returns(info =>
+                {
+                    var parameterName = info.Arg<string>();
+                    var dbType = info.Arg<DbType>();
+                    var direction = info.Arg<ParameterDirection>();
+                    var size = info.Arg<int>();
+
+                    var dbParameter = Substitute.For<DbParameter>();
+                    dbParameter.ParameterName.Returns(parameterName);
+                    dbParameter.DbType.Returns(dbType);
+                    dbParameter.Direction.Returns(direction);
+                    dbParameter.Size.Returns(size);
 
                     if (dbType.Equals(DbType.Int32))
                     {
