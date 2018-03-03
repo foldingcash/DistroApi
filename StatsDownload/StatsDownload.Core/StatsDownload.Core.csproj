@@ -69,6 +69,7 @@
     <Compile Include="Interfaces\File\IFileDownloadEmailService.cs" />
     <Compile Include="Interfaces\File\IFileDownloadMinimumWaitTimeService.cs" />
     <Compile Include="Interfaces\File\IFilePayloadUploadService.cs" />
+    <Compile Include="Interfaces\IDataStoreService.cs" />
     <Compile Include="Interfaces\IStatsFileParserService.cs" />
     <Compile Include="Interfaces\IStatsUploadLoggingService.cs" />
     <Compile Include="Interfaces\IStatsUploadService.cs" />
