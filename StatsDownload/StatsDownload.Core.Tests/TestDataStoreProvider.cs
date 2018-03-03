@@ -181,6 +181,65 @@
         }
 
         [Test]
+        public void GetFileData_WhenInvoked_GetFileData()
+        {
+            systemUnderTest.GetFileData(100);
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogVerbose("GetFileData Invoked");
+                databaseConnectionServiceMock.Open();
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[GetFileData]",
+                    Arg.Any<List<DbParameter>>());
+                databaseConnectionServiceMock.Close();
+            });
+        }
+
+        [Test]
+        public void GetFileData_WhenInvoked_ParametersAreProvided()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock.When(
+                service => service.ExecuteStoredProcedure("[FoldingCoin].[GetFileData]", Arg.Any<List<DbParameter>>()))
+                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            systemUnderTest.GetFileData(100);
+
+            Assert.That(actualParameters.Count, Is.EqualTo(4));
+            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
+            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
+            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@FileName"));
+            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Output));
+            Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@FileExtension"));
+            Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Output));
+            Assert.That(actualParameters[3].ParameterName, Is.EqualTo("@FileData"));
+            Assert.That(actualParameters[3].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[3].Direction, Is.EqualTo(ParameterDirection.Output));
+        }
+
+        [Test]
+        public void GetFileData_WhenInvoked_ReturnsFileData()
+        {
+            var dbParameter = Substitute.For<DbParameter>();
+            dbParameter.Value.Returns("FileData");
+
+            databaseConnectionServiceMock.ClearSubstitute();
+            databaseConnectionServiceMock.CreateParameter("@FileData", DbType.String, ParameterDirection.Output)
+                                         .Returns(dbParameter);
+            databaseConnectionServiceMock.CreateParameter("@DownloadId", DbType.Int32, ParameterDirection.Input)
+                                         .Returns(Substitute.For<DbParameter>());
+
+            string actual = systemUnderTest.GetFileData(100);
+
+            Assert.That(actual, Is.EqualTo("FileData"));
+        }
+
+        [Test]
         public void GetLastFileDownloadDateTime_WhenInvoked_GetsLastfileDownloadDateTime()
         {
             InvokeGetLastFileFownloadDateTime();
