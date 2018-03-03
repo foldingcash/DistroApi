@@ -15,6 +15,8 @@
 
         private const string FileDownloadFinishedProcedureName = "[FoldingCoin].[FileDownloadFinished]";
 
+        private const string GetFileDataProcedureName = "[FoldingCoin].[GetFileData]";
+
         private const string StartStatsUploadProcedureName = "[FoldingCoin].[StartStatsUpload]";
 
         private readonly IDatabaseConnectionServiceFactory databaseConnectionServiceFactory;
@@ -86,7 +88,10 @@
 
         public string GetFileData(int downloadId)
         {
-            throw new NotImplementedException();
+            LogMethodInvoked(nameof(GetFileData));
+            string fileData = default(string);
+            CreateDatabaseConnectionAndExecuteAction(service => fileData = GetFileData(service, downloadId));
+            return fileData;
         }
 
         public DateTime GetLastFileDownloadDateTime()
@@ -241,6 +246,25 @@
             }
 
             return downloadsReadyForUpload;
+        }
+
+        private string GetFileData(IDatabaseConnectionService databaseConnection, int downloadId)
+        {
+            DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
+
+            DbParameter fileName = databaseConnection.CreateParameter("@FileName", DbType.String,
+                ParameterDirection.Output);
+
+            DbParameter fileExtension = databaseConnection.CreateParameter("@FileExtension", DbType.String,
+                ParameterDirection.Output);
+
+            DbParameter fileData = databaseConnection.CreateParameter("@FileData", DbType.String,
+                ParameterDirection.Output);
+
+            databaseConnection.ExecuteStoredProcedure(GetFileDataProcedureName,
+                new List<DbParameter> { download, fileName, fileExtension, fileData });
+
+            return (string)fileData.Value;
         }
 
         private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
