@@ -55,6 +55,7 @@
     <Compile Include="Implementations\Tested\ErrorMessageProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="Implementations\Tested\FilePayloadUploadProvider.cs" />
+    <Compile Include="Implementations\Tested\StatsFileParserProvider.cs" />
     <Compile Include="Implementations\Tested\StatsUploadProvider.cs" />
     <Compile Include="Implementations\Tested\ResourceCleanupProvider.cs" />
     <Compile Include="Implementations\Tested\SecureDownloadProvider.cs" />
