@@ -19,6 +19,8 @@
 
         private const string StartStatsUploadProcedureName = "[FoldingCoin].[StartStatsUpload]";
 
+        private const string StatsUploadFinishedProcedureName = "[FoldingCoin].[StatsUploadFinished]";
+
         private readonly IDatabaseConnectionServiceFactory databaseConnectionServiceFactory;
 
         private readonly IDatabaseConnectionSettingsService databaseConnectionSettingsService;
@@ -135,6 +137,8 @@
 
         public void StatsUploadFinished(int downloadId)
         {
+            LogMethodInvoked(nameof(StatsUploadFinished));
+            CreateDatabaseConnectionAndExecuteAction(service => StatsUploadFinished(service, downloadId));
         }
 
         public void UpdateToLatest()
@@ -319,6 +323,14 @@
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
             databaseConnection.ExecuteStoredProcedure(StartStatsUploadProcedureName, new List<DbParameter> { download });
+        }
+
+        private void StatsUploadFinished(IDatabaseConnectionService databaseConnection, int downloadId)
+        {
+            DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
+
+            databaseConnection.ExecuteStoredProcedure(StatsUploadFinishedProcedureName,
+                new List<DbParameter> { download });
         }
 
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)
