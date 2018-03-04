@@ -514,6 +514,41 @@
         }
 
         [Test]
+        public void StatsUploadFinished_WhenInvoked_ParametersAreProvided()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock.When(
+                service =>
+                service.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadFinished]", Arg.Any<List<DbParameter>>()))
+                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            systemUnderTest.StatsUploadFinished(100);
+
+            Assert.That(actualParameters.Count, Is.EqualTo(1));
+            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
+            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
+            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+        }
+
+        [Test]
+        public void StatsUploadFinished_WhenInvoked_UpdatesStatsUploadToFinished()
+        {
+            systemUnderTest.StatsUploadFinished(100);
+
+            Received.InOrder((() =>
+            {
+                loggingServiceMock.LogVerbose("StatsUploadFinished Invoked");
+                databaseConnectionServiceMock.Open();
+                loggingServiceMock.LogVerbose("Database connection was successful");
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadFinished]",
+                    Arg.Any<List<DbParameter>>());
+                databaseConnectionServiceMock.Close();
+            }));
+        }
+
+        [Test]
         public void UpdateToLatest_WhenInvoked_DatabaseUpdatedToLatest()
         {
             databaseConnectionServiceMock.ExecuteStoredProcedure(Arg.Any<string>())
