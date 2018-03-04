@@ -51,6 +51,8 @@
     <Compile Include="DataTransfer\UserData.cs" />
     <Compile Include="Exceptions\FileDownloadArgumentException.cs" />
     <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
+    <Compile Include="Implementations\Tested\AdditionalUserDataParserProvider.cs" />
+    <Compile Include="Implementations\Tested\BitcoinAddressValidatorProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadEmailProvider.cs" />
     <Compile Include="Implementations\Tested\ErrorMessageProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
@@ -69,6 +71,8 @@
     <Compile Include="Interfaces\File\IFileDownloadEmailService.cs" />
     <Compile Include="Interfaces\File\IFileDownloadMinimumWaitTimeService.cs" />
     <Compile Include="Interfaces\File\IFilePayloadUploadService.cs" />
+    <Compile Include="Interfaces\IAdditionalUserDataParserService.cs" />
+    <Compile Include="Interfaces\IBitcoinAddressValidatorService.cs" />
     <Compile Include="Interfaces\IDataStoreService.cs" />
     <Compile Include="Interfaces\IStatsFileParserService.cs" />
     <Compile Include="Interfaces\IStatsUploadLoggingService.cs" />

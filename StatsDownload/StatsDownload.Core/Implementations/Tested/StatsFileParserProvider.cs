@@ -7,6 +7,13 @@
     {
         private const string ExpectedHeader = @"name	newcredit	sum(total)	team";
 
+        private readonly IAdditionalUserDataParserService additionalUserDataParserService;
+
+        public StatsFileParserProvider(IAdditionalUserDataParserService additionalUserDataParserService)
+        {
+            this.additionalUserDataParserService = additionalUserDataParserService;
+        }
+
         public List<UserData> Parse(string fileData)
         {
             var usersData = new List<UserData>();
@@ -40,7 +47,11 @@
                     continue;
                 }
 
-                usersData.Add(new UserData(name, totalPoints, totalWorkUnits, teamNumber));
+                var userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
+
+                additionalUserDataParserService.Parse(userData);
+
+                usersData.Add(userData);
             }
 
             return usersData;
