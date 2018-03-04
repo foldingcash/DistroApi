@@ -52,6 +52,7 @@
     <Compile Include="Exceptions\FileDownloadArgumentException.cs" />
     <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
     <Compile Include="Implementations\Tested\AdditionalUserDataParserProvider.cs" />
+    <Compile Include="Implementations\Tested\BitcoinAddressValidatorProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadEmailProvider.cs" />
     <Compile Include="Implementations\Tested\ErrorMessageProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
