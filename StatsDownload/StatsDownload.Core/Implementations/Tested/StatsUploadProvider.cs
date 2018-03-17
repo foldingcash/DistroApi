@@ -20,14 +20,14 @@
             this.statsFileParserService = statsFileParserService;
         }
 
-        public StatsUploadResult UploadStatsFile()
+        public StatsUploadResults UploadStatsFiles()
         {
             try
             {
-                loggingService.LogVerbose($"{nameof(UploadStatsFile)} Invoked");
+                loggingService.LogVerbose($"{nameof(UploadStatsFiles)} Invoked");
                 if (DataStoreUnavailable())
                 {
-                    return new StatsUploadResult(FailedReason.DataStoreUnavailable);
+                    return new StatsUploadResults(FailedReason.DataStoreUnavailable);
                 }
 
                 List<int> uploadFiles = statsUploadDataStoreService.GetDownloadsReadyForUpload();
@@ -47,12 +47,12 @@
                     loggingService.LogVerbose($"Finished stats file upload. DownloadId: {uploadFile}");
                 }
 
-                return new StatsUploadResult();
+                return new StatsUploadResults();
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                loggingService.LogException(ex);
-                return new StatsUploadResult(FailedReason.UnexpectedException);
+                loggingService.LogException(exception);
+                return new StatsUploadResults(FailedReason.UnexpectedException);
             }
         }
 

@@ -93,7 +93,7 @@
         {
             await
                 RunActionAsync(
-                    () => { CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFile(); }); });
+                    () => { CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFiles(); }); });
         }
     }
 }
