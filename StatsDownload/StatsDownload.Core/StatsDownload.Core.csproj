@@ -51,6 +51,7 @@
     <Compile Include="DataTransfer\UserData.cs" />
     <Compile Include="Exceptions\FileDownloadArgumentException.cs" />
     <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
+    <Compile Include="Exceptions\InvalidStatsFileException.cs" />
     <Compile Include="Implementations\Tested\AdditionalUserDataParserProvider.cs" />
     <Compile Include="Implementations\Tested\BitcoinAddressValidatorProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadEmailProvider.cs" />
