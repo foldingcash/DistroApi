@@ -11,13 +11,17 @@
 
         private readonly IStatsUploadDataStoreService statsUploadDataStoreService;
 
+        private readonly IStatsUploadEmailService statsUploadEmailService;
+
         public StatsUploadProvider(IStatsUploadDataStoreService statsUploadDataStoreService,
                                    IStatsUploadLoggingService loggingService,
-                                   IStatsFileParserService statsFileParserService)
+                                   IStatsFileParserService statsFileParserService,
+                                   IStatsUploadEmailService statsUploadEmailService)
         {
             this.statsUploadDataStoreService = statsUploadDataStoreService;
             this.loggingService = loggingService;
             this.statsFileParserService = statsFileParserService;
+            this.statsUploadEmailService = statsUploadEmailService;
         }
 
         public StatsUploadResults UploadStatsFiles()
@@ -31,20 +35,32 @@
                 }
 
                 List<int> uploadFiles = statsUploadDataStoreService.GetDownloadsReadyForUpload();
+                var statsUploadResults = new List<StatsUploadResult>();
 
                 foreach (int uploadFile in uploadFiles)
                 {
-                    loggingService.LogVerbose($"Starting stats file upload. DownloadId: {uploadFile}");
-                    statsUploadDataStoreService.StartStatsUpload(uploadFile);
-                    string fileData = statsUploadDataStoreService.GetFileData(uploadFile);
-                    List<UserData> usersData = statsFileParserService.Parse(fileData);
-
-                    foreach (UserData userData in usersData)
+                    try
                     {
-                        statsUploadDataStoreService.AddUserData(userData);
+                        loggingService.LogVerbose($"Starting stats file upload. DownloadId: {uploadFile}");
+                        statsUploadDataStoreService.StartStatsUpload(uploadFile);
+                        string fileData = statsUploadDataStoreService.GetFileData(uploadFile);
+                        List<UserData> usersData = statsFileParserService.Parse(fileData);
+
+                        foreach (UserData userData in usersData)
+                        {
+                            statsUploadDataStoreService.AddUserData(userData);
+                        }
+                        statsUploadDataStoreService.StatsUploadFinished(uploadFile);
+                        loggingService.LogVerbose($"Finished stats file upload. DownloadId: {uploadFile}");
                     }
-                    statsUploadDataStoreService.StatsUploadFinished(uploadFile);
-                    loggingService.LogVerbose($"Finished stats file upload. DownloadId: {uploadFile}");
+                    catch (Exception exception)
+                    {
+                        StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(exception);
+                        loggingService.LogResult(failedStatsUploadResult);
+                        statsUploadEmailService.SendEmail(failedStatsUploadResult);
+                        statsUploadDataStoreService.StatsUploadError(failedStatsUploadResult);
+                        statsUploadResults.Add(failedStatsUploadResult);
+                    }
                 }
 
                 return new StatsUploadResults();
@@ -59,6 +75,16 @@
         private bool DataStoreUnavailable()
         {
             return !statsUploadDataStoreService.IsAvailable();
+        }
+
+        private StatsUploadResult NewFailedStatsUploadResult(Exception exception)
+        {
+            if (exception is InvalidStatsFileException)
+            {
+                return new StatsUploadResult();
+            }
+
+            throw exception;
         }
     }
 }

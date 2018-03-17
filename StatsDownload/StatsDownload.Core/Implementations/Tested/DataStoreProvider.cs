@@ -135,6 +135,10 @@
             CreateDatabaseConnectionAndExecuteAction(service => StartStatsUpload(service, downloadId));
         }
 
+        public void StatsUploadError(StatsUploadResult statsUploadResult)
+        {
+        }
+
         public void StatsUploadFinished(int downloadId)
         {
             LogMethodInvoked(nameof(StatsUploadFinished));
