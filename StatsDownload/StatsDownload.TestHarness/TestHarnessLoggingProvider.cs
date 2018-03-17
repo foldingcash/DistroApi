@@ -40,6 +40,10 @@
                         + $"Download Data (First 100): {result.FilePayload?.DecompressedDownloadFileData?.Substring(0, 99)}");
         }
 
+        public void LogResult(StatsUploadResult statsUploadResult)
+        {
+        }
+
         public void LogVerbose(string message)
         {
             Log?.Invoke(message);

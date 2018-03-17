@@ -4,6 +4,7 @@
     using System.Collections.Generic;
 
     using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
 
     using NUnit.Framework;
 
@@ -15,6 +16,8 @@
         private IStatsFileParserService statsFileParserServiceMock;
 
         private IStatsUploadDataStoreService statsUploadDataStoreServiceMock;
+
+        private IStatsUploadEmailService statsUploadEmailServiceMock;
 
         private IStatsUploadService systemUnderTest;
 
@@ -46,8 +49,10 @@
             statsFileParserServiceMock.Parse("File1").Returns(new List<UserData> { user1, user2 });
             statsFileParserServiceMock.Parse("File2").Returns(new List<UserData> { user3, user4 });
 
+            statsUploadEmailServiceMock = Substitute.For<IStatsUploadEmailService>();
+
             systemUnderTest = new StatsUploadProvider(statsUploadDataStoreServiceMock, loggingServiceMock,
-                statsFileParserServiceMock);
+                statsFileParserServiceMock, statsUploadEmailServiceMock);
         }
 
         [Test]
@@ -85,6 +90,36 @@
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_EmailsResult()
+        {
+            SetUpWhenInvalidStatsFileExceptionThrown();
+
+            InvokeUploadStatsFiles();
+
+            statsUploadEmailServiceMock.Received().SendEmail(Arg.Any<StatsUploadResult>());
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_LogsResult()
+        {
+            SetUpWhenInvalidStatsFileExceptionThrown();
+
+            InvokeUploadStatsFiles();
+
+            loggingServiceMock.Received().LogResult(Arg.Any<StatsUploadResult>());
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_UpdatesStatsUploadToError()
+        {
+            SetUpWhenInvalidStatsFileExceptionThrown();
+
+            InvokeUploadStatsFiles();
+
+            statsUploadDataStoreServiceMock.Received().StatsUploadError(Arg.Any<StatsUploadResult>());
         }
 
         [Test]
@@ -153,9 +188,16 @@
 
         private Exception SetUpWhenExceptionThrown()
         {
-            var expected = new Exception();
-            statsUploadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw expected; });
-            return expected;
+            var exception = new Exception();
+            statsUploadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
+            return exception;
+        }
+
+        private InvalidStatsFileException SetUpWhenInvalidStatsFileExceptionThrown()
+        {
+            var exception = new InvalidStatsFileException();
+            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(exception);
+            return exception;
         }
     }
 }
