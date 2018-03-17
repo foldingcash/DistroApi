@@ -2,6 +2,6 @@
 {
     public interface IStatsUploadService
     {
-        StatsUploadResult UploadStatsFile();
+        StatsUploadResults UploadStatsFiles();
     }
 }
