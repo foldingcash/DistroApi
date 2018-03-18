@@ -39,28 +39,7 @@
 
                 foreach (int downloadId in uploadFiles)
                 {
-                    try
-                    {
-                        loggingService.LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
-                        statsUploadDataStoreService.StartStatsUpload(downloadId);
-                        string fileData = statsUploadDataStoreService.GetFileData(downloadId);
-                        List<UserData> usersData = statsFileParserService.Parse(fileData);
-
-                        foreach (UserData userData in usersData)
-                        {
-                            statsUploadDataStoreService.AddUserData(userData);
-                        }
-                        statsUploadDataStoreService.StatsUploadFinished(downloadId);
-                        loggingService.LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");
-                    }
-                    catch (Exception exception)
-                    {
-                        StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId, exception);
-                        loggingService.LogResult(failedStatsUploadResult);
-                        statsUploadEmailService.SendEmail(failedStatsUploadResult);
-                        statsUploadDataStoreService.StatsUploadError(failedStatsUploadResult);
-                        statsUploadResults.Add(failedStatsUploadResult);
-                    }
+                    UploadStatsFile(statsUploadResults, downloadId);
                 }
 
                 return new StatsUploadResults(statsUploadResults);
@@ -85,6 +64,36 @@
             }
 
             throw exception;
+        }
+
+        private void UploadStatsFile(List<StatsUploadResult> statsUploadResults, int downloadId)
+        {
+            try
+            {
+                loggingService.LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
+                statsUploadDataStoreService.StartStatsUpload(downloadId);
+                string fileData = statsUploadDataStoreService.GetFileData(downloadId);
+                List<UserData> usersData = statsFileParserService.Parse(fileData);
+                UploadUserData(usersData);
+                statsUploadDataStoreService.StatsUploadFinished(downloadId);
+                loggingService.LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");
+            }
+            catch (Exception exception)
+            {
+                StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId, exception);
+                loggingService.LogResult(failedStatsUploadResult);
+                statsUploadEmailService.SendEmail(failedStatsUploadResult);
+                statsUploadDataStoreService.StatsUploadError(failedStatsUploadResult);
+                statsUploadResults.Add(failedStatsUploadResult);
+            }
+        }
+
+        private void UploadUserData(List<UserData> usersData)
+        {
+            foreach (UserData userData in usersData)
+            {
+                statsUploadDataStoreService.AddUserData(userData);
+            }
         }
     }
 }
