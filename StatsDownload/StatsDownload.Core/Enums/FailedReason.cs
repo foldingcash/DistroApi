@@ -14,6 +14,8 @@
 
         FileDownloadFailedDecompression,
 
+        InvalidStatsFileUpload,
+
         UnexpectedException
     }
 }
