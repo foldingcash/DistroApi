@@ -44,5 +44,10 @@
             }
             return string.Empty;
         }
+
+        public string GetErrorMessage(FailedReason failedReason)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
