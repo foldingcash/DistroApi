@@ -4,6 +4,6 @@
 
     public interface IStatsUploadLoggingService : ILoggingService
     {
-        void LogResult(StatsUploadResult statsUploadResult);
+        void LogResult(StatsUploadResult result);
     }
 }
