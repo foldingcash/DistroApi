@@ -37,25 +37,25 @@
                 List<int> uploadFiles = statsUploadDataStoreService.GetDownloadsReadyForUpload();
                 var statsUploadResults = new List<StatsUploadResult>();
 
-                foreach (int uploadFile in uploadFiles)
+                foreach (int downloadId in uploadFiles)
                 {
                     try
                     {
-                        loggingService.LogVerbose($"Starting stats file upload. DownloadId: {uploadFile}");
-                        statsUploadDataStoreService.StartStatsUpload(uploadFile);
-                        string fileData = statsUploadDataStoreService.GetFileData(uploadFile);
+                        loggingService.LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
+                        statsUploadDataStoreService.StartStatsUpload(downloadId);
+                        string fileData = statsUploadDataStoreService.GetFileData(downloadId);
                         List<UserData> usersData = statsFileParserService.Parse(fileData);
 
                         foreach (UserData userData in usersData)
                         {
                             statsUploadDataStoreService.AddUserData(userData);
                         }
-                        statsUploadDataStoreService.StatsUploadFinished(uploadFile);
-                        loggingService.LogVerbose($"Finished stats file upload. DownloadId: {uploadFile}");
+                        statsUploadDataStoreService.StatsUploadFinished(downloadId);
+                        loggingService.LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");
                     }
                     catch (Exception exception)
                     {
-                        StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(exception);
+                        StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId, exception);
                         loggingService.LogResult(failedStatsUploadResult);
                         statsUploadEmailService.SendEmail(failedStatsUploadResult);
                         statsUploadDataStoreService.StatsUploadError(failedStatsUploadResult);
@@ -63,7 +63,7 @@
                     }
                 }
 
-                return new StatsUploadResults();
+                return new StatsUploadResults(statsUploadResults);
             }
             catch (Exception exception)
             {
@@ -77,11 +77,11 @@
             return !statsUploadDataStoreService.IsAvailable();
         }
 
-        private StatsUploadResult NewFailedStatsUploadResult(Exception exception)
+        private StatsUploadResult NewFailedStatsUploadResult(int downloadId, Exception exception)
         {
             if (exception is InvalidStatsFileException)
             {
-                return new StatsUploadResult();
+                return new StatsUploadResult(downloadId, FailedReason.InvalidStatsFileUpload);
             }
 
             throw exception;
