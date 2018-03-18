@@ -514,6 +514,46 @@
         }
 
         [Test]
+        public void StatsUploadError_WhenInvoked_ParametersAreProvided()
+        {
+            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException).Returns("ErrorMessage");
+
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock.When(
+                service =>
+                service.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadError]", Arg.Any<List<DbParameter>>()))
+                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            systemUnderTest.StatsUploadError(new StatsUploadResult(100, FailedReason.UnexpectedException));
+
+            Assert.That(actualParameters.Count, Is.EqualTo(2));
+            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
+            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
+            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@ErrorMessage"));
+            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[1].Value, Is.EqualTo("ErrorMessage"));
+        }
+
+        [Test]
+        public void StatsUploadError_WhenInvoked_UpdatesStatsUploadToError()
+        {
+            systemUnderTest.StatsUploadError(new StatsUploadResult());
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogVerbose("StatsUploadError Invoked");
+                databaseConnectionServiceMock.Open();
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadError]",
+                    Arg.Any<List<DbParameter>>());
+                databaseConnectionServiceMock.Close();
+            });
+        }
+
+        [Test]
         public void StatsUploadFinished_WhenInvoked_ParametersAreProvided()
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
