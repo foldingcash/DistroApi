@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class FileDownloadErrorMessageProvider : IFileDownloadErrorMessageService
+    public class ErrorMessageProvider : IErrorMessageService
     {
         private const string FileDownloadFailBodyStart = "There was a problem downloading the file payload.";
 
