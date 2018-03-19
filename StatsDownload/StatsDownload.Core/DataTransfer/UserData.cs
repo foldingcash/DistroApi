@@ -18,6 +18,10 @@
             TeamNumber = teamNumber;
         }
 
+        public string BitcoinAddress { get; set; }
+
+        public string FriendlyName { get; set; }
+
         public string Name { get; private set; }
 
         public int TeamNumber { get; private set; }

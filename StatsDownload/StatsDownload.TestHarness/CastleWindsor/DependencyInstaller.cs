@@ -42,6 +42,8 @@
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
                 Component.For<IStatsUploadService>().ImplementedBy<StatsUploadProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
+                Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
+                Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),

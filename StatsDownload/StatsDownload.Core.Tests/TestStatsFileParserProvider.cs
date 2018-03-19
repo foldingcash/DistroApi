@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
 
+    using NSubstitute;
+
     using NUnit.Framework;
 
     [TestFixture]
@@ -34,7 +36,20 @@ anonymous	13937689581	not an int	0
 anonymous	13937689581	64221589	not an int
 TheWasp	13660834951	734045	70335";
 
+        private IAdditionalUserDataParserService additionalUserDataParserServiceMock;
+
         private IStatsFileParserService systemUnderTest;
+
+        [Test]
+        public void Parse_WhenInvoked_ParsesAdditionalUserData()
+        {
+            List<UserData> usersData = systemUnderTest.Parse(GoodStatsFile);
+
+            foreach (UserData actual in usersData)
+            {
+                additionalUserDataParserServiceMock.Received(1).Parse(actual);
+            }
+        }
 
         [Test]
         public void Parse_WhenInvoked_ReturnsListOfUsersData()
@@ -77,7 +92,9 @@ TheWasp	13660834951	734045	70335";
         [SetUp]
         public void SetUp()
         {
-            systemUnderTest = new StatsFileParserProvider();
+            additionalUserDataParserServiceMock = Substitute.For<IAdditionalUserDataParserService>();
+
+            systemUnderTest = new StatsFileParserProvider(additionalUserDataParserServiceMock);
         }
     }
 }
