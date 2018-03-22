@@ -55,7 +55,7 @@
     <Compile Include="Exceptions\InvalidStatsFileException.cs" />
     <Compile Include="Implementations\Tested\AdditionalUserDataParserProvider.cs" />
     <Compile Include="Implementations\Tested\BitcoinAddressValidatorProvider.cs" />
-    <Compile Include="Implementations\Tested\FileDownloadEmailProvider.cs" />
+    <Compile Include="Implementations\Tested\StatsDownloadEmailProvider.cs" />
     <Compile Include="Implementations\Tested\ErrorMessageProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="Implementations\Tested\FilePayloadUploadProvider.cs" />
@@ -76,6 +76,7 @@
     <Compile Include="Interfaces\IAdditionalUserDataParserService.cs" />
     <Compile Include="Interfaces\IBitcoinAddressValidatorService.cs" />
     <Compile Include="Interfaces\IDataStoreService.cs" />
+    <Compile Include="Interfaces\IStatsDownloadEmailService.cs" />
     <Compile Include="Interfaces\IStatsFileParserService.cs" />
     <Compile Include="Interfaces\IStatsUploadEmailService.cs" />
     <Compile Include="Interfaces\IStatsUploadLoggingService.cs" />
