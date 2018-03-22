@@ -64,7 +64,7 @@
     <Compile Include="TestAdditionalUserDataParserProvider.cs" />
     <Compile Include="TestBitcoinAddressValidatorProvider.cs" />
     <Compile Include="TestDataStoreProvider.cs" />
-    <Compile Include="TestFileDownloadEmailProvider.cs" />
+    <Compile Include="TestStatsDownloadEmailProvider.cs" />
     <Compile Include="TestErrorMessageProvider.cs" />
     <Compile Include="TestFileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="TestFileDownloadProvider.cs" />
