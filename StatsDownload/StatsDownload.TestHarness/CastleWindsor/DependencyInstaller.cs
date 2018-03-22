@@ -48,7 +48,8 @@
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),
                 Component.For<IErrorMessageService>().ImplementedBy<ErrorMessageProvider>(),
-                Component.For<IFileDownloadEmailService>().ImplementedBy<FileDownloadEmailProvider>(),
+                Component.For<IFileDownloadEmailService, IStatsUploadEmailService>()
+                         .ImplementedBy<StatsDownloadEmailProvider>(),
                 Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),
                 Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>());

@@ -24,15 +24,20 @@
             }
             else
             {
-                LoggingTextBox.Text += message;
+                AppendToLog(message);
 
                 if (!LoggingTextBox.Text.EndsWith(Environment.NewLine))
                 {
-                    LoggingTextBox.Text += Environment.NewLine;
+                    AppendToLog(Environment.NewLine);
                 }
 
-                LoggingTextBox.Text += Environment.NewLine;
+                AppendToLog(Environment.NewLine);
             }
+        }
+
+        private void AppendToLog(string message)
+        {
+            LoggingTextBox.AppendText(message);
         }
 
         private void CreateFileDownloadServiceAndPerformAction(Action<IFileDownloadService> fileDownloadServiceAction)
@@ -88,7 +93,7 @@
         {
             await
                 RunActionAsync(
-                    () => { CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFile(); }); });
+                    () => { CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFiles(); }); });
         }
     }
 }

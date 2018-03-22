@@ -4,6 +4,7 @@
     using System.Collections.Generic;
 
     using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
 
     using NUnit.Framework;
 
@@ -15,6 +16,8 @@
         private IStatsFileParserService statsFileParserServiceMock;
 
         private IStatsUploadDataStoreService statsUploadDataStoreServiceMock;
+
+        private IStatsUploadEmailService statsUploadEmailServiceMock;
 
         private IStatsUploadService systemUnderTest;
 
@@ -46,51 +49,94 @@
             statsFileParserServiceMock.Parse("File1").Returns(new List<UserData> { user1, user2 });
             statsFileParserServiceMock.Parse("File2").Returns(new List<UserData> { user3, user4 });
 
+            statsUploadEmailServiceMock = Substitute.For<IStatsUploadEmailService>();
+
             systemUnderTest = new StatsUploadProvider(statsUploadDataStoreServiceMock, loggingServiceMock,
-                statsFileParserServiceMock);
+                statsFileParserServiceMock, statsUploadEmailServiceMock);
         }
 
         [Test]
-        public void UploadStatsFile_WhenDataStoreIsNotAvailable_ReturnsDataStoreUnavailableResult()
+        public void UploadStatsFiles_WhenDataStoreIsNotAvailable_ReturnsDataStoreUnavailableResult()
         {
             statsUploadDataStoreServiceMock.IsAvailable().Returns(false);
 
-            StatsUploadResult actual = InvokeUploadStatsFile();
+            StatsUploadResults actual = InvokeUploadStatsFiles();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
         }
 
         [Test]
-        public void UploadStatsFile_WhenExceptionThrown_LogsException()
+        public void UploadStatsFiles_WhenExceptionThrown_LogsException()
         {
             Exception expected = SetUpWhenExceptionThrown();
 
-            InvokeUploadStatsFile();
+            InvokeUploadStatsFiles();
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogVerbose("UploadStatsFile Invoked");
+                loggingServiceMock.LogVerbose("UploadStatsFiles Invoked");
                 statsUploadDataStoreServiceMock.IsAvailable();
                 loggingServiceMock.LogException(expected);
             });
         }
 
         [Test]
-        public void UploadStatsFile_WhenExceptionThrown_ReturnsUnexpectedExceptionResult()
+        public void UploadStatsFiles_WhenExceptionThrown_ReturnsUnexpectedExceptionResult()
         {
             SetUpWhenExceptionThrown();
 
-            StatsUploadResult actual = InvokeUploadStatsFile();
+            StatsUploadResults actual = InvokeUploadStatsFiles();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
         }
 
         [Test]
-        public void UploadStatsFile_WhenInvoked_AddsUserDataForEachDownloadReadyForUpload()
+        public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_EmailsResult()
         {
-            InvokeUploadStatsFile();
+            SetUpWhenInvalidStatsFileExceptionThrown();
+
+            InvokeUploadStatsFiles();
+
+            statsUploadEmailServiceMock.Received().SendEmail(Arg.Any<StatsUploadResult>());
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_LogsResult()
+        {
+            SetUpWhenInvalidStatsFileExceptionThrown();
+
+            InvokeUploadStatsFiles();
+
+            loggingServiceMock.Received().LogResult(Arg.Any<StatsUploadResult>());
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_ResultInvalidStatFileData()
+        {
+            SetUpWhenInvalidStatsFileExceptionThrown();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            Assert.That(actual.UploadResults[0].DownloadId, Is.EqualTo(1));
+            Assert.That(actual.UploadResults[0].FailedReason, Is.EqualTo(FailedReason.InvalidStatsFileUpload));
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_UpdatesStatsUploadToError()
+        {
+            SetUpWhenInvalidStatsFileExceptionThrown();
+
+            InvokeUploadStatsFiles();
+
+            statsUploadDataStoreServiceMock.Received().StatsUploadError(Arg.Any<StatsUploadResult>());
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenInvoked_AddsUserDataForEachDownloadReadyForUpload()
+        {
+            InvokeUploadStatsFiles();
 
             statsUploadDataStoreServiceMock.Received(1).AddUserData(user1);
             statsUploadDataStoreServiceMock.Received(1).AddUserData(user2);
@@ -99,13 +145,13 @@
         }
 
         [Test]
-        public void UploadStatsFile_WhenInvoked_LogsVerboseMessages()
+        public void UploadStatsFiles_WhenInvoked_LogsVerboseMessages()
         {
-            InvokeUploadStatsFile();
+            InvokeUploadStatsFiles();
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogVerbose("UploadStatsFile Invoked");
+                loggingServiceMock.LogVerbose("UploadStatsFiles Invoked");
                 loggingServiceMock.LogVerbose("Starting stats file upload. DownloadId: 1");
                 loggingServiceMock.LogVerbose("Finished stats file upload. DownloadId: 1");
                 loggingServiceMock.LogVerbose("Starting stats file upload. DownloadId: 2");
@@ -114,26 +160,26 @@
         }
 
         [Test]
-        public void UploadStatsFile_WhenInvoked_ReturnsStatsUploadResult()
+        public void UploadStatsFiles_WhenInvoked_ReturnsStatsUploadResults()
         {
-            StatsUploadResult actual = InvokeUploadStatsFile();
+            StatsUploadResults actual = InvokeUploadStatsFiles();
 
-            Assert.IsInstanceOf<StatsUploadResult>(actual);
+            Assert.IsInstanceOf<StatsUploadResults>(actual);
         }
 
         [Test]
-        public void UploadStatsFile_WhenInvoked_ReturnsSuccessResult()
+        public void UploadStatsFiles_WhenInvoked_ReturnsSuccessResult()
         {
-            StatsUploadResult actual = InvokeUploadStatsFile();
+            StatsUploadResults actual = InvokeUploadStatsFiles();
 
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.None));
         }
 
         [Test]
-        public void UploadStatsFile_WhenInvoked_UpdatesTheDownloadFileState()
+        public void UploadStatsFiles_WhenInvoked_UpdatesTheDownloadFileState()
         {
-            InvokeUploadStatsFile();
+            InvokeUploadStatsFiles();
 
             Received.InOrder(() =>
             {
@@ -146,16 +192,23 @@
             });
         }
 
-        private StatsUploadResult InvokeUploadStatsFile()
+        private StatsUploadResults InvokeUploadStatsFiles()
         {
-            return systemUnderTest.UploadStatsFile();
+            return systemUnderTest.UploadStatsFiles();
         }
 
         private Exception SetUpWhenExceptionThrown()
         {
-            var expected = new Exception();
-            statsUploadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw expected; });
-            return expected;
+            var exception = new Exception();
+            statsUploadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
+            return exception;
+        }
+
+        private InvalidStatsFileException SetUpWhenInvalidStatsFileExceptionThrown()
+        {
+            var exception = new InvalidStatsFileException();
+            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(exception);
+            return exception;
         }
     }
 }
