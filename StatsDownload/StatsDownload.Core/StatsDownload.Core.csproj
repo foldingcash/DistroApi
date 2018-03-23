@@ -45,7 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTransfer\FailedUserData.cs" />
     <Compile Include="DataTransfer\FilePayload.cs" />
+    <Compile Include="DataTransfer\ParseResults.cs" />
     <Compile Include="DataTransfer\StatsUploadResult.cs" />
     <Compile Include="DataTransfer\StatsUploadResults.cs" />
     <Compile Include="DataTransfer\MinimumWait.cs" />

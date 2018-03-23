@@ -21,6 +21,11 @@
             Log?.Invoke($"Exception Stack-trace:{Environment.NewLine}{exception.StackTrace}");
         }
 
+        public void LogException(FailedUserData failedUserData)
+        {
+            throw new NotImplementedException();
+        }
+
         public void LogResult(FileDownloadResult result)
         {
             Log?.Invoke($"Success: {result.Success}{Environment.NewLine}"

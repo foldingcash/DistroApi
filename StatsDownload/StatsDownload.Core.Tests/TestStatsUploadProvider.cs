@@ -11,6 +11,14 @@
     [TestFixture]
     public class TestStatsUploadProvider
     {
+        private FailedUserData failedUser1;
+
+        private FailedUserData failedUser2;
+
+        private FailedUserData failedUser3;
+
+        private FailedUserData failedUser4;
+
         private IStatsUploadLoggingService loggingServiceMock;
 
         private IStatsFileParserService statsFileParserServiceMock;
@@ -45,9 +53,18 @@
             user3 = new UserData();
             user4 = new UserData();
 
+            failedUser1 = new FailedUserData();
+            failedUser2 = new FailedUserData();
+            failedUser3 = new FailedUserData();
+            failedUser4 = new FailedUserData();
+
             statsFileParserServiceMock = Substitute.For<IStatsFileParserService>();
-            statsFileParserServiceMock.Parse("File1").Returns(new List<UserData> { user1, user2 });
-            statsFileParserServiceMock.Parse("File2").Returns(new List<UserData> { user3, user4 });
+            statsFileParserServiceMock.Parse("File1")
+                                      .Returns(new ParseResults(new List<UserData> { user1, user2 },
+                                          new List<FailedUserData> { failedUser1, failedUser2 }));
+            statsFileParserServiceMock.Parse("File2")
+                                      .Returns(new ParseResults(new List<UserData> { user3, user4 },
+                                          new List<FailedUserData> { failedUser3, failedUser4 }));
 
             statsUploadEmailServiceMock = Substitute.For<IStatsUploadEmailService>();
 
@@ -190,6 +207,22 @@
                 statsUploadDataStoreServiceMock.GetFileData(2);
                 statsUploadDataStoreServiceMock.StatsUploadFinished(2);
             });
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenParsingUserDataFails_ErrorsLogged()
+        {
+            InvokeUploadStatsFiles();
+
+            loggingServiceMock.Received(4).LogException(Arg.Any<FailedUserData>());
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenParsingUserDataFails_SendsEmail()
+        {
+            InvokeUploadStatsFiles();
+
+            statsUploadEmailServiceMock.Received(2).SendEmail(Arg.Any<List<FailedUserData>>());
         }
 
         private StatsUploadResults InvokeUploadStatsFiles()

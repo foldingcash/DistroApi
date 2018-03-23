@@ -1,5 +1,8 @@
 ﻿namespace StatsDownload.Core
 {
+    using System;
+    using System.Collections.Generic;
+
     using StatsDownload.Email;
 
     public class StatsDownloadEmailProvider : IStatsDownloadEmailService
@@ -34,6 +37,11 @@
             string errorMessage = errorMessageService.GetErrorMessage(failedReason);
 
             SendEmail(StatsUploadFailedSubject, errorMessage);
+        }
+
+        public void SendEmail(List<FailedUserData> failedUsersData)
+        {
+            throw new NotImplementedException();
         }
 
         private void SendEmail(string subject, string body)
