@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
+    using System.Collections.Generic;
 
     using NUnit.Framework;
 
@@ -17,6 +18,17 @@
             Assert.That(actual,
                 Is.EqualTo(
                     "There was a problem downloading the file payload. The data store is unavailable, ensure the data store is available and configured correctly and try again."));
+        }
+
+        [Test]
+        public void GetErrorMessage_WhenFailedUserData_ReturnsFailedUserDataMessage()
+        {
+            var failedUsersData = new List<FailedUserData> { new FailedUserData(), new FailedUserData() };
+            string actual = systemUnderTest.GetErrorMessage(failedUsersData);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings."));
         }
 
         [Test]
