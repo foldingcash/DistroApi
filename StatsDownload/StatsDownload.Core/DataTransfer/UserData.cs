@@ -2,10 +2,6 @@
 {
     public class UserData
     {
-        /// <summary>
-        ///     The intent of this constructor is to be used during testing when one does not care about the values in the DTO
-        ///     This constructor does not modify the properties, leaving them the default value
-        /// </summary>
         public UserData()
         {
         }

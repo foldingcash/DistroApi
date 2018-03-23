@@ -31,11 +31,12 @@
 
             for (var lineIndex = 2; lineIndex < fileLines.Length; lineIndex++)
             {
-                string[] unparsedUserData = fileLines[lineIndex].Split(new[] { '\t' },
-                    StringSplitOptions.RemoveEmptyEntries);
+                string currentLine = fileLines[lineIndex];
+                string[] unparsedUserData = currentLine.Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (unparsedUserData.Length != 4)
                 {
+                    failedUsersData.Add(new FailedUserData(currentLine));
                     continue;
                 }
 
@@ -44,14 +45,17 @@
                 int totalWorkUnits;
                 int teamNumber;
 
-                if (!ulong.TryParse(unparsedUserData[1], out totalPoints)
-                    || !int.TryParse(unparsedUserData[2], out totalWorkUnits)
-                    || !int.TryParse(unparsedUserData[3], out teamNumber))
-                {
-                    continue;
-                }
+                bool totalPointsParsed = ulong.TryParse(unparsedUserData[1], out totalPoints);
+                bool totalWorkUnitsParsed = int.TryParse(unparsedUserData[2], out totalWorkUnits);
+                bool teamNumberParsed = int.TryParse(unparsedUserData[3], out teamNumber);
 
                 var userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
+
+                if (!totalPointsParsed || !totalWorkUnitsParsed || !teamNumberParsed)
+                {
+                    failedUsersData.Add(new FailedUserData(currentLine, userData));
+                    continue;
+                }
 
                 additionalUserDataParserService.Parse(userData);
 
