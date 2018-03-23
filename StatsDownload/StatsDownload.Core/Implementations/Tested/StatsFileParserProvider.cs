@@ -15,9 +15,11 @@
             this.additionalUserDataParserService = additionalUserDataParserService;
         }
 
-        public List<UserData> Parse(string fileData)
+        public ParseResults Parse(string fileData)
         {
             var usersData = new List<UserData>();
+            var failedUsersData = new List<FailedUserData>();
+            var parseResults = new ParseResults(usersData, failedUsersData);
 
             string[] fileLines = fileData?.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -56,7 +58,7 @@
                 usersData.Add(userData);
             }
 
-            return usersData;
+            return parseResults;
         }
 
         private bool ValidDateTime(string dateTime)

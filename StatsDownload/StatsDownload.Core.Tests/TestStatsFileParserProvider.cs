@@ -54,7 +54,7 @@ TheWasp	13660834951	734045	70335";
         [Test]
         public void Parse_WhenInvoked_ParsesAdditionalUserData()
         {
-            List<UserData> usersData = systemUnderTest.Parse(GoodStatsFile);
+            List<UserData> usersData = InvokeParse();
 
             foreach (UserData actual in usersData)
             {
@@ -66,7 +66,7 @@ TheWasp	13660834951	734045	70335";
         [TestCase(EmptyStatsFile, 0)]
         public void Parse_WhenInvoked_ReturnsListOfUsersData(string fileData, int expectedCount)
         {
-            List<UserData> actual = systemUnderTest.Parse(fileData);
+            List<UserData> actual = InvokeParse(fileData);
 
             Assert.That(actual.Count, Is.EqualTo(expectedCount));
         }
@@ -74,7 +74,7 @@ TheWasp	13660834951	734045	70335";
         [Test]
         public void Parse_WhenInvoked_ReturnsParsedUserData()
         {
-            List<UserData> usersData = systemUnderTest.Parse(GoodStatsFile);
+            List<UserData> usersData = InvokeParse();
             UserData actual = usersData[2];
 
             Assert.That(actual.Name, Is.EqualTo("msi_TW"));
@@ -89,13 +89,13 @@ TheWasp	13660834951	734045	70335";
         [TestCase(MalformedDateTime)]
         public void Parse_WhenInvokedWithFileWithMalformedHeader_ThrowsInvalidStatsFileException(string fileData)
         {
-            Assert.Throws<InvalidStatsFileException>(() => systemUnderTest.Parse(fileData));
+            Assert.Throws<InvalidStatsFileException>(() => InvokeParse(fileData));
         }
 
         [Test]
         public void Parse_WhenInvokedWithMalformedUserRecord_SkipsMalformedUserRecord()
         {
-            List<UserData> actual = systemUnderTest.Parse(MalformedUserRecord);
+            List<UserData> actual = InvokeParse(MalformedUserRecord);
 
             Assert.That(actual.Count, Is.EqualTo(4));
         }
@@ -106,6 +106,11 @@ TheWasp	13660834951	734045	70335";
             additionalUserDataParserServiceMock = Substitute.For<IAdditionalUserDataParserService>();
 
             systemUnderTest = new StatsFileParserProvider(additionalUserDataParserServiceMock);
+        }
+
+        private List<UserData> InvokeParse(string fileData = GoodStatsFile)
+        {
+            return systemUnderTest.Parse(fileData).UsersData;
         }
     }
 }
