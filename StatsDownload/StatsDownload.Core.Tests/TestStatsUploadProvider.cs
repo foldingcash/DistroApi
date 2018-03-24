@@ -130,6 +130,16 @@
         }
 
         [Test]
+        public void UploadStatsFiles_WhenExceptionThrown_SendsEmail()
+        {
+            SetUpWhenExceptionThrown();
+
+            InvokeUploadStatsFiles();
+
+            statsUploadEmailServiceMock.Received().SendEmail(Arg.Any<StatsUploadResults>());
+        }
+
+        [Test]
         public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_EmailsResult()
         {
             SetUpWhenInvalidStatsFileExceptionThrown();
