@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using System.Collections.Generic;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -14,6 +16,17 @@
         private IErrorMessageService errorMessageServiceMock;
 
         private IStatsDownloadEmailService systemUnderTest;
+
+        [Test]
+        public void SendEmail_WhenInvokedWithFailedUsersData_SendsEmail()
+        {
+            var failedUsersData = new List<FailedUserData>();
+            errorMessageServiceMock.GetErrorMessage(failedUsersData).Returns("ErrorMessage");
+
+            systemUnderTest.SendEmail(failedUsersData);
+
+            emailServiceMock.Received(1).SendEmail("User Data Failed Parsing", "ErrorMessage");
+        }
 
         [Test]
         public void SendEmail_WhenInvokedWithFileDownloadResult_SendsEmail()
