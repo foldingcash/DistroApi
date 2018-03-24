@@ -49,8 +49,10 @@
             }
             catch (Exception exception)
             {
+                var results = new StatsUploadResults(FailedReason.UnexpectedException);
                 loggingService.LogException(exception);
-                return new StatsUploadResults(FailedReason.UnexpectedException);
+                statsUploadEmailService.SendEmail(results);
+                return results;
             }
         }
 
