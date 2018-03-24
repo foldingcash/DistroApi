@@ -73,14 +73,34 @@
         }
 
         [Test]
+        public void UploadStatsFiles_WhenDataStoreIsNotAvailable_LogsResult()
+        {
+            SetUpWhenDataStoreIsNotAvailable();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            loggingServiceMock.Received().LogResult(actual);
+        }
+
+        [Test]
         public void UploadStatsFiles_WhenDataStoreIsNotAvailable_ReturnsDataStoreUnavailableResult()
         {
-            statsUploadDataStoreServiceMock.IsAvailable().Returns(false);
+            SetUpWhenDataStoreIsNotAvailable();
 
             StatsUploadResults actual = InvokeUploadStatsFiles();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenDataStoreIsNotAvailable_SendsEmail()
+        {
+            SetUpWhenDataStoreIsNotAvailable();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            statsUploadEmailServiceMock.Received().SendEmail(actual);
         }
 
         [Test]
@@ -228,6 +248,11 @@
         private StatsUploadResults InvokeUploadStatsFiles()
         {
             return systemUnderTest.UploadStatsFiles();
+        }
+
+        private void SetUpWhenDataStoreIsNotAvailable()
+        {
+            statsUploadDataStoreServiceMock.IsAvailable().Returns(false);
         }
 
         private Exception SetUpWhenExceptionThrown()

@@ -50,6 +50,16 @@
             emailServiceMock.Received().SendEmail("Stats Upload Failed", "ErrorMessage");
         }
 
+        [Test]
+        public void SendEmail_WhenInvokedWithStatsUploadResults_SendsEmail()
+        {
+            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException).Returns("ErrorMessage");
+
+            systemUnderTest.SendEmail(new StatsUploadResults(FailedReason.UnexpectedException));
+
+            emailServiceMock.Received().SendEmail("Stats Upload Failed", "ErrorMessage");
+        }
+
         [SetUp]
         public void SetUp()
         {
