@@ -65,7 +65,7 @@
 
             foreach (FailedUserData failedUserData in failedUsersData)
             {
-                loggingService.LogException(failedUserData);
+                loggingService.LogFailedUserData(failedUserData);
             }
         }
 

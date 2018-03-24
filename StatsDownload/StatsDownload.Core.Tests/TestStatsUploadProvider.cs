@@ -214,7 +214,7 @@
         {
             InvokeUploadStatsFiles();
 
-            loggingServiceMock.Received(4).LogException(Arg.Any<FailedUserData>());
+            loggingServiceMock.Received(4).LogFailedUserData(Arg.Any<FailedUserData>());
         }
 
         [Test]

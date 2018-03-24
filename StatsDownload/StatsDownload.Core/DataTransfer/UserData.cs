@@ -6,7 +6,7 @@
         {
         }
 
-        public UserData(string name, ulong totalPoints, int totalWorkUnits, int teamNumber)
+        public UserData(string name, ulong totalPoints, ulong totalWorkUnits, ulong teamNumber)
         {
             Name = name;
             TotalPoints = totalPoints;
@@ -20,10 +20,10 @@
 
         public string Name { get; private set; }
 
-        public int TeamNumber { get; private set; }
+        public ulong TeamNumber { get; private set; }
 
         public ulong TotalPoints { get; private set; }
 
-        public int TotalWorkUnits { get; private set; }
+        public ulong TotalWorkUnits { get; private set; }
     }
 }
