@@ -40,6 +40,15 @@
             SendEmail(StatsUploadFailedSubject, errorMessage);
         }
 
+        public void SendEmail(StatsUploadResults statsUploadResults)
+        {
+            FailedReason failedReason = statsUploadResults.FailedReason;
+
+            string errorMessage = errorMessageService.GetErrorMessage(failedReason);
+
+            SendEmail(StatsUploadFailedSubject, errorMessage);
+        }
+
         public void SendEmail(List<FailedUserData> failedUsersData)
         {
             string errorMessage = errorMessageService.GetErrorMessage(failedUsersData);

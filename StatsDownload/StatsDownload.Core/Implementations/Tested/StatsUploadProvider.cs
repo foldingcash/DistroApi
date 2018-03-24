@@ -31,7 +31,10 @@
                 loggingService.LogVerbose($"{nameof(UploadStatsFiles)} Invoked");
                 if (DataStoreUnavailable())
                 {
-                    return new StatsUploadResults(FailedReason.DataStoreUnavailable);
+                    var results = new StatsUploadResults(FailedReason.DataStoreUnavailable);
+                    loggingService.LogResult(results);
+                    statsUploadEmailService.SendEmail(results);
+                    return results;
                 }
 
                 List<int> uploadFiles = statsUploadDataStoreService.GetDownloadsReadyForUpload();

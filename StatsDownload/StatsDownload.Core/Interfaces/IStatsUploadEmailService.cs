@@ -6,6 +6,8 @@
     {
         void SendEmail(StatsUploadResult statsUploadResult);
 
+        void SendEmail(StatsUploadResults statsUploadResults);
+
         void SendEmail(List<FailedUserData> failedUsersData);
     }
 }
