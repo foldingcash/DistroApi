@@ -17,7 +17,7 @@
 
             Assert.That(actual,
                 Is.EqualTo(
-                    "There was a problem downloading the file payload. The data store is unavailable, ensure the data store is available and configured correctly and try again."));
+                    "There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again."));
         }
 
         [Test]

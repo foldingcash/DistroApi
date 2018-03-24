@@ -6,6 +6,8 @@
     {
         void LogFailedUserData(FailedUserData failedUserData);
 
-        void LogResult(StatsUploadResult result);
+        void LogResult(StatsUploadResult statsUploadResult);
+
+        void LogResult(StatsUploadResults statsUploadResults);
     }
 }
