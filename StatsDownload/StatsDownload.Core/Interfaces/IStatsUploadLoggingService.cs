@@ -4,7 +4,7 @@
 
     public interface IStatsUploadLoggingService : ILoggingService
     {
-        void LogException(FailedUserData failedUserData);
+        void LogFailedUserData(FailedUserData failedUserData);
 
         void LogResult(StatsUploadResult result);
     }
