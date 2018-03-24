@@ -30,7 +30,7 @@
             if (failedReason == FailedReason.DataStoreUnavailable)
             {
                 return
-                    "there was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.";
+                    "There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.";
             }
             if (failedReason == FailedReason.RequiredSettingsInvalid)
             {
