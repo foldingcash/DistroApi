@@ -20,11 +20,11 @@
         Stream GetFile();
 
         [OperationContract]
-        [WebGet(UriTemplate = "/invalid_folder.bz2")]
+        [WebGet(UriTemplate = "/invalid_folder.txt.bz2")]
         Stream GetInvalidFolderRecord();
 
         [OperationContract]
-        [WebGet(UriTemplate = "/invalid_file.bz2")]
+        [WebGet(UriTemplate = "/invalid_file.txt.bz2")]
         Stream GetInvalidStatsFile();
 
         [OperationContract]

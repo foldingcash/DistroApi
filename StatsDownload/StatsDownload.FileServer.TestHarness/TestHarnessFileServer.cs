@@ -11,9 +11,9 @@
     {
         private const string GoodStatsFile = "TestHarnessStatsFile.txt.bz2";
 
-        private const string InvalidFolderRecordFile = "TestHarnessStatsFile.txt.bz2";
+        private const string InvalidFolderRecordFile = "InvalidFolderRecord.txt.bz2";
 
-        private const string InvalidStatsFile = "TestHarnessStatsFile.txt.bz2";
+        private const string InvalidStatsFile = "InvalidStatsFile.txt.bz2";
 
         public Stream GetDecompressableFile()
         {
