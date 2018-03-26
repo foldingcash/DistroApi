@@ -20,6 +20,14 @@
         Stream GetFile();
 
         [OperationContract]
+        [WebGet(UriTemplate = "/invalid_folder.txt.bz2")]
+        Stream GetInvalidFolderRecord();
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/invalid_file.txt.bz2")]
+        Stream GetInvalidStatsFile();
+
+        [OperationContract]
         [WebGet(UriTemplate = "/timeout.bz2")]
         Stream GetTimeoutFile();
     }
