@@ -5,6 +5,7 @@
     using System.Net;
     using System.Net.Mail;
     using System.Text;
+    using System.Threading;
 
     using StatsDownload.Logging;
 
@@ -15,6 +16,8 @@
         private readonly ILoggingService loggingService;
 
         private readonly IEmailSettingsService settingsService;
+
+        private readonly int WaitTimeInMillisecondsBeforeTryingSendAgain = 5000;
 
         public EmailProvider(IEmailSettingsService settingsService,
                              IEmailSettingsValidatorService emailSettingsValidatorService,
@@ -209,7 +212,23 @@
 
             using (MailMessage mailMessage = NewMailMessage(fromAddress, toAddress, subject, body))
             {
-                smtpClient.Send(mailMessage);
+                try
+                {
+                    smtpClient.Send(mailMessage);
+                }
+                catch (SmtpException smtpException)
+                {
+                    sb.AppendLine($"An smtp exception was caught with a status code of {smtpException.StatusCode}");
+
+                    SmtpStatusCode statusCode = smtpException.StatusCode;
+                    if (statusCode == SmtpStatusCode.MailboxBusy || statusCode == SmtpStatusCode.MailboxUnavailable)
+                    {
+                        sb.AppendLine($"Attempting to resend message to {toAddress.Address}");
+
+                        Thread.Sleep(WaitTimeInMillisecondsBeforeTryingSendAgain);
+                        smtpClient.Send(mailMessage);
+                    }
+                }
             }
         }
     }
