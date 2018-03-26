@@ -31,6 +31,16 @@
             return new FileStream(filePath, FileMode.Open);
         }
 
+        public Stream GetInvalidFolderRecord()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Stream GetInvalidStatsFile()
+        {
+            throw new NotImplementedException();
+        }
+
         public Stream GetTimeoutFile()
         {
             int sleepInSeconds = GetSleepInSeconds();
