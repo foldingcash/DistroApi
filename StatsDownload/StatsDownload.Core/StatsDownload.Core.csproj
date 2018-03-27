@@ -61,6 +61,7 @@
     <Compile Include="Implementations\Tested\ErrorMessageProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="Implementations\Tested\FilePayloadUploadProvider.cs" />
+    <Compile Include="Implementations\Tested\StatsDownloadLoggingProvider.cs" />
     <Compile Include="Implementations\Tested\StatsFileParserProvider.cs" />
     <Compile Include="Implementations\Tested\StatsUploadProvider.cs" />
     <Compile Include="Implementations\Tested\ResourceCleanupProvider.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Interfaces\IBitcoinAddressValidatorService.cs" />
     <Compile Include="Interfaces\IDataStoreService.cs" />
     <Compile Include="Interfaces\IStatsDownloadEmailService.cs" />
+    <Compile Include="Interfaces\IStatsDownloadLoggingService.cs" />
     <Compile Include="Interfaces\IStatsFileParserService.cs" />
     <Compile Include="Interfaces\IStatsUploadEmailService.cs" />
     <Compile Include="Interfaces\IStatsUploadLoggingService.cs" />
