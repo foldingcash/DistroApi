@@ -23,7 +23,6 @@
                 Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
                 Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>(),
-                Component.For<IResourceCleanupService>().ImplementedBy<ResourceCleanupProvider>(),
                 Component.For<ILoggingService>().ImplementedBy<LoggingProvider>(),
                 Component.For<IStatsUploadLoggingService>().ImplementedBy<StatsDownloadLoggingProvider>(),
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
@@ -40,9 +39,6 @@
                 Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
                 Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
                 Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
-                Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),
-                Component.For<IFileDownloadMinimumWaitTimeService>()
-                         .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),
                 Component.For<IErrorMessageService>().ImplementedBy<ErrorMessageProvider>(),
                 Component.For<IStatsUploadEmailService>().ImplementedBy<StatsDownloadEmailProvider>(),
                 Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
