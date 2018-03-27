@@ -27,6 +27,9 @@
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
                 Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>(),
                 Component.For<IResourceCleanupService>().ImplementedBy<ResourceCleanupProvider>(),
+                Component.For<ILoggingService>().ImplementedBy<LoggingProvider>(),
+                Component.For<IFileDownloadLoggingService, IStatsUploadLoggingService>()
+                         .ImplementedBy<StatsDownloadLoggingProvider>(),
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
