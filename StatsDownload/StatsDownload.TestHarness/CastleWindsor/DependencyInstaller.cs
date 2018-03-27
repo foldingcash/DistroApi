@@ -14,9 +14,7 @@
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(
-                Component.For<ILoggingService, IFileDownloadLoggingService, IStatsUploadLoggingService>()
-                         .ImplementedBy<TestHarnessLoggingProvider>(),
+            container.Register(Component.For<IApplicationLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
                 Component
                     .For
                     <IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService,

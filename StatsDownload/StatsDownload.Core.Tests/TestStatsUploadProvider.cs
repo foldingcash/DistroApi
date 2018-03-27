@@ -79,7 +79,7 @@
 
             StatsUploadResults actual = InvokeUploadStatsFiles();
 
-            loggingServiceMock.Received().LogResult(actual);
+            loggingServiceMock.Received().LogResults(actual);
         }
 
         [Test]
