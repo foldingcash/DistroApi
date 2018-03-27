@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.FileDownload.Console
 {
+    using System;
+
     using StatsDownload.Core;
 
     public class Program
@@ -12,6 +14,10 @@
 
                 var service = WindsorContainer.Instance.Resolve<IFileDownloadService>();
                 service.DownloadStatsFile();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
             finally
             {

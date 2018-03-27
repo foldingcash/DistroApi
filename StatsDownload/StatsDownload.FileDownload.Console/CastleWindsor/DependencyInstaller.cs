@@ -15,7 +15,9 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
-                Component.For<IApplicationLoggingService>().ImplementedBy<FileDownloadConsoleLoggingProvider>());
+                Component.For<IApplicationLoggingService>().ImplementedBy<FileDownloadConsoleLoggingProvider>(),
+                Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService>()
+                         .ImplementedBy<FileDownloadConsoleSettingsProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
