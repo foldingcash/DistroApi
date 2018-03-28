@@ -115,11 +115,6 @@
     <Compile Include="DataTransfer\FileDownloadResult.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SqlScripts\FoldingCoinSchemaV1.sql" />
-    <Content Include="SqlScripts\FoldingCoinStoredProceduresV1.sql" />
-    <Content Include="SqlScripts\SqlStatementsDuringRun.sql" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">
       <Project>{3F8412A3-CC11-4D84-8BC3-FD81ACF81CDF}</Project>
       <Name>StatsDownload.Email</Name>
