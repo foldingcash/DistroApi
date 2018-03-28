@@ -7,13 +7,21 @@
 
     using StatsDownload.Logging;
 
-    public class DataStoreProvider : IFileDownloadDataStoreService, IStatsUploadDataStoreService
+    public class DataStoreProvider : IDataStoreService
     {
         private const string DatabaseConnectionSuccessfulLogMessage = "Database connection was successful";
 
         private const string FileDownloadErrorProcedureName = "[FoldingCoin].[FileDownloadError]";
 
         private const string FileDownloadFinishedProcedureName = "[FoldingCoin].[FileDownloadFinished]";
+
+        private const string GetFileDataProcedureName = "[FoldingCoin].[GetFileData]";
+
+        private const string StartStatsUploadProcedureName = "[FoldingCoin].[StartStatsUpload]";
+
+        private const string StatsUploadErrorProcedureName = "[FoldingCoin].[StatsUploadError]";
+
+        private const string StatsUploadFinishedProcedureName = "[FoldingCoin].[StatsUploadFinished]";
 
         private readonly IDatabaseConnectionServiceFactory databaseConnectionServiceFactory;
 
@@ -57,6 +65,10 @@
             this.errorMessageService = errorMessageService;
         }
 
+        public void AddUserData(UserData userData)
+        {
+        }
+
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
             LogMethodInvoked(nameof(FileDownloadError));
@@ -67,6 +79,23 @@
         {
             LogMethodInvoked(nameof(FileDownloadFinished));
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
+        }
+
+        public List<int> GetDownloadsReadyForUpload()
+        {
+            LogMethodInvoked(nameof(GetDownloadsReadyForUpload));
+            List<int> downloadsReadyForUpload = default(List<int>);
+            CreateDatabaseConnectionAndExecuteAction(
+                service => downloadsReadyForUpload = GetDownloadsReadyForUpload(service));
+            return downloadsReadyForUpload;
+        }
+
+        public string GetFileData(int downloadId)
+        {
+            LogMethodInvoked(nameof(GetFileData));
+            string fileData = default(string);
+            CreateDatabaseConnectionAndExecuteAction(service => fileData = GetFileData(service, downloadId));
+            return fileData;
         }
 
         public DateTime GetLastFileDownloadDateTime()
@@ -100,6 +129,24 @@
             int downloadId = default(int);
             CreateDatabaseConnectionAndExecuteAction(service => { downloadId = NewFileDownloadStarted(service); });
             filePayload.DownloadId = downloadId;
+        }
+
+        public void StartStatsUpload(int downloadId)
+        {
+            LogMethodInvoked(nameof(StartStatsUpload));
+            CreateDatabaseConnectionAndExecuteAction(service => StartStatsUpload(service, downloadId));
+        }
+
+        public void StatsUploadError(StatsUploadResult statsUploadResult)
+        {
+            LogMethodInvoked(nameof(StatsUploadError));
+            CreateDatabaseConnectionAndExecuteAction(service => StatsUploadError(service, statsUploadResult));
+        }
+
+        public void StatsUploadFinished(int downloadId)
+        {
+            LogMethodInvoked(nameof(StatsUploadFinished));
+            CreateDatabaseConnectionAndExecuteAction(service => StatsUploadFinished(service, downloadId));
         }
 
         public void UpdateToLatest()
@@ -136,6 +183,37 @@
             }
         }
 
+        private DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection, int downloadId)
+        {
+            DbParameter downloadIdParameter = databaseConnection.CreateParameter("@DownloadId", DbType.Int32,
+                ParameterDirection.Input);
+            downloadIdParameter.Value = downloadId;
+            return downloadIdParameter;
+        }
+
+        private DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection,
+                                                        FileDownloadResult fileDownloadResult)
+        {
+            FilePayload filePayload = fileDownloadResult.FilePayload;
+            string message = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason, filePayload);
+            return CreateErrorMessageParameter(databaseConnection, message);
+        }
+
+        private DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection, string message)
+        {
+            DbParameter errorMessage = databaseConnection.CreateParameter("@ErrorMessage", DbType.String,
+                ParameterDirection.Input);
+            errorMessage.Value = message;
+            return errorMessage;
+        }
+
+        private DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection,
+                                                        StatsUploadResult fileDownloadResult)
+        {
+            string message = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason);
+            return CreateErrorMessageParameter(databaseConnection, message);
+        }
+
         private void EnsureValidConnectionString(string connectionString)
         {
             if (connectionString == null)
@@ -149,18 +227,20 @@
             }
         }
 
+        private void ExecuteStoredProcedure(IDatabaseConnectionService databaseConnection, string storedProcedure,
+                                            List<DbParameter> parameters)
+        {
+            databaseConnection.ExecuteStoredProcedure(storedProcedure, parameters);
+        }
+
         private void FileDownloadError(IDatabaseConnectionService databaseConnection,
                                        FileDownloadResult fileDownloadResult)
         {
             FilePayload filePayload = fileDownloadResult.FilePayload;
 
-            DbParameter downloadId = databaseConnection.CreateParameter("@DownloadId", DbType.Int32,
-                ParameterDirection.Input);
-            downloadId.Value = filePayload.DownloadId;
+            DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, filePayload.DownloadId);
 
-            DbParameter errorMessage = databaseConnection.CreateParameter("@ErrorMessage", DbType.String,
-                ParameterDirection.Input);
-            errorMessage.Value = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason, filePayload);
+            DbParameter errorMessage = CreateErrorMessageParameter(databaseConnection, fileDownloadResult);
 
             databaseConnection.ExecuteStoredProcedure(FileDownloadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });
@@ -168,9 +248,7 @@
 
         private void FileDownloadFinished(IDatabaseConnectionService databaseConnection, FilePayload filePayload)
         {
-            DbParameter downloadId = databaseConnection.CreateParameter("@DownloadId", DbType.Int32,
-                ParameterDirection.Input);
-            downloadId.Value = filePayload.DownloadId;
+            DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, filePayload.DownloadId);
 
             DbParameter fileName = databaseConnection.CreateParameter("@FileName", DbType.String,
                 ParameterDirection.Input);
@@ -193,9 +271,42 @@
             return databaseConnectionSettingsService.GetConnectionString();
         }
 
-        private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService service)
+        private List<int> GetDownloadsReadyForUpload(IDatabaseConnectionService databaseConnection)
         {
-            return service.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()") as DateTime?
+            DbDataReader reader =
+                databaseConnection.ExecuteReader("SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]");
+            var downloadsReadyForUpload = new List<int>();
+
+            while (reader.Read())
+            {
+                downloadsReadyForUpload.Add(reader.GetInt32(0));
+            }
+
+            return downloadsReadyForUpload;
+        }
+
+        private string GetFileData(IDatabaseConnectionService databaseConnection, int downloadId)
+        {
+            DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
+
+            DbParameter fileName = databaseConnection.CreateParameter("@FileName", DbType.String,
+                ParameterDirection.Output, -1);
+
+            DbParameter fileExtension = databaseConnection.CreateParameter("@FileExtension", DbType.String,
+                ParameterDirection.Output, -1);
+
+            DbParameter fileData = databaseConnection.CreateParameter("@FileData", DbType.String,
+                ParameterDirection.Output, -1);
+
+            databaseConnection.ExecuteStoredProcedure(GetFileDataProcedureName,
+                new List<DbParameter> { download, fileName, fileExtension, fileData });
+
+            return (string)fileData.Value;
+        }
+
+        private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
+        {
+            return databaseConnection.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()") as DateTime?
                    ?? default(DateTime);
         }
 
@@ -235,9 +346,33 @@
             return (int)downloadId.Value;
         }
 
-        private void OpenDatabaseConnection(IDatabaseConnectionService databaseConnectionService)
+        private void OpenDatabaseConnection(IDatabaseConnectionService databaseConnection)
         {
-            databaseConnectionService.Open();
+            databaseConnection.Open();
+        }
+
+        private void StartStatsUpload(IDatabaseConnectionService databaseConnection, int downloadId)
+        {
+            DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
+
+            databaseConnection.ExecuteStoredProcedure(StartStatsUploadProcedureName, new List<DbParameter> { download });
+        }
+
+        private void StatsUploadError(IDatabaseConnectionService databaseConnection, StatsUploadResult statsUploadResult)
+        {
+            DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, statsUploadResult.DownloadId);
+            DbParameter errorMessage = CreateErrorMessageParameter(databaseConnection, statsUploadResult);
+
+            ExecuteStoredProcedure(databaseConnection, StatsUploadErrorProcedureName,
+                new List<DbParameter> { downloadId, errorMessage });
+        }
+
+        private void StatsUploadFinished(IDatabaseConnectionService databaseConnection, int downloadId)
+        {
+            DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
+
+            databaseConnection.ExecuteStoredProcedure(StatsUploadFinishedProcedureName,
+                new List<DbParameter> { download });
         }
 
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)

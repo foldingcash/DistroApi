@@ -45,15 +45,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTransfer\FailedUserData.cs" />
     <Compile Include="DataTransfer\FilePayload.cs" />
+    <Compile Include="DataTransfer\ParseResults.cs" />
     <Compile Include="DataTransfer\StatsUploadResult.cs" />
+    <Compile Include="DataTransfer\StatsUploadResults.cs" />
     <Compile Include="DataTransfer\MinimumWait.cs" />
+    <Compile Include="DataTransfer\UserData.cs" />
     <Compile Include="Exceptions\FileDownloadArgumentException.cs" />
     <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
-    <Compile Include="Implementations\Tested\FileDownloadEmailProvider.cs" />
+    <Compile Include="Exceptions\InvalidStatsFileException.cs" />
+    <Compile Include="Implementations\Tested\AdditionalUserDataParserProvider.cs" />
+    <Compile Include="Implementations\Tested\BitcoinAddressValidatorProvider.cs" />
+    <Compile Include="Implementations\Tested\StatsDownloadEmailProvider.cs" />
     <Compile Include="Implementations\Tested\ErrorMessageProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
     <Compile Include="Implementations\Tested\FilePayloadUploadProvider.cs" />
+    <Compile Include="Implementations\Tested\StatsDownloadLoggingProvider.cs" />
+    <Compile Include="Implementations\Tested\StatsFileParserProvider.cs" />
     <Compile Include="Implementations\Tested\StatsUploadProvider.cs" />
     <Compile Include="Implementations\Tested\ResourceCleanupProvider.cs" />
     <Compile Include="Implementations\Tested\SecureDownloadProvider.cs" />
@@ -67,6 +76,13 @@
     <Compile Include="Interfaces\File\IFileDownloadEmailService.cs" />
     <Compile Include="Interfaces\File\IFileDownloadMinimumWaitTimeService.cs" />
     <Compile Include="Interfaces\File\IFilePayloadUploadService.cs" />
+    <Compile Include="Interfaces\IAdditionalUserDataParserService.cs" />
+    <Compile Include="Interfaces\IBitcoinAddressValidatorService.cs" />
+    <Compile Include="Interfaces\IDataStoreService.cs" />
+    <Compile Include="Interfaces\IStatsDownloadEmailService.cs" />
+    <Compile Include="Interfaces\IStatsDownloadLoggingService.cs" />
+    <Compile Include="Interfaces\IStatsFileParserService.cs" />
+    <Compile Include="Interfaces\IStatsUploadEmailService.cs" />
     <Compile Include="Interfaces\IStatsUploadLoggingService.cs" />
     <Compile Include="Interfaces\IStatsUploadService.cs" />
     <Compile Include="Interfaces\IDateTimeService.cs" />
@@ -97,11 +113,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Implementations\Tested\FileDownloadProvider.cs" />
     <Compile Include="DataTransfer\FileDownloadResult.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="SqlScripts\FoldingCoinSchemaV1.sql" />
-    <Content Include="SqlScripts\FoldingCoinStoredProceduresV1.sql" />
-    <Content Include="SqlScripts\SqlStatementsDuringRun.sql" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">

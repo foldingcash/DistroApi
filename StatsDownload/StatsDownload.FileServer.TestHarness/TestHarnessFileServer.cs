@@ -9,6 +9,12 @@
 
     public class TestHarnessFileServer : ITestHarnessFileServer
     {
+        private const string GoodStatsFile = "TestHarnessStatsFile.txt.bz2";
+
+        private const string InvalidFolderRecordFile = "InvalidFolderRecord.txt.bz2";
+
+        private const string InvalidStatsFile = "InvalidStatsFile.txt.bz2";
+
         public Stream GetDecompressableFile()
         {
             var memoryStream = new MemoryStream();
@@ -27,8 +33,17 @@
 
         public Stream GetFile()
         {
-            string filePath = GetFilePath();
-            return new FileStream(filePath, FileMode.Open);
+            return GetFileStream(GoodStatsFile);
+        }
+
+        public Stream GetInvalidFolderRecord()
+        {
+            return GetFileStream(InvalidFolderRecordFile);
+        }
+
+        public Stream GetInvalidStatsFile()
+        {
+            return GetFileStream(InvalidStatsFile);
         }
 
         public Stream GetTimeoutFile()
@@ -38,11 +53,17 @@
             return GetFile();
         }
 
-        private string GetFilePath()
+        private string GetFilePath(string fileName)
         {
             return ConfigurationManager.AppSettings["FilePath"]
-                   ?? Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "MockFile",
-                       "TestHarnessStatsFile.txt.bz2");
+                   ?? Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "MockFiles",
+                       fileName);
+        }
+
+        private Stream GetFileStream(string fileName)
+        {
+            string filePath = GetFilePath(fileName);
+            return new FileStream(filePath, FileMode.Open);
         }
 
         private int GetSleepInSeconds()

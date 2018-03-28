@@ -14,9 +14,7 @@
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(
-                Component.For<ILoggingService, IFileDownloadLoggingService, IStatsUploadLoggingService>()
-                         .ImplementedBy<TestHarnessLoggingProvider>(),
+            container.Register(Component.For<IApplicationLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
                 Component
                     .For
                     <IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService,
@@ -29,6 +27,9 @@
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
                 Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>(),
                 Component.For<IResourceCleanupService>().ImplementedBy<ResourceCleanupProvider>(),
+                Component.For<ILoggingService>().ImplementedBy<LoggingProvider>(),
+                Component.For<IFileDownloadLoggingService, IStatsUploadLoggingService>()
+                         .ImplementedBy<StatsDownloadLoggingProvider>(),
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
@@ -41,11 +42,15 @@
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
                 Component.For<IStatsUploadService>().ImplementedBy<StatsUploadProvider>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
+                Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
+                Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),
                 Component.For<IErrorMessageService>().ImplementedBy<ErrorMessageProvider>(),
-                Component.For<IFileDownloadEmailService>().ImplementedBy<FileDownloadEmailProvider>(),
+                Component.For<IFileDownloadEmailService, IStatsUploadEmailService>()
+                         .ImplementedBy<StatsDownloadEmailProvider>(),
                 Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),
                 Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>());

@@ -24,15 +24,20 @@
             }
             else
             {
-                LoggingTextBox.Text += message;
+                AppendToLog(message);
 
                 if (!LoggingTextBox.Text.EndsWith(Environment.NewLine))
                 {
-                    LoggingTextBox.Text += Environment.NewLine;
+                    AppendToLog(Environment.NewLine);
                 }
 
-                LoggingTextBox.Text += Environment.NewLine;
+                AppendToLog(Environment.NewLine);
             }
+        }
+
+        private void AppendToLog(string message)
+        {
+            LoggingTextBox.AppendText(message);
         }
 
         private void CreateFileDownloadServiceAndPerformAction(Action<IFileDownloadService> fileDownloadServiceAction)
@@ -57,6 +62,12 @@
             }
         }
 
+        private void EnableButtons(bool enable)
+        {
+            FileDownloadButton.Enabled = enable;
+            UploadStatsButton.Enabled = enable;
+        }
+
         private async void FileDownloadButton_Click(object sender, EventArgs e)
         {
             await
@@ -68,9 +79,9 @@
         {
             try
             {
-                FileDownloadButton.Enabled = false;
+                EnableButtons(false);
                 await Task.Run(action);
-                FileDownloadButton.Enabled = true;
+                EnableButtons(true);
             }
             catch (Exception exception)
             {
@@ -82,7 +93,7 @@
         {
             await
                 RunActionAsync(
-                    () => { CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFile(); }); });
+                    () => { CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFiles(); }); });
         }
     }
 }
