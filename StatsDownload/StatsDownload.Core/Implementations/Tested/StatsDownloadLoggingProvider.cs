@@ -11,6 +11,11 @@
 
         public StatsDownloadLoggingProvider(ILoggingService loggingService)
         {
+            if (loggingService == null)
+            {
+                throw new ArgumentNullException(nameof(loggingService));
+            }
+
             this.loggingService = loggingService;
         }
 

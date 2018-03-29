@@ -8,6 +8,11 @@
 
         public AdditionalUserDataParserProvider(IBitcoinAddressValidatorService bitcoinAddressValidatorService)
         {
+            if (bitcoinAddressValidatorService == null)
+            {
+                throw new ArgumentNullException(nameof(bitcoinAddressValidatorService));
+            }
+
             this.bitcoinAddressValidatorService = bitcoinAddressValidatorService;
         }
 

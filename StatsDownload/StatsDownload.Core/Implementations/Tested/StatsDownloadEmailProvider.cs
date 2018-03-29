@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core
 {
+    using System;
     using System.Collections.Generic;
 
     using StatsDownload.Email;
@@ -18,6 +19,16 @@
 
         public StatsDownloadEmailProvider(IEmailService emailService, IErrorMessageService errorMessageService)
         {
+            if (emailService == null)
+            {
+                throw new ArgumentNullException(nameof(emailService));
+            }
+
+            if (errorMessageService == null)
+            {
+                throw new ArgumentNullException(nameof(errorMessageService));
+            }
+
             this.emailService = emailService;
             this.errorMessageService = errorMessageService;
         }

@@ -18,6 +18,26 @@
                                    IStatsFileParserService statsFileParserService,
                                    IStatsUploadEmailService statsUploadEmailService)
         {
+            if (statsUploadDataStoreService == null)
+            {
+                throw new ArgumentNullException(nameof(statsUploadDataStoreService));
+            }
+
+            if (loggingService == null)
+            {
+                throw new ArgumentNullException(nameof(loggingService));
+            }
+
+            if (statsFileParserService == null)
+            {
+                throw new ArgumentNullException(nameof(statsFileParserService));
+            }
+
+            if (statsUploadEmailService == null)
+            {
+                throw new ArgumentNullException(nameof(statsUploadEmailService));
+            }
+
             this.statsUploadDataStoreService = statsUploadDataStoreService;
             this.loggingService = loggingService;
             this.statsFileParserService = statsFileParserService;

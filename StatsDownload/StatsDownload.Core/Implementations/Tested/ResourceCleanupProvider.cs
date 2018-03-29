@@ -12,14 +12,14 @@
 
         public ResourceCleanupProvider(IFileService fileService, ILoggingService loggingService)
         {
-            if (IsNull(fileService))
+            if (fileService == null)
             {
-                throw NewArgumentNullException(nameof(fileService));
+                throw new ArgumentNullException(nameof(fileService));
             }
 
-            if (IsNull(loggingService))
+            if (loggingService == null)
             {
-                throw NewArgumentNullException(nameof(loggingService));
+                throw new ArgumentNullException(nameof(loggingService));
             }
 
             this.fileService = fileService;
@@ -55,16 +55,6 @@
                     fileService.Delete(downloadFilePath);
                 }
             }
-        }
-
-        private bool IsNull(object value)
-        {
-            return value == null;
-        }
-
-        private Exception NewArgumentNullException(string parameterName)
-        {
-            return new ArgumentNullException(parameterName);
         }
     }
 }

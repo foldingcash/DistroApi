@@ -12,6 +12,11 @@
 
         public StatsFileParserProvider(IAdditionalUserDataParserService additionalUserDataParserService)
         {
+            if (additionalUserDataParserService == null)
+            {
+                throw new ArgumentNullException(nameof(additionalUserDataParserService));
+            }
+
             this.additionalUserDataParserService = additionalUserDataParserService;
         }
 

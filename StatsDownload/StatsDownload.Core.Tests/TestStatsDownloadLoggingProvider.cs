@@ -17,6 +17,12 @@
         private IStatsDownloadLoggingService systemUnderTest;
 
         [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadLoggingProvider(null));
+        }
+
+        [Test]
         public void LogError_WhenInvoked_LogsError()
         {
             systemUnderTest.LogError("error");
@@ -137,7 +143,12 @@
         {
             loggingServiceMock = Substitute.For<ILoggingService>();
 
-            systemUnderTest = new StatsDownloadLoggingProvider(loggingServiceMock);
+            systemUnderTest = NewStatsDownloadLoggingProvider(loggingServiceMock);
+        }
+
+        private IStatsDownloadLoggingService NewStatsDownloadLoggingProvider(ILoggingService loggingService)
+        {
+            return new StatsDownloadLoggingProvider(loggingService);
         }
     }
 }
