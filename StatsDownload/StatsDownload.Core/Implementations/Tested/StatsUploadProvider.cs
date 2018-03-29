@@ -48,7 +48,7 @@
         {
             try
             {
-                loggingService.LogVerbose($"{nameof(UploadStatsFiles)} Invoked");
+                LogVerbose($"{nameof(UploadStatsFiles)} Invoked");
                 if (DataStoreUnavailable())
                 {
                     var results = new StatsUploadResults(FailedReason.DataStoreUnavailable);
@@ -94,21 +94,21 @@
             }
         }
 
-        private StatsUploadResult NewFailedStatsUploadResult(int downloadId, Exception exception)
+        private void LogVerbose(string message)
         {
-            if (exception is InvalidStatsFileException)
-            {
-                return new StatsUploadResult(downloadId, FailedReason.InvalidStatsFileUpload);
-            }
+            loggingService.LogVerbose(message);
+        }
 
-            throw exception;
+        private StatsUploadResult NewFailedStatsUploadResult(int downloadId)
+        {
+            return new StatsUploadResult(downloadId, FailedReason.InvalidStatsFileUpload);
         }
 
         private void UploadStatsFile(List<StatsUploadResult> statsUploadResults, int downloadId)
         {
             try
             {
-                loggingService.LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
+                LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
                 statsUploadDataStoreService.StartStatsUpload(downloadId);
                 string fileData = statsUploadDataStoreService.GetFileData(downloadId);
                 ParseResults results = statsFileParserService.Parse(fileData);
@@ -117,11 +117,11 @@
                 HandleFailedUsersData(failedUsersData);
                 UploadUserData(usersData);
                 statsUploadDataStoreService.StatsUploadFinished(downloadId);
-                loggingService.LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");
+                LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");
             }
-            catch (Exception exception)
+            catch (InvalidStatsFileException)
             {
-                StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId, exception);
+                StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId);
                 loggingService.LogResult(failedStatsUploadResult);
                 statsUploadEmailService.SendEmail(failedStatsUploadResult);
                 statsUploadDataStoreService.StatsUploadError(failedStatsUploadResult);

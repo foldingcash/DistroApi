@@ -20,7 +20,7 @@
         {
             string[] tokenizedName = GetTokenizedName(userData);
 
-            if (IsUnexpectedTokenLength(tokenizedName))
+            if (IsInvalidTokenLength(tokenizedName))
             {
                 return;
             }
@@ -35,7 +35,7 @@
             return name.Split(new[] { '_', '-', '.' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        private bool IsUnexpectedTokenLength(string[] tokenizedName)
+        private bool IsInvalidTokenLength(string[] tokenizedName)
         {
             return tokenizedName.Length < 1 || tokenizedName.Length > 3;
         }
