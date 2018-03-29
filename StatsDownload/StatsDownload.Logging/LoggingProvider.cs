@@ -8,6 +8,11 @@
 
         public LoggingProvider(IApplicationLoggingService applicationLoggingService)
         {
+            if (applicationLoggingService == null)
+            {
+                throw new ArgumentNullException(nameof(applicationLoggingService));
+            }
+
             this.applicationLoggingService = applicationLoggingService;
         }
 

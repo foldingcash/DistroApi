@@ -14,6 +14,12 @@
         private ILoggingService systemUnderTest;
 
         [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewLoggingProvider(null));
+        }
+
+        [Test]
         public void LogError_WhenInvoked_LogsError()
         {
             systemUnderTest.LogError("error");
@@ -46,7 +52,12 @@
         {
             applicationLoggingServiceMock = Substitute.For<IApplicationLoggingService>();
 
-            systemUnderTest = new LoggingProvider(applicationLoggingServiceMock);
+            systemUnderTest = NewLoggingProvider(applicationLoggingServiceMock);
+        }
+
+        private ILoggingService NewLoggingProvider(IApplicationLoggingService applicationLoggingService)
+        {
+            return new LoggingProvider(applicationLoggingService);
         }
     }
 }
