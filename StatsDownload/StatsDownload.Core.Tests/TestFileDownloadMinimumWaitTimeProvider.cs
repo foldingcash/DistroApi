@@ -16,6 +16,12 @@
         private IFileDownloadMinimumWaitTimeService systemUnderTest;
 
         [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewFileDownloadMinimumWaitTimeProvider(null));
+        }
+
+        [Test]
         public void IsMinimumWaitTimeMet_WhenConfiguredLessThanMinimum_UsesMinimum()
         {
             filePayload.MinimumWaitTimeSpan = new TimeSpan(0, 50, 0);
@@ -76,12 +82,18 @@
 
             fileDownloadDataStoreServiceMock = Substitute.For<IFileDownloadDataStoreService>();
 
-            systemUnderTest = new FileDownloadMinimumWaitTimeProvider(fileDownloadDataStoreServiceMock);
+            systemUnderTest = NewFileDownloadMinimumWaitTimeProvider(fileDownloadDataStoreServiceMock);
         }
 
         private bool InvokeIsMinimumWaitTimeMet()
         {
             return systemUnderTest.IsMinimumWaitTimeMet(filePayload);
+        }
+
+        private IFileDownloadMinimumWaitTimeService NewFileDownloadMinimumWaitTimeProvider(
+            IFileDownloadDataStoreService fileDownloadDataStoreService)
+        {
+            return new FileDownloadMinimumWaitTimeProvider(fileDownloadDataStoreService);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using System;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -17,6 +19,17 @@
 
         private IFilePayloadUploadService systemUnderTest;
 
+        [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () => NewFilePayloadUploadProvider(null, fileReaderServiceMock, fileDownloadDataStoreServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () => NewFilePayloadUploadProvider(fileCompressionServiceMock, null, fileDownloadDataStoreServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () => NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, null));
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -28,7 +41,7 @@
 
             fileDownloadDataStoreServiceMock = Substitute.For<IFileDownloadDataStoreService>();
 
-            systemUnderTest = new FilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock,
+            systemUnderTest = NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock,
                 fileDownloadDataStoreServiceMock);
         }
 
@@ -48,6 +61,14 @@
         private void InvokeUploadFile()
         {
             systemUnderTest.UploadFile(filePayload);
+        }
+
+        private IFilePayloadUploadService NewFilePayloadUploadProvider(IFileCompressionService fileCompressionService,
+                                                                       IFileReaderService fileReaderService,
+                                                                       IFileDownloadDataStoreService
+                                                                           fileDownloadDataStoreService)
+        {
+            return new FilePayloadUploadProvider(fileCompressionService, fileReaderService, fileDownloadDataStoreService);
         }
     }
 }

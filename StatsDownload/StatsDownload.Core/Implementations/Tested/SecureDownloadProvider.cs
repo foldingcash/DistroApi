@@ -16,19 +16,19 @@
         public SecureDownloadProvider(IDownloadService downloadService,
                                       ISecureFilePayloadService secureFilePayloadService, ILoggingService loggingService)
         {
-            if (IsNull(downloadService))
+            if (downloadService == null)
             {
-                throw NewArgumentNullException(nameof(downloadService));
+                throw new ArgumentNullException(nameof(downloadService));
             }
 
-            if (IsNull(secureFilePayloadService))
+            if (secureFilePayloadService == null)
             {
-                throw NewArgumentNullException(nameof(secureFilePayloadService));
+                throw new ArgumentNullException(nameof(secureFilePayloadService));
             }
 
-            if (IsNull(loggingService))
+            if (loggingService == null)
             {
-                throw NewArgumentNullException(nameof(loggingService));
+                throw new ArgumentNullException(nameof(loggingService));
             }
 
             this.downloadService = downloadService;
@@ -59,16 +59,6 @@
                     throw;
                 }
             }
-        }
-
-        private bool IsNull(object value)
-        {
-            return value == null;
-        }
-
-        private Exception NewArgumentNullException(string parameterName)
-        {
-            return new ArgumentNullException(parameterName);
         }
     }
 }

@@ -8,6 +8,11 @@
 
         public FileDownloadMinimumWaitTimeProvider(IFileDownloadDataStoreService fileDownloadDataStoreService)
         {
+            if (fileDownloadDataStoreService == null)
+            {
+                throw new ArgumentNullException(nameof(fileDownloadDataStoreService));
+            }
+
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
         }
 

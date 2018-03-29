@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using System;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -10,6 +12,12 @@
         private IBitcoinAddressValidatorService bitcoinAddressValidatorServiceMock;
 
         private IAdditionalUserDataParserService systemUnderTest;
+
+        [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewAdditionalUserDataParserProvider(null));
+        }
 
         [TestCase("Address")]
         [TestCase("Name_Address")]
@@ -75,7 +83,13 @@
             bitcoinAddressValidatorServiceMock = Substitute.For<IBitcoinAddressValidatorService>();
             bitcoinAddressValidatorServiceMock.IsValidBitcoinAddress("Address").Returns(true);
 
-            systemUnderTest = new AdditionalUserDataParserProvider(bitcoinAddressValidatorServiceMock);
+            systemUnderTest = NewAdditionalUserDataParserProvider(bitcoinAddressValidatorServiceMock);
+        }
+
+        private IAdditionalUserDataParserService NewAdditionalUserDataParserProvider(
+            IBitcoinAddressValidatorService bitcoinAddressValidatorService)
+        {
+            return new AdditionalUserDataParserProvider(bitcoinAddressValidatorService);
         }
     }
 }

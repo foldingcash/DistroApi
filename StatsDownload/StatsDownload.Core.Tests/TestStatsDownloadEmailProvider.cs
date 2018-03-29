@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using System;
     using System.Collections.Generic;
 
     using NSubstitute;
@@ -16,6 +17,13 @@
         private IErrorMessageService errorMessageServiceMock;
 
         private IStatsDownloadEmailService systemUnderTest;
+
+        [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadEmailProvider(null, errorMessageServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadEmailProvider(emailServiceMock, null));
+        }
 
         [Test]
         public void SendEmail_WhenInvokedWithFailedUsersData_SendsEmail()
@@ -67,7 +75,13 @@
 
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
-            systemUnderTest = new StatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock);
+            systemUnderTest = NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock);
+        }
+
+        private IStatsDownloadEmailService NewStatsDownloadEmailProvider(IEmailService emailService,
+                                                                         IErrorMessageService errorMessageService)
+        {
+            return new StatsDownloadEmailProvider(emailService, errorMessageService);
         }
     }
 }

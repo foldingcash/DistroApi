@@ -16,6 +16,11 @@
 
         public DownloadSettingsValidatorProvider(IDirectoryService directoryService)
         {
+            if (directoryService == null)
+            {
+                throw new ArgumentNullException(nameof(directoryService));
+            }
+
             this.directoryService = directoryService;
         }
 
