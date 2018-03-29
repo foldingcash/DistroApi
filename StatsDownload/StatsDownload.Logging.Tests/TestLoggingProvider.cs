@@ -34,8 +34,8 @@
             systemUnderTest.LogException(exception);
 
             applicationLoggingServiceMock.Received()
-                                         .LogError($"Exception Type: {exception.GetType()}"
-                                                   + $"Exception Message: {exception.Message}"
+                                         .LogError($"Exception Type: {exception.GetType()}{Environment.NewLine}"
+                                                   + $"Exception Message: {exception.Message}{Environment.NewLine}"
                                                    + $"Exception Stack-trace: {Environment.NewLine}{exception.StackTrace}");
         }
 
@@ -45,6 +45,17 @@
             systemUnderTest.LogVerbose("verbose");
 
             applicationLoggingServiceMock.Received().LogVerbose("verbose");
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("\t")]
+        [TestCase("\n")]
+        public void LogVerbose_WhenInvokedWithNoMessage_DoesNotLogVerbose(string noMessage)
+        {
+            systemUnderTest.LogVerbose(noMessage);
+
+            applicationLoggingServiceMock.DidNotReceiveWithAnyArgs().LogVerbose(noMessage);
         }
 
         [SetUp]
