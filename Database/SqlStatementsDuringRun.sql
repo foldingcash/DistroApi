@@ -61,9 +61,9 @@ EXEC [FoldingCoin].[StartStatsUpload] @DownloadId;
 PRINT 'Adding user data'
 EXEC [FoldingCoin].[AddUserData] @DownloadId
 	,'FriendlyName_TAG_BitcoinAddress'
-	,'1000'
-	,'100'
-	,'100'
+	,1000
+	,100
+	,10
 	,'FriendlyName'
 	,'BitcoinAddress';
 
