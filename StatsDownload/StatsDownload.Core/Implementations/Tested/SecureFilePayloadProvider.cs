@@ -10,9 +10,9 @@
 
         public SecureFilePayloadProvider(ILoggingService loggingService)
         {
-            if (IsNull(loggingService))
+            if (loggingService == null)
             {
-                throw NewArgumentNullException(nameof(loggingService));
+                throw new ArgumentNullException(nameof(loggingService));
             }
 
             this.loggingService = loggingService;
@@ -31,16 +31,6 @@
         public bool IsSecureConnection(FilePayload filePayload)
         {
             return filePayload.DownloadUri.Scheme != Uri.UriSchemeHttp;
-        }
-
-        private bool IsNull(object value)
-        {
-            return value == null;
-        }
-
-        private Exception NewArgumentNullException(string parameterName)
-        {
-            return new ArgumentNullException(parameterName);
         }
 
         private void UpdateDownloadUri(FilePayload filePayload, string oldScheme, string newScheme)

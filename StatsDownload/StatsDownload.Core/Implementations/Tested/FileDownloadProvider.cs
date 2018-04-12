@@ -31,49 +31,49 @@
                                     IDateTimeService dateTimeService, IFilePayloadUploadService filePayloadUploadService,
                                     IFileDownloadEmailService fileDownloadEmailService)
         {
-            if (IsNull(fileDownloadDataStoreService))
+            if (fileDownloadDataStoreService == null)
             {
-                throw NewArgumentNullException(nameof(fileDownloadDataStoreService));
+                throw new ArgumentNullException(nameof(fileDownloadDataStoreService));
             }
 
-            if (IsNull(loggingService))
+            if (loggingService == null)
             {
-                throw NewArgumentNullException(nameof(loggingService));
+                throw new ArgumentNullException(nameof(loggingService));
             }
 
-            if (IsNull(downloadService))
+            if (downloadService == null)
             {
-                throw NewArgumentNullException(nameof(downloadService));
+                throw new ArgumentNullException(nameof(downloadService));
             }
 
-            if (IsNull(filePayloadSettingsService))
+            if (filePayloadSettingsService == null)
             {
-                throw NewArgumentNullException(nameof(filePayloadSettingsService));
+                throw new ArgumentNullException(nameof(filePayloadSettingsService));
             }
 
-            if (IsNull(resourceCleanupService))
+            if (resourceCleanupService == null)
             {
-                throw NewArgumentNullException(nameof(resourceCleanupService));
+                throw new ArgumentNullException(nameof(resourceCleanupService));
             }
 
-            if (IsNull(fileDownloadMinimumWaitTimeService))
+            if (fileDownloadMinimumWaitTimeService == null)
             {
-                throw NewArgumentNullException(nameof(fileDownloadMinimumWaitTimeService));
+                throw new ArgumentNullException(nameof(fileDownloadMinimumWaitTimeService));
             }
 
-            if (IsNull(dateTimeService))
+            if (dateTimeService == null)
             {
-                throw NewArgumentNullException(nameof(dateTimeService));
+                throw new ArgumentNullException(nameof(dateTimeService));
             }
 
-            if (IsNull(filePayloadUploadService))
+            if (filePayloadUploadService == null)
             {
-                throw NewArgumentNullException(nameof(filePayloadUploadService));
+                throw new ArgumentNullException(nameof(filePayloadUploadService));
             }
 
-            if (IsNull(fileDownloadEmailService))
+            if (fileDownloadEmailService == null)
             {
-                throw NewArgumentNullException(nameof(fileDownloadEmailService));
+                throw new ArgumentNullException(nameof(fileDownloadEmailService));
             }
 
             this.fileDownloadDataStoreService = fileDownloadDataStoreService;
@@ -186,11 +186,6 @@
             return !fileDownloadMinimumWaitTimeService.IsMinimumWaitTimeMet(filePayload);
         }
 
-        private bool IsNull(object value)
-        {
-            return value == null;
-        }
-
         private void LogException(Exception exception)
         {
             loggingService.LogException(exception);
@@ -209,11 +204,6 @@
         private void LogVerbose(string message)
         {
             loggingService.LogVerbose(message);
-        }
-
-        private Exception NewArgumentNullException(string parameterName)
-        {
-            return new ArgumentNullException(parameterName);
         }
 
         private FileDownloadResult NewFailedFileDownloadResult(Exception exception, FilePayload filePayload)

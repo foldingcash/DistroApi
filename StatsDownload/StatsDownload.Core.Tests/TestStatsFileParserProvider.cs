@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using System;
     using System.Collections.Generic;
 
     using NSubstitute;
@@ -56,6 +57,12 @@ TheWasp	13660834951	734045	70335";
         private IAdditionalUserDataParserService additionalUserDataParserServiceMock;
 
         private IStatsFileParserService systemUnderTest;
+
+        [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewStatsFileParserProvider(null));
+        }
 
         [Test]
         public void Parse_WhenInvoked_ParsesAdditionalUserData()
@@ -133,12 +140,18 @@ TheWasp	13660834951	734045	70335";
         {
             additionalUserDataParserServiceMock = Substitute.For<IAdditionalUserDataParserService>();
 
-            systemUnderTest = new StatsFileParserProvider(additionalUserDataParserServiceMock);
+            systemUnderTest = NewStatsFileParserProvider(additionalUserDataParserServiceMock);
         }
 
         private ParseResults InvokeParse(string fileData = GoodStatsFile)
         {
             return systemUnderTest.Parse(fileData);
+        }
+
+        private IStatsFileParserService NewStatsFileParserProvider(
+            IAdditionalUserDataParserService additionalUserDataParserService)
+        {
+            return new StatsFileParserProvider(additionalUserDataParserService);
         }
     }
 }

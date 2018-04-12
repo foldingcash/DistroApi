@@ -39,24 +39,24 @@
                                  IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
                                  ILoggingService loggingService, IErrorMessageService errorMessageService)
         {
-            if (IsNull(databaseConnectionSettingsService))
+            if (databaseConnectionSettingsService == null)
             {
-                throw NewArgumentNullException(nameof(databaseConnectionSettingsService));
+                throw new ArgumentNullException(nameof(databaseConnectionSettingsService));
             }
 
-            if (IsNull(databaseConnectionServiceFactory))
+            if (databaseConnectionServiceFactory == null)
             {
-                throw NewArgumentNullException(nameof(databaseConnectionServiceFactory));
+                throw new ArgumentNullException(nameof(databaseConnectionServiceFactory));
             }
 
-            if (IsNull(loggingService))
+            if (loggingService == null)
             {
-                throw NewArgumentNullException(nameof(loggingService));
+                throw new ArgumentNullException(nameof(loggingService));
             }
 
-            if (IsNull(errorMessageService))
+            if (errorMessageService == null)
             {
-                throw NewArgumentNullException(nameof(errorMessageService));
+                throw new ArgumentNullException(nameof(errorMessageService));
             }
 
             this.databaseConnectionSettingsService = databaseConnectionSettingsService;
@@ -310,11 +310,6 @@
                    ?? default(DateTime);
         }
 
-        private bool IsNull(object value)
-        {
-            return value == null;
-        }
-
         private void LogException(Exception exception)
         {
             loggingService.LogException(exception);
@@ -328,11 +323,6 @@
         private void LogVerbose(string message)
         {
             loggingService.LogVerbose(message);
-        }
-
-        private Exception NewArgumentNullException(string parameterName)
-        {
-            return new ArgumentNullException(parameterName);
         }
 
         private int NewFileDownloadStarted(IDatabaseConnectionService databaseConnection)

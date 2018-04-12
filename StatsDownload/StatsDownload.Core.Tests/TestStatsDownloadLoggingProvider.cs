@@ -17,6 +17,12 @@
         private IStatsDownloadLoggingService systemUnderTest;
 
         [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadLoggingProvider(null));
+        }
+
+        [Test]
         public void LogError_WhenInvoked_LogsError()
         {
             systemUnderTest.LogError("error");
@@ -82,15 +88,15 @@
                                           + $"Download Uri: {result.FilePayload?.DownloadUri}{Environment.NewLine}"
                                           + $"Download Timeout: {result.FilePayload?.TimeoutSeconds}{Environment.NewLine}"
                                           + $"Accept Any Ssl Cert: {result.FilePayload?.AcceptAnySslCert}{Environment.NewLine}"
-                                          + $"Download File Directory: {result.FilePayload?.DownloadDirectory}{Environment.NewLine}{Environment.NewLine}"
-                                          + $"Download File Name: {result.FilePayload?.DownloadFileName}{Environment.NewLine}{Environment.NewLine}"
-                                          + $"Download File Extension: {result.FilePayload?.DownloadFileExtension}{Environment.NewLine}{Environment.NewLine}"
-                                          + $"Download File Path: {result.FilePayload?.DownloadFilePath}{Environment.NewLine}{Environment.NewLine}"
-                                          + $"Decompressed Download File Directory: {result.FilePayload?.DecompressedDownloadDirectory}{Environment.NewLine}{Environment.NewLine}"
-                                          + $"Decompressed Download File Name: {result.FilePayload?.DecompressedDownloadFileName}{Environment.NewLine}{Environment.NewLine}"
-                                          + $"Decompressed Download File Extension: {result.FilePayload?.DecompressedDownloadFileExtension}{Environment.NewLine}{Environment.NewLine}"
-                                          + $"Decompressed Download File Path: {result.FilePayload?.DecompressedDownloadFilePath}{Environment.NewLine}{Environment.NewLine}"
-                                          + $"Failed Download File Path: {result.FilePayload?.FailedDownloadFilePath}{Environment.NewLine}{Environment.NewLine}"
+                                          + $"Download File Directory: {result.FilePayload?.DownloadDirectory}{Environment.NewLine}"
+                                          + $"Download File Name: {result.FilePayload?.DownloadFileName}{Environment.NewLine}"
+                                          + $"Download File Extension: {result.FilePayload?.DownloadFileExtension}{Environment.NewLine}"
+                                          + $"Download File Path: {result.FilePayload?.DownloadFilePath}{Environment.NewLine}"
+                                          + $"Decompressed Download File Directory: {result.FilePayload?.DecompressedDownloadDirectory}{Environment.NewLine}"
+                                          + $"Decompressed Download File Name: {result.FilePayload?.DecompressedDownloadFileName}{Environment.NewLine}"
+                                          + $"Decompressed Download File Extension: {result.FilePayload?.DecompressedDownloadFileExtension}{Environment.NewLine}"
+                                          + $"Decompressed Download File Path: {result.FilePayload?.DecompressedDownloadFilePath}{Environment.NewLine}"
+                                          + $"Failed Download File Path: {result.FilePayload?.FailedDownloadFilePath}{Environment.NewLine}"
                                           + $"Download Data (First 100): {result.FilePayload?.DecompressedDownloadFileData?.Substring(0, 99)}");
         }
 
@@ -137,7 +143,12 @@
         {
             loggingServiceMock = Substitute.For<ILoggingService>();
 
-            systemUnderTest = new StatsDownloadLoggingProvider(loggingServiceMock);
+            systemUnderTest = NewStatsDownloadLoggingProvider(loggingServiceMock);
+        }
+
+        private IStatsDownloadLoggingService NewStatsDownloadLoggingProvider(ILoggingService loggingService)
+        {
+            return new StatsDownloadLoggingProvider(loggingService);
         }
     }
 }

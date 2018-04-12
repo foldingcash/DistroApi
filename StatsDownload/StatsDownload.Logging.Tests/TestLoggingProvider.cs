@@ -14,6 +14,12 @@
         private ILoggingService systemUnderTest;
 
         [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewLoggingProvider(null));
+        }
+
+        [Test]
         public void LogError_WhenInvoked_LogsError()
         {
             systemUnderTest.LogError("error");
@@ -28,8 +34,8 @@
             systemUnderTest.LogException(exception);
 
             applicationLoggingServiceMock.Received()
-                                         .LogError($"Exception Type: {exception.GetType()}"
-                                                   + $"Exception Message: {exception.Message}"
+                                         .LogError($"Exception Type: {exception.GetType()}{Environment.NewLine}"
+                                                   + $"Exception Message: {exception.Message}{Environment.NewLine}"
                                                    + $"Exception Stack-trace: {Environment.NewLine}{exception.StackTrace}");
         }
 
@@ -41,12 +47,28 @@
             applicationLoggingServiceMock.Received().LogVerbose("verbose");
         }
 
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("\t")]
+        [TestCase("\n")]
+        public void LogVerbose_WhenInvokedWithNoMessage_DoesNotLogVerbose(string noMessage)
+        {
+            systemUnderTest.LogVerbose(noMessage);
+
+            applicationLoggingServiceMock.DidNotReceiveWithAnyArgs().LogVerbose(noMessage);
+        }
+
         [SetUp]
         public void SetUp()
         {
             applicationLoggingServiceMock = Substitute.For<IApplicationLoggingService>();
 
-            systemUnderTest = new LoggingProvider(applicationLoggingServiceMock);
+            systemUnderTest = NewLoggingProvider(applicationLoggingServiceMock);
+        }
+
+        private ILoggingService NewLoggingProvider(IApplicationLoggingService applicationLoggingService)
+        {
+            return new LoggingProvider(applicationLoggingService);
         }
     }
 }

@@ -1,17 +1,25 @@
 ﻿namespace StatsDownload.FileDownload.Console
 {
+    using System;
+
     using StatsDownload.Logging;
 
     public class FileDownloadConsoleLoggingProvider : IApplicationLoggingService
     {
         public void LogError(string message)
         {
-            System.Console.WriteLine(message);
+            WriteLine(message);
         }
 
         public void LogVerbose(string message)
         {
-            System.Console.WriteLine(message);
+            WriteLine(message);
+        }
+
+        private void WriteLine(string message)
+        {
+            Console.WriteLine(message);
+            Console.WriteLine();
         }
     }
 }

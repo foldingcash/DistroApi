@@ -91,8 +91,7 @@
 
             builder.AppendLine("There was a problem with the email settings.");
             builder.AppendLine("Ensure all of the email settings are configured and valid before trying again.");
-            builder.AppendLine();
-            builder.AppendLine($"Exception message: {emailArgumentException.Message}");
+            builder.Append($"Exception message: {emailArgumentException.Message}");
 
             LogVerbose(builder);
         }

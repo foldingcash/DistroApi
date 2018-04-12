@@ -28,24 +28,24 @@
                                            IDownloadSettingsValidatorService downloadSettingsValidatorService,
                                            ILoggingService loggingService)
         {
-            if (IsNull(dateTimeService))
+            if (dateTimeService == null)
             {
-                throw NewArgumentNullException(nameof(dateTimeService));
+                throw new ArgumentNullException(nameof(dateTimeService));
             }
 
-            if (IsNull(downloadSettingsService))
+            if (downloadSettingsService == null)
             {
-                throw NewArgumentNullException(nameof(downloadSettingsService));
+                throw new ArgumentNullException(nameof(downloadSettingsService));
             }
 
-            if (IsNull(downloadSettingsValidatorService))
+            if (downloadSettingsValidatorService == null)
             {
-                throw NewArgumentNullException(nameof(downloadSettingsValidatorService));
+                throw new ArgumentNullException(nameof(downloadSettingsValidatorService));
             }
 
-            if (IsNull(loggingService))
+            if (loggingService == null)
             {
-                throw NewArgumentNullException(nameof(loggingService));
+                throw new ArgumentNullException(nameof(loggingService));
             }
 
             this.dateTimeService = dateTimeService;
@@ -110,16 +110,6 @@
         private string GetMinimumWaitTimeInHours()
         {
             return downloadSettingsService.GetMinimumWaitTimeInHours();
-        }
-
-        private bool IsNull(object value)
-        {
-            return value == null;
-        }
-
-        private Exception NewArgumentNullException(string parameterName)
-        {
-            return new ArgumentNullException(parameterName);
         }
 
         private Exception NewFileDownloadArgumentException(string message)

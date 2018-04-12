@@ -8,40 +8,53 @@
 
         public AdditionalUserDataParserProvider(IBitcoinAddressValidatorService bitcoinAddressValidatorService)
         {
+            if (bitcoinAddressValidatorService == null)
+            {
+                throw new ArgumentNullException(nameof(bitcoinAddressValidatorService));
+            }
+
             this.bitcoinAddressValidatorService = bitcoinAddressValidatorService;
         }
 
         public void Parse(UserData userData)
         {
+            string[] tokenizedName = GetTokenizedName(userData);
+
+            if (IsInvalidTokenLength(tokenizedName))
+            {
+                return;
+            }
+
+            SetFriendlyName(tokenizedName, userData);
+            SetBitcoinAddress(tokenizedName, userData);
+        }
+
+        private string[] GetTokenizedName(UserData userData)
+        {
             string name = userData.Name;
-            string[] tokenizedName = name.Split(new[] { '_', '-', '.' }, StringSplitOptions.RemoveEmptyEntries);
+            return name.Split(new[] { '_', '-', '.' }, StringSplitOptions.RemoveEmptyEntries);
+        }
 
-            if (tokenizedName.Length == 1)
+        private bool IsInvalidTokenLength(string[] tokenizedName)
+        {
+            return tokenizedName.Length < 1 || tokenizedName.Length > 3;
+        }
+
+        private void SetBitcoinAddress(string[] tokenizedName, UserData userData)
+        {
+            int addressPosition = tokenizedName.Length - 1;
+
+            if (bitcoinAddressValidatorService.IsValidBitcoinAddress(tokenizedName[addressPosition]))
             {
-                if (bitcoinAddressValidatorService.IsValidBitcoinAddress(tokenizedName[0]))
-                {
-                    userData.BitcoinAddress = tokenizedName[0];
-                }
+                userData.BitcoinAddress = tokenizedName[addressPosition];
             }
+        }
 
-            if (tokenizedName.Length == 2)
+        private void SetFriendlyName(string[] tokenizedName, UserData userData)
+        {
+            if (tokenizedName.Length > 1)
             {
                 userData.FriendlyName = tokenizedName[0];
-
-                if (bitcoinAddressValidatorService.IsValidBitcoinAddress(tokenizedName[1]))
-                {
-                    userData.BitcoinAddress = tokenizedName[1];
-                }
-            }
-
-            if (tokenizedName.Length == 3)
-            {
-                userData.FriendlyName = tokenizedName[0];
-
-                if (bitcoinAddressValidatorService.IsValidBitcoinAddress(tokenizedName[2]))
-                {
-                    userData.BitcoinAddress = tokenizedName[2];
-                }
             }
         }
     }

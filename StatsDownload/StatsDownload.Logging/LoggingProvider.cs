@@ -8,6 +8,11 @@
 
         public LoggingProvider(IApplicationLoggingService applicationLoggingService)
         {
+            if (applicationLoggingService == null)
+            {
+                throw new ArgumentNullException(nameof(applicationLoggingService));
+            }
+
             this.applicationLoggingService = applicationLoggingService;
         }
 
@@ -18,13 +23,17 @@
 
         public void LogException(Exception exception)
         {
-            LogError($"Exception Type: {exception.GetType()}" + $"Exception Message: {exception.Message}"
+            LogError($"Exception Type: {exception.GetType()}{Environment.NewLine}"
+                     + $"Exception Message: {exception.Message}{Environment.NewLine}"
                      + $"Exception Stack-trace: {Environment.NewLine}{exception.StackTrace}");
         }
 
         public void LogVerbose(string message)
         {
-            applicationLoggingService.LogVerbose(message);
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                applicationLoggingService.LogVerbose(message);
+            }
         }
     }
 }

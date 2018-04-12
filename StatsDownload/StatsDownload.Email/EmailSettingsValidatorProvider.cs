@@ -9,7 +9,7 @@
         {
             if (string.IsNullOrWhiteSpace(unsafeFromAddress))
             {
-                throw new EmailArgumentException(nameof(unsafeFromAddress), "A from email address was not provided");
+                throw new EmailArgumentException("A from email address was not provided");
             }
 
             return unsafeFromAddress;
@@ -19,7 +19,7 @@
         {
             if (string.IsNullOrWhiteSpace(unsafeFromDisplayName))
             {
-                throw new EmailArgumentException(nameof(unsafeFromDisplayName), "A from display name was not provided");
+                throw new EmailArgumentException("A from display name was not provided");
             }
 
             return unsafeFromDisplayName;
@@ -29,7 +29,7 @@
         {
             if (string.IsNullOrWhiteSpace(unsafePassword))
             {
-                throw new EmailArgumentException(nameof(unsafePassword), "A password was not provided");
+                throw new EmailArgumentException("A password was not provided");
             }
 
             return unsafePassword;
@@ -40,12 +40,12 @@
             int port;
             if (!int.TryParse(unsafePort, out port))
             {
-                throw new EmailArgumentException(nameof(unsafePort), "An integer was not provided");
+                throw new EmailArgumentException("An integer was not provided");
             }
 
             if (port < 1 || port > 65535)
             {
-                throw new EmailArgumentException(nameof(unsafePort), "The port should be between 1 and 65535, inclusive");
+                throw new EmailArgumentException("The port should be between 1 and 65535, inclusive");
             }
 
             return port;
@@ -55,7 +55,7 @@
         {
             if (string.IsNullOrWhiteSpace(unsafeReceivers))
             {
-                throw new EmailArgumentException(nameof(unsafeReceivers), "A receivers list was not provided");
+                throw new EmailArgumentException("A receivers list was not provided");
             }
 
             return unsafeReceivers.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -65,7 +65,7 @@
         {
             if (string.IsNullOrWhiteSpace(unsafeSmtpHost))
             {
-                throw new EmailArgumentException(nameof(unsafeSmtpHost), "A SMTP host was not provided");
+                throw new EmailArgumentException("A SMTP host was not provided");
             }
 
             return unsafeSmtpHost;
