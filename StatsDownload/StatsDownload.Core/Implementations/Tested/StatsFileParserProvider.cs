@@ -91,15 +91,15 @@
                 index--;
             }
 
-            ulong totalPoints;
-            ulong totalWorkUnits;
-            ulong teamNumber;
+            long totalPoints;
+            long totalWorkUnits;
+            long teamNumber;
 
-            bool totalPointsParsed = ulong.TryParse(unparsedUserData[index], out totalPoints);
+            bool totalPointsParsed = long.TryParse(unparsedUserData[index], out totalPoints);
             index++;
-            bool totalWorkUnitsParsed = ulong.TryParse(unparsedUserData[index], out totalWorkUnits);
+            bool totalWorkUnitsParsed = long.TryParse(unparsedUserData[index], out totalWorkUnits);
             index++;
-            bool teamNumberParsed = ulong.TryParse(unparsedUserData[index], out teamNumber);
+            bool teamNumberParsed = long.TryParse(unparsedUserData[index], out teamNumber);
             index++;
 
             userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
