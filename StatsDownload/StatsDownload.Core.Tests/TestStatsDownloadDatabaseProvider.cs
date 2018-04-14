@@ -95,6 +95,38 @@
         }
 
         [Test]
+        public void AddUserData_WhenInvokedWithNullBitcoinAddress_ParameterIsDBNull()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock.When(
+                service => service.ExecuteStoredProcedure("[FoldingCoin].[AddUserData]", Arg.Any<List<DbParameter>>()))
+                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            systemUnderTest.AddUserData(1, new UserData("name", 10, 100, 1000) { FriendlyName = "friendly" });
+
+            Assert.That(actualParameters.Count, Is.EqualTo(7));
+            Assert.That(actualParameters[6].ParameterName, Is.EqualTo("@BitcoinAddress"));
+            Assert.That(actualParameters[6].Value, Is.EqualTo(DBNull.Value));
+        }
+
+        [Test]
+        public void AddUserData_WhenInvokedWithNullFriendlyName_ParameterIsDBNull()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock.When(
+                service => service.ExecuteStoredProcedure("[FoldingCoin].[AddUserData]", Arg.Any<List<DbParameter>>()))
+                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            systemUnderTest.AddUserData(1, new UserData("name", 10, 100, 1000) { BitcoinAddress = "address" });
+
+            Assert.That(actualParameters.Count, Is.EqualTo(7));
+            Assert.That(actualParameters[5].ParameterName, Is.EqualTo("@FriendlyName"));
+            Assert.That(actualParameters[5].Value, Is.EqualTo(DBNull.Value));
+        }
+
+        [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(

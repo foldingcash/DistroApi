@@ -181,11 +181,11 @@
 
             DbParameter friendlyName = databaseConnection.CreateParameter("@FriendlyName", DbType.String,
                 ParameterDirection.Input);
-            friendlyName.Value = userData.FriendlyName;
+            friendlyName.Value = userData.FriendlyName ?? DBNull.Value as object;
 
             DbParameter bitcoinAddress = databaseConnection.CreateParameter("@BitcoinAddress", DbType.String,
                 ParameterDirection.Input);
-            bitcoinAddress.Value = userData.BitcoinAddress;
+            bitcoinAddress.Value = userData.BitcoinAddress ?? DBNull.Value as object;
 
             databaseConnection.ExecuteStoredProcedure(AddUserDataProcedureName,
                 new List<DbParameter>
