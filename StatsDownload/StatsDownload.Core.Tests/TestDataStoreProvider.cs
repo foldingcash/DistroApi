@@ -33,7 +33,7 @@
 
         private ILoggingService loggingServiceMock;
 
-        private IDataStoreService systemUnderTest;
+        private IStatsDownloadDatabaseService systemUnderTest;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
@@ -637,12 +637,12 @@
             systemUnderTest.UpdateToLatest();
         }
 
-        private IDataStoreService NewFileDownloadDataStoreProvider(
+        private IStatsDownloadDatabaseService NewFileDownloadDataStoreProvider(
             IDatabaseConnectionSettingsService databaseConnectionSettingsService,
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService,
             IErrorMessageService errorMessageService)
         {
-            return new DataStoreProvider(databaseConnectionSettingsService, databaseConnectionServiceFactory,
+            return new StatsDownloadDatabaseProvider(databaseConnectionSettingsService, databaseConnectionServiceFactory,
                 loggingService, errorMessageService);
         }
     }

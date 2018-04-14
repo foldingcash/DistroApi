@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public interface IStatsUploadDataStoreService
+    public interface IStatsUploadDatabaseService
     {
         void AddUserData(UserData userData);
 

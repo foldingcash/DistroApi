@@ -2,7 +2,7 @@
 {
     using System;
 
-    public interface IFileDownloadDataStoreService
+    public interface IFileDownloadDatabaseService
     {
         void FileDownloadError(FileDownloadResult fileDownloadResult);
 

@@ -7,7 +7,7 @@
 
     using StatsDownload.Logging;
 
-    public class DataStoreProvider : IDataStoreService
+    public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
     {
         private const string DatabaseConnectionSuccessfulLogMessage = "Database connection was successful";
 
@@ -35,9 +35,9 @@
 
         private readonly string UpdateToLatestStoredProcedureName = "[FoldingCoin].[UpdateToLatest]";
 
-        public DataStoreProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
-                                 IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
-                                 ILoggingService loggingService, IErrorMessageService errorMessageService)
+        public StatsDownloadDatabaseProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
+                                             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
+                                             ILoggingService loggingService, IErrorMessageService errorMessageService)
         {
             if (databaseConnectionSettingsService == null)
             {
