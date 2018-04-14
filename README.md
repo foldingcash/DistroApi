@@ -33,6 +33,21 @@
 1. FoldingCoin
 	* A connection string to the database loaded with the schema and stored procedures
 
+#### Stats Download Email Settings
+
+1. SmtpHost
+	* The SMTP server to route emails through
+2. Port
+	* The SMTP server's port to communicate on
+3. FromAddress
+	* The address emails when be sent from
+4. DisplayName
+	* The display name the emails sent will have
+5. Password
+	* The password to access and use the SMTP server
+6. Receivers
+	* A semi-colon separated list of emails to send notifications to
+
 #### File Download Settings
 
 1. DownloadUri
@@ -46,19 +61,12 @@
 5. MinimumWaitTimeInHours
 	* The amount of time in hours we should wait between file downloads
 
-#### Stats Download Emailing Settings
-
-1. SmtpHost
-2. Port
-3. FromAddress
-4. DisplayName
-5. Password
-6. Receivers
-
 #### Test Harness Only Settings
 
 1. DisableMinimumWaitTime
+	* Disables the minimum wait time feature
 2. DisableSecureFilePayload
+	* Disables trying to upgrade HTTP connections to HTTPS connections automatically
 
 #### File Server Test Harness Settings
 
