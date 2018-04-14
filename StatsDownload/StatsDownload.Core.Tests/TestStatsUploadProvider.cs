@@ -205,10 +205,10 @@
         {
             InvokeUploadStatsFiles();
 
-            statsUploadDatabaseServiceMock.Received(1).AddUserData(user1);
-            statsUploadDatabaseServiceMock.Received(1).AddUserData(user2);
-            statsUploadDatabaseServiceMock.Received(1).AddUserData(user3);
-            statsUploadDatabaseServiceMock.Received(1).AddUserData(user4);
+            statsUploadDatabaseServiceMock.Received(1).AddUserData(1, user1);
+            statsUploadDatabaseServiceMock.Received(1).AddUserData(1, user2);
+            statsUploadDatabaseServiceMock.Received(1).AddUserData(2, user3);
+            statsUploadDatabaseServiceMock.Received(1).AddUserData(2, user4);
         }
 
         [Test]

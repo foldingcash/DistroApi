@@ -4,7 +4,7 @@
 
     public interface IStatsUploadDatabaseService
     {
-        void AddUserData(UserData userData);
+        void AddUserData(int downloadId, UserData userData);
 
         List<int> GetDownloadsReadyForUpload();
 

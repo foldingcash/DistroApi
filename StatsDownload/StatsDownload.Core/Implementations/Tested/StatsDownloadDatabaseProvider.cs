@@ -9,6 +9,8 @@
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
     {
+        private const string AddUserDataProcedureName = "[FoldingCoin].[AddUserData]";
+
         private const string DatabaseConnectionSuccessfulLogMessage = "Database connection was successful";
 
         private const string FileDownloadErrorProcedureName = "[FoldingCoin].[FileDownloadError]";
@@ -65,8 +67,10 @@
             this.errorMessageService = errorMessageService;
         }
 
-        public void AddUserData(UserData userData)
+        public void AddUserData(int downloadId, UserData userData)
         {
+            LogMethodInvoked(nameof(AddUserData));
+            CreateDatabaseConnectionAndExecuteAction(service => { AddUserData(service, downloadId, userData); });
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
@@ -153,6 +157,47 @@
         {
             LogMethodInvoked(nameof(UpdateToLatest));
             CreateDatabaseConnectionAndExecuteAction(UpdateToLatest);
+        }
+
+        private void AddUserData(IDatabaseConnectionService databaseConnection, int downloadId, UserData userData)
+        {
+            DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
+
+            DbParameter fahUserName = databaseConnection.CreateParameter("@FAHUserName", DbType.String,
+                ParameterDirection.Input);
+            fahUserName.Value = userData.Name;
+
+            DbParameter totalPoints = databaseConnection.CreateParameter("@TotalPoints", DbType.Int64,
+                ParameterDirection.Input);
+            totalPoints.Value = userData.TotalPoints;
+
+            DbParameter workUnits = databaseConnection.CreateParameter("@WorkUnits", DbType.Int64,
+                ParameterDirection.Input);
+            workUnits.Value = userData.TotalWorkUnits;
+
+            DbParameter teamNumber = databaseConnection.CreateParameter("@TeamNumber", DbType.Int64,
+                ParameterDirection.Input);
+            teamNumber.Value = userData.TeamNumber;
+
+            DbParameter friendlyName = databaseConnection.CreateParameter("@FriendlyName", DbType.String,
+                ParameterDirection.Input);
+            friendlyName.Value = userData.FriendlyName;
+
+            DbParameter bitcoinAddress = databaseConnection.CreateParameter("@BitcoinAddress", DbType.String,
+                ParameterDirection.Input);
+            bitcoinAddress.Value = userData.BitcoinAddress;
+
+            databaseConnection.ExecuteStoredProcedure(AddUserDataProcedureName,
+                new List<DbParameter>
+                {
+                    download,
+                    fahUserName,
+                    totalPoints,
+                    workUnits,
+                    teamNumber,
+                    friendlyName,
+                    bitcoinAddress
+                });
         }
 
         private void CloseDatabaseConnection(IDatabaseConnectionService databaseConnection)

@@ -115,7 +115,7 @@
                 List<UserData> usersData = results.UsersData;
                 List<FailedUserData> failedUsersData = results.FailedUsersData;
                 HandleFailedUsersData(failedUsersData);
-                UploadUserData(usersData);
+                UploadUserData(downloadId, usersData);
                 statsUploadDatabaseService.StatsUploadFinished(downloadId);
                 LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");
             }
@@ -129,11 +129,11 @@
             }
         }
 
-        private void UploadUserData(List<UserData> usersData)
+        private void UploadUserData(int downloadId, List<UserData> usersData)
         {
             foreach (UserData userData in usersData)
             {
-                statsUploadDatabaseService.AddUserData(userData);
+                statsUploadDatabaseService.AddUserData(downloadId, userData);
             }
         }
     }
