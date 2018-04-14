@@ -13,7 +13,7 @@
     using StatsDownload.Logging;
 
     [TestFixture]
-    public class TestDataStoreProvider
+    public class TestStatsDownloadDatabaseProvider
     {
         private const int NumberOfRowsEffectedExpected = 5;
 
