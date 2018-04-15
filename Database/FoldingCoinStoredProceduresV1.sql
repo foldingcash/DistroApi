@@ -392,11 +392,14 @@ BEGIN
 		END
 	ELSE
 		BEGIN
-			SELECT @FAHDataRunId = FAHDataRunId FROM [FoldingCoin].[FAHDataRuns]	WHERE DownloadId = @DownloadId AND FAHDataId = @FAHDataId;
+			SELECT @FAHDataRunId = FAHDataRunId FROM [FoldingCoin].[FAHDataRuns] WHERE DownloadId = @DownloadId AND FAHDataId = @FAHDataId;
 		END
 
-	INSERT INTO [FoldingCoin].[UserStats] (FAHDataRunId, Points, WorkUnits)
-		VALUES (@FAHDataRunId, @TotalPoints, @WorkUnits);
+	IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN [FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] WHERE TeamMemberId = @TeamMemberId AND Points >= @TotalPoints AND WorkUnits >= @WorkUnits) = 0
+		BEGIN
+			INSERT INTO [FoldingCoin].[UserStats] (FAHDataRunId, Points, WorkUnits)
+			VALUES (@FAHDataRunId, @TotalPoints, @WorkUnits);
+		END
 END
 GO
 
