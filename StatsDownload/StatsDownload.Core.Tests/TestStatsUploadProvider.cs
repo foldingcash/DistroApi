@@ -260,6 +260,14 @@
         }
 
         [Test]
+        public void UploadStatsFiles_WhenParsingUserDataFails_AddsUserRejection()
+        {
+            InvokeUploadStatsFiles();
+
+            statsUploadDatabaseServiceMock.Received(4).AddUserRejection(Arg.Any<FailedUserData>());
+        }
+
+        [Test]
         public void UploadStatsFiles_WhenParsingUserDataFails_ErrorsLogged()
         {
             InvokeUploadStatsFiles();
@@ -301,11 +309,10 @@
             return exception;
         }
 
-        private InvalidStatsFileException SetUpWhenInvalidStatsFileExceptionThrown()
+        private void SetUpWhenInvalidStatsFileExceptionThrown()
         {
             var exception = new InvalidStatsFileException();
             statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(exception);
-            return exception;
         }
     }
 }

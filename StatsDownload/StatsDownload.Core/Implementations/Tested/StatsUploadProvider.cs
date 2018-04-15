@@ -90,6 +90,7 @@
 
             foreach (FailedUserData failedUserData in failedUsersData)
             {
+                statsUploadDatabaseService.AddUserRejection(failedUserData);
                 loggingService.LogFailedUserData(failedUserData);
             }
         }

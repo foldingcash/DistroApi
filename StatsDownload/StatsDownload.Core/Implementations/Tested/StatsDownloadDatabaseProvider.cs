@@ -73,6 +73,11 @@
             CreateDatabaseConnectionAndExecuteAction(service => { AddUserData(service, downloadId, userData); });
         }
 
+        public void AddUserRejection(FailedUserData failedUserData)
+        {
+            throw new NotImplementedException();
+        }
+
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
             LogMethodInvoked(nameof(FileDownloadError));
