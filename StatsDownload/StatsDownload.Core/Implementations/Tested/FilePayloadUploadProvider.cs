@@ -6,13 +6,13 @@
     {
         private readonly IFileCompressionService fileCompressionService;
 
-        private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
+        private readonly IFileDownloadDatabaseService fileDownloadDatabaseService;
 
         private readonly IFileReaderService fileReaderService;
 
         public FilePayloadUploadProvider(IFileCompressionService fileCompressionService,
                                          IFileReaderService fileReaderService,
-                                         IFileDownloadDataStoreService fileDownloadDataStoreService)
+                                         IFileDownloadDatabaseService fileDownloadDatabaseService)
         {
             if (fileCompressionService == null)
             {
@@ -24,21 +24,21 @@
                 throw new ArgumentNullException(nameof(fileReaderService));
             }
 
-            if (fileDownloadDataStoreService == null)
+            if (fileDownloadDatabaseService == null)
             {
-                throw new ArgumentNullException(nameof(fileDownloadDataStoreService));
+                throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
             }
 
             this.fileCompressionService = fileCompressionService;
             this.fileReaderService = fileReaderService;
-            this.fileDownloadDataStoreService = fileDownloadDataStoreService;
+            this.fileDownloadDatabaseService = fileDownloadDatabaseService;
         }
 
         public void UploadFile(FilePayload filePayload)
         {
             fileCompressionService.DecompressFile(filePayload);
             fileReaderService.ReadFile(filePayload);
-            fileDownloadDataStoreService.FileDownloadFinished(filePayload);
+            fileDownloadDatabaseService.FileDownloadFinished(filePayload);
         }
     }
 }

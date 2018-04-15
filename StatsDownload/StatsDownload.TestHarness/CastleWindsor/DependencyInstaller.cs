@@ -35,8 +35,8 @@
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
-                Component.For<IFileDownloadDataStoreService, IStatsUploadDataStoreService>()
-                         .ImplementedBy<DataStoreProvider>(),
+                Component.For<IFileDownloadDatabaseService, IStatsUploadDatabaseService>()
+                         .ImplementedBy<StatsDownloadDatabaseProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),

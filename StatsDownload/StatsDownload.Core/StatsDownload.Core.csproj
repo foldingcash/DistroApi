@@ -78,7 +78,7 @@
     <Compile Include="Interfaces\IFilePayloadUploadService.cs" />
     <Compile Include="Interfaces\IAdditionalUserDataParserService.cs" />
     <Compile Include="Interfaces\IBitcoinAddressValidatorService.cs" />
-    <Compile Include="Interfaces\IDataStoreService.cs" />
+    <Compile Include="Interfaces\IStatsDownloadDatabaseService.cs" />
     <Compile Include="Interfaces\IStatsDownloadEmailService.cs" />
     <Compile Include="Interfaces\IStatsDownloadLoggingService.cs" />
     <Compile Include="Interfaces\IStatsFileParserService.cs" />
@@ -103,13 +103,13 @@
     <Compile Include="Interfaces\IDatabaseConnectionService.cs" />
     <Compile Include="Interfaces\IDatabaseConnectionServiceFactory.cs" />
     <Compile Include="Interfaces\IDatabaseConnectionSettingsService.cs" />
-    <Compile Include="Implementations\Tested\DataStoreProvider.cs" />
-    <Compile Include="Interfaces\IFileDownloadDataStoreService.cs" />
+    <Compile Include="Implementations\Tested\StatsDownloadDatabaseProvider.cs" />
+    <Compile Include="Interfaces\IFileDownloadDatabaseService.cs" />
     <Compile Include="Interfaces\IFileDownloadService.cs" />
     <Compile Include="Interfaces\IFileDownloadLoggingService.cs" />
     <Compile Include="Interfaces\IResourceCleanupService.cs" />
     <Compile Include="Interfaces\ISecureFilePayloadService.cs" />
-    <Compile Include="Interfaces\IStatsUploadDataStoreService.cs" />
+    <Compile Include="Interfaces\IStatsUploadDatabaseService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Implementations\Tested\FileDownloadProvider.cs" />
     <Compile Include="DataTransfer\FileDownloadResult.cs" />

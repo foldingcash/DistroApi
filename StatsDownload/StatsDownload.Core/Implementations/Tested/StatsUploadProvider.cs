@@ -9,18 +9,18 @@
 
         private readonly IStatsFileParserService statsFileParserService;
 
-        private readonly IStatsUploadDataStoreService statsUploadDataStoreService;
+        private readonly IStatsUploadDatabaseService statsUploadDatabaseService;
 
         private readonly IStatsUploadEmailService statsUploadEmailService;
 
-        public StatsUploadProvider(IStatsUploadDataStoreService statsUploadDataStoreService,
+        public StatsUploadProvider(IStatsUploadDatabaseService statsUploadDatabaseService,
                                    IStatsUploadLoggingService loggingService,
                                    IStatsFileParserService statsFileParserService,
                                    IStatsUploadEmailService statsUploadEmailService)
         {
-            if (statsUploadDataStoreService == null)
+            if (statsUploadDatabaseService == null)
             {
-                throw new ArgumentNullException(nameof(statsUploadDataStoreService));
+                throw new ArgumentNullException(nameof(statsUploadDatabaseService));
             }
 
             if (loggingService == null)
@@ -38,7 +38,7 @@
                 throw new ArgumentNullException(nameof(statsUploadEmailService));
             }
 
-            this.statsUploadDataStoreService = statsUploadDataStoreService;
+            this.statsUploadDatabaseService = statsUploadDatabaseService;
             this.loggingService = loggingService;
             this.statsFileParserService = statsFileParserService;
             this.statsUploadEmailService = statsUploadEmailService;
@@ -57,7 +57,7 @@
                     return results;
                 }
 
-                List<int> uploadFiles = statsUploadDataStoreService.GetDownloadsReadyForUpload();
+                List<int> uploadFiles = statsUploadDatabaseService.GetDownloadsReadyForUpload();
                 var statsUploadResults = new List<StatsUploadResult>();
 
                 foreach (int downloadId in uploadFiles)
@@ -78,7 +78,7 @@
 
         private bool DataStoreUnavailable()
         {
-            return !statsUploadDataStoreService.IsAvailable();
+            return !statsUploadDatabaseService.IsAvailable();
         }
 
         private void HandleFailedUsersData(List<FailedUserData> failedUsersData)
@@ -109,14 +109,14 @@
             try
             {
                 LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
-                statsUploadDataStoreService.StartStatsUpload(downloadId);
-                string fileData = statsUploadDataStoreService.GetFileData(downloadId);
+                statsUploadDatabaseService.StartStatsUpload(downloadId);
+                string fileData = statsUploadDatabaseService.GetFileData(downloadId);
                 ParseResults results = statsFileParserService.Parse(fileData);
                 List<UserData> usersData = results.UsersData;
                 List<FailedUserData> failedUsersData = results.FailedUsersData;
                 HandleFailedUsersData(failedUsersData);
-                UploadUserData(usersData);
-                statsUploadDataStoreService.StatsUploadFinished(downloadId);
+                UploadUserData(downloadId, usersData);
+                statsUploadDatabaseService.StatsUploadFinished(downloadId);
                 LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");
             }
             catch (InvalidStatsFileException)
@@ -124,16 +124,16 @@
                 StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId);
                 loggingService.LogResult(failedStatsUploadResult);
                 statsUploadEmailService.SendEmail(failedStatsUploadResult);
-                statsUploadDataStoreService.StatsUploadError(failedStatsUploadResult);
+                statsUploadDatabaseService.StatsUploadError(failedStatsUploadResult);
                 statsUploadResults.Add(failedStatsUploadResult);
             }
         }
 
-        private void UploadUserData(List<UserData> usersData)
+        private void UploadUserData(int downloadId, List<UserData> usersData)
         {
             foreach (UserData userData in usersData)
             {
-                statsUploadDataStoreService.AddUserData(userData);
+                statsUploadDatabaseService.AddUserData(downloadId, userData);
             }
         }
     }
