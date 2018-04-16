@@ -111,8 +111,17 @@
         {
             DateTime parsedDateTime;
             var format = "ddd MMM dd HH:mm:ss PST yyyy";
-            return DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
+            bool parsed = DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
                 DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
+
+            if (!parsed)
+            {
+                format = "ddd MMM dd HH:mm:ss PDT yyyy";
+                parsed = DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
+                    DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
+            }
+
+            return parsed;
         }
     }
 }

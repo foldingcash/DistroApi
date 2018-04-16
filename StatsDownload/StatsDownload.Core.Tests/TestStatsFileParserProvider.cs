@@ -21,6 +21,14 @@ msi_TW	15889476570	359312	31403
 anonymous	13937689581	64221589	0
 TheWasp	13660834951	734045	4294967295";
 
+        private const string GoodStatsFileWithDaylightSavingsTimeZone = @"Tue Dec 26 10:20:01 PDT 2017
+name	newcredit	sum(total)	team
+	25882218711	458785	224497
+war	20508731397	544139	37651
+msi_TW	15889476570	359312	31403
+anonymous	13937689581	64221589	0
+TheWasp	13660834951	734045	4294967295";
+
         private const string GoodStatsFileWithOnlyNewLine =
             "Tue Dec 26 10:20:01 PST 2017\n" + "name	newcredit	sum(total)	team\n"
             + "PS3EdOlkkola	25882218711	458785	224497\n" + "war	20508731397	544139	37651\n"
@@ -78,6 +86,7 @@ TheWasp	13660834951	734045	70335";
         [TestCase(GoodStatsFile, 5)]
         [TestCase(EmptyStatsFile, 0)]
         [TestCase(GoodStatsFileWithOnlyNewLine, 5)]
+        [TestCase(GoodStatsFileWithDaylightSavingsTimeZone, 5)]
         public void Parse_WhenInvoked_ReturnsListOfUsersData(string fileData, int expectedCount)
         {
             List<UserData> actual = InvokeParse(fileData).UsersData;
