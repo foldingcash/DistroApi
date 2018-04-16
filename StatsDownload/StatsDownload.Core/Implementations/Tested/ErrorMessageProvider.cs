@@ -67,7 +67,21 @@
 
         public string GetErrorMessage(FailedUserData failedUserData)
         {
-            throw new NotImplementedException();
+            RejectionReason rejectionReason = failedUserData.RejectionReason;
+            string data = failedUserData.Data;
+
+            if (rejectionReason == RejectionReason.FailedParsing)
+            {
+                return
+                    $"There was a problem parsing a user from the stats file. The user '{data}' failed data parsing. You should contact your technical advisor to review the logs and rejected users.";
+            }
+            if (rejectionReason == RejectionReason.UnexpectedFormat)
+            {
+                return
+                    $"There was a problem parsing a user from the stats file. The user '{data}' was in an unexpected format. You should contact your technical advisor to review the logs and rejected users.";
+            }
+
+            return string.Empty;
         }
     }
 }
