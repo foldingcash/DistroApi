@@ -42,7 +42,7 @@
         [Test]
         public void LogFailedUserData_WhenInvoked_LogsFailedUserData()
         {
-            var failedUserData = new FailedUserData("data",
+            var failedUserData = new FailedUserData(0, 0, "data",
                 new UserData("name", 1, 2, 3) { BitcoinAddress = "bitcoin address", FriendlyName = "friendly name" });
 
             systemUnderTest.LogFailedUserData(failedUserData);

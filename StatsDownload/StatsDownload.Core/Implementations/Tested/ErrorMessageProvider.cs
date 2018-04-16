@@ -64,5 +64,10 @@
             return
                 $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings.";
         }
+
+        public string GetErrorMessage(FailedUserData failedUserData)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

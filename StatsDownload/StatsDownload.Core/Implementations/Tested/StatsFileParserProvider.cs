@@ -62,7 +62,7 @@
 
                 if (IsInvalidUserData(unparsedUserData))
                 {
-                    failedUsersData.Add(new FailedUserData(currentLine));
+                    failedUsersData.Add(new FailedUserData(0, 0, currentLine));
                     continue;
                 }
 
@@ -75,7 +75,7 @@
                     continue;
                 }
 
-                failedUsersData.Add(new FailedUserData(currentLine, userData));
+                failedUsersData.Add(new FailedUserData(0, 0, currentLine, userData));
             }
         }
 

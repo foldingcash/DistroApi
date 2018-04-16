@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
+    using System.Runtime.CompilerServices;
 
     using StatsDownload.Logging;
 
@@ -16,6 +17,8 @@
         private const string SchemaSeparator = ".";
 
         private readonly string AddUserDataProcedureName = $"{DatabaseSchema}{SchemaSeparator}[AddUserData]";
+
+        private readonly string AddUserRejectionProcedureName = $"{DatabaseSchema}{SchemaSeparator}[AddUserRejection]";
 
         private readonly IDatabaseConnectionServiceFactory databaseConnectionServiceFactory;
 
@@ -82,30 +85,31 @@
 
         public void AddUserData(int downloadId, UserData userData)
         {
-            LogMethodInvoked(nameof(AddUserData));
+            LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => { AddUserData(service, downloadId, userData); });
         }
 
         public void AddUserRejection(FailedUserData failedUserData)
         {
-            throw new NotImplementedException();
+            LogMethodInvoked();
+            CreateDatabaseConnectionAndExecuteAction(service => { AddUserRejection(service, failedUserData); });
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
-            LogMethodInvoked(nameof(FileDownloadError));
+            LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadError(service, fileDownloadResult); });
         }
 
         public void FileDownloadFinished(FilePayload filePayload)
         {
-            LogMethodInvoked(nameof(FileDownloadFinished));
+            LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
         }
 
         public List<int> GetDownloadsReadyForUpload()
         {
-            LogMethodInvoked(nameof(GetDownloadsReadyForUpload));
+            LogMethodInvoked();
             List<int> downloadsReadyForUpload = default(List<int>);
             CreateDatabaseConnectionAndExecuteAction(
                 service => downloadsReadyForUpload = GetDownloadsReadyForUpload(service));
@@ -114,7 +118,7 @@
 
         public string GetFileData(int downloadId)
         {
-            LogMethodInvoked(nameof(GetFileData));
+            LogMethodInvoked();
             string fileData = default(string);
             CreateDatabaseConnectionAndExecuteAction(service => fileData = GetFileData(service, downloadId));
             return fileData;
@@ -122,7 +126,7 @@
 
         public DateTime GetLastFileDownloadDateTime()
         {
-            LogMethodInvoked(nameof(GetLastFileDownloadDateTime));
+            LogMethodInvoked();
             DateTime lastFileDownloadDateTime = default(DateTime);
             CreateDatabaseConnectionAndExecuteAction(
                 service => { lastFileDownloadDateTime = GetLastFileDownloadDateTime(service); });
@@ -131,7 +135,7 @@
 
         public bool IsAvailable()
         {
-            LogMethodInvoked(nameof(IsAvailable));
+            LogMethodInvoked();
 
             try
             {
@@ -147,7 +151,7 @@
 
         public void NewFileDownloadStarted(FilePayload filePayload)
         {
-            LogMethodInvoked(nameof(NewFileDownloadStarted));
+            LogMethodInvoked();
             int downloadId = default(int);
             CreateDatabaseConnectionAndExecuteAction(service => { downloadId = NewFileDownloadStarted(service); });
             filePayload.DownloadId = downloadId;
@@ -155,25 +159,25 @@
 
         public void StartStatsUpload(int downloadId)
         {
-            LogMethodInvoked(nameof(StartStatsUpload));
+            LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => StartStatsUpload(service, downloadId));
         }
 
         public void StatsUploadError(StatsUploadResult statsUploadResult)
         {
-            LogMethodInvoked(nameof(StatsUploadError));
+            LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => StatsUploadError(service, statsUploadResult));
         }
 
         public void StatsUploadFinished(int downloadId)
         {
-            LogMethodInvoked(nameof(StatsUploadFinished));
+            LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => StatsUploadFinished(service, downloadId));
         }
 
         public void UpdateToLatest()
         {
-            LogMethodInvoked(nameof(UpdateToLatest));
+            LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(UpdateToLatest);
         }
 
@@ -216,6 +220,22 @@
                     friendlyName,
                     bitcoinAddress
                 });
+        }
+
+        private void AddUserRejection(IDatabaseConnectionService databaseConnection, FailedUserData failedUserData)
+        {
+            DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, failedUserData.DownloadId);
+
+            DbParameter lineNumber = databaseConnection.CreateParameter("@LineNumber", DbType.Int32,
+                ParameterDirection.Input);
+            lineNumber.Value = failedUserData.LineNumber;
+
+            DbParameter rejectionReason = databaseConnection.CreateParameter("@RejectionReason", DbType.String,
+                ParameterDirection.Input);
+            rejectionReason.Value = errorMessageService.GetErrorMessage(failedUserData);
+
+            databaseConnection.ExecuteStoredProcedure(AddUserRejectionProcedureName,
+                new List<DbParameter> { downloadId, lineNumber, rejectionReason });
         }
 
         private void CloseDatabaseConnection(IDatabaseConnectionService databaseConnection)
@@ -376,7 +396,7 @@
             loggingService.LogException(exception);
         }
 
-        private void LogMethodInvoked(string method)
+        private void LogMethodInvoked([CallerMemberName] string method = "")
         {
             LogVerbose($"{method} Invoked");
         }
