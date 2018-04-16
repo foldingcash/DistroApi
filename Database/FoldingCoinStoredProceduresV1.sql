@@ -413,7 +413,6 @@ GO
 
 CREATE PROCEDURE [FoldingCoin].[AddUserRejection] 
 	 @DownloadId INT
-	,@FAHUserName NVARCHAR(50)
 	,@LineNumber INT
 	,@RejectionReason NVARCHAR(500)
 AS
