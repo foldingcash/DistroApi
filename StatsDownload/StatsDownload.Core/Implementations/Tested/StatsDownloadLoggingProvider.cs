@@ -31,7 +31,9 @@
 
         public void LogFailedUserData(FailedUserData failedUserData)
         {
-            LogError($"Data: {failedUserData.Data}{Environment.NewLine}"
+            LogError($"Download Id: {failedUserData.DownloadId}{Environment.NewLine}"
+                     + $"Line Number: {failedUserData.LineNumber}{Environment.NewLine}"
+                     + $"Data: {failedUserData.Data}{Environment.NewLine}"
                      + $"Name: {failedUserData.UserData?.Name}{Environment.NewLine}"
                      + $"Total Points: {failedUserData.UserData?.TotalPoints}{Environment.NewLine}"
                      + $"Total Work Units: {failedUserData.UserData?.TotalWorkUnits}{Environment.NewLine}"
