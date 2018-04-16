@@ -81,7 +81,7 @@
             return !statsUploadDatabaseService.IsAvailable();
         }
 
-        private void HandleFailedUsersData(List<FailedUserData> failedUsersData)
+        private void HandleFailedUsersData(int downloadId, List<FailedUserData> failedUsersData)
         {
             if (failedUsersData.Count > 0)
             {
@@ -90,8 +90,8 @@
 
             foreach (FailedUserData failedUserData in failedUsersData)
             {
-                statsUploadDatabaseService.AddUserRejection(failedUserData);
-                loggingService.LogFailedUserData(failedUserData);
+                statsUploadDatabaseService.AddUserRejection(downloadId, failedUserData);
+                loggingService.LogFailedUserData(downloadId, failedUserData);
             }
         }
 
@@ -115,7 +115,7 @@
                 ParseResults results = statsFileParserService.Parse(fileData);
                 List<UserData> usersData = results.UsersData;
                 List<FailedUserData> failedUsersData = results.FailedUsersData;
-                HandleFailedUsersData(failedUsersData);
+                HandleFailedUsersData(downloadId, failedUsersData);
                 UploadUserData(downloadId, usersData);
                 statsUploadDatabaseService.StatsUploadFinished(downloadId);
                 LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");

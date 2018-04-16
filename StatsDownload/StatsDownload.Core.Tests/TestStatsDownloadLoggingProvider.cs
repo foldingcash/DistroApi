@@ -42,15 +42,16 @@
         [Test]
         public void LogFailedUserData_WhenInvoked_LogsFailedUserData()
         {
-            var failedUserData = new FailedUserData(10, 100, "data",
+            var failedUserData = new FailedUserData(100, "data", RejectionReason.UnexpectedFormat,
                 new UserData("name", 1, 2, 3) { BitcoinAddress = "bitcoin address", FriendlyName = "friendly name" });
 
-            systemUnderTest.LogFailedUserData(failedUserData);
+            systemUnderTest.LogFailedUserData(10, failedUserData);
 
             loggingServiceMock.Received()
-                              .LogError($"Download Id: {failedUserData.DownloadId}{Environment.NewLine}"
+                              .LogError($"Download Id: 10{Environment.NewLine}"
                                         + $"Line Number: {failedUserData.LineNumber}{Environment.NewLine}"
                                         + $"Data: {failedUserData.Data}{Environment.NewLine}"
+                                        + $"Rejection Reason: {failedUserData.RejectionReason}{Environment.NewLine}"
                                         + $"Name: {failedUserData.UserData?.Name}{Environment.NewLine}"
                                         + $"Total Points: {failedUserData.UserData?.TotalPoints}{Environment.NewLine}"
                                         + $"Total Work Units: {failedUserData.UserData?.TotalWorkUnits}{Environment.NewLine}"

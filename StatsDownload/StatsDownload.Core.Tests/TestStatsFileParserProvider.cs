@@ -113,21 +113,29 @@ TheWasp	13660834951	734045	70335";
 
             Assert.That(actual.Count, Is.EqualTo(4));
 
+            Assert.That(actual[0].LineNumber, Is.EqualTo(6));
+            Assert.That(actual[0].RejectionReason, Is.EqualTo(RejectionReason.UnexpectedFormat));
             Assert.That(actual[0].Data, Is.EqualTo("a bad user record exists"));
             Assert.That(actual[0].UserData, Is.Null);
 
+            Assert.That(actual[1].LineNumber, Is.EqualTo(7));
+            Assert.That(actual[1].RejectionReason, Is.EqualTo(RejectionReason.FailedParsing));
             Assert.That(actual[1].Data, Is.EqualTo("anonymous	not an ulong	64221589	489"));
             Assert.That(actual[1].UserData.Name, Is.EqualTo("anonymous"));
             Assert.That(actual[1].UserData.TotalPoints, Is.EqualTo(0));
             Assert.That(actual[1].UserData.TotalWorkUnits, Is.EqualTo(64221589));
             Assert.That(actual[1].UserData.TeamNumber, Is.EqualTo(489));
 
+            Assert.That(actual[2].LineNumber, Is.EqualTo(8));
+            Assert.That(actual[2].RejectionReason, Is.EqualTo(RejectionReason.FailedParsing));
             Assert.That(actual[2].Data, Is.EqualTo("anonymous	13937689581	not an int	123"));
             Assert.That(actual[2].UserData.Name, Is.EqualTo("anonymous"));
             Assert.That(actual[2].UserData.TotalPoints, Is.EqualTo(13937689581));
             Assert.That(actual[2].UserData.TotalWorkUnits, Is.EqualTo(0));
             Assert.That(actual[2].UserData.TeamNumber, Is.EqualTo(123));
 
+            Assert.That(actual[3].LineNumber, Is.EqualTo(9));
+            Assert.That(actual[3].RejectionReason, Is.EqualTo(RejectionReason.FailedParsing));
             Assert.That(actual[3].Data, Is.EqualTo("anonymous	13937689581	64221589	not an int"));
             Assert.That(actual[3].UserData.Name, Is.EqualTo("anonymous"));
             Assert.That(actual[3].UserData.TotalPoints, Is.EqualTo(13937689581));

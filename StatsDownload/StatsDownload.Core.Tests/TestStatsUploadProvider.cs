@@ -264,7 +264,8 @@
         {
             InvokeUploadStatsFiles();
 
-            statsUploadDatabaseServiceMock.Received(4).AddUserRejection(Arg.Any<FailedUserData>());
+            statsUploadDatabaseServiceMock.Received(2).AddUserRejection(1, Arg.Any<FailedUserData>());
+            statsUploadDatabaseServiceMock.Received(2).AddUserRejection(2, Arg.Any<FailedUserData>());
         }
 
         [Test]
@@ -272,7 +273,8 @@
         {
             InvokeUploadStatsFiles();
 
-            loggingServiceMock.Received(4).LogFailedUserData(Arg.Any<FailedUserData>());
+            loggingServiceMock.Received(2).LogFailedUserData(1, Arg.Any<FailedUserData>());
+            loggingServiceMock.Received(2).LogFailedUserData(2, Arg.Any<FailedUserData>());
         }
 
         [Test]

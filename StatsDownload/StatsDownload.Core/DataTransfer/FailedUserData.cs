@@ -6,24 +6,24 @@
         {
         }
 
-        public FailedUserData(int downloadId, int lineNumber, string data)
-            : this(downloadId, lineNumber, data, null)
+        public FailedUserData(int lineNumber, string data, RejectionReason rejectionReason)
+            : this(lineNumber, data, rejectionReason, null)
         {
         }
 
-        public FailedUserData(int downloadId, int lineNumber, string data, UserData userdata)
+        public FailedUserData(int lineNumber, string data, RejectionReason rejectionReason, UserData userdata)
         {
-            DownloadId = downloadId;
             LineNumber = lineNumber;
             Data = data;
+            RejectionReason = rejectionReason;
             UserData = userdata;
         }
 
         public string Data { get; private set; }
 
-        public int DownloadId { get; private set; }
-
         public int LineNumber { get; private set; }
+
+        public RejectionReason RejectionReason { get; private set; }
 
         public UserData UserData { get; private set; }
     }

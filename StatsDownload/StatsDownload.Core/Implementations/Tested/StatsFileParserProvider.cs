@@ -62,7 +62,7 @@
 
                 if (IsInvalidUserData(unparsedUserData))
                 {
-                    failedUsersData.Add(new FailedUserData(0, 0, currentLine));
+                    failedUsersData.Add(new FailedUserData(lineIndex + 1, currentLine, RejectionReason.UnexpectedFormat));
                     continue;
                 }
 
@@ -75,7 +75,8 @@
                     continue;
                 }
 
-                failedUsersData.Add(new FailedUserData(0, 0, currentLine, userData));
+                failedUsersData.Add(new FailedUserData(lineIndex + 1, currentLine, RejectionReason.FailedParsing,
+                    userData));
             }
         }
 
@@ -100,7 +101,6 @@
             bool totalWorkUnitsParsed = long.TryParse(unparsedUserData[index], out totalWorkUnits);
             index++;
             bool teamNumberParsed = long.TryParse(unparsedUserData[index], out teamNumber);
-            index++;
 
             userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
 

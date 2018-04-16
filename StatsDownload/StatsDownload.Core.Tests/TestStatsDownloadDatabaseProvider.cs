@@ -129,7 +129,7 @@
         [Test]
         public void AddUserRejection_WhenInvoked_AddsUserRejection()
         {
-            systemUnderTest.AddUserRejection(new FailedUserData());
+            systemUnderTest.AddUserRejection(0, new FailedUserData());
 
             Received.InOrder(() =>
             {
@@ -146,7 +146,7 @@
         public void AddUserRejection_WhenInvoked_ParameterIsProvided()
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
-            var failedUserData = new FailedUserData(1, 10, "", new UserData());
+            var failedUserData = new FailedUserData(10, "", RejectionReason.UnexpectedFormat, new UserData());
 
             errorMessageServiceMock.GetErrorMessage(failedUserData).Returns("RejectionReason");
 
@@ -155,7 +155,7 @@
                 service.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]", Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            systemUnderTest.AddUserRejection(failedUserData);
+            systemUnderTest.AddUserRejection(1, failedUserData);
 
             Assert.That(actualParameters.Count, Is.EqualTo(3));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));

@@ -89,10 +89,11 @@
             CreateDatabaseConnectionAndExecuteAction(service => { AddUserData(service, downloadId, userData); });
         }
 
-        public void AddUserRejection(FailedUserData failedUserData)
+        public void AddUserRejection(int downloadId, FailedUserData failedUserData)
         {
             LogMethodInvoked();
-            CreateDatabaseConnectionAndExecuteAction(service => { AddUserRejection(service, failedUserData); });
+            CreateDatabaseConnectionAndExecuteAction(
+                service => { AddUserRejection(service, downloadId, failedUserData); });
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
@@ -222,9 +223,10 @@
                 });
         }
 
-        private void AddUserRejection(IDatabaseConnectionService databaseConnection, FailedUserData failedUserData)
+        private void AddUserRejection(IDatabaseConnectionService databaseConnection, int downloadId,
+                                      FailedUserData failedUserData)
         {
-            DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, failedUserData.DownloadId);
+            DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
             DbParameter lineNumber = databaseConnection.CreateParameter("@LineNumber", DbType.Int32,
                 ParameterDirection.Input);
@@ -235,7 +237,7 @@
             rejectionReason.Value = errorMessageService.GetErrorMessage(failedUserData);
 
             databaseConnection.ExecuteStoredProcedure(AddUserRejectionProcedureName,
-                new List<DbParameter> { downloadId, lineNumber, rejectionReason });
+                new List<DbParameter> { download, lineNumber, rejectionReason });
         }
 
         private void CloseDatabaseConnection(IDatabaseConnectionService databaseConnection)
