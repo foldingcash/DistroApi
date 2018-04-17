@@ -1,10 +1,10 @@
 USE [master]
 GO
-/****** Object:  Database [FoldingCoin]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Database [FoldingCoin]    Script Date: 4/17/2018 7:19:39 PM ******/
 CREATE DATABASE [FoldingCoin]
  CONTAINMENT = NONE
  ON  PRIMARY 
-( NAME = N'FoldingCoin', FILENAME = N'F:\Databases\FoldingCoin.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+( NAME = N'FoldingCoin', FILENAME = N'F:\Databases\FoldingCoin.mdf' , SIZE = 10240KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
  LOG ON 
 ( NAME = N'FoldingCoin_log', FILENAME = N'F:\Databases\FoldingCoin_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
 GO
@@ -95,10 +95,10 @@ ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET QUERY_OPTIMIZER_HOTFIXES =
 GO
 USE [FoldingCoin]
 GO
-/****** Object:  Schema [FoldingCoin]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Schema [FoldingCoin]    Script Date: 4/17/2018 7:19:39 PM ******/
 CREATE SCHEMA [FoldingCoin]
 GO
-/****** Object:  Table [FoldingCoin].[Downloads]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Table [FoldingCoin].[Downloads]    Script Date: 4/17/2018 7:19:39 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -114,7 +114,7 @@ CREATE TABLE [FoldingCoin].[Downloads](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[FAHData]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Table [FoldingCoin].[FAHData]    Script Date: 4/17/2018 7:19:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -131,7 +131,7 @@ CREATE TABLE [FoldingCoin].[FAHData](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[FAHDataRuns]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Table [FoldingCoin].[FAHDataRuns]    Script Date: 4/17/2018 7:19:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -147,7 +147,7 @@ CREATE TABLE [FoldingCoin].[FAHDataRuns](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Files]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Table [FoldingCoin].[Files]    Script Date: 4/17/2018 7:19:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -163,7 +163,7 @@ CREATE TABLE [FoldingCoin].[Files](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Rejections]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Table [FoldingCoin].[Rejections]    Script Date: 4/17/2018 7:19:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -179,7 +179,7 @@ CREATE TABLE [FoldingCoin].[Rejections](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Statuses]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Table [FoldingCoin].[Statuses]    Script Date: 4/17/2018 7:19:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -194,7 +194,7 @@ CREATE TABLE [FoldingCoin].[Statuses](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[TeamMembers]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Table [FoldingCoin].[TeamMembers]    Script Date: 4/17/2018 7:19:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -209,7 +209,7 @@ CREATE TABLE [FoldingCoin].[TeamMembers](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Teams]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Table [FoldingCoin].[Teams]    Script Date: 4/17/2018 7:19:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -224,7 +224,7 @@ CREATE TABLE [FoldingCoin].[Teams](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Users]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Table [FoldingCoin].[Users]    Script Date: 4/17/2018 7:19:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -244,7 +244,7 @@ CREATE TABLE [FoldingCoin].[Users](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[UserStats]    Script Date: 4/14/2018 4:49:55 PM ******/
+/****** Object:  Table [FoldingCoin].[UserStats]    Script Date: 4/17/2018 7:19:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
