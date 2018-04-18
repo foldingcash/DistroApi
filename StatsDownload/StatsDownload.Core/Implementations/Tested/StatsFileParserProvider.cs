@@ -62,7 +62,7 @@
 
                 if (IsInvalidUserData(unparsedUserData))
                 {
-                    failedUsersData.Add(new FailedUserData(currentLine));
+                    failedUsersData.Add(new FailedUserData(lineIndex + 1, currentLine, RejectionReason.UnexpectedFormat));
                     continue;
                 }
 
@@ -75,7 +75,8 @@
                     continue;
                 }
 
-                failedUsersData.Add(new FailedUserData(currentLine, userData));
+                failedUsersData.Add(new FailedUserData(lineIndex + 1, currentLine, RejectionReason.FailedParsing,
+                    userData));
             }
         }
 
@@ -100,7 +101,6 @@
             bool totalWorkUnitsParsed = long.TryParse(unparsedUserData[index], out totalWorkUnits);
             index++;
             bool teamNumberParsed = long.TryParse(unparsedUserData[index], out teamNumber);
-            index++;
 
             userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
 
@@ -111,8 +111,17 @@
         {
             DateTime parsedDateTime;
             var format = "ddd MMM dd HH:mm:ss PST yyyy";
-            return DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
+            bool parsed = DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
                 DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
+
+            if (!parsed)
+            {
+                format = "ddd MMM dd HH:mm:ss PDT yyyy";
+                parsed = DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
+                    DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
+            }
+
+            return parsed;
         }
     }
 }

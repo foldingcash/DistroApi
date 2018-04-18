@@ -6,6 +6,8 @@
     {
         void AddUserData(int downloadId, UserData userData);
 
+        void AddUserRejection(int downloadId, FailedUserData failedUserData);
+
         List<int> GetDownloadsReadyForUpload();
 
         string GetFileData(int downloadId);

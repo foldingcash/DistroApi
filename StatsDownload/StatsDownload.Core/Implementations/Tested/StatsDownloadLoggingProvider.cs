@@ -29,9 +29,12 @@
             loggingService.LogException(exception);
         }
 
-        public void LogFailedUserData(FailedUserData failedUserData)
+        public void LogFailedUserData(int downloadId, FailedUserData failedUserData)
         {
-            LogError($"Data: {failedUserData.Data}{Environment.NewLine}"
+            LogError($"Download Id: {downloadId}{Environment.NewLine}"
+                     + $"Line Number: {failedUserData.LineNumber}{Environment.NewLine}"
+                     + $"Data: {failedUserData.Data}{Environment.NewLine}"
+                     + $"Rejection Reason: {failedUserData.RejectionReason}{Environment.NewLine}"
                      + $"Name: {failedUserData.UserData?.Name}{Environment.NewLine}"
                      + $"Total Points: {failedUserData.UserData?.TotalPoints}{Environment.NewLine}"
                      + $"Total Work Units: {failedUserData.UserData?.TotalWorkUnits}{Environment.NewLine}"

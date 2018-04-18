@@ -52,6 +52,7 @@
     <Compile Include="DataTransfer\StatsUploadResults.cs" />
     <Compile Include="DataTransfer\MinimumWait.cs" />
     <Compile Include="DataTransfer\UserData.cs" />
+    <Compile Include="Enums\RejectionReason.cs" />
     <Compile Include="Exceptions\FileDownloadArgumentException.cs" />
     <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
     <Compile Include="Exceptions\InvalidStatsFileException.cs" />
