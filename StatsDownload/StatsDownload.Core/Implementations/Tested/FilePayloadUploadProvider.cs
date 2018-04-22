@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core
 {
+    using Interfaces;
+
     public class FilePayloadUploadProvider : IFilePayloadUploadService
     {
         private readonly IFileCompressionService fileCompressionService;

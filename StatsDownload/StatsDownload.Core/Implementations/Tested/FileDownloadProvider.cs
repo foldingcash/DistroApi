@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core
 {
+    using StatsDownload.Core.Interfaces;
     using System;
     using System.Net;
 

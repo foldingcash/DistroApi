@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.Core
 {
     using System.IO;
-
+    using Interfaces;
     using StatsDownload.Logging;
 
     public class FileReaderProvider : IFileReaderService

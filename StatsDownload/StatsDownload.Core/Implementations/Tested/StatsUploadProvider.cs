@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Interfaces;
 
     public class StatsUploadProvider : IStatsUploadService
     {

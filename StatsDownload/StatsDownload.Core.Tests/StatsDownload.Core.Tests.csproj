@@ -82,6 +82,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj">
+      <Project>{9A4EDD99-4FF4-4A32-830D-674C21C76A35}</Project>
+      <Name>StatsDownload.Core.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj">
       <Project>{E7A915E2-603D-419F-8987-170CE7814ED4}</Project>
       <Name>StatsDownload.Core</Name>
@@ -94,6 +98,9 @@
       <Project>{1ca1f9a2-ead1-4190-9e7e-6691773cebe4}</Project>
       <Name>StatsDownload.Logging</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -5,7 +5,7 @@
     using NSubstitute;
 
     using NUnit.Framework;
-
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Logging;
 
     [TestFixture]

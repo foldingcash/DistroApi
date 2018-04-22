@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core
 {
+    using Interfaces;
+
     public class StatsUploadResult
     {
         public StatsUploadResult()

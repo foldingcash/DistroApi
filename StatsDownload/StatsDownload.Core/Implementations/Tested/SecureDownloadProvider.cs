@@ -2,7 +2,7 @@
 {
     using System;
     using System.Net;
-
+    using Interfaces;
     using StatsDownload.Logging;
 
     public class SecureDownloadProvider : IDownloadService

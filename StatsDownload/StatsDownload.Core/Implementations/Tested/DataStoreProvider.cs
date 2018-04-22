@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
-
+    using Interfaces;
     using StatsDownload.Logging;
 
     public class DataStoreProvider : IDataStoreService

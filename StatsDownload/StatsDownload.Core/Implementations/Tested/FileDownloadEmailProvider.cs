@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core
 {
+    using Interfaces;
     using StatsDownload.Email;
 
     public class FileDownloadEmailProvider : IFileDownloadEmailService

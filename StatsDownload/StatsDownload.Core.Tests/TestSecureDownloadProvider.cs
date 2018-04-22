@@ -2,7 +2,7 @@
 {
     using System;
     using System.Net;
-
+    using Interfaces;
     using NSubstitute;
 
     using NUnit.Framework;

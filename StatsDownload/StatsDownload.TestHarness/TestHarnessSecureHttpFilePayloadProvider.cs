@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.TestHarness
 {
+    using Core.Interfaces;
     using StatsDownload.Core;
 
     public class TestHarnessSecureHttpFilePayloadProvider : ISecureFilePayloadService

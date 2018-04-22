@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System;
-
+    using Core.Interfaces;
     using StatsDownload.Core;
     using StatsDownload.Logging;
 

@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core
 {
+    using Interfaces;
+
     public interface ISecureFilePayloadService
     {
         void DisableSecureFilePayload(FilePayload filePayload);

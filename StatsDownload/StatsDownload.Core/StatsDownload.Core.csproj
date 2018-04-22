@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataTransfer\FilePayload.cs" />
     <Compile Include="DataTransfer\StatsUploadResult.cs" />
     <Compile Include="DataTransfer\MinimumWait.cs" />
     <Compile Include="DataTransfer\UserData.cs" />
@@ -91,22 +90,23 @@
     <Compile Include="Interfaces\Download\IDownloadService.cs" />
     <Compile Include="Interfaces\Download\IDownloadSettingsService.cs" />
     <Compile Include="Implementations\Untested\SqlDatabaseConnectionProvider.cs" />
-    <Compile Include="Enums\FailedReason.cs" />
     <Compile Include="Interfaces\Database\IDatabaseConnectionService.cs" />
     <Compile Include="Interfaces\Database\IDatabaseConnectionServiceFactory.cs" />
     <Compile Include="Interfaces\Database\IDatabaseConnectionSettingsService.cs" />
     <Compile Include="Implementations\Tested\DataStoreProvider.cs" />
     <Compile Include="Interfaces\File\IFileDownloadDataStoreService.cs" />
-    <Compile Include="Interfaces\File\IFileDownloadService.cs" />
     <Compile Include="Interfaces\IFileDownloadLoggingService.cs" />
     <Compile Include="Interfaces\IResourceCleanupService.cs" />
     <Compile Include="Interfaces\ISecureFilePayloadService.cs" />
     <Compile Include="Interfaces\IStatsUploadDataStoreService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Implementations\Tested\FileDownloadProvider.cs" />
-    <Compile Include="DataTransfer\FileDownloadResult.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj">
+      <Project>{9A4EDD99-4FF4-4A32-830D-674C21C76A35}</Project>
+      <Name>StatsDownload.Core.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">
       <Project>{3F8412A3-CC11-4D84-8BC3-FD81ACF81CDF}</Project>
       <Name>StatsDownload.Email</Name>

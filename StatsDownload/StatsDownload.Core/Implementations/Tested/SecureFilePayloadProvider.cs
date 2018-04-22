@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.Core
 {
     using System;
-
+    using Interfaces;
     using StatsDownload.Logging;
 
     public class SecureFilePayloadProvider : ISecureFilePayloadService
