@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
 
     public class StatsFileParserProvider : IStatsFileParserService
     {
@@ -20,9 +21,10 @@
 
             string[] fileLines = fileData?.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-            if (fileLines == null || fileLines.Length < 3 || fileLines[1] != ExpectedHeader)
+            if (fileLines == null || fileLines.Length < 2 || !ValidDateTime(fileLines[0])
+                || fileLines[1] != ExpectedHeader)
             {
-                return usersData;
+                throw new InvalidStatsFileException();
             }
 
             for (var lineIndex = 2; lineIndex < fileLines.Length; lineIndex++)
@@ -55,6 +57,14 @@
             }
 
             return usersData;
+        }
+
+        private bool ValidDateTime(string dateTime)
+        {
+            DateTime parsedDateTime;
+            var format = "ddd MMM dd HH:mm:ss PST yyyy";
+            return DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
+                DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
         }
     }
 }

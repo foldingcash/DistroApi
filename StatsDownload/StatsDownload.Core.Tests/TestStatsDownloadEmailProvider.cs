@@ -7,16 +7,16 @@
     using StatsDownload.Email;
 
     [TestFixture]
-    public class TestFileDownloadEmailProvider
+    public class TestStatsDownloadEmailProvider
     {
         private IEmailService emailServiceMock;
 
         private IErrorMessageService errorMessageServiceMock;
 
-        private IFileDownloadEmailService systemUnderTest;
+        private IStatsDownloadEmailService systemUnderTest;
 
         [Test]
-        public void SendEmail_WhenInvoked_SendsEmail()
+        public void SendEmail_WhenInvokedWithFileDownloadResult_SendsEmail()
         {
             var filePayload = new FilePayload();
             errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload)
@@ -27,6 +27,16 @@
             emailServiceMock.Received().SendEmail("File Download Failed", "ErrorMessage");
         }
 
+        [Test]
+        public void SendEmail_WhenInvokedWithStatsUploadResult_SendsEmail()
+        {
+            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException).Returns("ErrorMessage");
+
+            systemUnderTest.SendEmail(new StatsUploadResult(1, FailedReason.UnexpectedException));
+
+            emailServiceMock.Received().SendEmail("Stats Upload Failed", "ErrorMessage");
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -34,7 +44,7 @@
 
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
-            systemUnderTest = new FileDownloadEmailProvider(emailServiceMock, errorMessageServiceMock);
+            systemUnderTest = new StatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock);
         }
     }
 }

@@ -14,6 +14,8 @@
 
         void StartStatsUpload(int downloadId);
 
+        void StatsUploadError(StatsUploadResult statsUploadResult);
+
         void StatsUploadFinished(int downloadId);
     }
 }

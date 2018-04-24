@@ -41,6 +41,16 @@
         }
 
         [Test]
+        public void GetErrorMessage_WhenInvalidStatsFile_ReturnsInvalidStatsFileMessage()
+        {
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.InvalidStatsFileUpload);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem uploading the file payload. The file failed validation; check the logs for more information. If this problem occurs again, then you should contact your technical advisor to review the logs and failed uploads."));
+        }
+
+        [Test]
         public void GetErrorMessage_WhenMinimumWaitTimeNotMet_ReturnsMinimumWaitTimeNotMetMessage()
         {
             var configuredWaitTime = new TimeSpan(1, 0, 0, 0);

@@ -40,6 +40,13 @@
                         + $"Download Data (First 100): {result.FilePayload?.DecompressedDownloadFileData?.Substring(0, 99)}");
         }
 
+        public void LogResult(StatsUploadResult result)
+        {
+            Log?.Invoke($"Success: {result.Success}{Environment.NewLine}"
+                        + $"Failed Reason: {result.FailedReason}{Environment.NewLine}"
+                        + $"Download Id: {result.DownloadId}{Environment.NewLine}");
+        }
+
         public void LogVerbose(string message)
         {
             Log?.Invoke(message);
