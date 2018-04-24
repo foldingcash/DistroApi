@@ -56,6 +56,19 @@
             return !statsUploadDataStoreService.IsAvailable();
         }
 
+        private void HandleFailedUsersData(List<FailedUserData> failedUsersData)
+        {
+            if (failedUsersData.Count > 0)
+            {
+                statsUploadEmailService.SendEmail(failedUsersData);
+            }
+
+            foreach (FailedUserData failedUserData in failedUsersData)
+            {
+                loggingService.LogFailedUserData(failedUserData);
+            }
+        }
+
         private StatsUploadResult NewFailedStatsUploadResult(int downloadId, Exception exception)
         {
             if (exception is InvalidStatsFileException)
@@ -73,7 +86,10 @@
                 loggingService.LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
                 statsUploadDataStoreService.StartStatsUpload(downloadId);
                 string fileData = statsUploadDataStoreService.GetFileData(downloadId);
-                List<UserData> usersData = statsFileParserService.Parse(fileData);
+                ParseResults results = statsFileParserService.Parse(fileData);
+                List<UserData> usersData = results.UsersData;
+                List<FailedUserData> failedUsersData = results.FailedUsersData;
+                HandleFailedUsersData(failedUsersData);
                 UploadUserData(usersData);
                 statsUploadDataStoreService.StatsUploadFinished(downloadId);
                 loggingService.LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");

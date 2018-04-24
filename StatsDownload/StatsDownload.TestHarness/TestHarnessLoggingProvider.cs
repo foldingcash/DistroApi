@@ -21,6 +21,17 @@
             Log?.Invoke($"Exception Stack-trace:{Environment.NewLine}{exception.StackTrace}");
         }
 
+        public void LogFailedUserData(FailedUserData failedUserData)
+        {
+            Log?.Invoke($"Data: {failedUserData.Data}{Environment.NewLine}"
+                        + $"Name: {failedUserData.UserData?.Name}{Environment.NewLine}"
+                        + $"Total Points: {failedUserData.UserData?.TotalPoints}{Environment.NewLine}"
+                        + $"Total Work Units: {failedUserData.UserData?.TotalWorkUnits}{Environment.NewLine}"
+                        + $"Team Number: {failedUserData.UserData?.TeamNumber}{Environment.NewLine}"
+                        + $"Friendly Name: {failedUserData.UserData?.FriendlyName}{Environment.NewLine}"
+                        + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}");
+        }
+
         public void LogResult(FileDownloadResult result)
         {
             Log?.Invoke($"Success: {result.Success}{Environment.NewLine}"

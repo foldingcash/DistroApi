@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core
 {
+    using System.Collections.Generic;
+
     using StatsDownload.Email;
 
     public class StatsDownloadEmailProvider : IStatsDownloadEmailService
@@ -7,6 +9,8 @@
         private const string FileDownloadFailedSubject = "File Download Failed";
 
         private const string StatsUploadFailedSubject = "Stats Upload Failed";
+
+        private const string UserDataFailedParsingSubject = "User Data Failed Parsing";
 
         private readonly IEmailService emailService;
 
@@ -34,6 +38,13 @@
             string errorMessage = errorMessageService.GetErrorMessage(failedReason);
 
             SendEmail(StatsUploadFailedSubject, errorMessage);
+        }
+
+        public void SendEmail(List<FailedUserData> failedUsersData)
+        {
+            string errorMessage = errorMessageService.GetErrorMessage(failedUsersData);
+
+            SendEmail(UserDataFailedParsingSubject, errorMessage);
         }
 
         private void SendEmail(string subject, string body)
