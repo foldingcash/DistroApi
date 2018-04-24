@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System;
+    using System.Collections.Generic;
 
     using StatsDownload.Core;
     using StatsDownload.Logging;
@@ -55,7 +56,19 @@
         {
             Log?.Invoke($"Success: {result.Success}{Environment.NewLine}"
                         + $"Failed Reason: {result.FailedReason}{Environment.NewLine}"
-                        + $"Download Id: {result.DownloadId}{Environment.NewLine}");
+                        + $"Download Id: {result.DownloadId}");
+        }
+
+        public void LogResult(StatsUploadResults statsUploadResults)
+        {
+            Log?.Invoke($"Success: {statsUploadResults.Success}{Environment.NewLine}"
+                        + $"Failed Reason: {statsUploadResults.FailedReason}{Environment.NewLine}");
+
+            foreach (StatsUploadResult statsUploadResult in
+                statsUploadResults?.UploadResults ?? new List<StatsUploadResult>())
+            {
+                LogResult(statsUploadResult);
+            }
         }
 
         public void LogVerbose(string message)
