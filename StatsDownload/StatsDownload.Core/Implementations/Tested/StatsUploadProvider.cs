@@ -32,7 +32,7 @@
                 if (DataStoreUnavailable())
                 {
                     var results = new StatsUploadResults(FailedReason.DataStoreUnavailable);
-                    loggingService.LogResult(results);
+                    loggingService.LogResults(results);
                     statsUploadEmailService.SendEmail(results);
                     return results;
                 }

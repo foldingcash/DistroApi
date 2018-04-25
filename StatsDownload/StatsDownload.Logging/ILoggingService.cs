@@ -2,10 +2,8 @@
 {
     using System;
 
-    public interface ILoggingService
+    public interface ILoggingService : IApplicationLoggingService
     {
         void LogException(Exception exception);
-
-        void LogVerbose(string message);
     }
 }
