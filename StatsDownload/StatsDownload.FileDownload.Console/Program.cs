@@ -11,7 +11,6 @@
             try
             {
                 DependencyRegistration.Register();
-
                 var service = WindsorContainer.Instance.Resolve<IFileDownloadService>();
                 service.DownloadStatsFile();
             }
@@ -22,6 +21,8 @@
             finally
             {
                 WindsorContainer.Dispose();
+                Console.WriteLine(new string('-', 100));
+                Console.WriteLine();
             }
         }
     }

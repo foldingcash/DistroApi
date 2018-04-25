@@ -37,6 +37,26 @@
 
         private UserData user4;
 
+        [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewStatsUploadProvider(null, loggingServiceMock, statsFileParserServiceMock, statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewStatsUploadProvider(statsUploadDataStoreServiceMock, null, statsFileParserServiceMock,
+                    statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewStatsUploadProvider(statsUploadDataStoreServiceMock, loggingServiceMock, null,
+                    statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                NewStatsUploadProvider(statsUploadDataStoreServiceMock, loggingServiceMock, statsFileParserServiceMock,
+                    null));
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -68,7 +88,7 @@
 
             statsUploadEmailServiceMock = Substitute.For<IStatsUploadEmailService>();
 
-            systemUnderTest = new StatsUploadProvider(statsUploadDataStoreServiceMock, loggingServiceMock,
+            systemUnderTest = NewStatsUploadProvider(statsUploadDataStoreServiceMock, loggingServiceMock,
                 statsFileParserServiceMock, statsUploadEmailServiceMock);
         }
 
@@ -258,6 +278,15 @@
         private StatsUploadResults InvokeUploadStatsFiles()
         {
             return systemUnderTest.UploadStatsFiles();
+        }
+
+        private IStatsUploadService NewStatsUploadProvider(IStatsUploadDataStoreService statsUploadDataStoreService,
+                                                           IStatsUploadLoggingService statsUploadLoggingService,
+                                                           IStatsFileParserService statsFileParserService,
+                                                           IStatsUploadEmailService statsUploadEmailService)
+        {
+            return new StatsUploadProvider(statsUploadDataStoreService, statsUploadLoggingService,
+                statsFileParserService, statsUploadEmailService);
         }
 
         private void SetUpWhenDataStoreIsNotAvailable()

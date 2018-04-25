@@ -25,12 +25,7 @@
             else
             {
                 AppendToLog(message);
-
-                if (!LoggingTextBox.Text.EndsWith(Environment.NewLine))
-                {
-                    AppendToLog(Environment.NewLine);
-                }
-
+                AppendToLog(Environment.NewLine);
                 AppendToLog(Environment.NewLine);
             }
         }
@@ -58,7 +53,7 @@
         {
             if (LoggingTextBox.Text.Length != 0)
             {
-                Log(new string('-', 147));
+                Log(new string('-', 100));
             }
         }
 

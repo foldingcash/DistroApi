@@ -66,20 +66,6 @@ BEGIN
 END
 GO
 
-IF OBJECT_ID('FoldingCoin.GetCurrentVersionId') IS NOT NULL
-BEGIN
-	DROP FUNCTION [FoldingCoin].[GetCurrentVersionId];
-END
-GO
-
-CREATE FUNCTION [FoldingCoin].[GetCurrentVersionId] ()
-RETURNS INT
-AS
-BEGIN
-	RETURN FoldingCoin.GetVersion1000Id();
-END
-GO
-
 IF OBJECT_ID('FoldingCoin.GetVersion1000Id') IS NOT NULL
 BEGIN
 	DROP FUNCTION [FoldingCoin].[GetVersion1000Id];
@@ -99,6 +85,20 @@ BEGIN
 			);
 
 	RETURN @VersionNumberId;
+END
+GO
+
+IF OBJECT_ID('FoldingCoin.GetCurrentVersionId') IS NOT NULL
+BEGIN
+	DROP FUNCTION [FoldingCoin].[GetCurrentVersionId];
+END
+GO
+
+CREATE FUNCTION [FoldingCoin].[GetCurrentVersionId] ()
+RETURNS INT
+AS
+BEGIN
+	RETURN FoldingCoin.GetVersion1000Id();
 END
 GO
 
@@ -344,13 +344,11 @@ BEGIN
 		StatusId
 		,FileId
 		,DownloadDateTime
-		,ErrorMessage
 		)
 	VALUES (
 		@FileDownloadStartedStatusId
 		,@FileId
 		,CURRENT_TIMESTAMP
-		,''
 		);
 
 	SET @DownloadId = (
@@ -421,8 +419,28 @@ BEGIN
 
 	UPDATE [FoldingCoin].[Downloads]
 	SET StatusId = @FileDownloadErrorStatusId
-		,ErrorMessage = @ErrorMessage
 	WHERE DownloadId = @DownloadId;
+
+	DECLARE @FAHDataId INT;
+
+	EXEC [FoldingCoin].[GetFAHDataId] ''
+		,''
+		,''
+		,''
+		,@FAHDataId OUTPUT;
+
+	INSERT INTO [FoldingCoin].[Rejections] (
+		FAHDataId
+		,VersionId
+		,LineNumber
+		,Reason
+		)
+	VALUES (
+		@FAHDataId
+		,FoldingCoin.GetCurrentVersionId()
+		,''
+		,@ErrorMessage
+		);
 
 	RETURN 0;
 END
@@ -746,8 +764,28 @@ AS
 BEGIN
 	UPDATE [FoldingCoin].[Downloads]
 	SET StatusId = FoldingCoin.GetStatsUploadErrorStatusId()
-		,ErrorMessage = @ErrorMessage
-	WHERE DownloadId = @DownloadId
+	WHERE DownloadId = @DownloadId;
+
+	DECLARE @FAHDataId INT;
+
+	EXEC [FoldingCoin].[GetFAHDataId] ''
+		,''
+		,''
+		,''
+		,@FAHDataId OUTPUT;
+
+	INSERT INTO [FoldingCoin].[Rejections] (
+		FAHDataId
+		,VersionId
+		,LineNumber
+		,Reason
+		)
+	VALUES (
+		@FAHDataId
+		,FoldingCoin.GetCurrentVersionId()
+		,''
+		,@ErrorMessage
+		);
 
 	RETURN 0;
 END

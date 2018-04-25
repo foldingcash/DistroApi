@@ -12,14 +12,14 @@
 
         public ResourceCleanupProvider(IFileService fileService, ILoggingService loggingService)
         {
-            if (IsNull(fileService))
+            if (fileService == null)
             {
-                throw NewArgumentNullException(nameof(fileService));
+                throw new ArgumentNullException(nameof(fileService));
             }
 
-            if (IsNull(loggingService))
+            if (loggingService == null)
             {
-                throw NewArgumentNullException(nameof(loggingService));
+                throw new ArgumentNullException(nameof(loggingService));
             }
 
             this.fileService = fileService;
@@ -34,37 +34,47 @@
             string decompressedDownloadFilePath = filePayload.DecompressedDownloadFilePath;
             string failedDownloadFilePath = filePayload.FailedDownloadFilePath;
 
-            loggingService.LogVerbose($"{nameof(Cleanup)} Invoked");
+            LogVerbose($"{nameof(Cleanup)} Invoked");
 
-            if (fileService.Exists(decompressedDownloadFilePath))
+            if (Exists(decompressedDownloadFilePath))
             {
-                loggingService.LogVerbose($"Deleting: {decompressedDownloadFilePath}");
-                fileService.Delete(decompressedDownloadFilePath);
+                LogVerbose($"Deleting: {decompressedDownloadFilePath}");
+                Delete(decompressedDownloadFilePath);
             }
 
-            if (fileService.Exists(downloadFilePath))
+            if (Exists(downloadFilePath))
             {
                 if (fileDownloadResult.FailedReason == FailedReason.FileDownloadFailedDecompression)
                 {
-                    loggingService.LogVerbose($"Moving: {downloadFilePath} to {failedDownloadFilePath}");
-                    fileService.Move(downloadFilePath, failedDownloadFilePath);
+                    LogVerbose($"Moving: {downloadFilePath} to {failedDownloadFilePath}");
+                    Move(downloadFilePath, failedDownloadFilePath);
                 }
                 else
                 {
-                    loggingService.LogVerbose($"Deleting: {downloadFilePath}");
-                    fileService.Delete(downloadFilePath);
+                    LogVerbose($"Deleting: {downloadFilePath}");
+                    Delete(downloadFilePath);
                 }
             }
         }
 
-        private bool IsNull(object value)
+        private void Delete(string path)
         {
-            return value == null;
+            fileService.Delete(path);
         }
 
-        private Exception NewArgumentNullException(string parameterName)
+        private bool Exists(string path)
         {
-            return new ArgumentNullException(parameterName);
+            return fileService.Exists(path);
+        }
+
+        private void LogVerbose(string message)
+        {
+            loggingService.LogVerbose(message);
+        }
+
+        private void Move(string sourcePath, string destinationPath)
+        {
+            fileService.Move(sourcePath, destinationPath);
         }
     }
 }
