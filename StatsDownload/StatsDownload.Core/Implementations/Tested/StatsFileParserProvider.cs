@@ -62,7 +62,7 @@
 
                 if (IsInvalidUserData(unparsedUserData))
                 {
-                    failedUsersData.Add(new FailedUserData(currentLine));
+                    failedUsersData.Add(new FailedUserData(lineIndex + 1, currentLine, RejectionReason.UnexpectedFormat));
                     continue;
                 }
 
@@ -75,7 +75,8 @@
                     continue;
                 }
 
-                failedUsersData.Add(new FailedUserData(currentLine, userData));
+                failedUsersData.Add(new FailedUserData(lineIndex + 1, currentLine, RejectionReason.FailedParsing,
+                    userData));
             }
         }
 
@@ -91,16 +92,15 @@
                 index--;
             }
 
-            ulong totalPoints;
-            ulong totalWorkUnits;
-            ulong teamNumber;
+            long totalPoints;
+            long totalWorkUnits;
+            long teamNumber;
 
-            bool totalPointsParsed = ulong.TryParse(unparsedUserData[index], out totalPoints);
+            bool totalPointsParsed = long.TryParse(unparsedUserData[index], out totalPoints);
             index++;
-            bool totalWorkUnitsParsed = ulong.TryParse(unparsedUserData[index], out totalWorkUnits);
+            bool totalWorkUnitsParsed = long.TryParse(unparsedUserData[index], out totalWorkUnits);
             index++;
-            bool teamNumberParsed = ulong.TryParse(unparsedUserData[index], out teamNumber);
-            index++;
+            bool teamNumberParsed = long.TryParse(unparsedUserData[index], out teamNumber);
 
             userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
 
@@ -111,8 +111,17 @@
         {
             DateTime parsedDateTime;
             var format = "ddd MMM dd HH:mm:ss PST yyyy";
-            return DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
+            bool parsed = DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
                 DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
+
+            if (!parsed)
+            {
+                format = "ddd MMM dd HH:mm:ss PDT yyyy";
+                parsed = DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
+                    DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
+            }
+
+            return parsed;
         }
     }
 }

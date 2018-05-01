@@ -4,22 +4,22 @@
 
     public class FileDownloadMinimumWaitTimeProvider : IFileDownloadMinimumWaitTimeService
     {
-        private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
+        private readonly IFileDownloadDatabaseService fileDownloadDatabaseService;
 
-        public FileDownloadMinimumWaitTimeProvider(IFileDownloadDataStoreService fileDownloadDataStoreService)
+        public FileDownloadMinimumWaitTimeProvider(IFileDownloadDatabaseService fileDownloadDatabaseService)
         {
-            if (fileDownloadDataStoreService == null)
+            if (fileDownloadDatabaseService == null)
             {
-                throw new ArgumentNullException(nameof(fileDownloadDataStoreService));
+                throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
             }
 
-            this.fileDownloadDataStoreService = fileDownloadDataStoreService;
+            this.fileDownloadDatabaseService = fileDownloadDatabaseService;
         }
 
         public bool IsMinimumWaitTimeMet(FilePayload filePayload)
         {
             TimeSpan configuredMinimumWaitTimeSpan = filePayload.MinimumWaitTimeSpan;
-            DateTime lastSuccessfulRun = fileDownloadDataStoreService.GetLastFileDownloadDateTime();
+            DateTime lastSuccessfulRun = fileDownloadDatabaseService.GetLastFileDownloadDateTime();
             DateTime dateTimeNow = DateTime.Now;
 
             if (dateTimeNow - lastSuccessfulRun < MinimumWait.TimeSpan)

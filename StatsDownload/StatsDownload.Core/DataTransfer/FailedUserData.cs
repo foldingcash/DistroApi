@@ -6,18 +6,24 @@
         {
         }
 
-        public FailedUserData(string data)
+        public FailedUserData(int lineNumber, string data, RejectionReason rejectionReason)
+            : this(lineNumber, data, rejectionReason, null)
         {
-            Data = data;
         }
 
-        public FailedUserData(string data, UserData userdata)
+        public FailedUserData(int lineNumber, string data, RejectionReason rejectionReason, UserData userdata)
         {
+            LineNumber = lineNumber;
             Data = data;
+            RejectionReason = rejectionReason;
             UserData = userdata;
         }
 
         public string Data { get; private set; }
+
+        public int LineNumber { get; private set; }
+
+        public RejectionReason RejectionReason { get; private set; }
 
         public UserData UserData { get; private set; }
     }

@@ -2,9 +2,11 @@
 {
     using System.Collections.Generic;
 
-    public interface IStatsUploadDataStoreService
+    public interface IStatsUploadDatabaseService
     {
-        void AddUserData(UserData userData);
+        void AddUserData(int downloadId, UserData userData);
+
+        void AddUserRejection(int downloadId, FailedUserData failedUserData);
 
         List<int> GetDownloadsReadyForUpload();
 

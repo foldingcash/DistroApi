@@ -9,7 +9,7 @@
     [TestFixture]
     public class TestFileDownloadMinimumWaitTimeProvider
     {
-        private IFileDownloadDataStoreService fileDownloadDataStoreServiceMock;
+        private IFileDownloadDatabaseService fileDownloadDatabaseServiceMock;
 
         private FilePayload filePayload;
 
@@ -25,7 +25,7 @@
         public void IsMinimumWaitTimeMet_WhenConfiguredLessThanMinimum_UsesMinimum()
         {
             filePayload.MinimumWaitTimeSpan = new TimeSpan(0, 50, 0);
-            fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddMinutes(-59));
+            fileDownloadDatabaseServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddMinutes(-59));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
 
@@ -36,8 +36,8 @@
         public void IsMinimumWaitTimeMet_WhenNotWaitedConfiguredTime_ReturnsFalse()
         {
             filePayload.MinimumWaitTimeSpan = new TimeSpan(2, 0, 0);
-            fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime()
-                                            .Returns(DateTime.Now.AddHours(-1).AddMinutes(-59));
+            fileDownloadDatabaseServiceMock.GetLastFileDownloadDateTime()
+                                           .Returns(DateTime.Now.AddHours(-1).AddMinutes(-59));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
 
@@ -47,7 +47,7 @@
         [Test]
         public void IsMinimumWaitTimeMet_WhenNotWaitedMinimumTime_ReturnsFalse()
         {
-            fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddMinutes(-59));
+            fileDownloadDatabaseServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddMinutes(-59));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
 
@@ -58,7 +58,7 @@
         public void IsMinimumWaitTimeMet_WhenWaitedConfiguredTime_ReturnsTrue()
         {
             filePayload.MinimumWaitTimeSpan = new TimeSpan(2, 0, 0);
-            fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddHours(-2));
+            fileDownloadDatabaseServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddHours(-2));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
 
@@ -68,7 +68,7 @@
         [Test]
         public void IsMinimumWaitTimeMet_WhenWaitedMinimumTime_ReturnsTrue()
         {
-            fileDownloadDataStoreServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddHours(-1));
+            fileDownloadDatabaseServiceMock.GetLastFileDownloadDateTime().Returns(DateTime.Now.AddHours(-1));
 
             bool actual = InvokeIsMinimumWaitTimeMet();
 
@@ -80,9 +80,9 @@
         {
             filePayload = new FilePayload();
 
-            fileDownloadDataStoreServiceMock = Substitute.For<IFileDownloadDataStoreService>();
+            fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
 
-            systemUnderTest = NewFileDownloadMinimumWaitTimeProvider(fileDownloadDataStoreServiceMock);
+            systemUnderTest = NewFileDownloadMinimumWaitTimeProvider(fileDownloadDatabaseServiceMock);
         }
 
         private bool InvokeIsMinimumWaitTimeMet()
@@ -91,9 +91,9 @@
         }
 
         private IFileDownloadMinimumWaitTimeService NewFileDownloadMinimumWaitTimeProvider(
-            IFileDownloadDataStoreService fileDownloadDataStoreService)
+            IFileDownloadDatabaseService fileDownloadDatabaseService)
         {
-            return new FileDownloadMinimumWaitTimeProvider(fileDownloadDataStoreService);
+            return new FileDownloadMinimumWaitTimeProvider(fileDownloadDatabaseService);
         }
     }
 }

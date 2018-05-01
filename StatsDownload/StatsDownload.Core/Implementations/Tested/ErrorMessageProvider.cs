@@ -64,5 +64,24 @@
             return
                 $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings.";
         }
+
+        public string GetErrorMessage(FailedUserData failedUserData)
+        {
+            RejectionReason rejectionReason = failedUserData.RejectionReason;
+            string data = failedUserData.Data;
+
+            if (rejectionReason == RejectionReason.FailedParsing)
+            {
+                return
+                    $"There was a problem parsing a user from the stats file. The user '{data}' failed data parsing. You should contact your technical advisor to review the logs and rejected users.";
+            }
+            if (rejectionReason == RejectionReason.UnexpectedFormat)
+            {
+                return
+                    $"There was a problem parsing a user from the stats file. The user '{data}' was in an unexpected format. You should contact your technical advisor to review the logs and rejected users.";
+            }
+
+            return string.Empty;
+        }
     }
 }

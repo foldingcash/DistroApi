@@ -11,7 +11,7 @@
     {
         private IFileCompressionService fileCompressionServiceMock;
 
-        private IFileDownloadDataStoreService fileDownloadDataStoreServiceMock;
+        private IFileDownloadDatabaseService fileDownloadDatabaseServiceMock;
 
         private FilePayload filePayload;
 
@@ -23,9 +23,9 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(
-                () => NewFilePayloadUploadProvider(null, fileReaderServiceMock, fileDownloadDataStoreServiceMock));
+                () => NewFilePayloadUploadProvider(null, fileReaderServiceMock, fileDownloadDatabaseServiceMock));
             Assert.Throws<ArgumentNullException>(
-                () => NewFilePayloadUploadProvider(fileCompressionServiceMock, null, fileDownloadDataStoreServiceMock));
+                () => NewFilePayloadUploadProvider(fileCompressionServiceMock, null, fileDownloadDatabaseServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () => NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, null));
         }
@@ -39,10 +39,10 @@
 
             fileReaderServiceMock = Substitute.For<IFileReaderService>();
 
-            fileDownloadDataStoreServiceMock = Substitute.For<IFileDownloadDataStoreService>();
+            fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
 
             systemUnderTest = NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock,
-                fileDownloadDataStoreServiceMock);
+                fileDownloadDatabaseServiceMock);
         }
 
         [Test]
@@ -54,7 +54,7 @@
             {
                 fileCompressionServiceMock.DecompressFile(filePayload);
                 fileReaderServiceMock.ReadFile(filePayload);
-                fileDownloadDataStoreServiceMock.FileDownloadFinished(filePayload);
+                fileDownloadDatabaseServiceMock.FileDownloadFinished(filePayload);
             });
         }
 
@@ -65,10 +65,10 @@
 
         private IFilePayloadUploadService NewFilePayloadUploadProvider(IFileCompressionService fileCompressionService,
                                                                        IFileReaderService fileReaderService,
-                                                                       IFileDownloadDataStoreService
-                                                                           fileDownloadDataStoreService)
+                                                                       IFileDownloadDatabaseService
+                                                                           fileDownloadDatabaseService)
         {
-            return new FilePayloadUploadProvider(fileCompressionService, fileReaderService, fileDownloadDataStoreService);
+            return new FilePayloadUploadProvider(fileCompressionService, fileReaderService, fileDownloadDatabaseService);
         }
     }
 }

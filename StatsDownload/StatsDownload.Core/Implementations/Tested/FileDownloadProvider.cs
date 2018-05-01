@@ -9,7 +9,7 @@
 
         private readonly IDownloadService downloadService;
 
-        private readonly IFileDownloadDataStoreService fileDownloadDataStoreService;
+        private readonly IFileDownloadDatabaseService fileDownloadDatabaseService;
 
         private readonly IFileDownloadEmailService fileDownloadEmailService;
 
@@ -23,7 +23,7 @@
 
         private readonly IResourceCleanupService resourceCleanupService;
 
-        public FileDownloadProvider(IFileDownloadDataStoreService fileDownloadDataStoreService,
+        public FileDownloadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
                                     IFileDownloadLoggingService loggingService, IDownloadService downloadService,
                                     IFilePayloadSettingsService filePayloadSettingsService,
                                     IResourceCleanupService resourceCleanupService,
@@ -31,9 +31,9 @@
                                     IDateTimeService dateTimeService, IFilePayloadUploadService filePayloadUploadService,
                                     IFileDownloadEmailService fileDownloadEmailService)
         {
-            if (fileDownloadDataStoreService == null)
+            if (fileDownloadDatabaseService == null)
             {
-                throw new ArgumentNullException(nameof(fileDownloadDataStoreService));
+                throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
             }
 
             if (loggingService == null)
@@ -76,7 +76,7 @@
                 throw new ArgumentNullException(nameof(fileDownloadEmailService));
             }
 
-            this.fileDownloadDataStoreService = fileDownloadDataStoreService;
+            this.fileDownloadDatabaseService = fileDownloadDatabaseService;
             this.loggingService = loggingService;
             this.downloadService = downloadService;
             this.filePayloadSettingsService = filePayloadSettingsService;
@@ -146,7 +146,7 @@
 
         private bool DataStoreUnavailable()
         {
-            return !fileDownloadDataStoreService.IsAvailable();
+            return !fileDownloadDatabaseService.IsAvailable();
         }
 
         private DateTime DateTimeNow()
@@ -161,7 +161,7 @@
 
         private void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
-            fileDownloadDataStoreService.FileDownloadError(fileDownloadResult);
+            fileDownloadDatabaseService.FileDownloadError(fileDownloadResult);
         }
 
         private bool IsFileDownloadNotReadyToRun(FilePayload filePayload, out FailedReason failedReason)
@@ -231,7 +231,7 @@
 
         private void NewFileDownloadStarted(FilePayload filePayload)
         {
-            fileDownloadDataStoreService.NewFileDownloadStarted(filePayload);
+            fileDownloadDatabaseService.NewFileDownloadStarted(filePayload);
         }
 
         private FilePayload NewStatsPayload()
@@ -256,7 +256,7 @@
 
         private void UpdateToLatest()
         {
-            fileDownloadDataStoreService.UpdateToLatest();
+            fileDownloadDatabaseService.UpdateToLatest();
         }
 
         private void UploadFile(FilePayload filePayload)

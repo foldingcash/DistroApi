@@ -21,7 +21,18 @@
         }
 
         [Test]
-        public void GetErrorMessage_WhenFailedUserData_ReturnsFailedUserDataMessage()
+        public void GetErrorMessage_WhenFailedParsing_ReturnsFailedParsingMessage()
+        {
+            var failedUserData = new FailedUserData(0, "userdata", RejectionReason.FailedParsing);
+            string actual = systemUnderTest.GetErrorMessage(failedUserData);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem parsing a user from the stats file. The user 'userdata' failed data parsing. You should contact your technical advisor to review the logs and rejected users."));
+        }
+
+        [Test]
+        public void GetErrorMessage_WhenFailedUsersData_ReturnsFailedUserDataMessage()
         {
             var failedUsersData = new List<FailedUserData> { new FailedUserData(), new FailedUserData() };
             string actual = systemUnderTest.GetErrorMessage(failedUsersData);
@@ -100,6 +111,17 @@
 
             Assert.That(actual,
                 Is.EqualTo("There was a problem downloading the file payload. Check the log for more information."));
+        }
+
+        [Test]
+        public void GetErrorMessage_WhenUnexpectedFormat_ReturnsUnexpectedFormatMessage()
+        {
+            var failedUserData = new FailedUserData(0, "userdata", RejectionReason.UnexpectedFormat);
+            string actual = systemUnderTest.GetErrorMessage(failedUserData);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem parsing a user from the stats file. The user 'userdata' was in an unexpected format. You should contact your technical advisor to review the logs and rejected users."));
         }
 
         [SetUp]

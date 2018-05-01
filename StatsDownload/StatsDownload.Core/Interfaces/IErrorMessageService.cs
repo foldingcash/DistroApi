@@ -9,5 +9,7 @@
         string GetErrorMessage(FailedReason failedReason);
 
         string GetErrorMessage(List<FailedUserData> failedUsersData);
+
+        string GetErrorMessage(FailedUserData failedUserData);
     }
 }

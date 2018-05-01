@@ -23,7 +23,7 @@
 
         private IStatsFileParserService statsFileParserServiceMock;
 
-        private IStatsUploadDataStoreService statsUploadDataStoreServiceMock;
+        private IStatsUploadDatabaseService statsUploadDatabaseServiceMock;
 
         private IStatsUploadEmailService statsUploadEmailServiceMock;
 
@@ -45,26 +45,26 @@
                 NewStatsUploadProvider(null, loggingServiceMock, statsFileParserServiceMock, statsUploadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewStatsUploadProvider(statsUploadDataStoreServiceMock, null, statsFileParserServiceMock,
+                NewStatsUploadProvider(statsUploadDatabaseServiceMock, null, statsFileParserServiceMock,
                     statsUploadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewStatsUploadProvider(statsUploadDataStoreServiceMock, loggingServiceMock, null,
+                NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock, null,
                     statsUploadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewStatsUploadProvider(statsUploadDataStoreServiceMock, loggingServiceMock, statsFileParserServiceMock,
+                NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock, statsFileParserServiceMock,
                     null));
         }
 
         [SetUp]
         public void SetUp()
         {
-            statsUploadDataStoreServiceMock = Substitute.For<IStatsUploadDataStoreService>();
-            statsUploadDataStoreServiceMock.IsAvailable().Returns(true);
-            statsUploadDataStoreServiceMock.GetDownloadsReadyForUpload().Returns(new List<int> { 1, 2 });
-            statsUploadDataStoreServiceMock.GetFileData(1).Returns("File1");
-            statsUploadDataStoreServiceMock.GetFileData(2).Returns("File2");
+            statsUploadDatabaseServiceMock = Substitute.For<IStatsUploadDatabaseService>();
+            statsUploadDatabaseServiceMock.IsAvailable().Returns(true);
+            statsUploadDatabaseServiceMock.GetDownloadsReadyForUpload().Returns(new List<int> { 1, 2 });
+            statsUploadDatabaseServiceMock.GetFileData(1).Returns("File1");
+            statsUploadDatabaseServiceMock.GetFileData(2).Returns("File2");
 
             loggingServiceMock = Substitute.For<IStatsUploadLoggingService>();
 
@@ -88,7 +88,7 @@
 
             statsUploadEmailServiceMock = Substitute.For<IStatsUploadEmailService>();
 
-            systemUnderTest = NewStatsUploadProvider(statsUploadDataStoreServiceMock, loggingServiceMock,
+            systemUnderTest = NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock,
                 statsFileParserServiceMock, statsUploadEmailServiceMock);
         }
 
@@ -133,7 +133,7 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("UploadStatsFiles Invoked");
-                statsUploadDataStoreServiceMock.IsAvailable();
+                statsUploadDatabaseServiceMock.IsAvailable();
                 loggingServiceMock.LogException(expected);
             });
         }
@@ -197,7 +197,7 @@
 
             InvokeUploadStatsFiles();
 
-            statsUploadDataStoreServiceMock.Received().StatsUploadError(Arg.Any<StatsUploadResult>());
+            statsUploadDatabaseServiceMock.Received().StatsUploadError(Arg.Any<StatsUploadResult>());
         }
 
         [Test]
@@ -205,10 +205,10 @@
         {
             InvokeUploadStatsFiles();
 
-            statsUploadDataStoreServiceMock.Received(1).AddUserData(user1);
-            statsUploadDataStoreServiceMock.Received(1).AddUserData(user2);
-            statsUploadDataStoreServiceMock.Received(1).AddUserData(user3);
-            statsUploadDataStoreServiceMock.Received(1).AddUserData(user4);
+            statsUploadDatabaseServiceMock.Received(1).AddUserData(1, user1);
+            statsUploadDatabaseServiceMock.Received(1).AddUserData(1, user2);
+            statsUploadDatabaseServiceMock.Received(1).AddUserData(2, user3);
+            statsUploadDatabaseServiceMock.Received(1).AddUserData(2, user4);
         }
 
         [Test]
@@ -250,13 +250,22 @@
 
             Received.InOrder(() =>
             {
-                statsUploadDataStoreServiceMock.StartStatsUpload(1);
-                statsUploadDataStoreServiceMock.GetFileData(1);
-                statsUploadDataStoreServiceMock.StatsUploadFinished(1);
-                statsUploadDataStoreServiceMock.StartStatsUpload(2);
-                statsUploadDataStoreServiceMock.GetFileData(2);
-                statsUploadDataStoreServiceMock.StatsUploadFinished(2);
+                statsUploadDatabaseServiceMock.StartStatsUpload(1);
+                statsUploadDatabaseServiceMock.GetFileData(1);
+                statsUploadDatabaseServiceMock.StatsUploadFinished(1);
+                statsUploadDatabaseServiceMock.StartStatsUpload(2);
+                statsUploadDatabaseServiceMock.GetFileData(2);
+                statsUploadDatabaseServiceMock.StatsUploadFinished(2);
             });
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenParsingUserDataFails_AddsUserRejection()
+        {
+            InvokeUploadStatsFiles();
+
+            statsUploadDatabaseServiceMock.Received(2).AddUserRejection(1, Arg.Any<FailedUserData>());
+            statsUploadDatabaseServiceMock.Received(2).AddUserRejection(2, Arg.Any<FailedUserData>());
         }
 
         [Test]
@@ -264,7 +273,8 @@
         {
             InvokeUploadStatsFiles();
 
-            loggingServiceMock.Received(4).LogFailedUserData(Arg.Any<FailedUserData>());
+            loggingServiceMock.Received(2).LogFailedUserData(1, Arg.Any<FailedUserData>());
+            loggingServiceMock.Received(2).LogFailedUserData(2, Arg.Any<FailedUserData>());
         }
 
         [Test]
@@ -280,32 +290,31 @@
             return systemUnderTest.UploadStatsFiles();
         }
 
-        private IStatsUploadService NewStatsUploadProvider(IStatsUploadDataStoreService statsUploadDataStoreService,
+        private IStatsUploadService NewStatsUploadProvider(IStatsUploadDatabaseService statsUploadDatabaseService,
                                                            IStatsUploadLoggingService statsUploadLoggingService,
                                                            IStatsFileParserService statsFileParserService,
                                                            IStatsUploadEmailService statsUploadEmailService)
         {
-            return new StatsUploadProvider(statsUploadDataStoreService, statsUploadLoggingService,
-                statsFileParserService, statsUploadEmailService);
+            return new StatsUploadProvider(statsUploadDatabaseService, statsUploadLoggingService, statsFileParserService,
+                statsUploadEmailService);
         }
 
         private void SetUpWhenDataStoreIsNotAvailable()
         {
-            statsUploadDataStoreServiceMock.IsAvailable().Returns(false);
+            statsUploadDatabaseServiceMock.IsAvailable().Returns(false);
         }
 
         private Exception SetUpWhenExceptionThrown()
         {
             var exception = new Exception();
-            statsUploadDataStoreServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
+            statsUploadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
             return exception;
         }
 
-        private InvalidStatsFileException SetUpWhenInvalidStatsFileExceptionThrown()
+        private void SetUpWhenInvalidStatsFileExceptionThrown()
         {
             var exception = new InvalidStatsFileException();
             statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(exception);
-            return exception;
         }
     }
 }
