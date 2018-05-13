@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class ErrorMessageProvider : IErrorMessageService
     {
@@ -59,10 +60,10 @@
             return string.Empty;
         }
 
-        public string GetErrorMessage(List<FailedUserData> failedUsersData)
+        public string GetErrorMessage(IEnumerable<FailedUserData> failedUsersData)
         {
             return
-                $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings.";
+                $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count()} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings.";
         }
 
         public string GetErrorMessage(FailedUserData failedUserData)

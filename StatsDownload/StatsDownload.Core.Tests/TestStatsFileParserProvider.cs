@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using NSubstitute;
 
@@ -75,7 +76,7 @@ TheWasp	13660834951	734045	70335";
         [Test]
         public void Parse_WhenInvoked_ParsesAdditionalUserData()
         {
-            List<UserData> usersData = InvokeParse().UsersData;
+            IEnumerable<UserData> usersData = InvokeParse().UsersData;
 
             foreach (UserData actual in usersData)
             {
@@ -89,16 +90,16 @@ TheWasp	13660834951	734045	70335";
         [TestCase(GoodStatsFileWithDaylightSavingsTimeZone, 5)]
         public void Parse_WhenInvoked_ReturnsListOfUsersData(string fileData, int expectedCount)
         {
-            List<UserData> actual = InvokeParse(fileData).UsersData;
+            IEnumerable<UserData> actual = InvokeParse(fileData).UsersData;
 
-            Assert.That(actual.Count, Is.EqualTo(expectedCount));
+            Assert.That(actual.Count(), Is.EqualTo(expectedCount));
         }
 
         [Test]
         public void Parse_WhenInvoked_ReturnsParsedUserData()
         {
-            List<UserData> usersData = InvokeParse().UsersData;
-            UserData actual = usersData[2];
+            IEnumerable<UserData> usersData = InvokeParse().UsersData;
+            UserData actual = usersData.ElementAt(2);
 
             Assert.That(actual.Name, Is.EqualTo("msi_TW"));
             Assert.That(actual.TotalPoints, Is.EqualTo(15889476570));
@@ -118,7 +119,7 @@ TheWasp	13660834951	734045	70335";
         [Test]
         public void Parse_WhenInvokedWithMalformedUserRecord_ReturnsListOfFailedUsersData()
         {
-            List<FailedUserData> actual = InvokeParse(MalformedUserRecord).FailedUsersData;
+            List<FailedUserData> actual = new List<FailedUserData>(InvokeParse(MalformedUserRecord).FailedUsersData);
 
             Assert.That(actual.Count, Is.EqualTo(4));
 

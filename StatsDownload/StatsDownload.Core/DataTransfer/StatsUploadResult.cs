@@ -3,21 +3,26 @@
     public class StatsUploadResult
     {
         public StatsUploadResult()
+            : this(true, 0, FailedReason.None)
         {
-            Success = true;
         }
 
         public StatsUploadResult(int downloadId, FailedReason failedReason)
+            : this(false, downloadId, failedReason)
         {
-            Success = false;
+        }
+
+        private StatsUploadResult(bool success, int downloadId, FailedReason failedReason)
+        {
+            Success = success;
             DownloadId = downloadId;
             FailedReason = failedReason;
         }
 
-        public int DownloadId { get; private set; }
+        public int DownloadId { get; }
 
-        public FailedReason FailedReason { get; private set; } = FailedReason.None;
+        public FailedReason FailedReason { get; }
 
-        public bool Success { get; private set; }
+        public bool Success { get; }
     }
 }

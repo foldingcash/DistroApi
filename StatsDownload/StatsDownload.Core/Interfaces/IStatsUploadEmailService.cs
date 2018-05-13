@@ -8,6 +8,6 @@
 
         void SendEmail(StatsUploadResults statsUploadResults);
 
-        void SendEmail(List<FailedUserData> failedUsersData);
+        void SendEmail(IEnumerable<FailedUserData> failedUsersData);
     }
 }

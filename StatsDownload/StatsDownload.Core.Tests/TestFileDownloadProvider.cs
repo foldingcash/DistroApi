@@ -156,7 +156,7 @@
         public void DownloadFile_WhenFileDownloadFailedDecompressions_ReturnsFileDownloadFailedDecompression()
         {
             fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable())
-                                           .Do(info => { throw new FileDownloadFailedDecompressionException(); });
+                                           .Do(info => { throw new FileDownloadFailedDecompressionException(string.Empty); });
 
             FileDownloadResult actual = InvokeDownloadFile();
 
