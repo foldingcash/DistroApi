@@ -1,7 +1,8 @@
 ﻿namespace StatsDownload.Core
 {
     using System;
-
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using StatsDownload.Logging;
 
     public class ResourceCleanupProvider : IResourceCleanupService

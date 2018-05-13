@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.Core
 {
     using System.Collections.Generic;
+    using Interfaces.Enums;
 
     public class StatsUploadResults
     {

@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-
+    using Interfaces.DataTransfer;
     using NSubstitute;
 
     using NUnit.Framework;

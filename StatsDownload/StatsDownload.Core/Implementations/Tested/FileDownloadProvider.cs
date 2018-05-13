@@ -2,6 +2,9 @@
 {
     using System;
     using System.Net;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
 
     public class FileDownloadProvider : IFileDownloadService
     {

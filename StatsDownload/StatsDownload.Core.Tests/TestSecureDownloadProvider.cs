@@ -2,7 +2,7 @@
 {
     using System;
     using System.Net;
-
+    using Interfaces.DataTransfer;
     using NSubstitute;
 
     using NUnit.Framework;

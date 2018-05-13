@@ -4,7 +4,7 @@
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
-
+    using Core.Interfaces;
     using StatsDownload.Core;
     using StatsDownload.Email;
     using StatsDownload.Logging;

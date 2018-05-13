@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-
+    using Interfaces.DataTransfer;
     using StatsDownload.Logging;
 
     public class StatsDownloadLoggingProvider : IStatsDownloadLoggingService

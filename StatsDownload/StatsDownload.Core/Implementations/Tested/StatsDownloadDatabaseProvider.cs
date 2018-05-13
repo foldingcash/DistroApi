@@ -5,7 +5,7 @@
     using System.Data;
     using System.Data.Common;
     using System.Runtime.CompilerServices;
-
+    using Interfaces.DataTransfer;
     using StatsDownload.Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
