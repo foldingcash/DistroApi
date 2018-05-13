@@ -10,7 +10,7 @@
 
         void AddUserRejection(int downloadId, FailedUserData failedUserData);
 
-        List<int> GetDownloadsReadyForUpload();
+        IEnumerable<int> GetDownloadsReadyForUpload();
 
         string GetFileData(int downloadId);
 

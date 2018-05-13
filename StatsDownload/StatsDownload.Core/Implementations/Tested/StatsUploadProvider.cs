@@ -63,7 +63,7 @@
                     return results;
                 }
 
-                List<int> uploadFiles = statsUploadDatabaseService.GetDownloadsReadyForUpload();
+                List<int> uploadFiles = statsUploadDatabaseService.GetDownloadsReadyForUpload().ToList();
                 var statsUploadResults = new List<StatsUploadResult>();
 
                 foreach (int downloadId in uploadFiles)

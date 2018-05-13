@@ -111,7 +111,7 @@
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
         }
 
-        public List<int> GetDownloadsReadyForUpload()
+        public IEnumerable<int> GetDownloadsReadyForUpload()
         {
             LogMethodInvoked();
             List<int> downloadsReadyForUpload = default(List<int>);
