@@ -3,7 +3,7 @@
     using System;
     using System.Configuration;
 
-    using StatsDownload.Core;
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Email;
 
     public class StatsUploadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,

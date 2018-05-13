@@ -1,9 +1,11 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Untested
 {
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
     using System.Data.SqlClient;
+
+    using StatsDownload.Core.Interfaces;
 
     public class SqlDatabaseConnectionProvider : IDatabaseConnectionService
     {

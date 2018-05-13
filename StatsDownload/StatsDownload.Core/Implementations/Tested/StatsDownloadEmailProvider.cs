@@ -1,9 +1,12 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Collections.Generic;
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
+
+    using StatsDownload.Core.DataTransfer;
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Email;
 
     public class StatsDownloadEmailProvider : IStatsDownloadEmailService

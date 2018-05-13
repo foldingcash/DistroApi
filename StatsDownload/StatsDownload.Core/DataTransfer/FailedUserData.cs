@@ -1,5 +1,7 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.DataTransfer
 {
+    using StatsDownload.Core.Enums;
+
     public class FailedUserData
     {
         public FailedUserData()

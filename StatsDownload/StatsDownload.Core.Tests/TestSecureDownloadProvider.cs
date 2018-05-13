@@ -7,6 +7,8 @@
 
     using NUnit.Framework;
 
+    using StatsDownload.Core.Implementations.Tested;
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Logging;
 
     [TestFixture]

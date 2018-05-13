@@ -2,7 +2,6 @@
 {
     using System;
     using Core.Interfaces;
-    using StatsDownload.Core;
 
     public class Program
     {

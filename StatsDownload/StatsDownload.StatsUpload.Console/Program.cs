@@ -2,7 +2,7 @@
 {
     using System;
 
-    using StatsDownload.Core;
+    using StatsDownload.Core.Interfaces;
 
     public class Program
     {

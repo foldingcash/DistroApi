@@ -4,7 +4,7 @@
     using System.IO;
     using System.Reflection;
 
-    using StatsDownload.Core;
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Email;
 
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,

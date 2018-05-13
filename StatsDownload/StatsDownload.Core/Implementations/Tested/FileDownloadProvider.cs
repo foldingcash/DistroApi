@@ -1,10 +1,12 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Net;
     using Interfaces;
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
+
+    using StatsDownload.Core.Exceptions;
 
     public class FileDownloadProvider : IFileDownloadService
     {

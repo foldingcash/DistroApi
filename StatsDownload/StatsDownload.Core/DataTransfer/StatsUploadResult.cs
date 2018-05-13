@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.DataTransfer
 {
     using Interfaces.Enums;
 
