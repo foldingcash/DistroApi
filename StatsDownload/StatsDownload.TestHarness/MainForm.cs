@@ -13,7 +13,7 @@
         public MainForm()
         {
             InitializeComponent();
-            WindsorContainer.Instance.Register(Component.For<MainForm>().Instance(this));
+            WindsorContainer.Instance.Register(Component.For<Action<string>>().Instance(Log));
         }
 
         internal void Log(string message)

@@ -56,6 +56,7 @@
     <Compile Include="Exceptions\FileDownloadArgumentException.cs" />
     <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
     <Compile Include="Exceptions\InvalidStatsFileException.cs" />
+    <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Implementations\Tested\AdditionalUserDataParserProvider.cs" />
     <Compile Include="Implementations\Tested\BitcoinAddressValidatorProvider.cs" />
     <Compile Include="Implementations\Tested\StatsDownloadEmailProvider.cs" />
@@ -125,6 +126,7 @@
       <Name>StatsDownload.Logging</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

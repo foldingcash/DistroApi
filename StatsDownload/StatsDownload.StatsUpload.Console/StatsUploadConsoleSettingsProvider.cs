@@ -1,8 +1,7 @@
 ﻿namespace StatsDownload.StatsUpload.Console
 {
+    using System;
     using System.Configuration;
-    using System.IO;
-    using System.Reflection;
 
     using StatsDownload.Core;
     using StatsDownload.Email;
@@ -23,7 +22,7 @@
         public string GetDownloadDirectory()
         {
             return ConfigurationManager.AppSettings["DownloadDirectory"]
-                   ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                   ?? Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory, Environment.SpecialFolderOption.Create);
         }
 
         public string GetDownloadTimeout()

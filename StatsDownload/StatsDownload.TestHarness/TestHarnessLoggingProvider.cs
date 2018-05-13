@@ -6,21 +6,21 @@
 
     public class TestHarnessLoggingProvider : IApplicationLoggingService
     {
-        public TestHarnessLoggingProvider(MainForm mainForm)
-        {
-            Log = mainForm.Log;
-        }
+        private readonly Action<string> logAction;
 
-        private Action<string> Log { get; }
+        public TestHarnessLoggingProvider(Action<string> logAction)
+        {
+            this.logAction = logAction;
+        }
 
         public void LogError(string message)
         {
-            Log?.Invoke(message);
+            logAction?.Invoke(message);
         }
 
         public void LogVerbose(string message)
         {
-            Log?.Invoke(message);
+            logAction?.Invoke(message);
         }
     }
 }
