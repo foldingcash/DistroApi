@@ -1,8 +1,10 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Linq;
     using System.Security.Cryptography;
+
+    using StatsDownload.Core.Interfaces;
 
     public class BitcoinAddressValidatorProvider : IBitcoinAddressValidatorService
     {

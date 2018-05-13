@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Collections.Generic;
@@ -6,6 +6,9 @@
     using System.Data.Common;
     using System.Runtime.CompilerServices;
     using Interfaces.DataTransfer;
+
+    using StatsDownload.Core.DataTransfer;
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService

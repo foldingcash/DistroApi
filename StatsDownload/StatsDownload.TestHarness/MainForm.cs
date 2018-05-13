@@ -6,7 +6,6 @@
 
     using Castle.MicroKernel.Registration;
     using Core.Interfaces;
-    using StatsDownload.Core;
 
     public partial class MainForm : Form
     {

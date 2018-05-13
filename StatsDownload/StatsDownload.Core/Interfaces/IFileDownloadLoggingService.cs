@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Interfaces
 {
     using Interfaces.DataTransfer;
     using StatsDownload.Logging;

@@ -1,10 +1,14 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
+
+    using StatsDownload.Core.DataTransfer;
+    using StatsDownload.Core.Enums;
+    using StatsDownload.Core.Interfaces;
 
     public class ErrorMessageProvider : IErrorMessageService
     {

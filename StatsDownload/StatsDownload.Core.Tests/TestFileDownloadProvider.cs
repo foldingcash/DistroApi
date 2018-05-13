@@ -9,6 +9,9 @@
 
     using NUnit.Framework;
 
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Implementations.Tested;
+
     [TestFixture]
     public class TestFileDownloadProvider
     {

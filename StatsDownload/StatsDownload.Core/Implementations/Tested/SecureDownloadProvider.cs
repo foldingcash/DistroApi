@@ -1,8 +1,10 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Net;
     using Interfaces.DataTransfer;
+
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Logging;
 
     public class SecureDownloadProvider : IDownloadService

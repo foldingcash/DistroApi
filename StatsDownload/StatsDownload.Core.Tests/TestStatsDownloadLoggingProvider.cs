@@ -8,6 +8,10 @@
 
     using NUnit.Framework;
 
+    using StatsDownload.Core.DataTransfer;
+    using StatsDownload.Core.Enums;
+    using StatsDownload.Core.Implementations.Tested;
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Logging;
 
     [TestFixture]

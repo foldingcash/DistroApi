@@ -5,7 +5,9 @@
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
     using Core.Interfaces;
-    using StatsDownload.Core;
+
+    using StatsDownload.Core.Implementations.Tested;
+    using StatsDownload.Core.Implementations.Untested;
     using StatsDownload.Email;
     using StatsDownload.Logging;
     using StatsDownload.SharpZipLib;
