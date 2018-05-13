@@ -3,22 +3,26 @@
     public class FileDownloadResult
     {
         public FileDownloadResult(FilePayload filePayload)
+            : this(true, FailedReason.None, filePayload)
         {
-            Success = true;
-            FilePayload = filePayload;
         }
 
         public FileDownloadResult(FailedReason failedReason, FilePayload filePayload)
+            : this(false, failedReason, filePayload)
         {
-            Success = false;
+        }
+
+        private FileDownloadResult(bool success, FailedReason failedReason, FilePayload filePayload)
+        {
+            Success = success;
             FailedReason = failedReason;
             FilePayload = filePayload;
         }
 
-        public FailedReason FailedReason { get; private set; } = FailedReason.None;
+        public FailedReason FailedReason { get; }
 
-        public FilePayload FilePayload { get; private set; }
+        public FilePayload FilePayload { get; }
 
-        public bool Success { get; private set; }
+        public bool Success { get; }
     }
 }

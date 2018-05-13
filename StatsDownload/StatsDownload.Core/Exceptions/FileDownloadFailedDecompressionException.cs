@@ -4,7 +4,8 @@
 
     public class FileDownloadFailedDecompressionException : Exception
     {
-        public FileDownloadFailedDecompressionException()
+        public FileDownloadFailedDecompressionException(string message)
+            : base(message)
         {
         }
 

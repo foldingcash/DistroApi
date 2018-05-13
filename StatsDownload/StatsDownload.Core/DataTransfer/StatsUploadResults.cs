@@ -4,22 +4,27 @@
 
     public class StatsUploadResults
     {
-        public StatsUploadResults(List<StatsUploadResult> uploadResults)
+        public StatsUploadResults(IEnumerable<StatsUploadResult> uploadResults)
+            : this(true, FailedReason.None, uploadResults)
         {
-            Success = true;
-            UploadResults = uploadResults;
         }
 
         public StatsUploadResults(FailedReason failedReason)
+            : this(false, failedReason, null)
         {
-            Success = false;
-            FailedReason = failedReason;
         }
 
-        public FailedReason FailedReason { get; private set; } = FailedReason.None;
+        private StatsUploadResults(bool success, FailedReason failedReason, IEnumerable<StatsUploadResult> uploadResults)
+        {
+            Success = success;
+            FailedReason = failedReason;
+            UploadResults = uploadResults;
+        }
 
-        public bool Success { get; private set; }
+        public FailedReason FailedReason { get; }
 
-        public List<StatsUploadResult> UploadResults { get; private set; }
+        public bool Success { get; }
+
+        public IEnumerable<StatsUploadResult> UploadResults { get; }
     }
 }

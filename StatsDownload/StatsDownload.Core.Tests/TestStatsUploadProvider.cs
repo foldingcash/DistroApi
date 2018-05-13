@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
@@ -186,8 +187,8 @@
 
             StatsUploadResults actual = InvokeUploadStatsFiles();
 
-            Assert.That(actual.UploadResults[0].DownloadId, Is.EqualTo(1));
-            Assert.That(actual.UploadResults[0].FailedReason, Is.EqualTo(FailedReason.InvalidStatsFileUpload));
+            Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
+            Assert.That(actual.UploadResults.ElementAt(0).FailedReason, Is.EqualTo(FailedReason.InvalidStatsFileUpload));
         }
 
         [Test]

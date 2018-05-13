@@ -3,6 +3,7 @@
     public class UserData
     {
         public UserData()
+            : this(null, 0, 0, 0)
         {
         }
 
@@ -18,12 +19,12 @@
 
         public string FriendlyName { get; set; }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public long TeamNumber { get; private set; }
+        public long TeamNumber { get; }
 
-        public long TotalPoints { get; private set; }
+        public long TotalPoints { get; }
 
-        public long TotalWorkUnits { get; private set; }
+        public long TotalWorkUnits { get; }
     }
 }

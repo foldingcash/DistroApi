@@ -10,8 +10,8 @@
             FailedUsersData = failedUsersData;
         }
 
-        public List<FailedUserData> FailedUsersData { get; private set; }
+        public IEnumerable<FailedUserData> FailedUsersData { get; }
 
-        public List<UserData> UsersData { get; private set; }
+        public IEnumerable<UserData> UsersData { get; }
     }
 }

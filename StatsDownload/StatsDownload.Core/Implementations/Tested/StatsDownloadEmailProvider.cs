@@ -60,7 +60,7 @@
             SendEmail(StatsUploadFailedSubject, errorMessage);
         }
 
-        public void SendEmail(List<FailedUserData> failedUsersData)
+        public void SendEmail(IEnumerable<FailedUserData> failedUsersData)
         {
             string errorMessage = errorMessageService.GetErrorMessage(failedUsersData);
 
