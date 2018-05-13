@@ -419,7 +419,7 @@
         private void SetUpFileDownloadSettingsInvalid()
         {
             filePayloadSettingsServiceMock.When(mock => mock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>()))
-                                          .Throw<FileDownloadArgumentException>();
+                                          .Throw(new FileDownloadArgumentException(string.Empty));
         }
 
         private WebException SetUpFileDownloadTimeout()
