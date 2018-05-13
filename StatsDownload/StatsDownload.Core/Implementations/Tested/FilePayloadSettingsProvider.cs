@@ -2,7 +2,7 @@
 {
     using System;
     using System.IO;
-
+    using Interfaces.DataTransfer;
     using StatsDownload.Logging;
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService

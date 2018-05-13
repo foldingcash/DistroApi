@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.Core
 {
     using System;
+    using Interfaces.DataTransfer;
 
     public interface IFileDownloadDatabaseService
     {

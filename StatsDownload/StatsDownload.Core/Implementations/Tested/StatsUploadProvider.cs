@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Interfaces.Enums;
 
     public class StatsUploadProvider : IStatsUploadService
     {

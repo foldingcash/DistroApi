@@ -4,7 +4,8 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
-
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using NSubstitute;
     using NSubstitute.ClearExtensions;
 

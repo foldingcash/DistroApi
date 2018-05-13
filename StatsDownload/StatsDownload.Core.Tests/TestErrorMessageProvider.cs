@@ -2,7 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
-
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using NUnit.Framework;
 
     [TestFixture]

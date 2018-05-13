@@ -2,7 +2,9 @@
 {
     using System;
     using System.Net;
-
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using NSubstitute;
 
     using NUnit.Framework;
