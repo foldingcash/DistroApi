@@ -4,7 +4,7 @@
 
     public class ParseResults
     {
-        public ParseResults(List<UserData> usersData, List<FailedUserData> failedUsersData)
+        public ParseResults(IEnumerable<UserData> usersData, IEnumerable<FailedUserData> failedUsersData)
         {
             UsersData = usersData;
             FailedUsersData = failedUsersData;

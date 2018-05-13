@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
+    using System.Linq;
+
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
     using NSubstitute;
@@ -305,7 +307,7 @@
         [Test]
         public void GetDownloadsReadyForUpload_WhenInvoked_ReturnsDownloadIds()
         {
-            List<int> actual = systemUnderTest.GetDownloadsReadyForUpload();
+            List<int> actual = systemUnderTest.GetDownloadsReadyForUpload().ToList();
 
             Assert.That(actual.Count, Is.EqualTo(3));
             Assert.That(actual[1], Is.EqualTo(200));
@@ -317,7 +319,7 @@
             dbDataReaderMock.ClearSubstitute();
             dbDataReaderMock.Read().Returns(false);
 
-            List<int> actual = systemUnderTest.GetDownloadsReadyForUpload();
+            List<int> actual = systemUnderTest.GetDownloadsReadyForUpload().ToList();
 
             Assert.That(actual.Count, Is.EqualTo(0));
         }
