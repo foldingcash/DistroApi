@@ -11,8 +11,6 @@
 
     public class StatsFileParserProvider : IStatsFileParserService
     {
-        private const string ExpectedHeader = @"name	newcredit	sum(total)	team";
-
         private readonly IAdditionalUserDataParserService additionalUserDataParserService;
 
         public StatsFileParserProvider(IAdditionalUserDataParserService additionalUserDataParserService)
@@ -50,7 +48,7 @@
         private bool IsInvalidStatsFile(string[] fileLines)
         {
             return fileLines == null || fileLines.Length < 2 || !ValidDateTime(fileLines[0])
-                   || fileLines[1] != ExpectedHeader;
+                   || fileLines[1] != Constants.StatsFile.ExpectedHeader;
         }
 
         private bool IsInvalidUserData(string[] unparsedUserData)
@@ -97,15 +95,11 @@
                 index--;
             }
 
-            long totalPoints;
-            long totalWorkUnits;
-            long teamNumber;
-
-            bool totalPointsParsed = long.TryParse(unparsedUserData[index], out totalPoints);
+            bool totalPointsParsed = long.TryParse(unparsedUserData[index], out long totalPoints);
             index++;
-            bool totalWorkUnitsParsed = long.TryParse(unparsedUserData[index], out totalWorkUnits);
+            bool totalWorkUnitsParsed = long.TryParse(unparsedUserData[index], out long totalWorkUnits);
             index++;
-            bool teamNumberParsed = long.TryParse(unparsedUserData[index], out teamNumber);
+            bool teamNumberParsed = long.TryParse(unparsedUserData[index], out long teamNumber);
 
             userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
 
@@ -114,15 +108,12 @@
 
         private bool ValidDateTime(string dateTime)
         {
-            DateTime parsedDateTime;
-            var format = "ddd MMM dd HH:mm:ss PST yyyy";
-            bool parsed = DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
-                DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
+            bool parsed = DateTime.TryParseExact(dateTime, Constants.StatsFile.DateTimeFormatStandard, CultureInfo.CurrentCulture,
+                DateTimeStyles.NoCurrentDateDefault, out DateTime parsedDateTime);
 
             if (!parsed)
             {
-                format = "ddd MMM dd HH:mm:ss PDT yyyy";
-                parsed = DateTime.TryParseExact(dateTime, format, CultureInfo.CurrentCulture,
+                parsed = DateTime.TryParseExact(dateTime, Constants.StatsFile.DateTimeFormatDaylight, CultureInfo.CurrentCulture,
                     DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
             }
 

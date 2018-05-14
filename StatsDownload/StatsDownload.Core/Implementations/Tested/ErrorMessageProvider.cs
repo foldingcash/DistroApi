@@ -12,6 +12,7 @@
 
     public class ErrorMessageProvider : IErrorMessageService
     {
+        // TODO: Move these strings into a localizable resource
         private const string FileDownloadFailBodyStart = "There was a problem downloading the file payload.";
 
         private const string FileDownloadFailDecompressionBodyStart =
