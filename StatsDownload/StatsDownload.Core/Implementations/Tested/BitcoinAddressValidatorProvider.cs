@@ -8,10 +8,6 @@
 
     public class BitcoinAddressValidatorProvider : IBitcoinAddressValidatorService
     {
-        private const string Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-
-        private const int Size = 25;
-
         public bool IsValidBitcoinAddress(string bitcoinAddress)
         {
             if (IsInvalidLength(bitcoinAddress))
@@ -36,18 +32,18 @@
 
         private byte[] DecodeBase58(string input)
         {
-            var output = new byte[Size];
+            var output = new byte[Constants.BitcoinAddress.Size];
 
             foreach (char t in input)
             {
-                int p = Alphabet.IndexOf(t);
+                int p = Constants.BitcoinAddress.Alphabet.IndexOf(t);
 
                 if (p == -1)
                 {
                     return null;
                 }
 
-                int j = Size;
+                int j = Constants.BitcoinAddress.Size;
 
                 while (--j > 0)
                 {

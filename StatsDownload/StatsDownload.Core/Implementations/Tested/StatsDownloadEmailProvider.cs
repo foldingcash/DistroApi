@@ -11,6 +11,7 @@
 
     public class StatsDownloadEmailProvider : IStatsDownloadEmailService
     {
+        // TODO: Move these into a localizable resource
         private const string FileDownloadFailedSubject = "File Download Failed";
 
         private const string StatsUploadFailedSubject = "Stats Upload Failed";
