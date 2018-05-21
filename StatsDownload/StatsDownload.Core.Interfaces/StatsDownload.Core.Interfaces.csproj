@@ -44,6 +44,10 @@
     <Compile Include="DataTransfer\FilePayload.cs" />
     <Compile Include="Enums\FailedReason.cs" />
     <Compile Include="IFileDownloadService.cs" />
+    <Compile Include="Networking\IHttpClient.cs" />
+    <Compile Include="Networking\IHttpClientFactory.cs" />
+    <Compile Include="Networking\IHttpContent.cs" />
+    <Compile Include="Networking\IHttpResponseMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
