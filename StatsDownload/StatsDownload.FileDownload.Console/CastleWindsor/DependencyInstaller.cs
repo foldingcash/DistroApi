@@ -8,6 +8,8 @@
 
     using StatsDownload.Core.Implementations.Tested;
     using StatsDownload.Core.Implementations.Untested;
+    using StatsDownload.Core.Interfaces.Networking;
+    using StatsDownload.Core.Wrappers.Networking;
     using StatsDownload.Email;
     using StatsDownload.Logging;
     using StatsDownload.SharpZipLib;
@@ -49,7 +51,9 @@
                 Component.For<IFileDownloadEmailService>().ImplementedBy<StatsDownloadEmailProvider>(),
                 Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),
-                Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>());
+                Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>(),
+                Component.For<IHttpClient>().ImplementedBy<HttpClientWrapper>().LifestyleTransient(),
+                Component.For<IHttpClientFactory>().AsFactory());
         }
     }
 }

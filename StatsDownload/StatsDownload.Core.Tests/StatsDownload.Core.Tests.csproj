@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="TestAdditionalUserDataParserProvider.cs" />
     <Compile Include="TestBitcoinAddressValidatorProvider.cs" />
+    <Compile Include="TestDownloadProvider.cs" />
     <Compile Include="TestStatsDownloadDatabaseProvider.cs" />
     <Compile Include="TestStatsDownloadEmailProvider.cs" />
     <Compile Include="TestErrorMessageProvider.cs" />
