@@ -20,6 +20,13 @@
         private const string EmptyStatsFile = @"Tue Dec 26 10:20:01 PST 2017
 name	newcredit	sum(total)	team";
 
+        private const string GoodHeaderAndUsers = @"name	newcredit	sum(total)	team
+	25882218711	458785	224497
+war	20508731397	544139	37651
+msi_TW	15889476570	359312	31403
+anonymous	13937689581	64221589	0
+TheWasp	13660834951	734045	4294967295";
+
         private const string GoodStatsFile = @"Tue Dec 26 10:20:01 PST 2017
 name	newcredit	sum(total)	team
 	25882218711	458785	224497
@@ -94,6 +101,8 @@ TheWasp	13660834951	734045	70335";
         [TestCase(EmptyStatsFile, 0)]
         [TestCase(GoodStatsFileWithOnlyNewLine, 5)]
         [TestCase(GoodStatsFileWithDaylightSavingsTimeZone, 5)]
+        [TestCase("Tue Dec  5 10:20:01 PDT 2017\n" + GoodHeaderAndUsers, 5)]
+        [TestCase("Tue Dec  5 10:20:01 PST 2017\n" + GoodHeaderAndUsers, 5)]
         public void Parse_WhenInvoked_ReturnsListOfUsersData(string fileData, int expectedCount)
         {
             IEnumerable<UserData> actual = InvokeParse(fileData).UsersData;
@@ -125,7 +134,7 @@ TheWasp	13660834951	734045	70335";
         [Test]
         public void Parse_WhenInvokedWithMalformedUserRecord_ReturnsListOfFailedUsersData()
         {
-            List<FailedUserData> actual = new List<FailedUserData>(InvokeParse(MalformedUserRecord).FailedUsersData);
+            var actual = new List<FailedUserData>(InvokeParse(MalformedUserRecord).FailedUsersData);
 
             Assert.That(actual.Count, Is.EqualTo(4));
 
