@@ -12,13 +12,11 @@
     {
         private readonly HttpClient innerClient;
 
-        private readonly WebRequestHandler requestHandler;
-
         private bool disposed;
 
         public HttpClientWrapper()
         {
-            requestHandler = new WebRequestHandler();
+            var requestHandler = new WebRequestHandler();
             innerClient = new HttpClient(requestHandler);
             requestHandler.ServerCertificateValidationCallback = CertValidationCallback;
         }
@@ -27,8 +25,14 @@
 
         public TimeSpan Timeout
         {
-            get => innerClient.Timeout;
-            set => innerClient.Timeout = value;
+            get
+            {
+                return innerClient.Timeout;
+            }
+            set
+            {
+                innerClient.Timeout = value;
+            }
         }
 
         public void Dispose()
