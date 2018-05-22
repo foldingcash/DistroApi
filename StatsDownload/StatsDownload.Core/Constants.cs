@@ -39,9 +39,11 @@
 
             public static readonly string AddUserDataProcedureName = $"{DatabaseSchema}{SchemaSeparator}[AddUserData]";
 
-            public static readonly string AddUserRejectionProcedureName = $"{DatabaseSchema}{SchemaSeparator}[AddUserRejection]";
+            public static readonly string AddUserRejectionProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[AddUserRejection]";
 
-            public static readonly string FileDownloadErrorProcedureName = $"{DatabaseSchema}{SchemaSeparator}[FileDownloadError]";
+            public static readonly string FileDownloadErrorProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[FileDownloadError]";
 
             public static readonly string FileDownloadFinishedProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[FileDownloadFinished]";
@@ -57,23 +59,30 @@
             public static readonly string NewFileDownloadStartedProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[NewFileDownloadStarted]";
 
-            public static readonly string StartStatsUploadProcedureName = $"{DatabaseSchema}{SchemaSeparator}[StartStatsUpload]";
+            public static readonly string StartStatsUploadProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[StartStatsUpload]";
 
-            public static readonly string StatsUploadErrorProcedureName = $"{DatabaseSchema}{SchemaSeparator}[StatsUploadError]";
+            public static readonly string StatsUploadErrorProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[StatsUploadError]";
 
             public static readonly string StatsUploadFinishedProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[StatsUploadFinished]";
 
-            public static readonly string UpdateToLatestStoredProcedureName = $"{DatabaseSchema}{SchemaSeparator}[UpdateToLatest]";
+            public static readonly string UpdateToLatestStoredProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[UpdateToLatest]";
         }
 
         public static class StatsFile
         {
-            public const string DateTimeFormatStandard = "ddd MMM dd HH:mm:ss PST yyyy";
-
-            public const string DateTimeFormatDaylight = "ddd MMM dd HH:mm:ss PDT yyyy";
-
             public const string ExpectedHeader = @"name	newcredit	sum(total)	team";
+
+            public static string[] DateTimeFormats =
+            {
+                "ddd MMM  d HH:mm:ss PDT yyyy",
+                "ddd MMM dd HH:mm:ss PDT yyyy",
+                "ddd MMM  d HH:mm:ss PST yyyy",
+                "ddd MMM dd HH:mm:ss PST yyyy"
+            };
         }
     }
 }

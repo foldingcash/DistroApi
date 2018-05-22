@@ -113,15 +113,8 @@
         private bool ValidDateTime(string dateTime)
         {
             DateTime parsedDateTime;
-            bool parsed = DateTime.TryParseExact(dateTime, Constants.StatsFile.DateTimeFormatStandard, CultureInfo.CurrentCulture,
-                DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
-
-            if (!parsed)
-            {
-                parsed = DateTime.TryParseExact(dateTime, Constants.StatsFile.DateTimeFormatDaylight, CultureInfo.CurrentCulture,
-                    DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
-            }
-
+            bool parsed = DateTime.TryParseExact(dateTime, Constants.StatsFile.DateTimeFormats,
+                CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
             return parsed;
         }
     }
