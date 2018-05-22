@@ -43,6 +43,7 @@
     <Compile Include="DataTransfer\FileDownloadResult.cs" />
     <Compile Include="DataTransfer\FilePayload.cs" />
     <Compile Include="Enums\FailedReason.cs" />
+    <Compile Include="IDateTimeService.cs" />
     <Compile Include="IFileDownloadService.cs" />
     <Compile Include="Networking\IHttpClient.cs" />
     <Compile Include="Networking\IHttpClientFactory.cs" />

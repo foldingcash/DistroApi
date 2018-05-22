@@ -2,23 +2,35 @@
 {
     using System;
 
+    using StatsDownload.Core.Interfaces;
+
     public class LoggingProvider : ILoggingService
     {
         private readonly IApplicationLoggingService applicationLoggingService;
 
-        public LoggingProvider(IApplicationLoggingService applicationLoggingService)
+        private readonly IDateTimeService dateTimeService;
+
+        public LoggingProvider(IApplicationLoggingService applicationLoggingService, IDateTimeService dateTimeService)
         {
             if (applicationLoggingService == null)
             {
                 throw new ArgumentNullException(nameof(applicationLoggingService));
             }
 
+            if (dateTimeService == null)
+            {
+                throw new ArgumentNullException(nameof(dateTimeService));
+            }
+
             this.applicationLoggingService = applicationLoggingService;
+            this.dateTimeService = dateTimeService;
         }
 
         public void LogError(string message)
         {
-            applicationLoggingService.LogError(message);
+            string messageWithTime = GetMessageWithTimestamp(message);
+
+            applicationLoggingService.LogError(messageWithTime);
         }
 
         public void LogException(Exception exception)
@@ -32,8 +44,15 @@
         {
             if (!string.IsNullOrWhiteSpace(message))
             {
-                applicationLoggingService.LogVerbose(message);
+                string messageWithTime = GetMessageWithTimestamp(message);
+
+                applicationLoggingService.LogVerbose(messageWithTime);
             }
+        }
+
+        private string GetMessageWithTimestamp(string message)
+        {
+            return dateTimeService.DateTimeNow() + Environment.NewLine + message;
         }
     }
 }
