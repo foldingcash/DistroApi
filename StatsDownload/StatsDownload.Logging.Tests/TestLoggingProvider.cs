@@ -6,17 +6,24 @@
 
     using NUnit.Framework;
 
+    using StatsDownload.Core.Interfaces;
+
     [TestFixture]
     public class TestLoggingProvider
     {
         private IApplicationLoggingService applicationLoggingServiceMock;
+
+        private DateTime dateTime;
+
+        private IDateTimeService dateTimeServiceMock;
 
         private ILoggingService systemUnderTest;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewLoggingProvider(null));
+            Assert.Throws<ArgumentNullException>(() => NewLoggingProvider(null, dateTimeServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewLoggingProvider(applicationLoggingServiceMock, null));
         }
 
         [Test]
@@ -24,7 +31,7 @@
         {
             systemUnderTest.LogError("error");
 
-            applicationLoggingServiceMock.Received().LogError("error");
+            applicationLoggingServiceMock.Received().LogError($"{dateTime}{Environment.NewLine}error");
         }
 
         [Test]
@@ -34,7 +41,8 @@
             systemUnderTest.LogException(exception);
 
             applicationLoggingServiceMock.Received()
-                                         .LogError($"Exception Type: {exception.GetType()}{Environment.NewLine}"
+                                         .LogError($"{dateTime}{Environment.NewLine}"
+                                                   + $"Exception Type: {exception.GetType()}{Environment.NewLine}"
                                                    + $"Exception Message: {exception.Message}{Environment.NewLine}"
                                                    + $"Exception Stack-trace: {Environment.NewLine}{exception.StackTrace}");
         }
@@ -44,7 +52,7 @@
         {
             systemUnderTest.LogVerbose("verbose");
 
-            applicationLoggingServiceMock.Received().LogVerbose("verbose");
+            applicationLoggingServiceMock.Received().LogVerbose($"{dateTime}{Environment.NewLine}verbose");
         }
 
         [TestCase(null)]
@@ -61,14 +69,20 @@
         [SetUp]
         public void SetUp()
         {
-            applicationLoggingServiceMock = Substitute.For<IApplicationLoggingService>();
+            dateTime = DateTime.Now;
 
-            systemUnderTest = NewLoggingProvider(applicationLoggingServiceMock);
+            applicationLoggingServiceMock = Substitute.For<IApplicationLoggingService>();
+            dateTimeServiceMock = Substitute.For<IDateTimeService>();
+
+            systemUnderTest = NewLoggingProvider(applicationLoggingServiceMock, dateTimeServiceMock);
+
+            dateTimeServiceMock.DateTimeNow().Returns(dateTime);
         }
 
-        private ILoggingService NewLoggingProvider(IApplicationLoggingService applicationLoggingService)
+        private ILoggingService NewLoggingProvider(IApplicationLoggingService applicationLoggingService,
+                                                   IDateTimeService dateTimeService)
         {
-            return new LoggingProvider(applicationLoggingService);
+            return new LoggingProvider(applicationLoggingService, dateTimeService);
         }
     }
 }
