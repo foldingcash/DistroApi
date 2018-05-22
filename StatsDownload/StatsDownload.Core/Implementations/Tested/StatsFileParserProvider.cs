@@ -95,11 +95,15 @@
                 index--;
             }
 
-            bool totalPointsParsed = long.TryParse(unparsedUserData[index], out long totalPoints);
+            long totalPoints;
+            long totalWorkUnits;
+            long teamNumber;
+
+            bool totalPointsParsed = long.TryParse(unparsedUserData[index], out totalPoints);
             index++;
-            bool totalWorkUnitsParsed = long.TryParse(unparsedUserData[index], out long totalWorkUnits);
+            bool totalWorkUnitsParsed = long.TryParse(unparsedUserData[index], out totalWorkUnits);
             index++;
-            bool teamNumberParsed = long.TryParse(unparsedUserData[index], out long teamNumber);
+            bool teamNumberParsed = long.TryParse(unparsedUserData[index], out teamNumber);
 
             userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
 
@@ -108,8 +112,9 @@
 
         private bool ValidDateTime(string dateTime)
         {
+            DateTime parsedDateTime;
             bool parsed = DateTime.TryParseExact(dateTime, Constants.StatsFile.DateTimeFormatStandard, CultureInfo.CurrentCulture,
-                DateTimeStyles.NoCurrentDateDefault, out DateTime parsedDateTime);
+                DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
 
             if (!parsed)
             {
