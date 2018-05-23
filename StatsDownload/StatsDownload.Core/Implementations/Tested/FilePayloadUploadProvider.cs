@@ -39,7 +39,7 @@
 
         public void UploadFile(FilePayload filePayload)
         {
-            fileCompressionService.DecompressFile(filePayload);
+            fileCompressionService.DecompressFile(filePayload.DownloadFilePath, filePayload.DecompressedDownloadFilePath);
             fileReaderService.ReadFile(filePayload);
             fileDownloadDatabaseService.FileDownloadFinished(filePayload);
         }
