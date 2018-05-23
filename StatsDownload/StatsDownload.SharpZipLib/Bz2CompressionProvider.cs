@@ -9,13 +9,13 @@
 
     public class Bz2CompressionProvider : IFileCompressionService
     {
-        public void DecompressFile(FilePayload filePayload)
+        public void DecompressFile(string downloadFilePath, string decompressedDownloadFilePath)
         {
             try
             {
-                using (var sourceFile = new FileStream(filePayload.DownloadFilePath, FileMode.Open))
+                using (var sourceFile = new FileStream(downloadFilePath, FileMode.Open))
                 {
-                    using (FileStream targetFile = File.Create(filePayload.DecompressedDownloadFilePath))
+                    using (FileStream targetFile = File.Create(decompressedDownloadFilePath))
                     {
                         BZip2.Decompress(sourceFile, targetFile, true);
                     }

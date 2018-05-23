@@ -4,6 +4,6 @@
 
     public interface IFileCompressionService
     {
-        void DecompressFile(FilePayload filePayload);
+        void DecompressFile(string downloadFilePath, string decompressedDownloadFilePath);
     }
 }
