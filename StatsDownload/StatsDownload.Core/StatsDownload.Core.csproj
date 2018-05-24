@@ -47,8 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="DataTransfer\StatsUploadResult.cs" />
-    <Compile Include="DataTransfer\StatsUploadResults.cs" />
     <Compile Include="DataTransfer\MinimumWait.cs" />
     <Compile Include="Exceptions\FileDownloadArgumentException.cs" />
     <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
@@ -81,7 +79,6 @@
     <Compile Include="Interfaces\IStatsFileParserService.cs" />
     <Compile Include="Interfaces\IStatsUploadEmailService.cs" />
     <Compile Include="Interfaces\IStatsUploadLoggingService.cs" />
-    <Compile Include="Interfaces\IStatsUploadService.cs" />
     <Compile Include="Implementations\Untested\GuidProvider.cs" />
     <Compile Include="Interfaces\IFileReaderService.cs" />
     <Compile Include="Interfaces\IDirectoryService.cs" />
