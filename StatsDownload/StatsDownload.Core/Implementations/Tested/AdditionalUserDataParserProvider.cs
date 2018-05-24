@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
-
+    using Interfaces.DataTransfer;
     using StatsDownload.Core.DataTransfer;
     using StatsDownload.Core.Interfaces;
 

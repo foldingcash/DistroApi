@@ -3,9 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using StatsDownload.Core.DataTransfer;
-    using StatsDownload.Core.Enums;
     using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Interfaces;
 

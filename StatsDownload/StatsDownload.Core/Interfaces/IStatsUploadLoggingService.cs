@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
+    using DataTransfer;
     using StatsDownload.Core.DataTransfer;
     using StatsDownload.Logging;
 
