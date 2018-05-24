@@ -7,7 +7,6 @@
     using System.Runtime.CompilerServices;
     using Interfaces.DataTransfer;
 
-    using StatsDownload.Core.DataTransfer;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Logging;
 

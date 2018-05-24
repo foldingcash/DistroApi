@@ -2,7 +2,6 @@
 {
     using System;
     using Interfaces.DataTransfer;
-    using StatsDownload.Core.DataTransfer;
     using StatsDownload.Core.Interfaces;
 
     public class AdditionalUserDataParserProvider : IAdditionalUserDataParserService

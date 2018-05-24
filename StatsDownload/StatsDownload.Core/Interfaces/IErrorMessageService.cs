@@ -4,8 +4,6 @@
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
 
-    using StatsDownload.Core.DataTransfer;
-
     public interface IErrorMessageService
     {
         string GetErrorMessage(FailedReason failedReason, FilePayload filePayload);
