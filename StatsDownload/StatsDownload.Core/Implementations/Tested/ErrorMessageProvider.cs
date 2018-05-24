@@ -7,7 +7,6 @@
     using Interfaces.Enums;
 
     using StatsDownload.Core.DataTransfer;
-    using StatsDownload.Core.Enums;
     using StatsDownload.Core.Interfaces;
 
     public class ErrorMessageProvider : IErrorMessageService

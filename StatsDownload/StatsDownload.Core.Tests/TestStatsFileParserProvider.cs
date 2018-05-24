@@ -3,13 +3,12 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using NSubstitute;
 
     using NUnit.Framework;
 
-    using StatsDownload.Core.DataTransfer;
-    using StatsDownload.Core.Enums;
     using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Implementations.Tested;
     using StatsDownload.Core.Interfaces;

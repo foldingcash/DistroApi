@@ -47,13 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="DataTransfer\FailedUserData.cs" />
-    <Compile Include="DataTransfer\ParseResults.cs" />
     <Compile Include="DataTransfer\StatsUploadResult.cs" />
     <Compile Include="DataTransfer\StatsUploadResults.cs" />
     <Compile Include="DataTransfer\MinimumWait.cs" />
-    <Compile Include="DataTransfer\UserData.cs" />
-    <Compile Include="Enums\RejectionReason.cs" />
     <Compile Include="Exceptions\FileDownloadArgumentException.cs" />
     <Compile Include="Exceptions\FileDownloadFailedDecompressionException.cs" />
     <Compile Include="Exceptions\InvalidStatsFileException.cs" />
@@ -74,12 +70,10 @@
     <Compile Include="Implementations\Untested\DirectoryProvider.cs" />
     <Compile Include="Implementations\Untested\FileProvider.cs" />
     <Compile Include="Implementations\Untested\FileReaderProvider.cs" />
-    <Compile Include="Interfaces\IFileCompressionService.cs" />
     <Compile Include="Interfaces\IFileService.cs" />
     <Compile Include="Interfaces\IFileDownloadEmailService.cs" />
     <Compile Include="Interfaces\IFileDownloadMinimumWaitTimeService.cs" />
     <Compile Include="Interfaces\IFilePayloadUploadService.cs" />
-    <Compile Include="Interfaces\IAdditionalUserDataParserService.cs" />
     <Compile Include="Interfaces\IBitcoinAddressValidatorService.cs" />
     <Compile Include="Interfaces\IStatsDownloadDatabaseService.cs" />
     <Compile Include="Interfaces\IStatsDownloadEmailService.cs" />

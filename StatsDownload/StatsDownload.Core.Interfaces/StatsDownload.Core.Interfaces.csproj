@@ -40,10 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTransfer\FailedUserData.cs" />
     <Compile Include="DataTransfer\FileDownloadResult.cs" />
     <Compile Include="DataTransfer\FilePayload.cs" />
+    <Compile Include="DataTransfer\ParseResults.cs" />
+    <Compile Include="DataTransfer\UserData.cs" />
     <Compile Include="Enums\FailedReason.cs" />
+    <Compile Include="Enums\RejectionReason.cs" />
+    <Compile Include="IAdditionalUserDataParserService.cs" />
     <Compile Include="IDateTimeService.cs" />
+    <Compile Include="IFileCompressionService.cs" />
     <Compile Include="IFileDownloadService.cs" />
     <Compile Include="Networking\IHttpClient.cs" />
     <Compile Include="Networking\IHttpClientFactory.cs" />

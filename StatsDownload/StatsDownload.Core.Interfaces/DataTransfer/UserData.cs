@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.DataTransfer
+﻿namespace StatsDownload.Core.Interfaces.DataTransfer
 {
     public class UserData
     {

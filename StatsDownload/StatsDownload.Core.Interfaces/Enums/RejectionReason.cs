@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Enums
+﻿namespace StatsDownload.Core.Interfaces.Enums
 {
     public enum RejectionReason
     {
