@@ -1,7 +1,8 @@
 ﻿namespace StatsDownload.FileDownload.Console
 {
     using System;
-    using Core.Interfaces;
+
+    using StatsDownload.Core.Interfaces;
 
     public class Program
     {

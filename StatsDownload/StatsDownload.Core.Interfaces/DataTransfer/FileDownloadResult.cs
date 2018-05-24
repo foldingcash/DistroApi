@@ -1,6 +1,6 @@
 ﻿namespace StatsDownload.Core.Interfaces.DataTransfer
 {
-    using Enums;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class FileDownloadResult
     {

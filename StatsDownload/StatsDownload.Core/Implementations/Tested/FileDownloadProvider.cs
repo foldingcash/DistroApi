@@ -2,11 +2,11 @@
 {
     using System;
     using System.Net;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
 
     using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class FileDownloadProvider : IFileDownloadService
     {

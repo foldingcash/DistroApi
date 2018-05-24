@@ -3,8 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
 
@@ -13,6 +12,8 @@
     using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Implementations.Tested;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestStatsUploadProvider

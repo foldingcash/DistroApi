@@ -1,13 +1,14 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Interfaces.DataTransfer;
+
     using NSubstitute;
 
     using NUnit.Framework;
 
     using StatsDownload.Core.Implementations.Tested;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestFileDownloadMinimumWaitTimeProvider

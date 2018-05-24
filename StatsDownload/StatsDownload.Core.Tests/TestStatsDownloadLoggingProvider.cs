@@ -2,14 +2,15 @@
 {
     using System;
     using System.Collections.Generic;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+
     using NSubstitute;
 
     using NUnit.Framework;
 
     using StatsDownload.Core.Implementations.Tested;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Logging;
 
     [TestFixture]

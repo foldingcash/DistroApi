@@ -38,7 +38,8 @@
             int minimumWaitTimeInHours;
             if (int.TryParse(unsafeMinimumWaitTimeInHours, out minimumWaitTimeInHours))
             {
-                if (minimumWaitTimeInHours >= Constants.Download.MinimumWaitTimeInHours && minimumWaitTimeInHours <= Constants.Download.MaximumWaitTimeInHours)
+                if (minimumWaitTimeInHours >= Constants.Download.MinimumWaitTimeInHours
+                    && minimumWaitTimeInHours <= Constants.Download.MaximumWaitTimeInHours)
                 {
                     minimumWaitTimeSpan = new TimeSpan(minimumWaitTimeInHours, 0, 0);
                     return true;
@@ -58,7 +59,8 @@
                 return false;
             }
 
-            if (timeoutInSeconds < Constants.Download.MinimumTimeout || timeoutInSeconds > Constants.Download.MaximumTimeout)
+            if (timeoutInSeconds < Constants.Download.MinimumTimeout
+                || timeoutInSeconds > Constants.Download.MaximumTimeout)
             {
                 return false;
             }

@@ -61,8 +61,8 @@
             httpResponseMessageMock.IsSuccessStatusCode.Returns(false);
 
             Assert.That(() => { systemUnderTest.DownloadFile(filePayload); },
-                Throws.InstanceOf<Exception>().With.Message
-                      .EqualTo("Failed to download the target file. Status Code: NotFound"));
+                Throws.InstanceOf<Exception>()
+                      .With.Message.EqualTo("Failed to download the target file. Status Code: NotFound"));
         }
 
         [Test]

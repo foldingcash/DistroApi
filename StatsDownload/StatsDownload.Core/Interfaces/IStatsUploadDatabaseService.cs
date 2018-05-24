@@ -1,7 +1,8 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
     using System.Collections.Generic;
-    using DataTransfer;
+
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public interface IStatsUploadDatabaseService
     {

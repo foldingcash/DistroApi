@@ -1,7 +1,8 @@
 ﻿namespace StatsDownload.Core.Interfaces.DataTransfer
 {
     using System.Collections.Generic;
-    using Enums;
+
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class StatsUploadResults
     {

@@ -1,10 +1,11 @@
 ﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
-    using System.Linq;  
-    using Interfaces.DataTransfer;
+    using System.IO;
+    using System.Linq;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Networking;
     using StatsDownload.Logging;
 
@@ -18,9 +19,10 @@
 
         private readonly ILoggingService loggingService;
 
-        public DownloadProvider(ILoggingService loggingService, IDateTimeService dateTimeService, IHttpClientFactory httpClientFactory, IFileService fileService)
+        public DownloadProvider(ILoggingService loggingService, IDateTimeService dateTimeService,
+                                IHttpClientFactory httpClientFactory, IFileService fileService)
         {
-            this.loggingService = loggingService;            
+            this.loggingService = loggingService;
             this.dateTimeService = dateTimeService;
             this.httpClientFactory = httpClientFactory;
             this.fileService = fileService;
@@ -30,7 +32,7 @@
         {
             loggingService.LogVerbose($"Attempting to download file: {dateTimeService.DateTimeNow()}");
 
-            using (var httpClient = httpClientFactory.Create())
+            using (IHttpClient httpClient = httpClientFactory.Create())
             {
                 SetUpFileDownload(filePayload, httpClient);
                 DownloadFile(httpClient, filePayload.DownloadUri, filePayload.DownloadFilePath);
@@ -54,7 +56,7 @@
 
             if (response.IsSuccessStatusCode)
             {
-                var fileContent = response.Content.ReadAsStreamAsync().Result;
+                Stream fileContent = response.Content.ReadAsStreamAsync().Result;
                 fileService.CreateFromStream(downloadFilePath, fileContent);
                 return;
             }

@@ -10,7 +10,7 @@
         {
             EnsureFileDirectoryExists(path);
 
-            using (var target = File.Create(path))
+            using (FileStream target = File.Create(path))
             {
                 source.CopyTo(target);
                 target.Flush();

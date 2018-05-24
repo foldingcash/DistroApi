@@ -46,7 +46,7 @@
 
         public async Task<IHttpResponseMessage> GetAsync(Uri requestUri)
         {
-            var result = await innerClient.GetAsync(requestUri);
+            HttpResponseMessage result = await innerClient.GetAsync(requestUri);
             return new HttpResponseMessageWrapper(result);
         }
 

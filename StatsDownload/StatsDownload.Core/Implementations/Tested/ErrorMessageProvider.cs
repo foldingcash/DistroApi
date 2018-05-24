@@ -3,11 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
 
     using StatsDownload.Core.DataTransfer;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class ErrorMessageProvider : IErrorMessageService
     {

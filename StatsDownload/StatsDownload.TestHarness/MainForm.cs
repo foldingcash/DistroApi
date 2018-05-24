@@ -5,7 +5,8 @@
     using System.Windows.Forms;
 
     using Castle.MicroKernel.Registration;
-    using Core.Interfaces;
+
+    using StatsDownload.Core.Interfaces;
 
     public partial class MainForm : Form
     {
