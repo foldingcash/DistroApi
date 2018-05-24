@@ -5,7 +5,6 @@
     using System.Globalization;
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
-    using StatsDownload.Core.DataTransfer;
     using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Interfaces;
 
