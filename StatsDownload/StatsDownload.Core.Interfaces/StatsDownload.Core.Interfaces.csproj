@@ -53,6 +53,7 @@
     <Compile Include="IDateTimeService.cs" />
     <Compile Include="IFileCompressionService.cs" />
     <Compile Include="IFileDownloadService.cs" />
+    <Compile Include="IStatsUploadEmailService.cs" />
     <Compile Include="IStatsUploadService.cs" />
     <Compile Include="Networking\IHttpClient.cs" />
     <Compile Include="Networking\IHttpClientFactory.cs" />

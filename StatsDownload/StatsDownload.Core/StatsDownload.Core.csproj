@@ -77,7 +77,6 @@
     <Compile Include="Interfaces\IStatsDownloadEmailService.cs" />
     <Compile Include="Interfaces\IStatsDownloadLoggingService.cs" />
     <Compile Include="Interfaces\IStatsFileParserService.cs" />
-    <Compile Include="Interfaces\IStatsUploadEmailService.cs" />
     <Compile Include="Interfaces\IStatsUploadLoggingService.cs" />
     <Compile Include="Implementations\Untested\GuidProvider.cs" />
     <Compile Include="Interfaces\IFileReaderService.cs" />
