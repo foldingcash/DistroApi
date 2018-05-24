@@ -30,8 +30,9 @@
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
-                Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
-                Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
+                Component.For<IDatabaseConnectionService>()
+                         .ImplementedBy<SqlDatabaseConnectionProvider>()
+                         .LifestyleSingleton(), Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
                 Component.For<IStatsUploadDatabaseService>().ImplementedBy<StatsDownloadDatabaseProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),

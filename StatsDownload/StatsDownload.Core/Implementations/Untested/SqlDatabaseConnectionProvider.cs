@@ -9,6 +9,8 @@
 
     public class SqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
+        private bool disposed;
+
         private DbConnection sqlConnection;
 
         public SqlDatabaseConnectionProvider(string connectionString)
@@ -16,10 +18,7 @@
             sqlConnection = new SqlConnection(connectionString);
         }
 
-        public void Close()
-        {
-            sqlConnection.Close();
-        }
+        public ConnectionState ConnectionState => sqlConnection.State;
 
         public DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction)
         {
@@ -48,8 +47,12 @@
 
         public void Dispose()
         {
-            sqlConnection.Dispose();
-            sqlConnection = null;
+            if (!disposed)
+            {
+                sqlConnection.Dispose();
+                sqlConnection = null;
+                disposed = true;
+            }
         }
 
         public DbDataReader ExecuteReader(string commandText)

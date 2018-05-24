@@ -4,10 +4,10 @@
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
-    using Core.Interfaces;
 
     using StatsDownload.Core.Implementations.Tested;
     using StatsDownload.Core.Implementations.Untested;
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Networking;
     using StatsDownload.Core.Wrappers.Networking;
     using StatsDownload.Email;
@@ -37,8 +37,9 @@
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
-                Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>(),
-                Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
+                Component.For<IDatabaseConnectionService>()
+                         .ImplementedBy<SqlDatabaseConnectionProvider>()
+                         .LifestyleSingleton(), Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
                 Component.For<IFileDownloadDatabaseService, IStatsUploadDatabaseService>()
                          .ImplementedBy<StatsDownloadDatabaseProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
