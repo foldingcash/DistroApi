@@ -4,6 +4,8 @@
 
     public interface IFileService
     {
+        void CopyFile(string source, string target);
+
         void CreateFromStream(string path, Stream source);
 
         void Delete(string path);
