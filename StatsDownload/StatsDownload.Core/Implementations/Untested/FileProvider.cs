@@ -6,11 +6,17 @@
 
     public class FileProvider : IFileService
     {
+        public void CopyFile(string source, string target)
+        {
+            EnsureFileDirectoryExists(target);
+            File.Copy(source, target, true);
+        }
+
         public void CreateFromStream(string path, Stream source)
         {
             EnsureFileDirectoryExists(path);
 
-            using (var target = File.Create(path))
+            using (FileStream target = File.Create(path))
             {
                 source.CopyTo(target);
                 target.Flush();
