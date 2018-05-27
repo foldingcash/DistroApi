@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.FileDownload.Console
+﻿namespace StatsDownload.FileDownload.Console.CastleWindsor
 {
     using System.Reflection;
 

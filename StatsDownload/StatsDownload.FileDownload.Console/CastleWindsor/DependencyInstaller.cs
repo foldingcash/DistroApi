@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.FileDownload.Console
+﻿namespace StatsDownload.FileDownload.Console.CastleWindsor
 {
     using Castle.Facilities.TypedFactory;
     using Castle.MicroKernel.Registration;
@@ -52,8 +52,8 @@
                 Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),
                 Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>(),
-                Component.For<IHttpClient>().ImplementedBy<HttpClientWrapper>().LifestyleTransient(),
-                Component.For<IHttpClientFactory>().AsFactory());
+                Component.For<IWebClient>().ImplementedBy<WebClientWrapper>().LifestyleTransient(),
+                Component.For<IWebClientFactory>().AsFactory());
         }
     }
 }
