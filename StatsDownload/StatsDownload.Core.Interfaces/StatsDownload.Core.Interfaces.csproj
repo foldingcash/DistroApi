@@ -55,10 +55,8 @@
     <Compile Include="IFileDownloadService.cs" />
     <Compile Include="IStatsUploadEmailService.cs" />
     <Compile Include="IStatsUploadService.cs" />
-    <Compile Include="Networking\IHttpClient.cs" />
-    <Compile Include="Networking\IHttpClientFactory.cs" />
-    <Compile Include="Networking\IHttpContent.cs" />
-    <Compile Include="Networking\IHttpResponseMessage.cs" />
+    <Compile Include="Networking\IWebClient.cs" />
+    <Compile Include="Networking\IWebClientFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

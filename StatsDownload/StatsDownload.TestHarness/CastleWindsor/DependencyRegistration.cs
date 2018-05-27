@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.TestHarness
+﻿namespace StatsDownload.TestHarness.CastleWindsor
 {
     using System.Reflection;
 
