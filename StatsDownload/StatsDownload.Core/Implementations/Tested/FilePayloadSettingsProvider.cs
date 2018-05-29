@@ -2,11 +2,11 @@
 {
     using System;
     using System.IO;
-    using Interfaces.DataTransfer;
 
     using StatsDownload.Core.DataTransfer;
     using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Logging;
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService

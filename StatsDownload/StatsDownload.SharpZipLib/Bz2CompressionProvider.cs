@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.SharpZipLib
 {
     using System.IO;
+
     using ICSharpCode.SharpZipLib.BZip2;
 
     using StatsDownload.Core.Exceptions;

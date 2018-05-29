@@ -1,9 +1,9 @@
 ﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
-    using Interfaces.DataTransfer;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class FilePayloadUploadProvider : IFilePayloadUploadService
     {

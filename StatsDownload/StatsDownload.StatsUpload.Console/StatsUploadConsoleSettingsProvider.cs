@@ -23,7 +23,8 @@
         public string GetDownloadDirectory()
         {
             return ConfigurationManager.AppSettings["DownloadDirectory"]
-                   ?? Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory, Environment.SpecialFolderOption.Create);
+                   ?? Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory,
+                       Environment.SpecialFolderOption.Create);
         }
 
         public string GetDownloadTimeout()

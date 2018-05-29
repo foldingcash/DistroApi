@@ -1,13 +1,14 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Interfaces.DataTransfer;
+
     using NSubstitute;
 
     using NUnit.Framework;
 
     using StatsDownload.Core.Implementations.Tested;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestFilePayloadUploadProvider
@@ -40,11 +41,11 @@
         [SetUp]
         public void SetUp()
         {
-            filePayload = new FilePayload()
-            {
-                DownloadFilePath = DownloadFilePath,
-                DecompressedDownloadFilePath = DecompressedDownloadFilePath
-            };
+            filePayload = new FilePayload
+                          {
+                              DownloadFilePath = DownloadFilePath,
+                              DecompressedDownloadFilePath = DecompressedDownloadFilePath
+                          };
 
             fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
 

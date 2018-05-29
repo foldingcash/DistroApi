@@ -7,7 +7,7 @@
 
     public interface IDatabaseConnectionService : IDisposable
     {
-        void Close();
+        ConnectionState ConnectionState { get; }
 
         DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction);
 

@@ -33,8 +33,7 @@
                                     IFilePayloadSettingsService filePayloadSettingsService,
                                     IResourceCleanupService resourceCleanupService,
                                     IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
-                                    IDateTimeService dateTimeService,
-                                    IFilePayloadUploadService filePayloadUploadService,
+                                    IDateTimeService dateTimeService, IFilePayloadUploadService filePayloadUploadService,
                                     IFileDownloadEmailService fileDownloadEmailService)
         {
             ValidateCtorArgs(fileDownloadDatabaseService, loggingService, downloadService, filePayloadSettingsService,
@@ -112,8 +111,7 @@
 
         private FileDownloadResult HandleDataStoreUnavailable(FilePayload filePayload)
         {
-            FileDownloadResult failedResult =
-                NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable, filePayload);
+            FileDownloadResult failedResult = NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable, filePayload);
             LogResult(failedResult);
             SendEmail(failedResult);
             return failedResult;

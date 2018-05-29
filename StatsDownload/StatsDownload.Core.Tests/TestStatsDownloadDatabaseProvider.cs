@@ -6,8 +6,6 @@
     using System.Data.Common;
     using System.Linq;
 
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
     using NSubstitute;
     using NSubstitute.ClearExtensions;
 
@@ -15,6 +13,8 @@
 
     using StatsDownload.Core.Implementations.Tested;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Logging;
 
     [TestFixture]
@@ -41,23 +41,31 @@
         private IStatsDownloadDatabaseService systemUnderTest;
 
         [Test]
-        public void AddUserData_WhenInvoked_AddsUserData()
+        public void AddUsersData_WhenInvoked_AddsUsersData()
         {
-            systemUnderTest.AddUserData(1, new UserData());
+            systemUnderTest.AddUsersData(1, new List<UserData> { new UserData() });
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogVerbose("AddUserData Invoked");
-                databaseConnectionServiceMock.Open();
+                loggingServiceMock.LogVerbose("AddUsersData Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[AddUserData]",
                     Arg.Any<List<DbParameter>>());
-                databaseConnectionServiceMock.Close();
             });
         }
 
         [Test]
-        public void AddUserData_WhenInvoked_ParameterIsProvided()
+        public void AddUsersData_WhenInvoked_IteratesThroughUsersData()
+        {
+            systemUnderTest.AddUsersData(1, new List<UserData> { new UserData(), new UserData() });
+
+            databaseConnectionServiceMock.Received(2)
+                                         .ExecuteStoredProcedure("[FoldingCoin].[AddUserData]",
+                                             Arg.Any<List<DbParameter>>());
+        }
+
+        [Test]
+        public void AddUsersData_WhenInvoked_ParameterIsProvided()
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
@@ -65,8 +73,15 @@
                 service => service.ExecuteStoredProcedure("[FoldingCoin].[AddUserData]", Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            systemUnderTest.AddUserData(1,
-                new UserData("name", 10, 100, 1000) { BitcoinAddress = "address", FriendlyName = "friendly" });
+            systemUnderTest.AddUsersData(1,
+                new List<UserData>
+                {
+                    new UserData("name", 10, 100, 1000)
+                    {
+                        BitcoinAddress = "address",
+                        FriendlyName = "friendly"
+                    }
+                });
 
             Assert.That(actualParameters.Count, Is.EqualTo(7));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
@@ -100,7 +115,7 @@
         }
 
         [Test]
-        public void AddUserData_WhenInvokedWithNullBitcoinAddress_ParameterIsDBNull()
+        public void AddUsersData_WhenInvokedWithNullBitcoinAddress_ParameterIsDBNull()
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
@@ -108,7 +123,8 @@
                 service => service.ExecuteStoredProcedure("[FoldingCoin].[AddUserData]", Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            systemUnderTest.AddUserData(1, new UserData("name", 10, 100, 1000) { FriendlyName = "friendly" });
+            systemUnderTest.AddUsersData(1,
+                new List<UserData> { new UserData("name", 10, 100, 1000) { FriendlyName = "friendly" } });
 
             Assert.That(actualParameters.Count, Is.EqualTo(7));
             Assert.That(actualParameters[6].ParameterName, Is.EqualTo("@BitcoinAddress"));
@@ -116,7 +132,7 @@
         }
 
         [Test]
-        public void AddUserData_WhenInvokedWithNullFriendlyName_ParameterIsDBNull()
+        public void AddUsersData_WhenInvokedWithNullFriendlyName_ParameterIsDBNull()
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
@@ -124,7 +140,8 @@
                 service => service.ExecuteStoredProcedure("[FoldingCoin].[AddUserData]", Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            systemUnderTest.AddUserData(1, new UserData("name", 10, 100, 1000) { BitcoinAddress = "address" });
+            systemUnderTest.AddUsersData(1,
+                new List<UserData> { new UserData("name", 10, 100, 1000) { BitcoinAddress = "address" } });
 
             Assert.That(actualParameters.Count, Is.EqualTo(7));
             Assert.That(actualParameters[5].ParameterName, Is.EqualTo("@FriendlyName"));
@@ -132,23 +149,23 @@
         }
 
         [Test]
-        public void AddUserRejection_WhenInvoked_AddsUserRejection()
+        public void AddUsersRejection_WhenInvoked_AddsUsersRejection()
         {
-            systemUnderTest.AddUserRejection(0, new FailedUserData());
+            systemUnderTest.AddUserRejections(0, new[] { new FailedUserData(), new FailedUserData() });
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogVerbose("AddUserRejection Invoked");
-                databaseConnectionServiceMock.Open();
+                loggingServiceMock.LogVerbose("AddUserRejections Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]",
                     Arg.Any<List<DbParameter>>());
-                databaseConnectionServiceMock.Close();
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]",
+                    Arg.Any<List<DbParameter>>());
             });
         }
 
         [Test]
-        public void AddUserRejection_WhenInvoked_ParameterIsProvided()
+        public void AddUsersRejection_WhenInvoked_ParameterIsProvided()
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
             var failedUserData = new FailedUserData(10, "", RejectionReason.UnexpectedFormat, new UserData());
@@ -160,7 +177,7 @@
                 service.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]", Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            systemUnderTest.AddUserRejection(1, failedUserData);
+            systemUnderTest.AddUserRejections(1, new[] { failedUserData });
 
             Assert.That(actualParameters.Count, Is.EqualTo(3));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
@@ -233,11 +250,9 @@
             Received.InOrder((() =>
             {
                 loggingServiceMock.LogVerbose("FileDownloadError Invoked");
-                databaseConnectionServiceMock.Open();
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]",
                     Arg.Any<List<DbParameter>>());
-                databaseConnectionServiceMock.Close();
             }));
         }
 
@@ -249,10 +264,8 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("FileDownloadFinished Invoked");
-                databaseConnectionServiceMock.Open();
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]",
                     Arg.Any<List<DbParameter>>());
-                databaseConnectionServiceMock.Close();
             });
         }
 
@@ -295,10 +308,8 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("GetDownloadsReadyForUpload Invoked");
-                databaseConnectionServiceMock.Open();
                 databaseConnectionServiceMock.ExecuteReader(
                     "SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]");
-                databaseConnectionServiceMock.Close();
             });
         }
 
@@ -330,10 +341,8 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("GetFileData Invoked");
-                databaseConnectionServiceMock.Open();
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[GetFileData]",
                     Arg.Any<List<DbParameter>>());
-                databaseConnectionServiceMock.Close();
             });
         }
 
@@ -392,9 +401,7 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("GetLastFileDownloadDateTime Invoked");
-                databaseConnectionServiceMock.Open();
                 databaseConnectionServiceMock.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()");
-                databaseConnectionServiceMock.Close();
             });
         }
 
@@ -419,8 +426,10 @@
         }
 
         [Test]
-        public void IsAvailable_Invoked_ConnectionOpenedThenClosed()
+        public void IsAvailable_WhenConnectionClosed_ConnectionOpened()
         {
+            databaseConnectionServiceMock.ConnectionState.Returns(ConnectionState.Closed);
+
             InvokeIsAvailable();
 
             Received.InOrder((() =>
@@ -428,12 +437,21 @@
                 loggingServiceMock.LogVerbose("IsAvailable Invoked");
                 databaseConnectionServiceMock.Open();
                 loggingServiceMock.LogVerbose("Database connection was successful");
-                databaseConnectionServiceMock.Close();
             }));
         }
 
         [Test]
-        public void IsAvailable_WhenDatabaseConnectionFails_ConnectionOpenedThenClosed()
+        public void IsAvailable_WhenConnectionOpen_ConnectionNotOpened()
+        {
+            databaseConnectionServiceMock.ConnectionState.Returns(ConnectionState.Open);
+
+            InvokeIsAvailable();
+
+            databaseConnectionServiceMock.DidNotReceive().Open();
+        }
+
+        [Test]
+        public void IsAvailable_WhenDatabaseConnectionFails_LogsException()
         {
             var expected = new Exception();
             databaseConnectionServiceMock.When(mock => mock.Open()).Throw(expected);
@@ -444,7 +462,6 @@
             {
                 loggingServiceMock.LogVerbose("IsAvailable Invoked");
                 databaseConnectionServiceMock.Open();
-                databaseConnectionServiceMock.Close();
                 loggingServiceMock.LogException(expected);
             }));
         }
@@ -494,11 +511,9 @@
             Received.InOrder((() =>
             {
                 loggingServiceMock.LogVerbose("NewFileDownloadStarted Invoked");
-                databaseConnectionServiceMock.Open();
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[NewFileDownloadStarted]",
                     Arg.Any<List<DbParameter>>());
-                databaseConnectionServiceMock.Close();
             }));
         }
 
@@ -647,11 +662,9 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("StartStatsUpload Invoked");
-                databaseConnectionServiceMock.Open();
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[StartStatsUpload]",
                     Arg.Any<List<DbParameter>>());
-                databaseConnectionServiceMock.Close();
             });
         }
 
@@ -688,10 +701,8 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("StatsUploadError Invoked");
-                databaseConnectionServiceMock.Open();
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadError]",
                     Arg.Any<List<DbParameter>>());
-                databaseConnectionServiceMock.Close();
             });
         }
 
@@ -722,11 +733,9 @@
             Received.InOrder((() =>
             {
                 loggingServiceMock.LogVerbose("StatsUploadFinished Invoked");
-                databaseConnectionServiceMock.Open();
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadFinished]",
                     Arg.Any<List<DbParameter>>());
-                databaseConnectionServiceMock.Close();
             }));
         }
 
@@ -741,11 +750,9 @@
             Received.InOrder((() =>
             {
                 loggingServiceMock.LogVerbose("UpdateToLatest Invoked");
-                databaseConnectionServiceMock.Open();
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[UpdateToLatest]");
                 loggingServiceMock.LogVerbose($"'{NumberOfRowsEffectedExpected}' rows were effected");
-                databaseConnectionServiceMock.Close();
             }));
         }
 

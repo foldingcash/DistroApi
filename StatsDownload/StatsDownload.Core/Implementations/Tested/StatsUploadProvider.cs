@@ -3,11 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
 
     using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class StatsUploadProvider : IStatsUploadService
     {
@@ -94,9 +94,10 @@
                 statsUploadEmailService.SendEmail(failedUsersData);
             }
 
+            statsUploadDatabaseService.AddUserRejections(downloadId, failedUsersData);
+
             foreach (FailedUserData failedUserData in failedUsersData)
             {
-                statsUploadDatabaseService.AddUserRejection(downloadId, failedUserData);
                 loggingService.LogFailedUserData(downloadId, failedUserData);
             }
         }
@@ -138,10 +139,7 @@
 
         private void UploadUserData(int downloadId, IEnumerable<UserData> usersData)
         {
-            foreach (UserData userData in usersData)
-            {
-                statsUploadDatabaseService.AddUserData(downloadId, userData);
-            }
+            statsUploadDatabaseService.AddUsersData(downloadId, usersData);
         }
     }
 }

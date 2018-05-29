@@ -2,10 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Email;
 
     public class StatsDownloadEmailProvider : IStatsDownloadEmailService
