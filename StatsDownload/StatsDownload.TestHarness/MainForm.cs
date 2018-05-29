@@ -8,6 +8,8 @@
 
     using StatsDownload.Core.Interfaces;
 
+    using StatsDownload.TestHarness.CastleWindsor;
+
     public partial class MainForm : Form
     {
         public MainForm()

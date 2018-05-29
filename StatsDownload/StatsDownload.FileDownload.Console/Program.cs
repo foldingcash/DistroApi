@@ -4,6 +4,8 @@
 
     using StatsDownload.Core.Interfaces;
 
+    using StatsDownload.FileDownload.Console.CastleWindsor;
+
     public class Program
     {
         public static void Main(string[] args)
