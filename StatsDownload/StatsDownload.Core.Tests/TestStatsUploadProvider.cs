@@ -274,8 +274,15 @@
         {
             InvokeUploadStatsFiles();
 
-            statsUploadDatabaseServiceMock.Received(2).AddUserRejection(1, Arg.Any<FailedUserData>());
-            statsUploadDatabaseServiceMock.Received(2).AddUserRejection(2, Arg.Any<FailedUserData>());
+            Received.InOrder(() =>
+            {
+                statsUploadDatabaseServiceMock.AddUserRejections(1,
+                    Arg.Is<IEnumerable<FailedUserData>>(
+                        (data => data.Contains(failedUser1) && data.Contains(failedUser2))));
+                statsUploadDatabaseServiceMock.AddUserRejections(2,
+                    Arg.Is<IEnumerable<FailedUserData>>(
+                        (data => data.Contains(failedUser3) && data.Contains(failedUser4))));
+            });
         }
 
         [Test]

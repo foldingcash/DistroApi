@@ -94,9 +94,10 @@
                 statsUploadEmailService.SendEmail(failedUsersData);
             }
 
+            statsUploadDatabaseService.AddUserRejections(downloadId, failedUsersData);
+
             foreach (FailedUserData failedUserData in failedUsersData)
             {
-                statsUploadDatabaseService.AddUserRejection(downloadId, failedUserData);
                 loggingService.LogFailedUserData(downloadId, failedUserData);
             }
         }

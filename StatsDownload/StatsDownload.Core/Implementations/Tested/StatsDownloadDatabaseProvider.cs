@@ -52,11 +52,11 @@
             this.errorMessageService = errorMessageService;
         }
 
-        public void AddUserRejection(int downloadId, FailedUserData failedUserData)
+        public void AddUserRejections(int downloadId, IEnumerable<FailedUserData> failedUsersData)
         {
             LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(
-                service => { AddUserRejection(service, downloadId, failedUserData); });
+                service => { AddUserRejections(service, downloadId, failedUsersData); });
         }
 
         public void AddUsersData(int downloadId, IEnumerable<UserData> usersData)
@@ -207,6 +207,15 @@
 
             databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.AddUserRejectionProcedureName,
                 new List<DbParameter> { download, lineNumber, rejectionReason });
+        }
+
+        private void AddUserRejections(IDatabaseConnectionService databaseConnection, int downloadId,
+                                       IEnumerable<FailedUserData> failedUsersData)
+        {
+            foreach (FailedUserData failedUserData in failedUsersData)
+            {
+                AddUserRejection(databaseConnection, downloadId, failedUserData);
+            }
         }
 
         private void AddUsersData(IDatabaseConnectionService databaseConnection, int downloadId,

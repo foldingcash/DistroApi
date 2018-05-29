@@ -41,50 +41,6 @@
         private IStatsDownloadDatabaseService systemUnderTest;
 
         [Test]
-        public void AddUserRejection_WhenInvoked_AddsUserRejection()
-        {
-            systemUnderTest.AddUserRejection(0, new FailedUserData());
-
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogVerbose("AddUserRejection Invoked");
-                loggingServiceMock.LogVerbose("Database connection was successful");
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]",
-                    Arg.Any<List<DbParameter>>());
-            });
-        }
-
-        [Test]
-        public void AddUserRejection_WhenInvoked_ParameterIsProvided()
-        {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
-            var failedUserData = new FailedUserData(10, "", RejectionReason.UnexpectedFormat, new UserData());
-
-            errorMessageServiceMock.GetErrorMessage(failedUserData).Returns("RejectionReason");
-
-            databaseConnectionServiceMock.When(
-                service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]", Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
-
-            systemUnderTest.AddUserRejection(1, failedUserData);
-
-            Assert.That(actualParameters.Count, Is.EqualTo(3));
-            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
-            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
-            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[0].Value, Is.EqualTo(1));
-            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@LineNumber"));
-            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.Int32));
-            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[1].Value, Is.EqualTo(10));
-            Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@RejectionReason"));
-            Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
-            Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[2].Value, Is.EqualTo("RejectionReason"));
-        }
-
-        [Test]
         public void AddUsersData_WhenInvoked_AddsUsersData()
         {
             systemUnderTest.AddUsersData(1, new List<UserData> { new UserData() });
@@ -190,6 +146,52 @@
             Assert.That(actualParameters.Count, Is.EqualTo(7));
             Assert.That(actualParameters[5].ParameterName, Is.EqualTo("@FriendlyName"));
             Assert.That(actualParameters[5].Value, Is.EqualTo(DBNull.Value));
+        }
+
+        [Test]
+        public void AddUsersRejection_WhenInvoked_AddsUsersRejection()
+        {
+            systemUnderTest.AddUserRejections(0, new[] { new FailedUserData(), new FailedUserData() });
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogVerbose("AddUserRejections Invoked");
+                loggingServiceMock.LogVerbose("Database connection was successful");
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]",
+                    Arg.Any<List<DbParameter>>());
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]",
+                    Arg.Any<List<DbParameter>>());
+            });
+        }
+
+        [Test]
+        public void AddUsersRejection_WhenInvoked_ParameterIsProvided()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+            var failedUserData = new FailedUserData(10, "", RejectionReason.UnexpectedFormat, new UserData());
+
+            errorMessageServiceMock.GetErrorMessage(failedUserData).Returns("RejectionReason");
+
+            databaseConnectionServiceMock.When(
+                service =>
+                service.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]", Arg.Any<List<DbParameter>>()))
+                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            systemUnderTest.AddUserRejections(1, new[] { failedUserData });
+
+            Assert.That(actualParameters.Count, Is.EqualTo(3));
+            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
+            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
+            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[0].Value, Is.EqualTo(1));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@LineNumber"));
+            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.Int32));
+            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[1].Value, Is.EqualTo(10));
+            Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@RejectionReason"));
+            Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[2].Value, Is.EqualTo("RejectionReason"));
         }
 
         [Test]
