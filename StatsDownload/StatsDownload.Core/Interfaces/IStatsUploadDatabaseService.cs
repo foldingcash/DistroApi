@@ -6,9 +6,9 @@
 
     public interface IStatsUploadDatabaseService
     {
-        void AddUserData(int downloadId, UserData userData);
-
         void AddUserRejection(int downloadId, FailedUserData failedUserData);
+
+        void AddUsersData(int downloadId, IEnumerable<UserData> usersData);
 
         IEnumerable<int> GetDownloadsReadyForUpload();
 

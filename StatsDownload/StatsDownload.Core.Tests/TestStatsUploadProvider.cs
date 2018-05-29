@@ -208,14 +208,17 @@
         }
 
         [Test]
-        public void UploadStatsFiles_WhenInvoked_AddsUserDataForEachDownloadReadyForUpload()
+        public void UploadStatsFiles_WhenInvoked_AddsUsersData()
         {
             InvokeUploadStatsFiles();
 
-            statsUploadDatabaseServiceMock.Received(1).AddUserData(1, user1);
-            statsUploadDatabaseServiceMock.Received(1).AddUserData(1, user2);
-            statsUploadDatabaseServiceMock.Received(1).AddUserData(2, user3);
-            statsUploadDatabaseServiceMock.Received(1).AddUserData(2, user4);
+            Received.InOrder(() =>
+            {
+                statsUploadDatabaseServiceMock.AddUsersData(1,
+                    Arg.Is<IEnumerable<UserData>>((datas => datas.Contains(user1) && datas.Contains(user2))));
+                statsUploadDatabaseServiceMock.AddUsersData(2,
+                    Arg.Is<IEnumerable<UserData>>((datas => datas.Contains(user3) && datas.Contains(user4))));
+            });
         }
 
         [Test]
