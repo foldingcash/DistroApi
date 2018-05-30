@@ -301,6 +301,14 @@
         }
 
         [Test]
+        public void GetDownloadsReadyForUpload_WhenInvoked_DisposesReader()
+        {
+            systemUnderTest.GetDownloadsReadyForUpload();
+
+            dbDataReaderMock.Received().Dispose();
+        }
+
+        [Test]
         public void GetDownloadsReadyForUpload_WhenInvoked_GetsDownloadsReadyForUpload()
         {
             systemUnderTest.GetDownloadsReadyForUpload();
