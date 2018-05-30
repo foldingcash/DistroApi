@@ -57,25 +57,31 @@
 
         public DbDataReader ExecuteReader(string commandText)
         {
-            DbCommand command = sqlConnection.CreateCommand();
-            command.CommandText = commandText;
-            return command.ExecuteReader();
+            using (DbCommand command = sqlConnection.CreateCommand())
+            {
+                command.CommandText = commandText;
+                return command.ExecuteReader();
+            }
         }
 
         public object ExecuteScalar(string commandText)
         {
-            DbCommand command = sqlConnection.CreateCommand();
-            command.CommandText = commandText;
-            return command.ExecuteScalar();
+            using (DbCommand command = sqlConnection.CreateCommand())
+            {
+                command.CommandText = commandText;
+                return command.ExecuteScalar();
+            }
         }
 
         public int ExecuteStoredProcedure(string storedProcedure, List<DbParameter> parameters)
         {
-            DbCommand command = sqlConnection.CreateCommand();
-            command.CommandText = storedProcedure;
-            command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddRange(parameters?.ToArray() ?? new DbParameter[0]);
-            return command.ExecuteNonQuery();
+            using (DbCommand command = sqlConnection.CreateCommand())
+            {
+                command.CommandText = storedProcedure;
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddRange(parameters?.ToArray() ?? new DbParameter[0]);
+                return command.ExecuteNonQuery();
+            }
         }
 
         public int ExecuteStoredProcedure(string storedProcedure)

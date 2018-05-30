@@ -341,16 +341,19 @@
 
         private List<int> GetDownloadsReadyForUpload(IDatabaseConnectionService databaseConnection)
         {
-            DbDataReader reader =
-                databaseConnection.ExecuteReader(Constants.StatsDownloadDatabase.GetDownloadsReadyForUploadSql);
-            var downloadsReadyForUpload = new List<int>();
-
-            while (reader.Read())
+            using (
+                DbDataReader reader =
+                    databaseConnection.ExecuteReader(Constants.StatsDownloadDatabase.GetDownloadsReadyForUploadSql))
             {
-                downloadsReadyForUpload.Add(reader.GetInt32(0));
-            }
+                var downloadsReadyForUpload = new List<int>();
 
-            return downloadsReadyForUpload;
+                while (reader.Read())
+                {
+                    downloadsReadyForUpload.Add(reader.GetInt32(0));
+                }
+
+                return downloadsReadyForUpload;
+            }
         }
 
         private string GetFileData(IDatabaseConnectionService databaseConnection, int downloadId)
