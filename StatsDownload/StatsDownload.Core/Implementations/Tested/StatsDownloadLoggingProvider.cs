@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
 
+    using StatsDownload.Core.Extensions;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Logging;
@@ -62,7 +63,7 @@
                        + $"Decompressed Download File Extension: {result.FilePayload?.DecompressedDownloadFileExtension}{Environment.NewLine}"
                        + $"Decompressed Download File Path: {result.FilePayload?.DecompressedDownloadFilePath}{Environment.NewLine}"
                        + $"Failed Download File Path: {result.FilePayload?.FailedDownloadFilePath}{Environment.NewLine}"
-                       + $"Download Data (First 100): {result.FilePayload?.DecompressedDownloadFileData?.Substring(0, 99)}");
+                       + $"Download Data (First 100): {result.FilePayload?.DecompressedDownloadFileData?.SubstringSafe(0, 100)}");
         }
 
         public void LogResult(StatsUploadResult statsUploadResult)
