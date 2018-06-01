@@ -21,8 +21,6 @@
 
         int ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters);
 
-        int ExecuteStoredProcedure(DbCommand command);
-
         int ExecuteStoredProcedure(string storedProcedure);
 
         void Open();

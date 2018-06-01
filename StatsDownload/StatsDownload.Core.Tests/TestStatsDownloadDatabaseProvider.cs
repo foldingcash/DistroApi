@@ -43,7 +43,8 @@
         [Test]
         public void AddUsersData_WhenInvoked_AddsUsersData()
         {
-            SetUpDatabaseConnectionCreateDbCommandMock();
+            DbCommand command = default(DbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(dbCommand => command = dbCommand);
 
             systemUnderTest.AddUsersData(1, new List<UserData> { new UserData() });
 
@@ -51,7 +52,7 @@
             {
                 loggingServiceMock.LogVerbose("AddUsersData Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
-                databaseConnectionServiceMock.ExecuteStoredProcedure(Arg.Any<DbCommand>());
+                command.ExecuteNonQuery();
             });
         }
 
@@ -69,11 +70,12 @@
         [Test]
         public void AddUsersData_WhenInvoked_IteratesThroughUsersData()
         {
-            SetUpDatabaseConnectionCreateDbCommandMock();
+            DbCommand command = default(DbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(dbCommand => command = dbCommand);
 
             systemUnderTest.AddUsersData(1, new List<UserData> { new UserData(), new UserData() });
 
-            databaseConnectionServiceMock.Received(2).ExecuteStoredProcedure(Arg.Any<DbCommand>());
+            command.Received(2).ExecuteNonQuery();
         }
 
         [Test]
@@ -200,8 +202,8 @@
             {
                 loggingServiceMock.LogVerbose("AddUserRejections Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
-                databaseConnectionServiceMock.ExecuteStoredProcedure(command);
-                databaseConnectionServiceMock.ExecuteStoredProcedure(command);
+                command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
             });
         }
 

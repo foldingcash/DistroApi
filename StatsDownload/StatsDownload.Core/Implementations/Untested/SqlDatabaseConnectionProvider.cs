@@ -86,13 +86,8 @@
                 command.CommandText = storedProcedure;
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddRange(parameters?.ToArray() ?? new DbParameter[0]);
-                return ExecuteStoredProcedure(command);
+                return command.ExecuteNonQuery();
             }
-        }
-
-        public int ExecuteStoredProcedure(DbCommand command)
-        {
-            return command.ExecuteNonQuery();
         }
 
         public int ExecuteStoredProcedure(string storedProcedure)

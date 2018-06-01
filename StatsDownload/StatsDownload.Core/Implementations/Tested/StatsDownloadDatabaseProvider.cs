@@ -341,14 +341,9 @@
                 foreach (T data in dataSet)
                 {
                     setParametersFromDataSet(downloadId, data, parameters);
-                    ExecuteStoredProcedure(databaseConnection, command);
+                    command.ExecuteNonQuery();
                 }
             }
-        }
-
-        private void ExecuteStoredProcedure(IDatabaseConnectionService databaseConnection, DbCommand command)
-        {
-            databaseConnection.ExecuteStoredProcedure(command);
         }
 
         private void ExecuteStoredProcedure(IDatabaseConnectionService databaseConnection, string storedProcedure,
