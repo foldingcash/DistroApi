@@ -398,7 +398,10 @@ BEGIN
 		
 					SELECT @FAHDataId = FAHDataId FROM [FoldingCoin].[FAHData] WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
 
-					SELECT @FAHDataRunId = FAHDataRunId FROM [FoldingCoin].[FAHDataRuns] WHERE DownloadId = @DownloadId AND FAHDataId = @FAHDataId;
+					INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
+					VALUES (@FAHDataId, @DownloadId, @TeamMemberId);
+		
+					SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
 
 					IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN [FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] WHERE TeamMemberId = @TeamMemberId AND Points >= @TotalPoints AND WorkUnits >= @WorkUnits) = 0
 						BEGIN
@@ -463,5 +466,24 @@ BEGIN
 	
 	INSERT INTO [FoldingCoin].[Rejections] (DownloadId, LineNumber, Reason)
 	VALUES (@DownloadId, NULL, @ErrorMessage);
+END
+GO
+
+-----------------------------------------------------------------
+
+IF OBJECT_ID('FoldingCoin.RebuildIndices') IS NOT NULL
+	BEGIN
+		DROP PROCEDURE [FoldingCoin].[RebuildIndices];
+	END
+GO
+
+CREATE PROCEDURE [FoldingCoin].[RebuildIndices]
+AS
+BEGIN
+	IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.Users'), 
+		(SELECT index_id FROM sys.indexes WHERE name = 'IX_Users'), NULL, NULL)) > 50.0
+    BEGIN 
+        ALTER INDEX [IX_Users] ON [FoldingCoin].[Users] REBUILD; 
+    END
 END
 GO
