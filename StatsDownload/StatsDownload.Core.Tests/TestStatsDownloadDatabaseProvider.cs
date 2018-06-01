@@ -44,7 +44,7 @@
         public void AddUsersData_WhenInvoked_AddsUsersData()
         {
             DbCommand command = default(DbCommand);
-            SetUpDatabaseConnectionCreateDbCommandMock(dbCommand => command = dbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
             systemUnderTest.AddUsersData(1, new List<UserData> { new UserData() });
 
@@ -59,19 +59,19 @@
         [Test]
         public void AddUsersData_WhenInvoked_DisposesDbCommand()
         {
-            DbCommand dbCommand = default(DbCommand);
-            SetUpDatabaseConnectionCreateDbCommandMock(command => { dbCommand = command; });
+            DbCommand command = default(DbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
             systemUnderTest.AddUsersData(1, new[] { new UserData(), new UserData() });
 
-            dbCommand.Received(1).Dispose();
+            command.Received(1).Dispose();
         }
 
         [Test]
         public void AddUsersData_WhenInvoked_IteratesThroughUsersData()
         {
             DbCommand command = default(DbCommand);
-            SetUpDatabaseConnectionCreateDbCommandMock(dbCommand => command = dbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
             systemUnderTest.AddUsersData(1, new List<UserData> { new UserData(), new UserData() });
 
@@ -83,7 +83,8 @@
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            SetUpDatabaseConnectionCreateDbCommandMock(null, parameters => { actualParameters = parameters; });
+            SetUpDatabaseConnectionCreateDbCommandMock(null,
+                new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
 
             systemUnderTest.AddUsersData(1,
                 new List<UserData>
@@ -127,13 +128,34 @@
         }
 
         [Test]
-        public void AddUsersData_WhenInvoked_ReusesDbCommand()
+        public void AddUsersData_WhenInvoked_RebuildIndicesPeriodically()
+        {
+            DbCommand command = default(DbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
+                                                       {
+                                                           null,
+                                                           dbCommand => command = dbCommand
+                                                       });
+
+            var users = new UserData[2501];
+            for (var index = 0; index < users.Length; index++)
+            {
+                users[index] = new UserData();
+            }
+
+            systemUnderTest.AddUsersData(1, users);
+
+            command.Received(2).ExecuteNonQuery();
+        }
+
+        [Test]
+        public void AddUsersData_WhenInvoked_ReusesDbCommands()
         {
             SetUpDatabaseConnectionCreateDbCommandMock();
 
             systemUnderTest.AddUsersData(1, new[] { new UserData(), new UserData() });
 
-            databaseConnectionServiceMock.Received(1).CreateDbCommand();
+            databaseConnectionServiceMock.Received(2).CreateDbCommand();
         }
 
         [Test]
@@ -148,11 +170,26 @@
         }
 
         [Test]
+        public void AddUsersData_WhenInvoked_SetsUpRebuildIndicesCommands()
+        {
+            DbCommand command = default(DbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
+                                                       {
+                                                           null,
+                                                           dbCommand => command = dbCommand
+                                                       });
+
+            systemUnderTest.AddUsersData(1, new[] { new UserData() });
+
+            command.Received(1).CommandText = "[FoldingCoin].[RebuildIndices]";
+            command.Received(1).CommandType = CommandType.StoredProcedure;
+        }
+
+        [Test]
         public void AddUsersData_WhenInvoked_UsesAddUserDataStoredProcedure()
         {
             DbCommand command = default(DbCommand);
-
-            SetUpDatabaseConnectionCreateDbCommandMock(dbCommand => { command = dbCommand; });
+            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
             systemUnderTest.AddUsersData(1, new List<UserData> { new UserData(), new UserData() });
 
@@ -164,8 +201,8 @@
         public void AddUsersData_WhenInvokedWithNullBitcoinAddress_ParameterIsDBNull()
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
-
-            SetUpDatabaseConnectionCreateDbCommandMock(null, parameters => { actualParameters = parameters; });
+            SetUpDatabaseConnectionCreateDbCommandMock(null,
+                new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
 
             systemUnderTest.AddUsersData(1,
                 new List<UserData> { new UserData("name", 10, 100, 1000) { FriendlyName = "friendly" } });
@@ -179,8 +216,8 @@
         public void AddUsersData_WhenInvokedWithNullFriendlyName_ParameterIsDBNull()
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
-
-            SetUpDatabaseConnectionCreateDbCommandMock(null, parameters => { actualParameters = parameters; });
+            SetUpDatabaseConnectionCreateDbCommandMock(null,
+                new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
 
             systemUnderTest.AddUsersData(1,
                 new List<UserData> { new UserData("name", 10, 100, 1000) { BitcoinAddress = "address" } });
@@ -194,7 +231,7 @@
         public void AddUsersRejection_WhenInvoked_AddsUsersRejection()
         {
             DbCommand command = default(DbCommand);
-            SetUpDatabaseConnectionCreateDbCommandMock(dbCommand => { command = dbCommand; });
+            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
             systemUnderTest.AddUserRejections(0, new[] { new FailedUserData(), new FailedUserData() });
 
@@ -210,12 +247,12 @@
         [Test]
         public void AddUsersRejection_WhenInvoked_DisposesDbCommand()
         {
-            DbCommand dbCommand = default(DbCommand);
-            SetUpDatabaseConnectionCreateDbCommandMock(command => { dbCommand = command; });
+            DbCommand command = default(DbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
             systemUnderTest.AddUserRejections(0, new[] { new FailedUserData(), new FailedUserData() });
 
-            dbCommand.Received(1).Dispose();
+            command.Received(1).Dispose();
         }
 
         [Test]
@@ -225,7 +262,8 @@
             errorMessageServiceMock.GetErrorMessage(failedUserData).Returns("RejectionReason");
 
             List<DbParameter> actualParameters = default(List<DbParameter>);
-            SetUpDatabaseConnectionCreateDbCommandMock(null, parameters => { actualParameters = parameters; });
+            SetUpDatabaseConnectionCreateDbCommandMock(null,
+                new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
 
             systemUnderTest.AddUserRejections(1, new[] { failedUserData });
 
@@ -269,8 +307,7 @@
         public void AddUsersRejection_WhenInvoked_UsesAddUserRejectionStoredProcedure()
         {
             DbCommand command = default(DbCommand);
-
-            SetUpDatabaseConnectionCreateDbCommandMock(dbCommand => { command = dbCommand; });
+            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
             systemUnderTest.AddUsersData(1, new List<UserData> { new UserData(), new UserData() });
 
@@ -888,25 +925,37 @@
         }
 
         private void SetUpDatabaseConnectionCreateDbCommandMock(
-            Action<DbCommand> additionalCreateDbCommandSetupAction = null,
-            Action<List<DbParameter>> additionalAddRangeSetUpAction = null)
+            Action<DbCommand>[] additionalCreateDbCommandSetupActions = null,
+            Action<List<DbParameter>>[] additionalAddRangeSetUpActions = null)
         {
+            var createCommandCallCount = 0;
+
             databaseConnectionServiceMock.CreateDbCommand().Returns(createDbCommandInfo =>
             {
                 var command = Substitute.For<DbCommand>();
                 command.Parameters.Returns(parametersInfo =>
                 {
+                    var addRangeCallCount = 0;
+
                     var parameters = Substitute.For<DbParameterCollection>();
-                    parameters.When(collection => collection.AddRange(Arg.Any<Array>()))
-                              .Do(
-                                  addRangeInfo =>
-                                  {
-                                      additionalAddRangeSetUpAction?.Invoke(
-                                          addRangeInfo.Arg<Array>().Cast<DbParameter>().ToList());
-                                  });
+                    parameters.When(collection => collection.AddRange(Arg.Any<Array>())).Do(addRangeInfo =>
+                    {
+                        if (addRangeCallCount + 1 <= additionalAddRangeSetUpActions?.Length)
+                        {
+                            additionalAddRangeSetUpActions[addRangeCallCount]?.Invoke(
+                                addRangeInfo.Arg<Array>().Cast<DbParameter>().ToList());
+                            addRangeCallCount++;
+                        }
+                    });
                     return parameters;
                 });
-                additionalCreateDbCommandSetupAction?.Invoke(command);
+
+                if (createCommandCallCount + 1 <= additionalCreateDbCommandSetupActions?.Length)
+                {
+                    additionalCreateDbCommandSetupActions[createCommandCallCount]?.Invoke(command);
+                    createCommandCallCount++;
+                }
+
                 return command;
             });
         }

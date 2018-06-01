@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
+    using System.Linq;
     using System.Runtime.CompilerServices;
 
     using StatsDownload.Core.Interfaces;
@@ -50,11 +51,6 @@
             this.databaseConnectionServiceFactory = databaseConnectionServiceFactory;
             this.loggingService = loggingService;
             this.errorMessageService = errorMessageService;
-        }
-
-        private interface IParameters
-        {
-            DbParameter[] AllParameters { get; }
         }
 
         public void AddUserRejections(int downloadId, IEnumerable<FailedUserData> failedUsersData)
@@ -156,61 +152,54 @@
             CreateDatabaseConnectionAndExecuteAction(UpdateToLatest);
         }
 
-        private void AddUserData(IDatabaseConnectionService databaseConnection, int downloadId, UserData userData)
-        {
-            DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
-
-            DbParameter fahUserName = databaseConnection.CreateParameter("@FAHUserName", DbType.String,
-                ParameterDirection.Input);
-            fahUserName.Value = userData.Name;
-
-            DbParameter totalPoints = databaseConnection.CreateParameter("@TotalPoints", DbType.Int64,
-                ParameterDirection.Input);
-            totalPoints.Value = userData.TotalPoints;
-
-            DbParameter workUnits = databaseConnection.CreateParameter("@WorkUnits", DbType.Int64,
-                ParameterDirection.Input);
-            workUnits.Value = userData.TotalWorkUnits;
-
-            DbParameter teamNumber = databaseConnection.CreateParameter("@TeamNumber", DbType.Int64,
-                ParameterDirection.Input);
-            teamNumber.Value = userData.TeamNumber;
-
-            DbParameter friendlyName = databaseConnection.CreateParameter("@FriendlyName", DbType.String,
-                ParameterDirection.Input);
-            friendlyName.Value = userData.FriendlyName ?? DBNull.Value as object;
-
-            DbParameter bitcoinAddress = databaseConnection.CreateParameter("@BitcoinAddress", DbType.String,
-                ParameterDirection.Input);
-            bitcoinAddress.Value = userData.BitcoinAddress ?? DBNull.Value as object;
-
-            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.AddUserDataProcedureName,
-                new List<DbParameter>
-                {
-                    download,
-                    fahUserName,
-                    totalPoints,
-                    workUnits,
-                    teamNumber,
-                    friendlyName,
-                    bitcoinAddress
-                });
-        }
-
         private void AddUserRejections(IDatabaseConnectionService databaseConnection, int downloadId,
                                        IEnumerable<FailedUserData> failedUsersData)
         {
-            ExecuteStoredProcedure(databaseConnection, CreateAddUserRejectionParameters,
-                Constants.StatsDownloadDatabase.AddUserRejectionProcedureName, downloadId, failedUsersData,
-                SetAddUserRejectionParameters);
+            AddUserRejectionParameters parameters = CreateAddUserRejectionParameters(databaseConnection);
+
+            using (DbCommand command = databaseConnection.CreateDbCommand())
+            {
+                command.CommandText = Constants.StatsDownloadDatabase.AddUserRejectionProcedureName;
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddRange(parameters.AllParameters);
+
+                foreach (FailedUserData failedUserData in failedUsersData)
+                {
+                    SetAddUserRejectionParameters(downloadId, failedUserData, parameters);
+                    command.ExecuteNonQuery();
+                }
+            }
         }
 
         private void AddUsersData(IDatabaseConnectionService databaseConnection, int downloadId,
                                   IEnumerable<UserData> usersData)
         {
-            ExecuteStoredProcedure(databaseConnection, CreateAddUserDataParameters,
-                Constants.StatsDownloadDatabase.AddUserDataProcedureName, downloadId, usersData,
-                SetAddUserDataParameterValues);
+            AddUserDataParameters parameters = CreateAddUserDataParameters(databaseConnection);
+
+            using (DbCommand addUserDataCommand = databaseConnection.CreateDbCommand())
+            {
+                using (DbCommand rebuildIndicesCommand = databaseConnection.CreateDbCommand())
+                {
+                    addUserDataCommand.CommandText = Constants.StatsDownloadDatabase.AddUserDataProcedureName;
+                    addUserDataCommand.CommandType = CommandType.StoredProcedure;
+                    addUserDataCommand.Parameters.AddRange(parameters.AllParameters);
+
+                    rebuildIndicesCommand.CommandText = Constants.StatsDownloadDatabase.RebuildIndicesProcedureName;
+                    rebuildIndicesCommand.CommandType = CommandType.StoredProcedure;
+
+                    for (var index = 0; index < usersData.Count(); index++)
+                    {
+                        UserData userData = usersData.ElementAt(index);
+                        SetAddUserDataParameterValues(downloadId, userData, parameters);
+                        addUserDataCommand.ExecuteNonQuery();
+
+                        if (index % 2500 == 0)
+                        {
+                            rebuildIndicesCommand.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
         }
 
         private AddUserDataParameters CreateAddUserDataParameters(IDatabaseConnectionService databaseConnection)
@@ -322,27 +311,6 @@
             if (string.IsNullOrWhiteSpace(connectionString))
             {
                 throw new ArgumentException("Argument is empty", nameof(connectionString));
-            }
-        }
-
-        private void ExecuteStoredProcedure<T, P>(IDatabaseConnectionService databaseConnection,
-                                                  Func<IDatabaseConnectionService, P> createParametersFunction,
-                                                  string storedProcedureName, int downloadId, IEnumerable<T> dataSet,
-                                                  Action<int, T, P> setParametersFromDataSet) where P : IParameters
-        {
-            P parameters = createParametersFunction(databaseConnection);
-
-            using (DbCommand command = databaseConnection.CreateDbCommand())
-            {
-                command.CommandText = storedProcedureName;
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddRange(parameters.AllParameters);
-
-                foreach (T data in dataSet)
-                {
-                    setParametersFromDataSet(downloadId, data, parameters);
-                    command.ExecuteNonQuery();
-                }
             }
         }
 
@@ -514,7 +482,7 @@
             LogVerbose($"'{numberOfRowsEffected}' rows were effected");
         }
 
-        private class AddUserDataParameters : IParameters
+        private class AddUserDataParameters
         {
             public DbParameter[] AllParameters
                 => new[] { DownloadId, FahUserName, TotalPoints, WorkUnits, TeamNumber, FriendlyName, BitcoinAddress };
@@ -534,7 +502,7 @@
             public DbParameter WorkUnits { get; set; }
         }
 
-        private class AddUserRejectionParameters : IParameters
+        private class AddUserRejectionParameters
         {
             public DbParameter[] AllParameters => new[] { DownloadId, LineNumber, RejectionReason };
 
