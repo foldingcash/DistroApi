@@ -55,6 +55,8 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Implementations\Tested\AdditionalUserDataParserProvider.cs" />
     <Compile Include="Implementations\Tested\BitcoinAddressValidatorProvider.cs" />
+    <Compile Include="Implementations\Tested\GoogleUsersFilter.cs" />
+    <Compile Include="Implementations\Tested\NoPaymentAddressUsersFilter.cs" />
     <Compile Include="Implementations\Tested\StatsDownloadEmailProvider.cs" />
     <Compile Include="Implementations\Tested\ErrorMessageProvider.cs" />
     <Compile Include="Implementations\Tested\FileDownloadMinimumWaitTimeProvider.cs" />
@@ -65,6 +67,8 @@
     <Compile Include="Implementations\Tested\ResourceCleanupProvider.cs" />
     <Compile Include="Implementations\Tested\SecureDownloadProvider.cs" />
     <Compile Include="Implementations\Tested\SecureFilePayloadProvider.cs" />
+    <Compile Include="Implementations\Tested\WhitespaceNameUsersFilter.cs" />
+    <Compile Include="Implementations\Tested\ZeroPointUsersFilter.cs" />
     <Compile Include="Implementations\Untested\DateTimeProvider.cs" />
     <Compile Include="Implementations\Untested\DirectoryProvider.cs" />
     <Compile Include="Implementations\Untested\FileProvider.cs" />

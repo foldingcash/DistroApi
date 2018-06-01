@@ -64,6 +64,8 @@
     <Compile Include="TestAdditionalUserDataParserProvider.cs" />
     <Compile Include="TestBitcoinAddressValidatorProvider.cs" />
     <Compile Include="TestDownloadProvider.cs" />
+    <Compile Include="TestGoogleUsersFilter.cs" />
+    <Compile Include="TestNoPaymentAddressUsersFilter.cs" />
     <Compile Include="TestStatsDownloadDatabaseProvider.cs" />
     <Compile Include="TestStatsDownloadEmailProvider.cs" />
     <Compile Include="TestErrorMessageProvider.cs" />
@@ -79,6 +81,8 @@
     <Compile Include="TestResourceCleanupProvider.cs" />
     <Compile Include="TestSecureDownloadProvider.cs" />
     <Compile Include="TestSecureFilePayloadProvider.cs" />
+    <Compile Include="TestWhitespaceNameUsersFilter.cs" />
+    <Compile Include="TestZeroPointUsersFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
