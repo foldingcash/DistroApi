@@ -43,25 +43,37 @@
         [Test]
         public void AddUsersData_WhenInvoked_AddsUsersData()
         {
+            SetUpDatabaseConnectionCreateDbCommandMock();
+
             systemUnderTest.AddUsersData(1, new List<UserData> { new UserData() });
 
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("AddUsersData Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[AddUserData]",
-                    Arg.Any<List<DbParameter>>());
+                databaseConnectionServiceMock.ExecuteStoredProcedure(Arg.Any<DbCommand>());
             });
+        }
+
+        [Test]
+        public void AddUsersData_WhenInvoked_DisposesDbCommand()
+        {
+            DbCommand dbCommand = default(DbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(command => { dbCommand = command; });
+
+            systemUnderTest.AddUsersData(1, new[] { new UserData(), new UserData() });
+
+            dbCommand.Received(1).Dispose();
         }
 
         [Test]
         public void AddUsersData_WhenInvoked_IteratesThroughUsersData()
         {
+            SetUpDatabaseConnectionCreateDbCommandMock();
+
             systemUnderTest.AddUsersData(1, new List<UserData> { new UserData(), new UserData() });
 
-            databaseConnectionServiceMock.Received(2)
-                                         .ExecuteStoredProcedure("[FoldingCoin].[AddUserData]",
-                                             Arg.Any<List<DbParameter>>());
+            databaseConnectionServiceMock.Received(2).ExecuteStoredProcedure(Arg.Any<DbCommand>());
         }
 
         [Test]
@@ -69,9 +81,7 @@
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            databaseConnectionServiceMock.When(
-                service => service.ExecuteStoredProcedure("[FoldingCoin].[AddUserData]", Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            SetUpDatabaseConnectionCreateDbCommandMock(null, parameters => { actualParameters = parameters; });
 
             systemUnderTest.AddUsersData(1,
                 new List<UserData>
@@ -115,13 +125,45 @@
         }
 
         [Test]
+        public void AddUsersData_WhenInvoked_ReusesDbCommand()
+        {
+            SetUpDatabaseConnectionCreateDbCommandMock();
+
+            systemUnderTest.AddUsersData(1, new[] { new UserData(), new UserData() });
+
+            databaseConnectionServiceMock.Received(1).CreateDbCommand();
+        }
+
+        [Test]
+        public void AddUsersData_WhenInvoked_ReusesParameters()
+        {
+            SetUpDatabaseConnectionCreateDbCommandMock();
+
+            systemUnderTest.AddUsersData(1, new[] { new UserData(), new UserData() });
+
+            databaseConnectionServiceMock.ReceivedWithAnyArgs(7)
+                                         .CreateParameter(null, DbType.AnsiString, ParameterDirection.Input);
+        }
+
+        [Test]
+        public void AddUsersData_WhenInvoked_UsesAddUserDataStoredProcedure()
+        {
+            DbCommand command = default(DbCommand);
+
+            SetUpDatabaseConnectionCreateDbCommandMock(dbCommand => { command = dbCommand; });
+
+            systemUnderTest.AddUsersData(1, new List<UserData> { new UserData(), new UserData() });
+
+            command.Received(1).CommandText = "[FoldingCoin].[AddUserData]";
+            command.Received(1).CommandType = CommandType.StoredProcedure;
+        }
+
+        [Test]
         public void AddUsersData_WhenInvokedWithNullBitcoinAddress_ParameterIsDBNull()
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            databaseConnectionServiceMock.When(
-                service => service.ExecuteStoredProcedure("[FoldingCoin].[AddUserData]", Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            SetUpDatabaseConnectionCreateDbCommandMock(null, parameters => { actualParameters = parameters; });
 
             systemUnderTest.AddUsersData(1,
                 new List<UserData> { new UserData("name", 10, 100, 1000) { FriendlyName = "friendly" } });
@@ -136,9 +178,7 @@
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            databaseConnectionServiceMock.When(
-                service => service.ExecuteStoredProcedure("[FoldingCoin].[AddUserData]", Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            SetUpDatabaseConnectionCreateDbCommandMock(null, parameters => { actualParameters = parameters; });
 
             systemUnderTest.AddUsersData(1,
                 new List<UserData> { new UserData("name", 10, 100, 1000) { BitcoinAddress = "address" } });
@@ -151,31 +191,39 @@
         [Test]
         public void AddUsersRejection_WhenInvoked_AddsUsersRejection()
         {
+            DbCommand command = default(DbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(dbCommand => { command = dbCommand; });
+
             systemUnderTest.AddUserRejections(0, new[] { new FailedUserData(), new FailedUserData() });
 
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("AddUserRejections Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]",
-                    Arg.Any<List<DbParameter>>());
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]",
-                    Arg.Any<List<DbParameter>>());
+                databaseConnectionServiceMock.ExecuteStoredProcedure(command);
+                databaseConnectionServiceMock.ExecuteStoredProcedure(command);
             });
+        }
+
+        [Test]
+        public void AddUsersRejection_WhenInvoked_DisposesDbCommand()
+        {
+            DbCommand dbCommand = default(DbCommand);
+            SetUpDatabaseConnectionCreateDbCommandMock(command => { dbCommand = command; });
+
+            systemUnderTest.AddUserRejections(0, new[] { new FailedUserData(), new FailedUserData() });
+
+            dbCommand.Received(1).Dispose();
         }
 
         [Test]
         public void AddUsersRejection_WhenInvoked_ParameterIsProvided()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
             var failedUserData = new FailedUserData(10, "", RejectionReason.UnexpectedFormat, new UserData());
-
             errorMessageServiceMock.GetErrorMessage(failedUserData).Returns("RejectionReason");
 
-            databaseConnectionServiceMock.When(
-                service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[AddUserRejection]", Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+            SetUpDatabaseConnectionCreateDbCommandMock(null, parameters => { actualParameters = parameters; });
 
             systemUnderTest.AddUserRejections(1, new[] { failedUserData });
 
@@ -192,6 +240,40 @@
             Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters[2].Value, Is.EqualTo("RejectionReason"));
+        }
+
+        [Test]
+        public void AddUsersRejection_WhenInvoked_ReusesDbCommand()
+        {
+            SetUpDatabaseConnectionCreateDbCommandMock();
+
+            systemUnderTest.AddUserRejections(0, new[] { new FailedUserData(), new FailedUserData() });
+
+            databaseConnectionServiceMock.Received(1).CreateDbCommand();
+        }
+
+        [Test]
+        public void AddUsersRejection_WhenInvoked_ReusesParameters()
+        {
+            SetUpDatabaseConnectionCreateDbCommandMock();
+
+            systemUnderTest.AddUserRejections(0, new[] { new FailedUserData(), new FailedUserData() });
+
+            databaseConnectionServiceMock.ReceivedWithAnyArgs(3)
+                                         .CreateParameter(null, DbType.AnsiString, ParameterDirection.Input);
+        }
+
+        [Test]
+        public void AddUsersRejection_WhenInvoked_UsesAddUserRejectionStoredProcedure()
+        {
+            DbCommand command = default(DbCommand);
+
+            SetUpDatabaseConnectionCreateDbCommandMock(dbCommand => { command = dbCommand; });
+
+            systemUnderTest.AddUsersData(1, new List<UserData> { new UserData(), new UserData() });
+
+            command.Received(1).CommandText = "[FoldingCoin].[AddUserData]";
+            command.Received(1).CommandType = CommandType.StoredProcedure;
         }
 
         [Test]
@@ -801,6 +883,30 @@
         {
             return new StatsDownloadDatabaseProvider(databaseConnectionSettingsService, databaseConnectionServiceFactory,
                 loggingService, errorMessageService);
+        }
+
+        private void SetUpDatabaseConnectionCreateDbCommandMock(
+            Action<DbCommand> additionalCreateDbCommandSetupAction = null,
+            Action<List<DbParameter>> additionalAddRangeSetUpAction = null)
+        {
+            databaseConnectionServiceMock.CreateDbCommand().Returns(createDbCommandInfo =>
+            {
+                var command = Substitute.For<DbCommand>();
+                command.Parameters.Returns(parametersInfo =>
+                {
+                    var parameters = Substitute.For<DbParameterCollection>();
+                    parameters.When(collection => collection.AddRange(Arg.Any<Array>()))
+                              .Do(
+                                  addRangeInfo =>
+                                  {
+                                      additionalAddRangeSetUpAction?.Invoke(
+                                          addRangeInfo.Arg<Array>().Cast<DbParameter>().ToList());
+                                  });
+                    return parameters;
+                });
+                additionalCreateDbCommandSetupAction?.Invoke(command);
+                return command;
+            });
         }
     }
 }
