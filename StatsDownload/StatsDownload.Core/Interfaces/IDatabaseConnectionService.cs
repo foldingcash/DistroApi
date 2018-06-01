@@ -9,6 +9,8 @@
     {
         ConnectionState ConnectionState { get; }
 
+        DbCommand CreateDbCommand();
+
         DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction);
 
         DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction, int size);
@@ -17,7 +19,9 @@
 
         object ExecuteScalar(string commandText);
 
-        int ExecuteStoredProcedure(string storedProcedure, List<DbParameter> parameters);
+        int ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters);
+
+        int ExecuteStoredProcedure(DbCommand command);
 
         int ExecuteStoredProcedure(string storedProcedure);
 
