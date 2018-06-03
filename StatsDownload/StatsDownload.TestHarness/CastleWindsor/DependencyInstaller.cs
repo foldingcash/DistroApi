@@ -20,11 +20,12 @@
         {
             container.Register(Component.For<IApplicationLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
                 Component
-                    .For
-                    <IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService,
+                    .For<IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService,
                         IEmailSettingsService>().ImplementedBy<TestHarnessSettingsProvider>(),
-                Component.For<IFileDownloadMinimumWaitTimeService>().ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
-                Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>());
+                Component.For<IFileDownloadMinimumWaitTimeService>()
+                         .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
+                Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessTopOneHundredUsersFilter>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
@@ -37,8 +38,7 @@
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
-                Component.For<IDatabaseConnectionService>()
-                         .ImplementedBy<SqlDatabaseConnectionProvider>()
+                Component.For<IDatabaseConnectionService>().ImplementedBy<SqlDatabaseConnectionProvider>()
                          .LifestyleSingleton(), Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
                 Component.For<IFileDownloadDatabaseService, IStatsUploadDatabaseService>()
                          .ImplementedBy<StatsDownloadDatabaseProvider>(),
@@ -47,6 +47,10 @@
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
                 Component.For<IStatsUploadService>().ImplementedBy<StatsUploadProvider>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<GoogleUsersFilter>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<NoPaymentAddressUsersFilter>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<WhitespaceNameUsersFilter>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<ZeroPointUsersFilter>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
                 Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
                 Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
