@@ -27,7 +27,6 @@
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
-                Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
                 Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>(),
                 Component.For<IResourceCleanupService>().ImplementedBy<ResourceCleanupProvider>(),
