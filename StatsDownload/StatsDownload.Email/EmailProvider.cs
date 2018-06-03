@@ -6,7 +6,8 @@
     using System.Net.Mail;
     using System.Text;
     using System.Threading;
-    using Core.Interfaces.Logging;
+
+    using StatsDownload.Logging;
 
     public class EmailProvider : IEmailService
     {

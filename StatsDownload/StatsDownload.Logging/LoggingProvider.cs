@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.Logging
 {
     using System;
-    using Core.Interfaces.Logging;
+
     using StatsDownload.Core.Interfaces;
 
     public class LoggingProvider : ILoggingService
