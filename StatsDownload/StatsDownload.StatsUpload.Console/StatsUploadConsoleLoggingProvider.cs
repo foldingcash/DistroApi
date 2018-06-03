@@ -1,8 +1,7 @@
 ﻿namespace StatsDownload.StatsUpload.Console
 {
     using System;
-
-    using StatsDownload.Logging;
+    using Core.Interfaces.Logging;
 
     public class StatsUploadConsoleLoggingProvider : IApplicationLoggingService
     {

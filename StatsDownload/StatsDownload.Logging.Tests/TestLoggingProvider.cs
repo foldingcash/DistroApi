@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.Logging.Tests
 {
     using System;
-
+    using Core.Interfaces.Logging;
     using NSubstitute;
 
     using NUnit.Framework;
