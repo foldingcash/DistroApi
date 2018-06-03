@@ -90,9 +90,6 @@
     <Compile Include="Interfaces\IDownloadService.cs" />
     <Compile Include="Interfaces\IDownloadSettingsService.cs" />
     <Compile Include="Implementations\Untested\SqlDatabaseConnectionProvider.cs" />
-    <Compile Include="Interfaces\IDatabaseConnectionService.cs" />
-    <Compile Include="Interfaces\IDatabaseConnectionServiceFactory.cs" />
-    <Compile Include="Interfaces\IDatabaseConnectionSettingsService.cs" />
     <Compile Include="Implementations\Tested\StatsDownloadDatabaseProvider.cs" />
     <Compile Include="Interfaces\IFileDownloadDatabaseService.cs" />
     <Compile Include="Interfaces\IResourceCleanupService.cs" />
