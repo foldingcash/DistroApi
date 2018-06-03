@@ -55,6 +55,11 @@
     <Compile Include="IFileDownloadService.cs" />
     <Compile Include="IStatsUploadEmailService.cs" />
     <Compile Include="IStatsUploadService.cs" />
+    <Compile Include="Logging\IApplicationLoggingService.cs" />
+    <Compile Include="Logging\IFileDownloadLoggingService.cs" />
+    <Compile Include="Logging\ILoggingService.cs" />
+    <Compile Include="Logging\IStatsDownloadLoggingService.cs" />
+    <Compile Include="Logging\IStatsUploadLoggingService.cs" />
     <Compile Include="Networking\IWebClient.cs" />
     <Compile Include="Networking\IWebClientFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

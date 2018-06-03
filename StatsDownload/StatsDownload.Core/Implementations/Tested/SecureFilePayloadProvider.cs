@@ -1,10 +1,9 @@
 ﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
-
+    using Interfaces.Logging;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Logging;
 
     public class SecureFilePayloadProvider : ISecureFilePayloadService
     {
