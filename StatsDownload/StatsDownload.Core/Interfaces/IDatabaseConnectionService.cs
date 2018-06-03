@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Interfaces
 {
     using System;
     using System.Collections.Generic;
@@ -7,7 +7,7 @@
 
     public interface IDatabaseConnectionService : IDisposable
     {
-        void Close();
+        ConnectionState ConnectionState { get; }
 
         DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction);
 

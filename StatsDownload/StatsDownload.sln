@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Core", "StatsDownload.Core\StatsDownload.Core.csproj", "{E7A915E2-603D-419F-8987-170CE7814ED4}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.FileDownload.Console", "StatsDownload.FileDownload.Console\StatsDownload.FileDownload.Console.csproj", "{E57708AF-260B-4573-A982-44E63534D4A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.StatsUpload.Console", "StatsDownload.StatsUpload.Console\StatsDownload.StatsUpload.Console.csproj", "{21690E43-54BF-459B-9125-9D6E52458482}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Core.Interfaces", "StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj", "{8730A4D8-8070-4105-8198-F3A42743B961}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,8 +77,15 @@ Global
 		{21690E43-54BF-459B-9125-9D6E52458482}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21690E43-54BF-459B-9125-9D6E52458482}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21690E43-54BF-459B-9125-9D6E52458482}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8730A4D8-8070-4105-8198-F3A42743B961}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8730A4D8-8070-4105-8198-F3A42743B961}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8730A4D8-8070-4105-8198-F3A42743B961}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8730A4D8-8070-4105-8198-F3A42743B961}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {902FB14E-0D74-426E-BDE2-8A4F1ABAF694}
 	EndGlobalSection
 EndGlobal

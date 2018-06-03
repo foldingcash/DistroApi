@@ -1,6 +1,8 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Interfaces
 {
     using System.Collections.Generic;
+
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public interface IStatsUploadEmailService
     {
@@ -8,6 +10,6 @@
 
         void SendEmail(StatsUploadResults statsUploadResults);
 
-        void SendEmail(List<FailedUserData> failedUsersData);
+        void SendEmail(IEnumerable<FailedUserData> failedUsersData);
     }
 }

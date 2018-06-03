@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Collections.Generic;
@@ -6,19 +6,13 @@
     using System.Data.Common;
     using System.Runtime.CompilerServices;
 
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
     {
         private const string DatabaseConnectionSuccessfulLogMessage = "Database connection was successful";
-
-        private const string DatabaseSchema = "[FoldingCoin]";
-
-        private const string SchemaSeparator = ".";
-
-        private readonly string AddUserDataProcedureName = $"{DatabaseSchema}{SchemaSeparator}[AddUserData]";
-
-        private readonly string AddUserRejectionProcedureName = $"{DatabaseSchema}{SchemaSeparator}[AddUserRejection]";
 
         private readonly IDatabaseConnectionServiceFactory databaseConnectionServiceFactory;
 
@@ -26,32 +20,7 @@
 
         private readonly IErrorMessageService errorMessageService;
 
-        private readonly string FileDownloadErrorProcedureName = $"{DatabaseSchema}{SchemaSeparator}[FileDownloadError]";
-
-        private readonly string FileDownloadFinishedProcedureName =
-            $"{DatabaseSchema}{SchemaSeparator}[FileDownloadFinished]";
-
-        private readonly string GetDownloadsReadyForUploadSql =
-            $"SELECT DownloadId FROM {DatabaseSchema}{SchemaSeparator}[DownloadsReadyForUpload]";
-
-        private readonly string GetFileDataProcedureName = $"{DatabaseSchema}{SchemaSeparator}[GetFileData]";
-
-        private readonly string GetLastFileDownloadDateTimeSql =
-            $"SELECT {DatabaseSchema}{SchemaSeparator}[GetLastFileDownloadDateTime]()";
-
         private readonly ILoggingService loggingService;
-
-        private readonly string NewFileDownloadStartedProcedureName =
-            $"{DatabaseSchema}{SchemaSeparator}[NewFileDownloadStarted]";
-
-        private readonly string StartStatsUploadProcedureName = $"{DatabaseSchema}{SchemaSeparator}[StartStatsUpload]";
-
-        private readonly string StatsUploadErrorProcedureName = $"{DatabaseSchema}{SchemaSeparator}[StatsUploadError]";
-
-        private readonly string StatsUploadFinishedProcedureName =
-            $"{DatabaseSchema}{SchemaSeparator}[StatsUploadFinished]";
-
-        private readonly string UpdateToLatestStoredProcedureName = $"{DatabaseSchema}{SchemaSeparator}[UpdateToLatest]";
 
         public StatsDownloadDatabaseProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
                                              IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
@@ -83,17 +52,17 @@
             this.errorMessageService = errorMessageService;
         }
 
-        public void AddUserData(int downloadId, UserData userData)
-        {
-            LogMethodInvoked();
-            CreateDatabaseConnectionAndExecuteAction(service => { AddUserData(service, downloadId, userData); });
-        }
-
-        public void AddUserRejection(int downloadId, FailedUserData failedUserData)
+        public void AddUserRejections(int downloadId, IEnumerable<FailedUserData> failedUsersData)
         {
             LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(
-                service => { AddUserRejection(service, downloadId, failedUserData); });
+                service => { AddUserRejections(service, downloadId, failedUsersData); });
+        }
+
+        public void AddUsersData(int downloadId, IEnumerable<UserData> usersData)
+        {
+            LogMethodInvoked();
+            CreateDatabaseConnectionAndExecuteAction(service => { AddUsersData(service, downloadId, usersData); });
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
@@ -108,7 +77,7 @@
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
         }
 
-        public List<int> GetDownloadsReadyForUpload()
+        public IEnumerable<int> GetDownloadsReadyForUpload()
         {
             LogMethodInvoked();
             List<int> downloadsReadyForUpload = default(List<int>);
@@ -210,7 +179,7 @@
                 ParameterDirection.Input);
             bitcoinAddress.Value = userData.BitcoinAddress ?? DBNull.Value as object;
 
-            databaseConnection.ExecuteStoredProcedure(AddUserDataProcedureName,
+            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.AddUserDataProcedureName,
                 new List<DbParameter>
                 {
                     download,
@@ -236,13 +205,26 @@
                 ParameterDirection.Input);
             rejectionReason.Value = errorMessageService.GetErrorMessage(failedUserData);
 
-            databaseConnection.ExecuteStoredProcedure(AddUserRejectionProcedureName,
+            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.AddUserRejectionProcedureName,
                 new List<DbParameter> { download, lineNumber, rejectionReason });
         }
 
-        private void CloseDatabaseConnection(IDatabaseConnectionService databaseConnection)
+        private void AddUserRejections(IDatabaseConnectionService databaseConnection, int downloadId,
+                                       IEnumerable<FailedUserData> failedUsersData)
         {
-            databaseConnection?.Close();
+            foreach (FailedUserData failedUserData in failedUsersData)
+            {
+                AddUserRejection(databaseConnection, downloadId, failedUserData);
+            }
+        }
+
+        private void AddUsersData(IDatabaseConnectionService databaseConnection, int downloadId,
+                                  IEnumerable<UserData> usersData)
+        {
+            foreach (UserData userData in usersData)
+            {
+                AddUserData(databaseConnection, downloadId, userData);
+            }
         }
 
         private IDatabaseConnectionService CreateDatabaseConnection(string connectionString)
@@ -252,20 +234,12 @@
 
         private void CreateDatabaseConnectionAndExecuteAction(Action<IDatabaseConnectionService> action)
         {
-            IDatabaseConnectionService databaseConnection = default(IDatabaseConnectionService);
-            try
-            {
-                string connectionString = GetConnectionString();
-                EnsureValidConnectionString(connectionString);
-                databaseConnection = CreateDatabaseConnection(connectionString);
-                OpenDatabaseConnection(databaseConnection);
-                LogVerbose(DatabaseConnectionSuccessfulLogMessage);
-                action?.Invoke(databaseConnection);
-            }
-            finally
-            {
-                CloseDatabaseConnection(databaseConnection);
-            }
+            string connectionString = GetConnectionString();
+            EnsureValidConnectionString(connectionString);
+            IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(connectionString);
+            EnsureDatabaseConnectionOpened(databaseConnection);
+            LogVerbose(DatabaseConnectionSuccessfulLogMessage);
+            action?.Invoke(databaseConnection);
         }
 
         private DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection, int downloadId)
@@ -299,6 +273,14 @@
             return CreateErrorMessageParameter(databaseConnection, message);
         }
 
+        private void EnsureDatabaseConnectionOpened(IDatabaseConnectionService databaseConnection)
+        {
+            if (databaseConnection.ConnectionState == ConnectionState.Closed)
+            {
+                databaseConnection.Open();
+            }
+        }
+
         private void EnsureValidConnectionString(string connectionString)
         {
             if (connectionString == null)
@@ -327,7 +309,7 @@
 
             DbParameter errorMessage = CreateErrorMessageParameter(databaseConnection, fileDownloadResult);
 
-            databaseConnection.ExecuteStoredProcedure(FileDownloadErrorProcedureName,
+            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.FileDownloadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });
         }
 
@@ -347,7 +329,8 @@
                 ParameterDirection.Input);
             fileData.Value = filePayload.DecompressedDownloadFileData;
 
-            databaseConnection.ExecuteStoredProcedure(FileDownloadFinishedProcedureName,
+            databaseConnection.ExecuteStoredProcedure(
+                Constants.StatsDownloadDatabase.FileDownloadFinishedProcedureName,
                 new List<DbParameter> { downloadId, fileName, fileExtension, fileData });
         }
 
@@ -358,15 +341,19 @@
 
         private List<int> GetDownloadsReadyForUpload(IDatabaseConnectionService databaseConnection)
         {
-            DbDataReader reader = databaseConnection.ExecuteReader(GetDownloadsReadyForUploadSql);
-            var downloadsReadyForUpload = new List<int>();
-
-            while (reader.Read())
+            using (
+                DbDataReader reader =
+                    databaseConnection.ExecuteReader(Constants.StatsDownloadDatabase.GetDownloadsReadyForUploadSql))
             {
-                downloadsReadyForUpload.Add(reader.GetInt32(0));
-            }
+                var downloadsReadyForUpload = new List<int>();
 
-            return downloadsReadyForUpload;
+                while (reader.Read())
+                {
+                    downloadsReadyForUpload.Add(reader.GetInt32(0));
+                }
+
+                return downloadsReadyForUpload;
+            }
         }
 
         private string GetFileData(IDatabaseConnectionService databaseConnection, int downloadId)
@@ -382,7 +369,7 @@
             DbParameter fileData = databaseConnection.CreateParameter("@FileData", DbType.String,
                 ParameterDirection.Output, -1);
 
-            databaseConnection.ExecuteStoredProcedure(GetFileDataProcedureName,
+            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.GetFileDataProcedureName,
                 new List<DbParameter> { download, fileName, fileExtension, fileData });
 
             return (string)fileData.Value;
@@ -390,7 +377,9 @@
 
         private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
         {
-            return databaseConnection.ExecuteScalar(GetLastFileDownloadDateTimeSql) as DateTime? ?? default(DateTime);
+            return
+                databaseConnection.ExecuteScalar(Constants.StatsDownloadDatabase.GetLastFileDownloadDateTimeSql) as
+                DateTime? ?? default(DateTime);
         }
 
         private void LogException(Exception exception)
@@ -413,22 +402,19 @@
             DbParameter downloadId = databaseConnection.CreateParameter("@DownloadId", DbType.Int32,
                 ParameterDirection.Output);
 
-            databaseConnection.ExecuteStoredProcedure(NewFileDownloadStartedProcedureName,
+            databaseConnection.ExecuteStoredProcedure(
+                Constants.StatsDownloadDatabase.NewFileDownloadStartedProcedureName,
                 new List<DbParameter> { downloadId });
 
             return (int)downloadId.Value;
-        }
-
-        private void OpenDatabaseConnection(IDatabaseConnectionService databaseConnection)
-        {
-            databaseConnection.Open();
         }
 
         private void StartStatsUpload(IDatabaseConnectionService databaseConnection, int downloadId)
         {
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
-            databaseConnection.ExecuteStoredProcedure(StartStatsUploadProcedureName, new List<DbParameter> { download });
+            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.StartStatsUploadProcedureName,
+                new List<DbParameter> { download });
         }
 
         private void StatsUploadError(IDatabaseConnectionService databaseConnection, StatsUploadResult statsUploadResult)
@@ -436,7 +422,7 @@
             DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, statsUploadResult.DownloadId);
             DbParameter errorMessage = CreateErrorMessageParameter(databaseConnection, statsUploadResult);
 
-            ExecuteStoredProcedure(databaseConnection, StatsUploadErrorProcedureName,
+            ExecuteStoredProcedure(databaseConnection, Constants.StatsDownloadDatabase.StatsUploadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });
         }
 
@@ -444,13 +430,15 @@
         {
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
-            databaseConnection.ExecuteStoredProcedure(StatsUploadFinishedProcedureName,
+            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.StatsUploadFinishedProcedureName,
                 new List<DbParameter> { download });
         }
 
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)
         {
-            int numberOfRowsEffected = databaseConnection.ExecuteStoredProcedure(UpdateToLatestStoredProcedureName);
+            int numberOfRowsEffected =
+                databaseConnection.ExecuteStoredProcedure(
+                    Constants.StatsDownloadDatabase.UpdateToLatestStoredProcedureName);
 
             LogVerbose($"'{numberOfRowsEffected}' rows were effected");
         }

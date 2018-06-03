@@ -7,6 +7,12 @@
 
     using NUnit.Framework;
 
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Implementations.Tested;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
+
     [TestFixture]
     public class TestFileDownloadProvider
     {
@@ -156,7 +162,11 @@
         public void DownloadFile_WhenFileDownloadFailedDecompressions_ReturnsFileDownloadFailedDecompression()
         {
             fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable())
-                                           .Do(info => { throw new FileDownloadFailedDecompressionException(); });
+                                           .Do(
+                                               info =>
+                                               {
+                                                   throw new FileDownloadFailedDecompressionException(string.Empty);
+                                               });
 
             FileDownloadResult actual = InvokeDownloadFile();
 
@@ -417,7 +427,7 @@
         private void SetUpFileDownloadSettingsInvalid()
         {
             filePayloadSettingsServiceMock.When(mock => mock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>()))
-                                          .Throw<FileDownloadArgumentException>();
+                                          .Throw(new FileDownloadArgumentException(string.Empty));
         }
 
         private WebException SetUpFileDownloadTimeout()

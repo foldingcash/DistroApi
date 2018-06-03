@@ -1,12 +1,16 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Collections.Generic;
 
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Email;
 
     public class StatsDownloadEmailProvider : IStatsDownloadEmailService
     {
+        // TODO: Move these into a localizable resource
         private const string FileDownloadFailedSubject = "File Download Failed";
 
         private const string StatsUploadFailedSubject = "Stats Upload Failed";
@@ -60,7 +64,7 @@
             SendEmail(StatsUploadFailedSubject, errorMessage);
         }
 
-        public void SendEmail(List<FailedUserData> failedUsersData)
+        public void SendEmail(IEnumerable<FailedUserData> failedUsersData)
         {
             string errorMessage = errorMessageService.GetErrorMessage(failedUsersData);
 

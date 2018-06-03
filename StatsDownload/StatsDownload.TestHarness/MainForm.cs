@@ -6,14 +6,15 @@
 
     using Castle.MicroKernel.Registration;
 
-    using StatsDownload.Core;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.TestHarness.CastleWindsor;
 
     public partial class MainForm : Form
     {
         public MainForm()
         {
             InitializeComponent();
-            WindsorContainer.Instance.Register(Component.For<MainForm>().Instance(this));
+            WindsorContainer.Instance.Register(Component.For<Action<string>>().Instance(Log));
         }
 
         internal void Log(string message)

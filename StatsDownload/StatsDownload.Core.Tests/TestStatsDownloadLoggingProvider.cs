@@ -7,6 +7,11 @@
 
     using NUnit.Framework;
 
+    using StatsDownload.Core.Extensions;
+    using StatsDownload.Core.Implementations.Tested;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Logging;
 
     [TestFixture]
@@ -60,8 +65,12 @@
                                         + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}");
         }
 
-        [Test]
-        public void LogResult_WhenFileDownloadResult_LogsResult()
+        [TestCase(150)]
+        [TestCase(50)]
+        [TestCase(0)]
+        [TestCase(100)]
+        [TestCase(-1)]
+        public void LogResult_WhenFileDownloadResult_LogsResult(int decompressedFileDataLength)
         {
             var filePayload = new FilePayload
                               {
@@ -79,7 +88,7 @@
                                       "decompressed download file extension",
                                   DecompressedDownloadFilePath = "decompressed download file path",
                                   FailedDownloadFilePath = "failed download file path",
-                                  DecompressedDownloadFileData = new string('A', 150)
+                                  DecompressedDownloadFileData = decompressedFileDataLength < 0 ? null : new string('A', decompressedFileDataLength)
                               };
             var result = new FileDownloadResult(FailedReason.UnexpectedException, filePayload);
             systemUnderTest.LogResult(result);
@@ -100,7 +109,7 @@
                                           + $"Decompressed Download File Extension: {result.FilePayload?.DecompressedDownloadFileExtension}{Environment.NewLine}"
                                           + $"Decompressed Download File Path: {result.FilePayload?.DecompressedDownloadFilePath}{Environment.NewLine}"
                                           + $"Failed Download File Path: {result.FilePayload?.FailedDownloadFilePath}{Environment.NewLine}"
-                                          + $"Download Data (First 100): {result.FilePayload?.DecompressedDownloadFileData?.Substring(0, 99)}");
+                                          + $"Download Data (First 100): {result.FilePayload?.DecompressedDownloadFileData?.SubstringSafe(0, 100)}");
         }
 
         [Test]

@@ -1,20 +1,16 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.IO;
 
+    using StatsDownload.Core.DataTransfer;
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Logging;
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
     {
-        private const string DecompressedFileExtension = ".txt";
-
-        private const string DecompressedFileName = "daily_user_summary";
-
-        private const string FileExtension = ".bz2";
-
-        private const string FileName = "daily_user_summary.txt";
-
         private readonly IDateTimeService dateTimeService;
 
         private readonly IDownloadSettingsService downloadSettingsService;
@@ -89,12 +85,12 @@
 
         private string GetDownloadFileName(DateTime dateTime)
         {
-            return $"{dateTime.ToFileTime()}.{FileName}";
+            return $"{dateTime.ToFileTime()}.{Constants.FilePayload.FileName}";
         }
 
         private string GetDownloadFileNameWithExtension(DateTime dateTime)
         {
-            return $"{dateTime.ToFileTime()}.{FileName}{FileExtension}";
+            return $"{dateTime.ToFileTime()}.{Constants.FilePayload.FileName}{Constants.FilePayload.FileExtension}";
         }
 
         private string GetDownloadTimeout()
@@ -120,13 +116,13 @@
         private void SetDecompressedDownloadFileDetails(FilePayload filePayload, DateTime dateTime,
                                                         string downloadDirectory)
         {
-            string decompressedFileName = $"{dateTime.ToFileTime()}.{DecompressedFileName}";
+            string decompressedFileName = $"{dateTime.ToFileTime()}.{Constants.FilePayload.DecompressedFileName}";
 
             filePayload.DecompressedDownloadDirectory = downloadDirectory;
             filePayload.DecompressedDownloadFileName = decompressedFileName;
-            filePayload.DecompressedDownloadFileExtension = DecompressedFileExtension;
+            filePayload.DecompressedDownloadFileExtension = Constants.FilePayload.DecompressedFileExtension;
             filePayload.DecompressedDownloadFilePath = Path.Combine(downloadDirectory,
-                $"{decompressedFileName}{DecompressedFileExtension}");
+                $"{decompressedFileName}{Constants.FilePayload.DecompressedFileExtension}");
         }
 
         private void SetDownloadDetails(FilePayload filePayload)
@@ -173,7 +169,7 @@
         {
             filePayload.DownloadDirectory = downloadDirectory;
             filePayload.DownloadFileName = GetDownloadFileName(dateTime);
-            filePayload.DownloadFileExtension = FileExtension;
+            filePayload.DownloadFileExtension = Constants.FilePayload.FileExtension;
             filePayload.DownloadFilePath = Path.Combine(downloadDirectory, GetDownloadFileNameWithExtension(dateTime));
         }
 

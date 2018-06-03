@@ -2,7 +2,8 @@
 {
     using System;
 
-    using StatsDownload.Core;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.StatsUpload.Console.CastleWindsor;
 
     public class Program
     {

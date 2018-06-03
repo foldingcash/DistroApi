@@ -2,16 +2,30 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using NSubstitute;
 
     using NUnit.Framework;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Implementations.Tested;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestStatsFileParserProvider
     {
         private const string EmptyStatsFile = @"Tue Dec 26 10:20:01 PST 2017
 name	newcredit	sum(total)	team";
+
+        private const string GoodHeaderAndUsers = @"name	newcredit	sum(total)	team
+	25882218711	458785	224497
+war	20508731397	544139	37651
+msi_TW	15889476570	359312	31403
+anonymous	13937689581	64221589	0
+TheWasp	13660834951	734045	4294967295";
 
         private const string GoodStatsFile = @"Tue Dec 26 10:20:01 PST 2017
 name	newcredit	sum(total)	team
@@ -75,7 +89,7 @@ TheWasp	13660834951	734045	70335";
         [Test]
         public void Parse_WhenInvoked_ParsesAdditionalUserData()
         {
-            List<UserData> usersData = InvokeParse().UsersData;
+            IEnumerable<UserData> usersData = InvokeParse().UsersData;
 
             foreach (UserData actual in usersData)
             {
@@ -87,18 +101,20 @@ TheWasp	13660834951	734045	70335";
         [TestCase(EmptyStatsFile, 0)]
         [TestCase(GoodStatsFileWithOnlyNewLine, 5)]
         [TestCase(GoodStatsFileWithDaylightSavingsTimeZone, 5)]
+        [TestCase("Tue Dec  5 10:20:01 PDT 2017\n" + GoodHeaderAndUsers, 5)]
+        [TestCase("Tue Dec  5 10:20:01 PST 2017\n" + GoodHeaderAndUsers, 5)]
         public void Parse_WhenInvoked_ReturnsListOfUsersData(string fileData, int expectedCount)
         {
-            List<UserData> actual = InvokeParse(fileData).UsersData;
+            IEnumerable<UserData> actual = InvokeParse(fileData).UsersData;
 
-            Assert.That(actual.Count, Is.EqualTo(expectedCount));
+            Assert.That(actual.Count(), Is.EqualTo(expectedCount));
         }
 
         [Test]
         public void Parse_WhenInvoked_ReturnsParsedUserData()
         {
-            List<UserData> usersData = InvokeParse().UsersData;
-            UserData actual = usersData[2];
+            IEnumerable<UserData> usersData = InvokeParse().UsersData;
+            UserData actual = usersData.ElementAt(2);
 
             Assert.That(actual.Name, Is.EqualTo("msi_TW"));
             Assert.That(actual.TotalPoints, Is.EqualTo(15889476570));
@@ -118,7 +134,7 @@ TheWasp	13660834951	734045	70335";
         [Test]
         public void Parse_WhenInvokedWithMalformedUserRecord_ReturnsListOfFailedUsersData()
         {
-            List<FailedUserData> actual = InvokeParse(MalformedUserRecord).FailedUsersData;
+            var actual = new List<FailedUserData>(InvokeParse(MalformedUserRecord).FailedUsersData);
 
             Assert.That(actual.Count, Is.EqualTo(4));
 

@@ -4,12 +4,13 @@
     using System.IO;
     using System.Reflection;
 
-    using StatsDownload.Core;
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Email;
 
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
                                                        IEmailSettingsService
     {
+        // These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
         public string GetAcceptAnySslCert()
         {
             return ConfigurationManager.AppSettings["AcceptAnySslCert"];

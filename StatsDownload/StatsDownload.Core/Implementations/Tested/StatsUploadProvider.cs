@@ -1,7 +1,13 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class StatsUploadProvider : IStatsUploadService
     {
@@ -57,7 +63,7 @@
                     return results;
                 }
 
-                List<int> uploadFiles = statsUploadDatabaseService.GetDownloadsReadyForUpload();
+                List<int> uploadFiles = statsUploadDatabaseService.GetDownloadsReadyForUpload().ToList();
                 var statsUploadResults = new List<StatsUploadResult>();
 
                 foreach (int downloadId in uploadFiles)
@@ -81,16 +87,17 @@
             return !statsUploadDatabaseService.IsAvailable();
         }
 
-        private void HandleFailedUsersData(int downloadId, List<FailedUserData> failedUsersData)
+        private void HandleFailedUsersData(int downloadId, IEnumerable<FailedUserData> failedUsersData)
         {
-            if (failedUsersData.Count > 0)
+            if (failedUsersData.Any())
             {
                 statsUploadEmailService.SendEmail(failedUsersData);
             }
 
+            statsUploadDatabaseService.AddUserRejections(downloadId, failedUsersData);
+
             foreach (FailedUserData failedUserData in failedUsersData)
             {
-                statsUploadDatabaseService.AddUserRejection(downloadId, failedUserData);
                 loggingService.LogFailedUserData(downloadId, failedUserData);
             }
         }
@@ -113,8 +120,8 @@
                 statsUploadDatabaseService.StartStatsUpload(downloadId);
                 string fileData = statsUploadDatabaseService.GetFileData(downloadId);
                 ParseResults results = statsFileParserService.Parse(fileData);
-                List<UserData> usersData = results.UsersData;
-                List<FailedUserData> failedUsersData = results.FailedUsersData;
+                IEnumerable<UserData> usersData = results.UsersData;
+                IEnumerable<FailedUserData> failedUsersData = results.FailedUsersData;
                 HandleFailedUsersData(downloadId, failedUsersData);
                 UploadUserData(downloadId, usersData);
                 statsUploadDatabaseService.StatsUploadFinished(downloadId);
@@ -130,12 +137,9 @@
             }
         }
 
-        private void UploadUserData(int downloadId, List<UserData> usersData)
+        private void UploadUserData(int downloadId, IEnumerable<UserData> usersData)
         {
-            foreach (UserData userData in usersData)
-            {
-                statsUploadDatabaseService.AddUserData(downloadId, userData);
-            }
+            statsUploadDatabaseService.AddUsersData(downloadId, usersData);
         }
     }
 }

@@ -1,7 +1,12 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Net;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class FileDownloadProvider : IFileDownloadService
     {
@@ -31,50 +36,9 @@
                                     IDateTimeService dateTimeService, IFilePayloadUploadService filePayloadUploadService,
                                     IFileDownloadEmailService fileDownloadEmailService)
         {
-            if (fileDownloadDatabaseService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
-            }
-
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            if (downloadService == null)
-            {
-                throw new ArgumentNullException(nameof(downloadService));
-            }
-
-            if (filePayloadSettingsService == null)
-            {
-                throw new ArgumentNullException(nameof(filePayloadSettingsService));
-            }
-
-            if (resourceCleanupService == null)
-            {
-                throw new ArgumentNullException(nameof(resourceCleanupService));
-            }
-
-            if (fileDownloadMinimumWaitTimeService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadMinimumWaitTimeService));
-            }
-
-            if (dateTimeService == null)
-            {
-                throw new ArgumentNullException(nameof(dateTimeService));
-            }
-
-            if (filePayloadUploadService == null)
-            {
-                throw new ArgumentNullException(nameof(filePayloadUploadService));
-            }
-
-            if (fileDownloadEmailService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadEmailService));
-            }
+            ValidateCtorArgs(fileDownloadDatabaseService, loggingService, downloadService, filePayloadSettingsService,
+                resourceCleanupService, fileDownloadMinimumWaitTimeService, dateTimeService, filePayloadUploadService,
+                fileDownloadEmailService);
 
             this.fileDownloadDatabaseService = fileDownloadDatabaseService;
             this.loggingService = loggingService;
@@ -97,11 +61,7 @@
 
                 if (DataStoreUnavailable())
                 {
-                    FileDownloadResult failedResult = NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable,
-                        filePayload);
-                    LogResult(failedResult);
-                    SendEmail(failedResult);
-                    return failedResult;
+                    return HandleDataStoreUnavailable(filePayload);
                 }
 
                 UpdateToLatest();
@@ -111,31 +71,16 @@
                 FailedReason failedReason;
                 if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
                 {
-                    FileDownloadResult failedResult = NewFailedFileDownloadResult(failedReason, filePayload);
-                    LogResult(failedResult);
-                    FileDownloadError(failedResult);
-                    SendEmail(failedResult);
-                    return failedResult;
+                    return HandleDownloadNotReadyToRun(failedReason, filePayload);
                 }
 
                 SetDownloadFileDetails(filePayload);
                 DownloadFile(filePayload);
-                LogVerbose($"Stats file download completed: {DateTimeNow()}");
-                UploadFile(filePayload);
-                FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
-                Cleanup(successResult);
-                LogResult(successResult);
-                return successResult;
+                return HandleSuccessAndUpload(filePayload);
             }
             catch (Exception exception)
             {
-                FileDownloadResult exceptionResult = NewFailedFileDownloadResult(exception, filePayload);
-                LogResult(exceptionResult);
-                LogException(exception);
-                FileDownloadError(exceptionResult);
-                Cleanup(exceptionResult);
-                SendEmail(exceptionResult);
-                return exceptionResult;
+                return HandleException(exception, filePayload);
             }
         }
 
@@ -162,6 +107,44 @@
         private void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
             fileDownloadDatabaseService.FileDownloadError(fileDownloadResult);
+        }
+
+        private FileDownloadResult HandleDataStoreUnavailable(FilePayload filePayload)
+        {
+            FileDownloadResult failedResult = NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable, filePayload);
+            LogResult(failedResult);
+            SendEmail(failedResult);
+            return failedResult;
+        }
+
+        private FileDownloadResult HandleDownloadNotReadyToRun(FailedReason failedReason, FilePayload filePayload)
+        {
+            FileDownloadResult failedResult = NewFailedFileDownloadResult(failedReason, filePayload);
+            LogResult(failedResult);
+            FileDownloadError(failedResult);
+            SendEmail(failedResult);
+            return failedResult;
+        }
+
+        private FileDownloadResult HandleException(Exception exception, FilePayload filePayload)
+        {
+            FileDownloadResult exceptionResult = NewFailedFileDownloadResult(exception, filePayload);
+            LogResult(exceptionResult);
+            LogException(exception);
+            FileDownloadError(exceptionResult);
+            Cleanup(exceptionResult);
+            SendEmail(exceptionResult);
+            return exceptionResult;
+        }
+
+        private FileDownloadResult HandleSuccessAndUpload(FilePayload filePayload)
+        {
+            LogVerbose($"Stats file download completed: {DateTimeNow()}");
+            UploadFile(filePayload);
+            FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
+            Cleanup(successResult);
+            LogResult(successResult);
+            return successResult;
         }
 
         private bool IsFileDownloadNotReadyToRun(FilePayload filePayload, out FailedReason failedReason)
@@ -262,6 +245,61 @@
         private void UploadFile(FilePayload filePayload)
         {
             filePayloadUploadService.UploadFile(filePayload);
+        }
+
+        private void ValidateCtorArgs(IFileDownloadDatabaseService fileDownloadDatabaseService,
+                                      IFileDownloadLoggingService loggingService, IDownloadService downloadService,
+                                      IFilePayloadSettingsService filePayloadSettingsService,
+                                      IResourceCleanupService resourceCleanupService,
+                                      IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
+                                      IDateTimeService dateTimeService,
+                                      IFilePayloadUploadService filePayloadUploadService,
+                                      IFileDownloadEmailService fileDownloadEmailService)
+        {
+            if (fileDownloadDatabaseService == null)
+            {
+                throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
+            }
+
+            if (loggingService == null)
+            {
+                throw new ArgumentNullException(nameof(loggingService));
+            }
+
+            if (downloadService == null)
+            {
+                throw new ArgumentNullException(nameof(downloadService));
+            }
+
+            if (filePayloadSettingsService == null)
+            {
+                throw new ArgumentNullException(nameof(filePayloadSettingsService));
+            }
+
+            if (resourceCleanupService == null)
+            {
+                throw new ArgumentNullException(nameof(resourceCleanupService));
+            }
+
+            if (fileDownloadMinimumWaitTimeService == null)
+            {
+                throw new ArgumentNullException(nameof(fileDownloadMinimumWaitTimeService));
+            }
+
+            if (dateTimeService == null)
+            {
+                throw new ArgumentNullException(nameof(dateTimeService));
+            }
+
+            if (filePayloadUploadService == null)
+            {
+                throw new ArgumentNullException(nameof(filePayloadUploadService));
+            }
+
+            if (fileDownloadEmailService == null)
+            {
+                throw new ArgumentNullException(nameof(fileDownloadEmailService));
+            }
         }
     }
 }

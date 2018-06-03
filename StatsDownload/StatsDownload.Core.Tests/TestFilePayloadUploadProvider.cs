@@ -6,9 +6,17 @@
 
     using NUnit.Framework;
 
+    using StatsDownload.Core.Implementations.Tested;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+
     [TestFixture]
     public class TestFilePayloadUploadProvider
     {
+        private const string DecompressedDownloadFilePath = "test decompressed download file path";
+
+        private const string DownloadFilePath = "test download file path";
+
         private IFileCompressionService fileCompressionServiceMock;
 
         private IFileDownloadDatabaseService fileDownloadDatabaseServiceMock;
@@ -33,7 +41,11 @@
         [SetUp]
         public void SetUp()
         {
-            filePayload = new FilePayload();
+            filePayload = new FilePayload
+                          {
+                              DownloadFilePath = DownloadFilePath,
+                              DecompressedDownloadFilePath = DecompressedDownloadFilePath
+                          };
 
             fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
 
@@ -52,7 +64,7 @@
 
             Received.InOrder(() =>
             {
-                fileCompressionServiceMock.DecompressFile(filePayload);
+                fileCompressionServiceMock.DecompressFile(DownloadFilePath, DecompressedDownloadFilePath);
                 fileReaderServiceMock.ReadFile(filePayload);
                 fileDownloadDatabaseServiceMock.FileDownloadFinished(filePayload);
             });

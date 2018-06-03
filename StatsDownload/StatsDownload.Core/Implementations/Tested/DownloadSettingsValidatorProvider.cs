@@ -1,17 +1,11 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
 
+    using StatsDownload.Core.Interfaces;
+
     public class DownloadSettingsValidatorProvider : IDownloadSettingsValidatorService
     {
-        private const int MaximumTimeout = 3600;
-
-        private const int MaximumWaitTimeInHours = 100;
-
-        private const int MinimumTimeout = 100;
-
-        private const int MinimumWaitTimeInHours = 1;
-
         private readonly IDirectoryService directoryService;
 
         public DownloadSettingsValidatorProvider(IDirectoryService directoryService)
@@ -44,7 +38,8 @@
             int minimumWaitTimeInHours;
             if (int.TryParse(unsafeMinimumWaitTimeInHours, out minimumWaitTimeInHours))
             {
-                if (minimumWaitTimeInHours >= MinimumWaitTimeInHours && minimumWaitTimeInHours <= MaximumWaitTimeInHours)
+                if (minimumWaitTimeInHours >= Constants.Download.MinimumWaitTimeInHours
+                    && minimumWaitTimeInHours <= Constants.Download.MaximumWaitTimeInHours)
                 {
                     minimumWaitTimeSpan = new TimeSpan(minimumWaitTimeInHours, 0, 0);
                     return true;
@@ -64,7 +59,8 @@
                 return false;
             }
 
-            if (timeoutInSeconds < MinimumTimeout || timeoutInSeconds > MaximumTimeout)
+            if (timeoutInSeconds < Constants.Download.MinimumTimeout
+                || timeoutInSeconds > Constants.Download.MaximumTimeout)
             {
                 return false;
             }

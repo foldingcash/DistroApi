@@ -1,12 +1,16 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Untested
 {
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
     using System.Data.SqlClient;
 
+    using StatsDownload.Core.Interfaces;
+
     public class SqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
+        private bool disposed;
+
         private DbConnection sqlConnection;
 
         public SqlDatabaseConnectionProvider(string connectionString)
@@ -14,10 +18,7 @@
             sqlConnection = new SqlConnection(connectionString);
         }
 
-        public void Close()
-        {
-            sqlConnection.Close();
-        }
+        public ConnectionState ConnectionState => sqlConnection.State;
 
         public DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction)
         {
@@ -46,31 +47,41 @@
 
         public void Dispose()
         {
-            sqlConnection.Dispose();
-            sqlConnection = null;
+            if (!disposed)
+            {
+                sqlConnection.Dispose();
+                sqlConnection = null;
+                disposed = true;
+            }
         }
 
         public DbDataReader ExecuteReader(string commandText)
         {
-            DbCommand command = sqlConnection.CreateCommand();
-            command.CommandText = commandText;
-            return command.ExecuteReader();
+            using (DbCommand command = sqlConnection.CreateCommand())
+            {
+                command.CommandText = commandText;
+                return command.ExecuteReader();
+            }
         }
 
         public object ExecuteScalar(string commandText)
         {
-            DbCommand command = sqlConnection.CreateCommand();
-            command.CommandText = commandText;
-            return command.ExecuteScalar();
+            using (DbCommand command = sqlConnection.CreateCommand())
+            {
+                command.CommandText = commandText;
+                return command.ExecuteScalar();
+            }
         }
 
         public int ExecuteStoredProcedure(string storedProcedure, List<DbParameter> parameters)
         {
-            DbCommand command = sqlConnection.CreateCommand();
-            command.CommandText = storedProcedure;
-            command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddRange(parameters?.ToArray() ?? new DbParameter[0]);
-            return command.ExecuteNonQuery();
+            using (DbCommand command = sqlConnection.CreateCommand())
+            {
+                command.CommandText = storedProcedure;
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddRange(parameters?.ToArray() ?? new DbParameter[0]);
+                return command.ExecuteNonQuery();
+            }
         }
 
         public int ExecuteStoredProcedure(string storedProcedure)

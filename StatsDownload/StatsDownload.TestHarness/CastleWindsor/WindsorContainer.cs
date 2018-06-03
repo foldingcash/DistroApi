@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.TestHarness
+﻿namespace StatsDownload.TestHarness.CastleWindsor
 {
     using Castle.Facilities.TypedFactory;
     using Castle.Windsor;

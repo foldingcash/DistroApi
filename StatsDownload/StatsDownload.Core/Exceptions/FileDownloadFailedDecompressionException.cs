@@ -1,10 +1,11 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Exceptions
 {
     using System;
 
     public class FileDownloadFailedDecompressionException : Exception
     {
-        public FileDownloadFailedDecompressionException()
+        public FileDownloadFailedDecompressionException(string message)
+            : base(message)
         {
         }
 

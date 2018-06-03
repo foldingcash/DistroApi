@@ -1,8 +1,11 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Interfaces.DataTransfer
 {
+    using StatsDownload.Core.Interfaces.Enums;
+
     public class FailedUserData
     {
         public FailedUserData()
+            : this(0, null, RejectionReason.FailedParsing)
         {
         }
 
@@ -19,12 +22,12 @@
             UserData = userdata;
         }
 
-        public string Data { get; private set; }
+        public string Data { get; }
 
-        public int LineNumber { get; private set; }
+        public int LineNumber { get; }
 
-        public RejectionReason RejectionReason { get; private set; }
+        public RejectionReason RejectionReason { get; }
 
-        public UserData UserData { get; private set; }
+        public UserData UserData { get; }
     }
 }

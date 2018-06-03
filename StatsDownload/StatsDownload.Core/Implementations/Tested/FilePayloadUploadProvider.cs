@@ -1,6 +1,9 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class FilePayloadUploadProvider : IFilePayloadUploadService
     {
@@ -36,7 +39,7 @@
 
         public void UploadFile(FilePayload filePayload)
         {
-            fileCompressionService.DecompressFile(filePayload);
+            fileCompressionService.DecompressFile(filePayload.DownloadFilePath, filePayload.DecompressedDownloadFilePath);
             fileReaderService.ReadFile(filePayload);
             fileDownloadDatabaseService.FileDownloadFinished(filePayload);
         }

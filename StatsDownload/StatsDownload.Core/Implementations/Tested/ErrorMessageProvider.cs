@@ -1,10 +1,17 @@
-﻿namespace StatsDownload.Core
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+
+    using StatsDownload.Core.DataTransfer;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class ErrorMessageProvider : IErrorMessageService
     {
+        // TODO: Move these strings into a localizable resource
         private const string FileDownloadFailBodyStart = "There was a problem downloading the file payload.";
 
         private const string FileDownloadFailDecompressionBodyStart =
@@ -59,10 +66,10 @@
             return string.Empty;
         }
 
-        public string GetErrorMessage(List<FailedUserData> failedUsersData)
+        public string GetErrorMessage(IEnumerable<FailedUserData> failedUsersData)
         {
             return
-                $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings.";
+                $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count()} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings.";
         }
 
         public string GetErrorMessage(FailedUserData failedUserData)
