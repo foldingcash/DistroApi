@@ -50,6 +50,7 @@
     <Compile Include="Enums\FailedReason.cs" />
     <Compile Include="Enums\RejectionReason.cs" />
     <Compile Include="IAdditionalUserDataParserService.cs" />
+    <Compile Include="IBitcoinAddressValidatorService.cs" />
     <Compile Include="IDatabaseConnectionService.cs" />
     <Compile Include="IDatabaseConnectionServiceFactory.cs" />
     <Compile Include="IDatabaseConnectionSettingsService.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="IDownloadService.cs" />
     <Compile Include="IDownloadSettingsService.cs" />
     <Compile Include="IDownloadSettingsValidatorService.cs" />
+    <Compile Include="IErrorMessageService.cs" />
     <Compile Include="IFileCompressionService.cs" />
     <Compile Include="IFileDownloadDatabaseService.cs" />
     <Compile Include="IFileDownloadEmailService.cs" />
