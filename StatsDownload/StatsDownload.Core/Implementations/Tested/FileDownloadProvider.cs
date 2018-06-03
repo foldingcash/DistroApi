@@ -2,7 +2,7 @@
 {
     using System;
     using System.Net;
-    using Interfaces.Logging;
+
     using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;

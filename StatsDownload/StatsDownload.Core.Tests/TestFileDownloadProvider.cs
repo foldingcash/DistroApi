@@ -2,7 +2,7 @@
 {
     using System;
     using System.Net;
-    using Interfaces.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;

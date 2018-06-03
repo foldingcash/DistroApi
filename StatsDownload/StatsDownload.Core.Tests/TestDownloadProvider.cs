@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Interfaces.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -10,6 +10,7 @@
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Networking;
+    using StatsDownload.Logging;
 
     [TestFixture]
     public class TestDownloadProvider
