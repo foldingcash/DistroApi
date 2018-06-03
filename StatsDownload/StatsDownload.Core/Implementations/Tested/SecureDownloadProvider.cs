@@ -2,10 +2,9 @@
 {
     using System;
     using System.Net;
-
+    using Interfaces.Logging;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Logging;
 
     public class SecureDownloadProvider : IDownloadService
     {

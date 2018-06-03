@@ -1,8 +1,7 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System;
-
-    using StatsDownload.Logging;
+    using Core.Interfaces.Logging;
 
     public class TestHarnessLoggingProvider : IApplicationLoggingService
     {

@@ -96,10 +96,6 @@
       <Project>{3F8412A3-CC11-4D84-8BC3-FD81ACF81CDF}</Project>
       <Name>StatsDownload.Email</Name>
     </ProjectReference>
-    <ProjectReference Include="..\StatsDownload.Logging\StatsDownload.Logging.csproj">
-      <Project>{1ca1f9a2-ead1-4190-9e7e-6691773cebe4}</Project>
-      <Name>StatsDownload.Logging</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
