@@ -54,6 +54,10 @@
     <Compile Include="IDatabaseConnectionServiceFactory.cs" />
     <Compile Include="IDatabaseConnectionSettingsService.cs" />
     <Compile Include="IDateTimeService.cs" />
+    <Compile Include="IDirectoryService.cs" />
+    <Compile Include="IDownloadService.cs" />
+    <Compile Include="IDownloadSettingsService.cs" />
+    <Compile Include="IDownloadSettingsValidatorService.cs" />
     <Compile Include="IFileCompressionService.cs" />
     <Compile Include="IFileDownloadDatabaseService.cs" />
     <Compile Include="IFileDownloadEmailService.cs" />
@@ -61,8 +65,13 @@
     <Compile Include="IFileDownloadService.cs" />
     <Compile Include="IFilePayloadSettingsService.cs" />
     <Compile Include="IFilePayloadUploadService.cs" />
+    <Compile Include="IFileReaderService.cs" />
+    <Compile Include="IFileService.cs" />
+    <Compile Include="IResourceCleanupService.cs" />
+    <Compile Include="ISecureFilePayloadService.cs" />
     <Compile Include="IStatsDownloadDatabaseService.cs" />
     <Compile Include="IStatsDownloadEmailService.cs" />
+    <Compile Include="IStatsFileParserService.cs" />
     <Compile Include="IStatsUploadDatabaseService.cs" />
     <Compile Include="IStatsUploadEmailService.cs" />
     <Compile Include="IStatsUploadService.cs" />
