@@ -5,21 +5,95 @@
     using System.Data;
     using System.Data.Common;
     using System.Linq;
+    using Implementations.Tested;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using Interfaces.Logging;
     using NSubstitute;
     using NSubstitute.ClearExtensions;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestStatsDownloadDatabaseProvider
     {
-        private const int NumberOfRowsEffectedExpected = 5;
+        [SetUp]
+        public void SetUp()
+        {
+            databaseConnectionSettingsServiceMock = Substitute.For<IDatabaseConnectionSettingsService>();
+            databaseConnectionSettingsServiceMock.GetConnectionString().Returns("connectionString");
+
+            databaseConnectionServiceMock = Substitute.For<IDatabaseConnectionService>();
+            databaseConnectionServiceFactoryMock = Substitute.For<IDatabaseConnectionServiceFactory>();
+            databaseConnectionServiceFactoryMock.Create("connectionString").Returns(databaseConnectionServiceMock);
+
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
+            errorMessageServiceMock = Substitute.For<IErrorMessageService>();
+
+            systemUnderTest = NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
+                databaseConnectionServiceFactoryMock, loggingServiceMock, errorMessageServiceMock);
+
+            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
+                Arg.Any<ParameterDirection>()).Returns(info =>
+            {
+                var parameterName = info.Arg<string>();
+                var dbType = info.Arg<DbType>();
+                var direction = info.Arg<ParameterDirection>();
+
+                var dbParameter = Substitute.For<DbParameter>();
+                dbParameter.ParameterName.Returns(parameterName);
+                dbParameter.DbType.Returns(dbType);
+                dbParameter.Direction.Returns(direction);
+
+                if (dbType.Equals(DbType.Int32))
+                {
+                    dbParameter.Value.Returns(default(int));
+                }
+
+                return dbParameter;
+            });
+
+            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
+                Arg.Any<ParameterDirection>(), Arg.Any<int>()).Returns(info =>
+            {
+                var parameterName = info.Arg<string>();
+                var dbType = info.Arg<DbType>();
+                var direction = info.Arg<ParameterDirection>();
+                var size = info.Arg<int>();
+
+                var dbParameter = Substitute.For<DbParameter>();
+                dbParameter.ParameterName.Returns(parameterName);
+                dbParameter.DbType.Returns(dbType);
+                dbParameter.Direction.Returns(direction);
+                dbParameter.Size.Returns(size);
+
+                if (dbType.Equals(DbType.Int32))
+                {
+                    dbParameter.Value.Returns(default(int));
+                }
+
+                return dbParameter;
+            });
+
+            filePayload = new FilePayload
+            {
+                DownloadId = 100,
+                DecompressedDownloadFileName = "DecompressedDownloadFileName",
+                DecompressedDownloadFileExtension = "DecompressedDownloadFileExtension",
+                DecompressedDownloadFileData = "DecompressedDownloadFileData"
+            };
+
+            fileDownloadResult = new FileDownloadResult(filePayload);
+
+            dbDataReaderMock = Substitute.For<DbDataReader>();
+            dbDataReaderMock.Read().Returns(true, true, true, false);
+            dbDataReaderMock.GetInt32(0).Returns(100, 200, 300);
+
+            databaseConnectionServiceMock
+                .ExecuteReader("SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]")
+                .Returns(dbDataReaderMock);
+        }
 
         private IDatabaseConnectionServiceFactory databaseConnectionServiceFactoryMock;
 
@@ -131,10 +205,10 @@
         {
             DbCommand command = default(DbCommand);
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
-                                                       {
-                                                           null,
-                                                           dbCommand => command = dbCommand
-                                                       });
+            {
+                null,
+                dbCommand => command = dbCommand
+            });
 
             var users = new UserData[2501];
             for (var index = 0; index < users.Length; index++)
@@ -173,10 +247,10 @@
         {
             DbCommand command = default(DbCommand);
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
-                                                       {
-                                                           null,
-                                                           dbCommand => command = dbCommand
-                                                       });
+            {
+                null,
+                dbCommand => command = dbCommand
+            });
 
             systemUnderTest.AddUsersData(1, new[] { new UserData() });
 
@@ -319,20 +393,20 @@
         {
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadDataStoreProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock,
-                    errorMessageServiceMock));
+                    NewFileDownloadDataStoreProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock,
+                        errorMessageServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock,
-                    errorMessageServiceMock));
+                    NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock,
+                        errorMessageServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
-                    databaseConnectionServiceFactoryMock, null, errorMessageServiceMock));
+                    NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
+                        databaseConnectionServiceFactoryMock, null, errorMessageServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
-                    databaseConnectionServiceFactoryMock, loggingServiceMock, null));
+                    NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
+                        databaseConnectionServiceFactoryMock, loggingServiceMock, null));
         }
 
         [Test]
@@ -345,8 +419,9 @@
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock.When(
-                service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]", Arg.Any<List<DbParameter>>()))
+                                             service =>
+                                                 service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]",
+                                                     Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             InvokeFileDownloadError();
@@ -395,8 +470,9 @@
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock.When(
-                service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]", Arg.Any<List<DbParameter>>()))
+                                             service =>
+                                                 service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]",
+                                                     Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             InvokeFileDownloadFinished();
@@ -480,7 +556,8 @@
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock.When(
-                service => service.ExecuteStoredProcedure("[FoldingCoin].[GetFileData]", Arg.Any<List<DbParameter>>()))
+                                             service => service.ExecuteStoredProcedure("[FoldingCoin].[GetFileData]",
+                                                 Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             systemUnderTest.GetFileData(100);
@@ -652,8 +729,10 @@
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock.When(
-                service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[NewFileDownloadStarted]", Arg.Any<List<DbParameter>>()))
+                                             service =>
+                                                 service.ExecuteStoredProcedure(
+                                                     "[FoldingCoin].[NewFileDownloadStarted]",
+                                                     Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             InvokeNewFileDownloadStarted();
@@ -682,86 +761,9 @@
         [Test]
         public void NewFileDownloadStarted_WhenNullConnectionString_ThrowsArgumentNullException()
         {
-            databaseConnectionSettingsServiceMock.GetConnectionString().Returns((string)null);
+            databaseConnectionSettingsServiceMock.GetConnectionString().Returns((string) null);
 
             Assert.Throws<ArgumentNullException>(InvokeNewFileDownloadStarted);
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            databaseConnectionSettingsServiceMock = Substitute.For<IDatabaseConnectionSettingsService>();
-            databaseConnectionSettingsServiceMock.GetConnectionString().Returns("connectionString");
-
-            databaseConnectionServiceMock = Substitute.For<IDatabaseConnectionService>();
-            databaseConnectionServiceFactoryMock = Substitute.For<IDatabaseConnectionServiceFactory>();
-            databaseConnectionServiceFactoryMock.Create("connectionString").Returns(databaseConnectionServiceMock);
-
-            loggingServiceMock = Substitute.For<ILoggingService>();
-
-            errorMessageServiceMock = Substitute.For<IErrorMessageService>();
-
-            systemUnderTest = NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
-                databaseConnectionServiceFactoryMock, loggingServiceMock, errorMessageServiceMock);
-
-            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
-                Arg.Any<ParameterDirection>()).Returns(info =>
-                {
-                    var parameterName = info.Arg<string>();
-                    var dbType = info.Arg<DbType>();
-                    var direction = info.Arg<ParameterDirection>();
-
-                    var dbParameter = Substitute.For<DbParameter>();
-                    dbParameter.ParameterName.Returns(parameterName);
-                    dbParameter.DbType.Returns(dbType);
-                    dbParameter.Direction.Returns(direction);
-
-                    if (dbType.Equals(DbType.Int32))
-                    {
-                        dbParameter.Value.Returns(default(int));
-                    }
-
-                    return dbParameter;
-                });
-
-            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
-                Arg.Any<ParameterDirection>(), Arg.Any<int>()).Returns(info =>
-                {
-                    var parameterName = info.Arg<string>();
-                    var dbType = info.Arg<DbType>();
-                    var direction = info.Arg<ParameterDirection>();
-                    var size = info.Arg<int>();
-
-                    var dbParameter = Substitute.For<DbParameter>();
-                    dbParameter.ParameterName.Returns(parameterName);
-                    dbParameter.DbType.Returns(dbType);
-                    dbParameter.Direction.Returns(direction);
-                    dbParameter.Size.Returns(size);
-
-                    if (dbType.Equals(DbType.Int32))
-                    {
-                        dbParameter.Value.Returns(default(int));
-                    }
-
-                    return dbParameter;
-                });
-
-            filePayload = new FilePayload
-                          {
-                              DownloadId = 100,
-                              DecompressedDownloadFileName = "DecompressedDownloadFileName",
-                              DecompressedDownloadFileExtension = "DecompressedDownloadFileExtension",
-                              DecompressedDownloadFileData = "DecompressedDownloadFileData"
-                          };
-
-            fileDownloadResult = new FileDownloadResult(filePayload);
-
-            dbDataReaderMock = Substitute.For<DbDataReader>();
-            dbDataReaderMock.Read().Returns(true, true, true, false);
-            dbDataReaderMock.GetInt32(0).Returns(100, 200, 300);
-
-            databaseConnectionServiceMock.ExecuteReader("SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]")
-                                         .Returns(dbDataReaderMock);
         }
 
         [Test]
@@ -770,8 +772,9 @@
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock.When(
-                service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[StartStatsUpload]", Arg.Any<List<DbParameter>>()))
+                                             service =>
+                                                 service.ExecuteStoredProcedure("[FoldingCoin].[StartStatsUpload]",
+                                                     Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             systemUnderTest.StartStatsUpload(100);
@@ -805,8 +808,9 @@
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock.When(
-                service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadError]", Arg.Any<List<DbParameter>>()))
+                                             service =>
+                                                 service.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadError]",
+                                                     Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             systemUnderTest.StatsUploadError(new StatsUploadResult(100, FailedReason.UnexpectedException));
@@ -841,8 +845,9 @@
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock.When(
-                service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadFinished]", Arg.Any<List<DbParameter>>()))
+                                             service =>
+                                                 service.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadFinished]",
+                                                     Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             systemUnderTest.StatsUploadFinished(100);
@@ -885,6 +890,8 @@
             }));
         }
 
+        private const int NumberOfRowsEffectedExpected = 5;
+
         private void InvokeFileDownloadError()
         {
             systemUnderTest.FileDownloadError(fileDownloadResult);
@@ -920,7 +927,8 @@
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService,
             IErrorMessageService errorMessageService)
         {
-            return new StatsDownloadDatabaseProvider(databaseConnectionSettingsService, databaseConnectionServiceFactory,
+            return new StatsDownloadDatabaseProvider(databaseConnectionSettingsService,
+                databaseConnectionServiceFactory,
                 loggingService, errorMessageService);
         }
 

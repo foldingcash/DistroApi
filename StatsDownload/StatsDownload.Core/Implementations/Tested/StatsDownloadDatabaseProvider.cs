@@ -6,9 +6,9 @@
     using System.Data.Common;
     using System.Linq;
     using System.Runtime.CompilerServices;
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using Interfaces.Logging;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
     {
@@ -23,8 +23,8 @@
         private readonly ILoggingService loggingService;
 
         public StatsDownloadDatabaseProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
-                                             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
-                                             ILoggingService loggingService, IErrorMessageService errorMessageService)
+            IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
+            ILoggingService loggingService, IErrorMessageService errorMessageService)
         {
             if (databaseConnectionSettingsService == null)
             {
@@ -152,7 +152,7 @@
         }
 
         private void AddUserRejections(IDatabaseConnectionService databaseConnection, int downloadId,
-                                       IEnumerable<FailedUserData> failedUsersData)
+            IEnumerable<FailedUserData> failedUsersData)
         {
             AddUserRejectionParameters parameters = CreateAddUserRejectionParameters(databaseConnection);
 
@@ -171,7 +171,7 @@
         }
 
         private void AddUsersData(IDatabaseConnectionService databaseConnection, int downloadId,
-                                  IEnumerable<UserData> usersData)
+            IEnumerable<UserData> usersData)
         {
             AddUserDataParameters parameters = CreateAddUserDataParameters(databaseConnection);
 
@@ -204,42 +204,42 @@
         private AddUserDataParameters CreateAddUserDataParameters(IDatabaseConnectionService databaseConnection)
         {
             return new AddUserDataParameters
-                   {
-                       DownloadId = CreateDownloadIdParameter(databaseConnection),
-                       FahUserName =
-                           databaseConnection.CreateParameter("@FAHUserName", DbType.String,
-                               ParameterDirection.Input),
-                       TotalPoints =
-                           databaseConnection.CreateParameter("@TotalPoints", DbType.Int64,
-                               ParameterDirection.Input),
-                       WorkUnits =
-                           databaseConnection.CreateParameter("@WorkUnits", DbType.Int64,
-                               ParameterDirection.Input),
-                       TeamNumber =
-                           databaseConnection.CreateParameter("@TeamNumber", DbType.Int64,
-                               ParameterDirection.Input),
-                       FriendlyName =
-                           databaseConnection.CreateParameter("@FriendlyName", DbType.String,
-                               ParameterDirection.Input),
-                       BitcoinAddress =
-                           databaseConnection.CreateParameter("@BitcoinAddress", DbType.String,
-                               ParameterDirection.Input)
-                   };
+            {
+                DownloadId = CreateDownloadIdParameter(databaseConnection),
+                FahUserName =
+                    databaseConnection.CreateParameter("@FAHUserName", DbType.String,
+                        ParameterDirection.Input),
+                TotalPoints =
+                    databaseConnection.CreateParameter("@TotalPoints", DbType.Int64,
+                        ParameterDirection.Input),
+                WorkUnits =
+                    databaseConnection.CreateParameter("@WorkUnits", DbType.Int64,
+                        ParameterDirection.Input),
+                TeamNumber =
+                    databaseConnection.CreateParameter("@TeamNumber", DbType.Int64,
+                        ParameterDirection.Input),
+                FriendlyName =
+                    databaseConnection.CreateParameter("@FriendlyName", DbType.String,
+                        ParameterDirection.Input),
+                BitcoinAddress =
+                    databaseConnection.CreateParameter("@BitcoinAddress", DbType.String,
+                        ParameterDirection.Input)
+            };
         }
 
         private AddUserRejectionParameters CreateAddUserRejectionParameters(
             IDatabaseConnectionService databaseConnection)
         {
             return new AddUserRejectionParameters
-                   {
-                       DownloadId = CreateDownloadIdParameter(databaseConnection),
-                       LineNumber =
-                           databaseConnection.CreateParameter("@LineNumber", DbType.Int32,
-                               ParameterDirection.Input),
-                       RejectionReason =
-                           databaseConnection.CreateParameter("@RejectionReason",
-                               DbType.String, ParameterDirection.Input)
-                   };
+            {
+                DownloadId = CreateDownloadIdParameter(databaseConnection),
+                LineNumber =
+                    databaseConnection.CreateParameter("@LineNumber", DbType.Int32,
+                        ParameterDirection.Input),
+                RejectionReason =
+                    databaseConnection.CreateParameter("@RejectionReason",
+                        DbType.String, ParameterDirection.Input)
+            };
         }
 
         private IDatabaseConnectionService CreateDatabaseConnection(string connectionString)
@@ -269,7 +269,7 @@
         }
 
         private DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection,
-                                                        FileDownloadResult fileDownloadResult)
+            FileDownloadResult fileDownloadResult)
         {
             FilePayload filePayload = fileDownloadResult.FilePayload;
             string message = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason, filePayload);
@@ -285,7 +285,7 @@
         }
 
         private DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection,
-                                                        StatsUploadResult fileDownloadResult)
+            StatsUploadResult fileDownloadResult)
         {
             string message = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason);
             return CreateErrorMessageParameter(databaseConnection, message);
@@ -314,13 +314,13 @@
         }
 
         private void ExecuteStoredProcedure(IDatabaseConnectionService databaseConnection, string storedProcedure,
-                                            List<DbParameter> parameters)
+            List<DbParameter> parameters)
         {
             databaseConnection.ExecuteStoredProcedure(storedProcedure, parameters);
         }
 
         private void FileDownloadError(IDatabaseConnectionService databaseConnection,
-                                       FileDownloadResult fileDownloadResult)
+            FileDownloadResult fileDownloadResult)
         {
             FilePayload filePayload = fileDownloadResult.FilePayload;
 
@@ -391,14 +391,14 @@
             databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.GetFileDataProcedureName,
                 new List<DbParameter> { download, fileName, fileExtension, fileData });
 
-            return (string)fileData.Value;
+            return (string) fileData.Value;
         }
 
         private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
         {
             return
                 databaseConnection.ExecuteScalar(Constants.StatsDownloadDatabase.GetLastFileDownloadDateTimeSql) as
-                DateTime? ?? default(DateTime);
+                    DateTime? ?? default(DateTime);
         }
 
         private void LogException(Exception exception)
@@ -425,7 +425,7 @@
                 Constants.StatsDownloadDatabase.NewFileDownloadStartedProcedureName,
                 new List<DbParameter> { downloadId });
 
-            return (int)downloadId.Value;
+            return (int) downloadId.Value;
         }
 
         private void SetAddUserDataParameterValues(int downloadId, UserData userData, AddUserDataParameters parameters)
@@ -440,7 +440,7 @@
         }
 
         private void SetAddUserRejectionParameters(int downloadId, FailedUserData failedUserData,
-                                                   AddUserRejectionParameters parameters)
+            AddUserRejectionParameters parameters)
         {
             parameters.DownloadId.Value = downloadId;
             parameters.LineNumber.Value = failedUserData.LineNumber;
@@ -455,7 +455,8 @@
                 new List<DbParameter> { download });
         }
 
-        private void StatsUploadError(IDatabaseConnectionService databaseConnection, StatsUploadResult statsUploadResult)
+        private void StatsUploadError(IDatabaseConnectionService databaseConnection,
+            StatsUploadResult statsUploadResult)
         {
             DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, statsUploadResult.DownloadId);
             DbParameter errorMessage = CreateErrorMessageParameter(databaseConnection, statsUploadResult);
