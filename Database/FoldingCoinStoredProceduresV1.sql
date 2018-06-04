@@ -322,7 +322,7 @@ BEGIN
 	DECLARE @FAHDataId INT;
 	DECLARE @FAHDataRunId INT;
 	
-	IF (SELECT COUNT(1) FROM [FoldingCoin].[Teams]	WHERE TeamNumber = @TeamNumber) = 0
+	IF (SELECT COUNT(1) FROM [FoldingCoin].[Teams] WHERE TeamNumber = @TeamNumber) = 0
 		BEGIN
 			INSERT INTO [FoldingCoin].[Teams] (TeamNumber, TeamName)
 			VALUES (@TeamNumber, NULL);
