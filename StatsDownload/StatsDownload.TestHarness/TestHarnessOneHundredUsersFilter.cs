@@ -9,15 +9,24 @@
     {
         private readonly IStatsFileParserService innerService;
 
-        public TestHarnessOneHundredUsersFilter(IStatsFileParserService innerService)
+        private readonly ITestHarnessSettingsService settingsService;
+
+        public TestHarnessOneHundredUsersFilter(IStatsFileParserService innerService,
+                                                ITestHarnessSettingsService settingsService)
         {
             this.innerService = innerService;
+            this.settingsService = settingsService;
         }
 
         public ParseResults Parse(string fileData)
         {
-            ParseResults results = innerService.Parse(fileData);
-            return new ParseResults(results.UsersData.Take(100), results.FailedUsersData);
+            if (settingsService.IsOneHundredUsersFilterEnabled())
+            {
+                ParseResults results = innerService.Parse(fileData);
+                return new ParseResults(results.UsersData.Take(100), results.FailedUsersData);
+            }
+
+            return innerService.Parse(fileData);
         }
     }
 }

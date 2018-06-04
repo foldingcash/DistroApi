@@ -78,6 +78,11 @@
             return disableMinimumWaitTime;
         }
 
+        public bool IsOneHundredUsersFilterEnabled()
+        {
+            return true;
+        }
+
         public bool IsSecureFilePayloadDisabled()
         {
             bool disableSecureFilePayload;
