@@ -4,6 +4,7 @@
     using System.Data;
     using System.Data.Common;
     using System.Data.SqlClient;
+    using System.Linq;
 
     using StatsDownload.Core.Interfaces;
 
@@ -19,6 +20,11 @@
         }
 
         public ConnectionState ConnectionState => sqlConnection.State;
+
+        public DbCommand CreateDbCommand()
+        {
+            return sqlConnection.CreateCommand();
+        }
 
         public DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction)
         {
@@ -73,7 +79,7 @@
             }
         }
 
-        public int ExecuteStoredProcedure(string storedProcedure, List<DbParameter> parameters)
+        public int ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters)
         {
             using (DbCommand command = sqlConnection.CreateCommand())
             {

@@ -1,6 +1,12 @@
 # FLDCDotNet
 
-### Required Dependencies
+### Hardware Requirements
+
+* SSD 120GB+
+* i5 Intel / AMD ?
+* 16 GB
+
+### Development Dependencies
 
 * .NET Framework 4.5.2
 * Visual Studio 2015

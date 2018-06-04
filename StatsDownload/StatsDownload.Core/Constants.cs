@@ -70,6 +70,8 @@
 
             public static readonly string UpdateToLatestStoredProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[UpdateToLatest]";
+
+            public static string RebuildIndicesProcedureName = $"{DatabaseSchema}{SchemaSeparator}[RebuildIndices]";
         }
 
         public static class StatsFile

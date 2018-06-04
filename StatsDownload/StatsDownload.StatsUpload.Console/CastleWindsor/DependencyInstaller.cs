@@ -4,13 +4,13 @@
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
+    using Core.Implementations.Tested;
+    using Core.Implementations.Untested;
+    using Core.Interfaces;
     using Core.Interfaces.Logging;
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Implementations.Untested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Email;
-    using StatsDownload.Logging;
-    using StatsDownload.SharpZipLib;
+    using Email;
+    using Logging;
+    using SharpZipLib;
 
     public class DependencyInstaller : IWindsorInstaller
     {
@@ -38,6 +38,10 @@
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
                 Component.For<IStatsUploadService>().ImplementedBy<StatsUploadProvider>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<GoogleUsersFilter>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<NoPaymentAddressUsersFilter>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<WhitespaceNameUsersFilter>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<ZeroPointUsersFilter>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
                 Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
                 Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
