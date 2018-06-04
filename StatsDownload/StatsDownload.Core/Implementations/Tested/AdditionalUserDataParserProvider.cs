@@ -1,9 +1,8 @@
 ﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
-
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
+    using Interfaces;
+    using Interfaces.DataTransfer;
 
     public class AdditionalUserDataParserProvider : IAdditionalUserDataParserService
     {
@@ -28,14 +27,14 @@
                 return;
             }
 
-            SetFriendlyName(tokenizedName, userData);
             SetBitcoinAddress(tokenizedName, userData);
+            SetFriendlyName(tokenizedName, userData);
         }
 
         private string[] GetTokenizedName(UserData userData)
         {
             string name = userData.Name;
-            return name.Split(new[] { '_', '-', '.' }, StringSplitOptions.RemoveEmptyEntries);
+            return name.Split(new[] {'_', '-', '.'}, StringSplitOptions.RemoveEmptyEntries);
         }
 
         private bool IsInvalidTokenLength(string[] tokenizedName)
@@ -55,7 +54,7 @@
 
         private void SetFriendlyName(string[] tokenizedName, UserData userData)
         {
-            if (tokenizedName.Length > 1)
+            if (tokenizedName.Length > 1 && !string.IsNullOrWhiteSpace(userData.BitcoinAddress))
             {
                 userData.FriendlyName = tokenizedName[0];
             }
