@@ -1,13 +1,14 @@
-﻿using System.Configuration;
-using System.IO;
-using System.Reflection;
-using StatsDownload.Core.Interfaces;
-using StatsDownload.Email;
-
-namespace StatsDownload.TestHarness
+﻿namespace StatsDownload.TestHarness
 {
+    using System.Configuration;
+    using System.IO;
+    using System.Reflection;
+    using Core.Interfaces;
+    using Email;
+
     public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-        ITestHarnessSettingsService, IEmailSettingsService
+        ITestHarnessSettingsService, IEmailSettingsService, IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
+        IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings
     {
         public string GetConnectionString()
         {
@@ -70,6 +71,10 @@ namespace StatsDownload.TestHarness
             return ConfigurationManager.AppSettings["SmtpHost"];
         }
 
+        bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
+
+        bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolConfig("EnableNoPaymentAddressUsersFilter");
+
         public bool IsMinimumWaitTimeMetDisabled()
         {
             return GetBoolConfig("DisableMinimumWaitTime");
@@ -77,13 +82,17 @@ namespace StatsDownload.TestHarness
 
         public bool IsOneHundredUsersFilterEnabled()
         {
-            return GetBoolConfig("RestrictStatsUploadToOneHundredUsers");
+            return GetBoolConfig("EnableOneHundredUsersFilter");
         }
 
         public bool IsSecureFilePayloadDisabled()
         {
             return GetBoolConfig("DisableSecureFilePayload");
         }
+
+        bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
+
+        bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
 
         private bool GetBoolConfig(string appSettingName)
         {
