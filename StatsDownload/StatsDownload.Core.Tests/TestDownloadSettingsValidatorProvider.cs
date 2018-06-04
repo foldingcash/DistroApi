@@ -14,7 +14,7 @@
         {
             directoryServiceMock = Substitute.For<IDirectoryService>();
 
-            systemUnderTest = new DownloadSettingsValidatorProvider(directoryServiceMock);
+            systemUnderTest = NewDownloadSettingsValidatorProvider(directoryServiceMock);
         }
 
         private static readonly string[] BadAcceptAnySslCertValues = { "anything else" };
@@ -38,6 +38,12 @@
         private IDirectoryService directoryServiceMock;
 
         private IDownloadSettingsValidatorService systemUnderTest;
+
+        [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewDownloadSettingsValidatorProvider(null));
+        }
 
         [Test]
         public void IsValidDownloadDirectory_WhenDirectoryDoesNotExist_ReturnsFalse()
@@ -86,6 +92,12 @@
             systemUnderTest.TryParseTimeout(input, out actual);
 
             Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        private IDownloadSettingsValidatorService NewDownloadSettingsValidatorProvider(
+            IDirectoryService directoryService)
+        {
+            return new DownloadSettingsValidatorProvider(directoryService);
         }
 
         [TestCaseSource(nameof(BadAcceptAnySslCertValues))]
