@@ -60,6 +60,19 @@
             Assert.That(userData.FriendlyName, Is.EqualTo("Name"));
         }
 
+        [TestCase("")]
+        [TestCase(null)]
+        [TestCase("part1.part2.part3.part4")]
+        public void Parse_WhenNoAdditionalUserData_ReturnsUserData(string name)
+        {
+            var userData = new UserData(name, 0, 0, 0);
+
+            systemUnderTest.Parse(userData);
+
+            Assert.IsNull(userData.BitcoinAddress);
+            Assert.IsNull(userData.FriendlyName);
+        }
+
         [TestCase("name")]
         [TestCase("Name_BadAddress")]
         [TestCase("Name.BadAddress")]
@@ -88,6 +101,7 @@
 
             Assert.IsNull(userData.FriendlyName);
         }
+
 
         private IAdditionalUserDataParserService NewAdditionalUserDataParserProvider(
             IBitcoinAddressValidatorService bitcoinAddressValidatorService)

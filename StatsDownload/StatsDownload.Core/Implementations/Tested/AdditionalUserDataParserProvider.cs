@@ -34,12 +34,12 @@
         private string[] GetTokenizedName(UserData userData)
         {
             string name = userData.Name;
-            return name.Split(new[] {'_', '-', '.'}, StringSplitOptions.RemoveEmptyEntries);
+            return name?.Split(new[] { '_', '-', '.' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         private bool IsInvalidTokenLength(string[] tokenizedName)
         {
-            return tokenizedName.Length < 1 || tokenizedName.Length > 3;
+            return tokenizedName == null || tokenizedName.Length < 1 || tokenizedName.Length > 3;
         }
 
         private void SetBitcoinAddress(string[] tokenizedName, UserData userData)
