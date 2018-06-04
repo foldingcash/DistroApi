@@ -69,6 +69,8 @@
     <Compile Include="IFilePayloadUploadService.cs" />
     <Compile Include="IFileReaderService.cs" />
     <Compile Include="IFileService.cs" />
+    <Compile Include="IGoogleUsersFilterSettings.cs" />
+    <Compile Include="INoPaymentAddressUsersSettings.cs" />
     <Compile Include="IResourceCleanupService.cs" />
     <Compile Include="ISecureFilePayloadService.cs" />
     <Compile Include="IStatsDownloadDatabaseService.cs" />
@@ -77,6 +79,7 @@
     <Compile Include="IStatsUploadDatabaseService.cs" />
     <Compile Include="IStatsUploadEmailService.cs" />
     <Compile Include="IStatsUploadService.cs" />
+    <Compile Include="IWhitespaceNameUsersFilterSettings.cs" />
     <Compile Include="IZeroPointUsersFilterSettings.cs" />
     <Compile Include="Logging\IApplicationLoggingService.cs" />
     <Compile Include="Logging\IFileDownloadLoggingService.cs" />

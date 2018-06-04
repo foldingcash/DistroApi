@@ -18,13 +18,14 @@ namespace StatsDownload.Core.Implementations.Tested
 
         public ParseResults Parse(string fileData)
         {
+            ParseResults results = innerService.Parse(fileData);
+
             if (settings.Enabled)
             {
-                ParseResults results = innerService.Parse(fileData);
                 return new ParseResults(results.UsersData.Where(data => data.TotalPoints > 0), results.FailedUsersData);
             }
 
-            return innerService.Parse(fileData);
+            return results;
         }
     }
 }
