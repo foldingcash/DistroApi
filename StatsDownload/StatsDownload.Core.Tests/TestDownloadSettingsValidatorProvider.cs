@@ -181,7 +181,7 @@
             Assert.That(actual, Is.True);
         }
 
-        [TestCaseSource(nameof(BadTimeoutValues))]
+        [TestCase("not an int")]
         public void TryParseTimeout_WhenAnIntIsNotProvided_ReturnsFalse(string input)
         {
             int output;
