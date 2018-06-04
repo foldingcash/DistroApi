@@ -15,7 +15,7 @@ namespace StatsDownload.Core.Tests
         {
             innerServiceMock = Substitute.For<IStatsFileParserService>();
 
-            settingsMock = Substitute.For<INoPaymentAddressUsersSettings>();
+            settingsMock = Substitute.For<INoPaymentAddressUsersFilterSettings>();
 
             systemUnderTest = new NoPaymentAddressUsersFilter(innerServiceMock, settingsMock);
         }
@@ -24,7 +24,7 @@ namespace StatsDownload.Core.Tests
 
         private IStatsFileParserService systemUnderTest;
 
-        private INoPaymentAddressUsersSettings settingsMock;
+        private INoPaymentAddressUsersFilterSettings settingsMock;
 
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()

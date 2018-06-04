@@ -70,7 +70,7 @@
     <Compile Include="IFileReaderService.cs" />
     <Compile Include="IFileService.cs" />
     <Compile Include="IGoogleUsersFilterSettings.cs" />
-    <Compile Include="INoPaymentAddressUsersSettings.cs" />
+    <Compile Include="INoPaymentAddressUsersFilterSettings.cs" />
     <Compile Include="IResourceCleanupService.cs" />
     <Compile Include="ISecureFilePayloadService.cs" />
     <Compile Include="IStatsDownloadDatabaseService.cs" />

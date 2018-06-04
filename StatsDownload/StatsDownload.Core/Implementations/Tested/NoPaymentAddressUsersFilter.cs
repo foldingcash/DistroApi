@@ -8,10 +8,10 @@ namespace StatsDownload.Core.Implementations.Tested
     {
         private readonly IStatsFileParserService innerService;
 
-        private readonly INoPaymentAddressUsersSettings settings;
+        private readonly INoPaymentAddressUsersFilterSettings settings;
 
         public NoPaymentAddressUsersFilter(IStatsFileParserService innerService,
-            INoPaymentAddressUsersSettings settings)
+            INoPaymentAddressUsersFilterSettings settings)
         {
             this.innerService = innerService;
             this.settings = settings;

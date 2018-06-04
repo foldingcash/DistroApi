@@ -1,6 +1,6 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
-    public interface INoPaymentAddressUsersSettings
+    public interface INoPaymentAddressUsersFilterSettings
     {
         bool Enabled { get; }
     }
