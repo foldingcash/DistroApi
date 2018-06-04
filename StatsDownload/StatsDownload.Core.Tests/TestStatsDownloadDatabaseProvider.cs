@@ -575,6 +575,7 @@
 
             InvokeIsAvailable();
 
+            loggingServiceMock.DidNotReceive().LogVerbose("Database connection was successful");
             databaseConnectionServiceMock.DidNotReceive().Open();
         }
 

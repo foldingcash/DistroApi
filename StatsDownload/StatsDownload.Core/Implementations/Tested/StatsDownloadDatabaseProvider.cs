@@ -253,7 +253,6 @@
             EnsureValidConnectionString(connectionString);
             IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(connectionString);
             EnsureDatabaseConnectionOpened(databaseConnection);
-            LogVerbose(DatabaseConnectionSuccessfulLogMessage);
             action?.Invoke(databaseConnection);
         }
 
@@ -297,6 +296,7 @@
             if (databaseConnection.ConnectionState == ConnectionState.Closed)
             {
                 databaseConnection.Open();
+                LogVerbose(DatabaseConnectionSuccessfulLogMessage);
             }
         }
 
