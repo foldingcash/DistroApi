@@ -2,12 +2,17 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-
     using NUnit.Framework;
 
     [TestFixture]
     public class TestEmailSettingsValidatorProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            systemUnderTest = new EmailSettingsValidatorProvider();
+        }
+
         private IEmailSettingsValidatorService systemUnderTest;
 
         [TestCase("")]
@@ -27,9 +32,10 @@
 
         [TestCase("")]
         [TestCase(null)]
-        public void ParseFromDisplayName_WhenInvalidSmtpHost_ThrowsEmailArgumentException(string unsafeSmtpHost)
+        public void ParseFromDisplayName_WhenInvalidFromDisplayName_ThrowsEmailArgumentException(
+            string unsafeFromDisplayName)
         {
-            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParseSmtpHost(unsafeSmtpHost)));
+            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParseFromDisplayName(unsafeFromDisplayName)));
         }
 
         [TestCase("Display Name")]
@@ -121,12 +127,6 @@
             string actual = systemUnderTest.ParseSmtpHost(unsafeSmtpHost);
 
             Assert.That(actual, Is.EqualTo(unsafeSmtpHost));
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            systemUnderTest = new EmailSettingsValidatorProvider();
         }
     }
 }

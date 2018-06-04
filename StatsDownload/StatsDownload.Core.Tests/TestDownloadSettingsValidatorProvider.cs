@@ -1,17 +1,22 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-
+    using Implementations.Tested;
+    using Interfaces;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
 
     [TestFixture]
     public class TestDownloadSettingsValidatorProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            directoryServiceMock = Substitute.For<IDirectoryService>();
+
+            systemUnderTest = NewDownloadSettingsValidatorProvider(directoryServiceMock);
+        }
+
         private static readonly string[] BadAcceptAnySslCertValues = { "anything else" };
 
         private static readonly string[] BadDownloadUriValues = { null };
@@ -35,6 +40,12 @@
         private IDownloadSettingsValidatorService systemUnderTest;
 
         [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => NewDownloadSettingsValidatorProvider(null));
+        }
+
+        [Test]
         public void IsValidDownloadDirectory_WhenDirectoryDoesNotExist_ReturnsFalse()
         {
             directoryServiceMock.Exists("DownloadDirectory").Returns(false);
@@ -54,12 +65,39 @@
             Assert.That(actual, Is.True);
         }
 
-        [SetUp]
-        public void SetUp()
+        [TestCase("100", 100)]
+        public void TryParseMinimumWaitTimeSpan_WhenGoodValueIsProvided_ReturnsParsedTrue(string input, int hours)
         {
-            directoryServiceMock = Substitute.For<IDirectoryService>();
+            var expected = new TimeSpan(hours, 0, 0);
 
-            systemUnderTest = new DownloadSettingsValidatorProvider(directoryServiceMock);
+            TimeSpan actual;
+            systemUnderTest.TryParseMinimumWaitTimeSpan(input, out actual);
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [TestCase("not an int")]
+        public void TryParseTimeout_WhenAnIntIsNotProvided_ReturnsFalse(string input)
+        {
+            int output;
+            bool actual = systemUnderTest.TryParseTimeout(input, out output);
+
+            Assert.That(actual, Is.False);
+        }
+
+        [TestCase("100", 100)]
+        public void TryParseTimeout_WhenAnIntIsProvided_ReturnsTheParsedInt(string input, int expected)
+        {
+            int actual;
+            systemUnderTest.TryParseTimeout(input, out actual);
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        private IDownloadSettingsValidatorService NewDownloadSettingsValidatorProvider(
+            IDirectoryService directoryService)
+        {
+            return new DownloadSettingsValidatorProvider(directoryService);
         }
 
         [TestCaseSource(nameof(BadAcceptAnySslCertValues))]
@@ -161,17 +199,6 @@
             Assert.That(actual, Is.EqualTo(TimeSpan.Zero));
         }
 
-        [TestCase("100", 100)]
-        public void TryParseMinimumWaitTimeSpan_WhenGoodValueIsProvided_ReturnsParsedTrue(string input, int hours)
-        {
-            var expected = new TimeSpan(hours, 0, 0);
-
-            TimeSpan actual;
-            systemUnderTest.TryParseMinimumWaitTimeSpan(input, out actual);
-
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
         [TestCaseSource(nameof(GoodMinimumWaitTimeInHoursValues))]
         public void TryParseMinimumWaitTimeSpan_WhenGoodValueIsProvided_ReturnsTrue(string input)
         {
@@ -179,24 +206,6 @@
             bool actual = systemUnderTest.TryParseMinimumWaitTimeSpan(input, out output);
 
             Assert.That(actual, Is.True);
-        }
-
-        [TestCaseSource(nameof(BadTimeoutValues))]
-        public void TryParseTimeout_WhenAnIntIsNotProvided_ReturnsFalse(string input)
-        {
-            int output;
-            bool actual = systemUnderTest.TryParseTimeout(input, out output);
-
-            Assert.That(actual, Is.False);
-        }
-
-        [TestCase("100", 100)]
-        public void TryParseTimeout_WhenAnIntIsProvided_ReturnsTheParsedInt(string input, int expected)
-        {
-            int actual;
-            systemUnderTest.TryParseTimeout(input, out actual);
-
-            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [TestCaseSource(nameof(BadTimeoutValues))]
