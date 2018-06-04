@@ -1,18 +1,24 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-
+    using Implementations.Tested;
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestAdditionalUserDataParserProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            bitcoinAddressValidatorServiceMock = Substitute.For<IBitcoinAddressValidatorService>();
+            bitcoinAddressValidatorServiceMock.IsValidBitcoinAddress("Address").Returns(true);
+
+            systemUnderTest = NewAdditionalUserDataParserProvider(bitcoinAddressValidatorServiceMock);
+        }
+
         private IBitcoinAddressValidatorService bitcoinAddressValidatorServiceMock;
 
         private IAdditionalUserDataParserService systemUnderTest;
@@ -61,14 +67,16 @@
         [TestCase("Name_TAG_BadAddress")]
         [TestCase("Name.TAG.BadAddress")]
         [TestCase("Name-TAG-BadAddress")]
-        public void Parse_WhenNoBitcoinAddress_ReturnsNoBitcoinAddress(string name)
+        public void Parse_WhenNoBitcoinAddress_ReturnsNoAdditionalData(string name)
         {
             var userData = new UserData(name, 0, 0, 0);
 
             systemUnderTest.Parse(userData);
 
             Assert.IsNull(userData.BitcoinAddress);
+            Assert.IsNull(userData.FriendlyName);
         }
+
 
         [TestCase("name")]
         [TestCase("Address")]
@@ -79,15 +87,6 @@
             systemUnderTest.Parse(userData);
 
             Assert.IsNull(userData.FriendlyName);
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            bitcoinAddressValidatorServiceMock = Substitute.For<IBitcoinAddressValidatorService>();
-            bitcoinAddressValidatorServiceMock.IsValidBitcoinAddress("Address").Returns(true);
-
-            systemUnderTest = NewAdditionalUserDataParserProvider(bitcoinAddressValidatorServiceMock);
         }
 
         private IAdditionalUserDataParserService NewAdditionalUserDataParserProvider(
