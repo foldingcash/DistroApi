@@ -7,6 +7,7 @@ namespace StatsDownload.Core.Implementations.Tested
     public class ZeroPointUsersFilter : IStatsFileParserService
     {
         private readonly IStatsFileParserService innerService;
+
         private readonly IZeroPointUsersFilterSettings settings;
 
         public ZeroPointUsersFilter(IStatsFileParserService innerService, IZeroPointUsersFilterSettings settings)
