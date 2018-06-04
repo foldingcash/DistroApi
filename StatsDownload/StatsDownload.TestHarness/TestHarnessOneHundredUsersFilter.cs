@@ -5,11 +5,11 @@
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
-    public class TestHarnessTopOneHundredUsersFilter : IStatsFileParserService
+    public class TestHarnessOneHundredUsersFilter : IStatsFileParserService
     {
         private readonly IStatsFileParserService innerService;
 
-        public TestHarnessTopOneHundredUsersFilter(IStatsFileParserService innerService)
+        public TestHarnessOneHundredUsersFilter(IStatsFileParserService innerService)
         {
             this.innerService = innerService;
         }

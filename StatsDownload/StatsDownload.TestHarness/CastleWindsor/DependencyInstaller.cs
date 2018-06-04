@@ -25,7 +25,7 @@
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),
-                Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessTopOneHundredUsersFilter>());
+                Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessOneHundredUsersFilter>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
