@@ -69,8 +69,6 @@
     <Compile Include="Implementations\Untested\DirectoryProvider.cs" />
     <Compile Include="Implementations\Untested\FileProvider.cs" />
     <Compile Include="Implementations\Untested\FileReaderProvider.cs" />
-    <Compile Include="Implementations\Untested\GuidProvider.cs" />
-    <Compile Include="Interfaces\IGuidService.cs" />
     <Compile Include="Implementations\Tested\FilePayloadSettingsProvider.cs" />
     <Compile Include="Implementations\Tested\DownloadSettingsValidatorProvider.cs" />
     <Compile Include="Implementations\Tested\DownloadProvider.cs" />
