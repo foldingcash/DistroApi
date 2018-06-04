@@ -5,7 +5,7 @@
     using System.Data;
     using System.Data.Common;
     using System.Linq;
-
+    using Interfaces.Logging;
     using NSubstitute;
     using NSubstitute.ClearExtensions;
 
@@ -15,7 +15,6 @@
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Logging;
 
     [TestFixture]
     public class TestStatsDownloadDatabaseProvider

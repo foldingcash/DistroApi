@@ -4,7 +4,7 @@
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
-
+    using Core.Interfaces.Logging;
     using StatsDownload.Core.Implementations.Tested;
     using StatsDownload.Core.Implementations.Untested;
     using StatsDownload.Core.Interfaces;
@@ -28,7 +28,6 @@
                 Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessOneHundredUsersFilter>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
-                Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
                 Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>(),
                 Component.For<IResourceCleanupService>().ImplementedBy<ResourceCleanupProvider>(),

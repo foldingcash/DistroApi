@@ -1,7 +1,6 @@
-﻿namespace StatsDownload.Core.Interfaces
+﻿namespace StatsDownload.Core.Interfaces.Logging
 {
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Logging;
+    using DataTransfer;
 
     public interface IStatsUploadLoggingService : ILoggingService
     {
