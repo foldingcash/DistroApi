@@ -3,11 +3,9 @@
     using System;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-
     using Castle.MicroKernel.Registration;
-
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.TestHarness.CastleWindsor;
+    using CastleWindsor;
+    using Core.Interfaces;
 
     public partial class MainForm : Form
     {
@@ -41,6 +39,7 @@
             var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
             fileDownloadServiceAction?.Invoke(fileDownloadService);
             CreateSeparationInLog();
+            WindsorContainer.Instance.Release(fileDownloadService);
         }
 
         private void CreateFileUploadServiceAndPerformAction(Action<IStatsUploadService> fileUploadServiceAction)
@@ -48,6 +47,7 @@
             var fileUploadService = WindsorContainer.Instance.Resolve<IStatsUploadService>();
             fileUploadServiceAction?.Invoke(fileUploadService);
             CreateSeparationInLog();
+            WindsorContainer.Instance.Release(fileUploadService);
         }
 
         private void CreateSeparationInLog()

@@ -2,10 +2,10 @@
 {
     using System;
     using System.Net.Security;
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using Interfaces.Logging;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Networking;
+    using Interfaces.Networking;
 
     public class DownloadProvider : IDownloadService
     {
@@ -16,7 +16,7 @@
         private readonly IWebClientFactory webClientFactory;
 
         public DownloadProvider(ILoggingService loggingService, IDateTimeService dateTimeService,
-                                IWebClientFactory webClientFactory)
+            IWebClientFactory webClientFactory)
         {
             this.loggingService = loggingService;
             this.dateTimeService = dateTimeService;
@@ -27,10 +27,17 @@
         {
             loggingService.LogVerbose($"Attempting to download file: {dateTimeService.DateTimeNow()}");
 
-            using (IWebClient webClient = webClientFactory.Create())
+            IWebClient webClient = null;
+
+            try
             {
+                webClient = webClientFactory.Create();
                 SetUpFileDownload(filePayload, webClient);
                 DownloadFile(filePayload, webClient);
+            }
+            finally
+            {
+                webClientFactory.Release(webClient);
             }
 
             loggingService.LogVerbose($"File download complete: {dateTimeService.DateTimeNow()}");
