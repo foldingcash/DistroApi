@@ -39,14 +39,44 @@
         private IWebClient webClientMock;
 
         [Test]
-        public void DownloadFile_WhenInvoked_DisposesSslOverridePolicyWhenFinished()
+        public void DownloadFile_WhenErrorOccursDuringDownload_DisposesWebClient()
+        {
+            webClientMock.When(client => client.DownloadFile(Arg.Any<Uri>(), Arg.Any<string>()))
+                         .Do(callInfo => { throw new Exception(); });
+
+            Assert.Throws<Exception>(() => systemUnderTest.DownloadFile(filePayload));
+
+            Received.InOrder(() =>
+            {
+                webClientMock.DownloadFile(filePayload.DownloadUri, filePayload.DownloadFilePath);
+                webClientMock.Dispose();
+            });
+        }
+
+        [Test]
+        public void DownloadFile_WhenErrorOccursDuringDownload_ReleasesWebClient()
+        {
+            webClientMock.When(client => client.DownloadFile(Arg.Any<Uri>(), Arg.Any<string>()))
+                         .Do(callInfo => { throw new Exception(); });
+
+            Assert.Throws<Exception>(() => systemUnderTest.DownloadFile(filePayload));
+
+            Received.InOrder(() =>
+            {
+                webClientMock.DownloadFile(filePayload.DownloadUri, filePayload.DownloadFilePath);
+                webClientFactoryMock.Release(webClientMock);
+            });
+        }
+
+        [Test]
+        public void DownloadFile_WhenInvoked_DisposesWebClient()
         {
             systemUnderTest.DownloadFile(filePayload);
 
             Received.InOrder(() =>
             {
                 webClientMock.DownloadFile(filePayload.DownloadUri, filePayload.DownloadFilePath);
-                webClientMock.SslPolicyOverride = null;
+                webClientMock.Dispose();
             });
         }
 
@@ -56,6 +86,18 @@
             systemUnderTest.DownloadFile(filePayload);
 
             webClientMock.Received(1).DownloadFile(filePayload.DownloadUri, filePayload.DownloadFilePath);
+        }
+
+        [Test]
+        public void DownloadFile_WhenInvoked_ReleasesWebClient()
+        {
+            systemUnderTest.DownloadFile(filePayload);
+
+            Received.InOrder(() =>
+            {
+                webClientMock.DownloadFile(filePayload.DownloadUri, filePayload.DownloadFilePath);
+                webClientFactoryMock.Release(webClientMock);
+            });
         }
 
         [Test]

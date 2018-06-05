@@ -27,11 +27,18 @@
         {
             loggingService.LogVerbose($"Attempting to download file: {dateTimeService.DateTimeNow()}");
 
-            using (IWebClient webClient = webClientFactory.Create())
+            IWebClient webClient = null;
+
+            try
             {
+                webClient = webClientFactory.Create();
                 SetUpFileDownload(filePayload, webClient);
                 DownloadFile(filePayload, webClient);
-                webClient.SslPolicyOverride = null;
+            }
+            finally
+            {
+                webClient?.Dispose();
+                webClientFactory.Release(webClient);
             }
 
             loggingService.LogVerbose($"File download complete: {dateTimeService.DateTimeNow()}");
