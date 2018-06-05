@@ -3,15 +3,15 @@
 ### Hardware Requirements
 
 * SSD 120GB+
-* i5 Intel / AMD ?
+* i5 Intel / Ryzen 5 AMD
 * 16 GB
 
 ### Development Dependencies
 
 * .NET Framework 4.5.2
 * Visual Studio 2015
-* ReSharper
 * Microsoft SQL Server
+* ReSharper
 
 ### Getting Started
 
@@ -66,6 +66,17 @@
 	* Accept all SSL certificates regardless if they are valid
 5. MinimumWaitTimeInHours
 	* The amount of time in hours we should wait between file downloads
+	
+#### Stats Upload Filter Settings
+
+1. EnableNoPaymentAddressUsersFilter
+	* The stats upload only processes users with a payment address
+2. EnableZeroPointUsersFilter
+	* The stats upload will filter out users with zero points
+3. EnableWhitespaceNameUsersFilter
+	* The stats upload will filter out users with a whitespace name
+4. EnableGoogleUsersFilter
+	* The stats upload will filter out users whoms name start with 'google'
 
 #### Test Harness Only Settings
 
@@ -73,6 +84,8 @@
 	* Disables the minimum wait time feature
 2. DisableSecureFilePayload
 	* Disables trying to upgrade HTTP connections to HTTPS connections automatically
+3. EnableOneHundredUsersFilter
+	* The stats upload only processes one hundred users
 
 #### File Server Test Harness Settings
 
