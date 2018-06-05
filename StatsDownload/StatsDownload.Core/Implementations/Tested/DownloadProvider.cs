@@ -37,7 +37,6 @@
             }
             finally
             {
-                webClient?.Dispose();
                 webClientFactory.Release(webClient);
             }
 
