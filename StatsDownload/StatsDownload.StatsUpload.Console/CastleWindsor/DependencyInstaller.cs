@@ -19,7 +19,9 @@
             container.Register(
                 Component.For<IApplicationLoggingService>().ImplementedBy<StatsUploadConsoleLoggingProvider>(),
                 Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService>()
-                         .ImplementedBy<StatsUploadConsoleSettingsProvider>());
+                         .ImplementedBy<StatsUploadConsoleSettingsProvider>()
+                         .Forward<IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
+                             IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
