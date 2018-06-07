@@ -1,14 +1,11 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
     using System.Collections.Generic;
-
-    using StatsDownload.Core.Interfaces.DataTransfer;
+    using DataTransfer;
 
     public interface IStatsUploadDatabaseService
     {
-        void AddUserRejections(int downloadId, IEnumerable<FailedUserData> failedUsersData);
-
-        void AddUsersData(int downloadId, IEnumerable<UserData> usersData);
+        void AddUsers(int downloadId, IEnumerable<UserData> usersData, IEnumerable<FailedUserData> failedUsers);
 
         IEnumerable<int> GetDownloadsReadyForUpload();
 

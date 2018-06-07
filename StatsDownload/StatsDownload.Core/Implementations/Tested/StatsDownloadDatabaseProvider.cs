@@ -52,17 +52,10 @@
             this.errorMessageService = errorMessageService;
         }
 
-        public void AddUserRejections(int downloadId, IEnumerable<FailedUserData> failedUsersData)
+        public void AddUsers(int downloadId, IEnumerable<UserData> users, IEnumerable<FailedUserData> failedUsers)
         {
             LogMethodInvoked();
-            CreateDatabaseConnectionAndExecuteAction(
-                service => { AddUserRejections(service, downloadId, failedUsersData); });
-        }
-
-        public void AddUsersData(int downloadId, IEnumerable<UserData> usersData)
-        {
-            LogMethodInvoked();
-            CreateDatabaseConnectionAndExecuteAction(service => { AddUsersData(service, downloadId, usersData); });
+            CreateDatabaseConnectionAndExecuteAction(service => { AddUsers(service, downloadId, users, failedUsers); });
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
@@ -151,7 +144,8 @@
             CreateDatabaseConnectionAndExecuteAction(UpdateToLatest);
         }
 
-        private void AddUserRejections(IDatabaseConnectionService databaseConnection, int downloadId,
+        private void AddUserRejections(IDatabaseConnectionService databaseConnection, DbTransaction transaction,
+            int downloadId,
             IEnumerable<FailedUserData> failedUsersData)
         {
             AddUserRejectionParameters parameters = CreateAddUserRejectionParameters(databaseConnection);
@@ -160,9 +154,10 @@
             {
                 command.CommandText = Constants.StatsDownloadDatabase.AddUserRejectionProcedureName;
                 command.CommandType = CommandType.StoredProcedure;
+                command.Transaction = transaction;
                 command.Parameters.AddRange(parameters.AllParameters);
 
-                foreach (FailedUserData failedUserData in failedUsersData)
+                foreach (FailedUserData failedUserData in failedUsersData ?? new FailedUserData[0])
                 {
                     SetAddUserRejectionParameters(downloadId, failedUserData, parameters);
                     command.ExecuteNonQuery();
@@ -170,7 +165,8 @@
             }
         }
 
-        private void AddUsersData(IDatabaseConnectionService databaseConnection, int downloadId,
+        private void AddUsersData(IDatabaseConnectionService databaseConnection, DbTransaction transaction,
+            int downloadId,
             IEnumerable<UserData> usersData)
         {
             AddUserDataParameters parameters = CreateAddUserDataParameters(databaseConnection);
@@ -181,12 +177,14 @@
                 {
                     addUserDataCommand.CommandText = Constants.StatsDownloadDatabase.AddUserDataProcedureName;
                     addUserDataCommand.CommandType = CommandType.StoredProcedure;
+                    addUserDataCommand.Transaction = transaction;
                     addUserDataCommand.Parameters.AddRange(parameters.AllParameters);
 
                     rebuildIndicesCommand.CommandText = Constants.StatsDownloadDatabase.RebuildIndicesProcedureName;
                     rebuildIndicesCommand.CommandType = CommandType.StoredProcedure;
+                    rebuildIndicesCommand.Transaction = transaction;
 
-                    for (var index = 0; index < usersData.Count(); index++)
+                    for (var index = 0; index < (usersData?.Count() ?? 0); index++)
                     {
                         UserData userData = usersData.ElementAt(index);
                         SetAddUserDataParameterValues(downloadId, userData, parameters);
@@ -198,6 +196,24 @@
                         }
                     }
                 }
+            }
+        }
+
+        private void AddUsers(IDatabaseConnectionService databaseConnection, int downloadId,
+            IEnumerable<UserData> users, IEnumerable<FailedUserData> failedUsers)
+        {
+            var transaction = databaseConnection.CreateTransaction();
+
+            try
+            {
+                AddUserRejections(databaseConnection, transaction, downloadId, failedUsers);
+                AddUsersData(databaseConnection, transaction, downloadId, users);
+                transaction?.Commit();
+            }
+            catch (Exception)
+            {
+                transaction?.Rollback();
+                throw;
             }
         }
 
