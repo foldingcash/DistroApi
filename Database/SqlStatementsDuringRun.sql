@@ -83,7 +83,7 @@ BEGIN TRY
 	COMMIT
 END TRY
 BEGIN CATCH
-	ROLLBACK
+	ROLLBACK;
 END CATCH
 
 -- Use this to update the download status to show the stats upload has completed
