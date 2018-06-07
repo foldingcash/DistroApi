@@ -5,9 +5,9 @@
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
     using Core.Implementations.Tested;
-    using Core.Implementations.Untested;
     using Core.Interfaces;
     using Core.Interfaces.Logging;
+    using Core.Wrappers;
     using Email;
     using Logging;
     using SharpZipLib;
