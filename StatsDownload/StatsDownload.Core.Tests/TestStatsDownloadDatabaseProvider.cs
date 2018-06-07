@@ -314,10 +314,14 @@
                 dbCommand => command = dbCommand
             });
 
+            DbTransaction transactionMock = Substitute.For<DbTransaction>();
+            databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
+
             systemUnderTest.AddUsers(1, null, null);
 
             command.Received(1).CommandText = "[FoldingCoin].[AddUserData]";
             command.Received(1).CommandType = CommandType.StoredProcedure;
+            command.Received(1).Transaction = transactionMock;
         }
 
         [Test]
@@ -326,10 +330,14 @@
             DbCommand command = default(DbCommand);
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
+            DbTransaction transactionMock = Substitute.For<DbTransaction>();
+            databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
+
             systemUnderTest.AddUsers(1, null, null);
 
             command.Received(1).CommandText = "[FoldingCoin].[AddUserRejection]";
             command.Received(1).CommandType = CommandType.StoredProcedure;
+            command.Received(1).Transaction = transactionMock;
         }
 
         [Test]
@@ -343,10 +351,14 @@
                 dbCommand => command = dbCommand
             });
 
+            DbTransaction transactionMock = Substitute.For<DbTransaction>();
+            databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
+
             systemUnderTest.AddUsers(1, null, null);
 
             command.Received(1).CommandText = "[FoldingCoin].[RebuildIndices]";
             command.Received(1).CommandType = CommandType.StoredProcedure;
+            command.Received(1).Transaction = transactionMock;
         }
 
         [Test]

@@ -144,7 +144,8 @@
             CreateDatabaseConnectionAndExecuteAction(UpdateToLatest);
         }
 
-        private void AddUserRejections(IDatabaseConnectionService databaseConnection, int downloadId,
+        private void AddUserRejections(IDatabaseConnectionService databaseConnection, DbTransaction transaction,
+            int downloadId,
             IEnumerable<FailedUserData> failedUsersData)
         {
             AddUserRejectionParameters parameters = CreateAddUserRejectionParameters(databaseConnection);
@@ -153,6 +154,7 @@
             {
                 command.CommandText = Constants.StatsDownloadDatabase.AddUserRejectionProcedureName;
                 command.CommandType = CommandType.StoredProcedure;
+                command.Transaction = transaction;
                 command.Parameters.AddRange(parameters.AllParameters);
 
                 foreach (FailedUserData failedUserData in failedUsersData ?? new FailedUserData[0])
@@ -163,7 +165,8 @@
             }
         }
 
-        private void AddUsersData(IDatabaseConnectionService databaseConnection, int downloadId,
+        private void AddUsersData(IDatabaseConnectionService databaseConnection, DbTransaction transaction,
+            int downloadId,
             IEnumerable<UserData> usersData)
         {
             AddUserDataParameters parameters = CreateAddUserDataParameters(databaseConnection);
@@ -174,10 +177,12 @@
                 {
                     addUserDataCommand.CommandText = Constants.StatsDownloadDatabase.AddUserDataProcedureName;
                     addUserDataCommand.CommandType = CommandType.StoredProcedure;
+                    addUserDataCommand.Transaction = transaction;
                     addUserDataCommand.Parameters.AddRange(parameters.AllParameters);
 
                     rebuildIndicesCommand.CommandText = Constants.StatsDownloadDatabase.RebuildIndicesProcedureName;
                     rebuildIndicesCommand.CommandType = CommandType.StoredProcedure;
+                    rebuildIndicesCommand.Transaction = transaction;
 
                     for (var index = 0; index < (usersData?.Count() ?? 0); index++)
                     {
@@ -201,8 +206,8 @@
 
             try
             {
-                AddUserRejections(databaseConnection, downloadId, failedUsers);
-                AddUsersData(databaseConnection, downloadId, users);
+                AddUserRejections(databaseConnection, transaction, downloadId, failedUsers);
+                AddUsersData(databaseConnection, transaction, downloadId, users);
                 transaction?.Commit();
             }
             catch (Exception)
