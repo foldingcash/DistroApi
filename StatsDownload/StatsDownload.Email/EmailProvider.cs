@@ -19,8 +19,8 @@
         private readonly int WaitTimeInMillisecondsBeforeTryingSendAgain = 5000;
 
         public EmailProvider(IEmailSettingsService settingsService,
-                             IEmailSettingsValidatorService emailSettingsValidatorService,
-                             ILoggingService loggingService)
+            IEmailSettingsValidatorService emailSettingsValidatorService,
+            ILoggingService loggingService)
         {
             if (settingsService == null)
             {
@@ -163,14 +163,14 @@
             sb.AppendLine();
 
             return new SmtpClient
-                   {
-                       Host = host,
-                       Port = port,
-                       EnableSsl = enableSsl,
-                       DeliveryMethod = deliveryMethod,
-                       UseDefaultCredentials = useDefaultCredentials,
-                       Credentials = credentials
-                   };
+            {
+                Host = host,
+                Port = port,
+                EnableSsl = enableSsl,
+                DeliveryMethod = deliveryMethod,
+                UseDefaultCredentials = useDefaultCredentials,
+                Credentials = credentials
+            };
         }
 
         private string ParseFromAddress(string unsafeFromAddress)
@@ -203,8 +203,9 @@
             return emailSettingsValidatorService.ParseSmtpHost(unsafeSmtpHost);
         }
 
-        private void SendMessage(StringBuilder sb, SmtpClient smtpClient, MailAddress fromAddress, MailAddress toAddress,
-                                 string subject, string body)
+        private void SendMessage(StringBuilder sb, SmtpClient smtpClient, MailAddress fromAddress,
+            MailAddress toAddress,
+            string subject, string body)
         {
             sb.AppendLine($"Sending message to {toAddress.Address}");
 

@@ -1,10 +1,9 @@
 ﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
-
-    using StatsDownload.Core.DataTransfer;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
+    using DataTransfer;
+    using Interfaces;
+    using Interfaces.DataTransfer;
 
     public class FileDownloadMinimumWaitTimeProvider : IFileDownloadMinimumWaitTimeService
     {

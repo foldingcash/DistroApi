@@ -1,8 +1,7 @@
 ﻿namespace StatsDownload.Core.Implementations.Untested
 {
     using System;
-
-    using StatsDownload.Core.Interfaces;
+    using Interfaces;
 
     public class DateTimeProvider : IDateTimeService
     {

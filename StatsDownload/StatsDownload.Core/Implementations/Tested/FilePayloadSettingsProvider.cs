@@ -2,11 +2,11 @@
 {
     using System;
     using System.IO;
+    using DataTransfer;
+    using Exceptions;
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using Interfaces.Logging;
-    using StatsDownload.Core.DataTransfer;
-    using StatsDownload.Core.Exceptions;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
     {
@@ -19,9 +19,9 @@
         private readonly ILoggingService loggingService;
 
         public FilePayloadSettingsProvider(IDateTimeService dateTimeService,
-                                           IDownloadSettingsService downloadSettingsService,
-                                           IDownloadSettingsValidatorService downloadSettingsValidatorService,
-                                           ILoggingService loggingService)
+            IDownloadSettingsService downloadSettingsService,
+            IDownloadSettingsValidatorService downloadSettingsValidatorService,
+            ILoggingService loggingService)
         {
             if (dateTimeService == null)
             {
@@ -113,7 +113,7 @@
         }
 
         private void SetDecompressedDownloadFileDetails(FilePayload filePayload, DateTime dateTime,
-                                                        string downloadDirectory)
+            string downloadDirectory)
         {
             string decompressedFileName = $"{dateTime.ToFileTime()}.{Constants.FilePayload.DecompressedFileName}";
 
@@ -148,7 +148,8 @@
             if (!TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out acceptAnySslCert))
             {
                 acceptAnySslCert = false;
-                loggingService.LogVerbose("The accept any SSL cert configuration was invalid, using the default value.");
+                loggingService.LogVerbose(
+                    "The accept any SSL cert configuration was invalid, using the default value.");
             }
 
             TimeSpan minimumWaitTimeSpan;
@@ -176,7 +177,8 @@
         {
             string downloadFileName = GetDownloadFileNameWithExtension(dateTime);
 
-            filePayload.FailedDownloadFilePath = Path.Combine(downloadDirectory, "FileDownloadFailed", downloadFileName);
+            filePayload.FailedDownloadFilePath =
+                Path.Combine(downloadDirectory, "FileDownloadFailed", downloadFileName);
         }
 
         private bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)

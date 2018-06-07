@@ -1,9 +1,8 @@
 ﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
-
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
+    using Interfaces;
+    using Interfaces.DataTransfer;
 
     public class FilePayloadUploadProvider : IFilePayloadUploadService
     {
@@ -14,8 +13,8 @@
         private readonly IFileReaderService fileReaderService;
 
         public FilePayloadUploadProvider(IFileCompressionService fileCompressionService,
-                                         IFileReaderService fileReaderService,
-                                         IFileDownloadDatabaseService fileDownloadDatabaseService)
+            IFileReaderService fileReaderService,
+            IFileDownloadDatabaseService fileDownloadDatabaseService)
         {
             if (fileCompressionService == null)
             {
@@ -39,7 +38,8 @@
 
         public void UploadFile(FilePayload filePayload)
         {
-            fileCompressionService.DecompressFile(filePayload.DownloadFilePath, filePayload.DecompressedDownloadFilePath);
+            fileCompressionService.DecompressFile(filePayload.DownloadFilePath,
+                filePayload.DecompressedDownloadFilePath);
             fileReaderService.ReadFile(filePayload);
             fileDownloadDatabaseService.FileDownloadFinished(filePayload);
         }

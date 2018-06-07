@@ -2,20 +2,50 @@
 {
     using System;
     using System.Net;
+    using Exceptions;
+    using Implementations.Tested;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using Interfaces.Logging;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Exceptions;
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestFileDownloadProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            dateTime = DateTime.Today;
+
+            fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
+            fileDownloadDatabaseServiceMock.IsAvailable().Returns(true);
+
+            loggingServiceMock = Substitute.For<IFileDownloadLoggingService>();
+
+            downloadServiceMock = Substitute.For<IDownloadService>();
+
+            filePayloadSettingsServiceMock = Substitute.For<IFilePayloadSettingsService>();
+
+            resourceCleanupServiceMock = Substitute.For<IResourceCleanupService>();
+
+            fileDownloadMinimumWaitTimeServiceMock = Substitute.For<IFileDownloadMinimumWaitTimeService>();
+            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>()).Returns(true);
+
+            dateTimeServiceMock = Substitute.For<IDateTimeService>();
+            dateTimeServiceMock.DateTimeNow().Returns(dateTime);
+
+            filePayloadUploadServiceMock = Substitute.For<IFilePayloadUploadService>();
+
+            fileDownloadEmailServiceMock = Substitute.For<IFileDownloadEmailService>();
+
+            systemUnderTest = NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock,
+                downloadServiceMock, filePayloadSettingsServiceMock, resourceCleanupServiceMock,
+                fileDownloadMinimumWaitTimeServiceMock, dateTimeServiceMock, filePayloadUploadServiceMock,
+                fileDownloadEmailServiceMock);
+        }
+
         private DateTime dateTime;
 
         private IDateTimeService dateTimeServiceMock;
@@ -43,49 +73,57 @@
         {
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadProvider(null, loggingServiceMock, downloadServiceMock, filePayloadSettingsServiceMock,
-                    resourceCleanupServiceMock, fileDownloadMinimumWaitTimeServiceMock, dateTimeServiceMock,
-                    filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
+                    NewFileDownloadProvider(null, loggingServiceMock, downloadServiceMock,
+                        filePayloadSettingsServiceMock,
+                        resourceCleanupServiceMock, fileDownloadMinimumWaitTimeServiceMock, dateTimeServiceMock,
+                        filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadProvider(fileDownloadDatabaseServiceMock, null, downloadServiceMock,
-                    filePayloadSettingsServiceMock, resourceCleanupServiceMock, fileDownloadMinimumWaitTimeServiceMock,
-                    dateTimeServiceMock, filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
+                    NewFileDownloadProvider(fileDownloadDatabaseServiceMock, null, downloadServiceMock,
+                        filePayloadSettingsServiceMock, resourceCleanupServiceMock,
+                        fileDownloadMinimumWaitTimeServiceMock,
+                        dateTimeServiceMock, filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, null,
-                    filePayloadSettingsServiceMock, resourceCleanupServiceMock, fileDownloadMinimumWaitTimeServiceMock,
-                    dateTimeServiceMock, filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
+                    NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, null,
+                        filePayloadSettingsServiceMock, resourceCleanupServiceMock,
+                        fileDownloadMinimumWaitTimeServiceMock,
+                        dateTimeServiceMock, filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock, null,
-                    resourceCleanupServiceMock, fileDownloadMinimumWaitTimeServiceMock, dateTimeServiceMock,
-                    filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
+                    NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
+                        null,
+                        resourceCleanupServiceMock, fileDownloadMinimumWaitTimeServiceMock, dateTimeServiceMock,
+                        filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
-                    filePayloadSettingsServiceMock, null, fileDownloadMinimumWaitTimeServiceMock, dateTimeServiceMock,
-                    filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
+                    NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
+                        filePayloadSettingsServiceMock, null, fileDownloadMinimumWaitTimeServiceMock,
+                        dateTimeServiceMock,
+                        filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
-                    filePayloadSettingsServiceMock, resourceCleanupServiceMock, null, dateTimeServiceMock,
-                    filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
+                    NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
+                        filePayloadSettingsServiceMock, resourceCleanupServiceMock, null, dateTimeServiceMock,
+                        filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
-                    filePayloadSettingsServiceMock, resourceCleanupServiceMock, fileDownloadMinimumWaitTimeServiceMock,
-                    null, filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
+                    NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
+                        filePayloadSettingsServiceMock, resourceCleanupServiceMock,
+                        fileDownloadMinimumWaitTimeServiceMock,
+                        null, filePayloadUploadServiceMock, fileDownloadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
-                    filePayloadSettingsServiceMock, resourceCleanupServiceMock, fileDownloadMinimumWaitTimeServiceMock,
-                    dateTimeServiceMock, null, fileDownloadEmailServiceMock));
+                    NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
+                        filePayloadSettingsServiceMock, resourceCleanupServiceMock,
+                        fileDownloadMinimumWaitTimeServiceMock,
+                        dateTimeServiceMock, null, fileDownloadEmailServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
-                    filePayloadSettingsServiceMock, resourceCleanupServiceMock, fileDownloadMinimumWaitTimeServiceMock,
-                    dateTimeServiceMock, filePayloadUploadServiceMock, null));
+                    NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock, downloadServiceMock,
+                        filePayloadSettingsServiceMock, resourceCleanupServiceMock,
+                        fileDownloadMinimumWaitTimeServiceMock,
+                        dateTimeServiceMock, filePayloadUploadServiceMock, null));
         }
 
         [Test]
@@ -364,53 +402,21 @@
             fileDownloadDatabaseServiceMock.Received().FileDownloadError(Arg.Any<FileDownloadResult>());
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            dateTime = DateTime.Today;
-
-            fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
-            fileDownloadDatabaseServiceMock.IsAvailable().Returns(true);
-
-            loggingServiceMock = Substitute.For<IFileDownloadLoggingService>();
-
-            downloadServiceMock = Substitute.For<IDownloadService>();
-
-            filePayloadSettingsServiceMock = Substitute.For<IFilePayloadSettingsService>();
-
-            resourceCleanupServiceMock = Substitute.For<IResourceCleanupService>();
-
-            fileDownloadMinimumWaitTimeServiceMock = Substitute.For<IFileDownloadMinimumWaitTimeService>();
-            fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>()).Returns(true);
-
-            dateTimeServiceMock = Substitute.For<IDateTimeService>();
-            dateTimeServiceMock.DateTimeNow().Returns(dateTime);
-
-            filePayloadUploadServiceMock = Substitute.For<IFilePayloadUploadService>();
-
-            fileDownloadEmailServiceMock = Substitute.For<IFileDownloadEmailService>();
-
-            systemUnderTest = NewFileDownloadProvider(fileDownloadDatabaseServiceMock, loggingServiceMock,
-                downloadServiceMock, filePayloadSettingsServiceMock, resourceCleanupServiceMock,
-                fileDownloadMinimumWaitTimeServiceMock, dateTimeServiceMock, filePayloadUploadServiceMock,
-                fileDownloadEmailServiceMock);
-        }
-
         private FileDownloadResult InvokeDownloadFile()
         {
             return systemUnderTest.DownloadStatsFile();
         }
 
         private IFileDownloadService NewFileDownloadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
-                                                             IFileDownloadLoggingService loggingService,
-                                                             IDownloadService downloadService,
-                                                             IFilePayloadSettingsService filePayloadSettingsService,
-                                                             IResourceCleanupService resourceCleanupService,
-                                                             IFileDownloadMinimumWaitTimeService
-                                                                 fileDownloadMinimumWaitTimeService,
-                                                             IDateTimeService dateTimeService,
-                                                             IFilePayloadUploadService filePayloadUploadService,
-                                                             IFileDownloadEmailService fileDownloadEmailService)
+            IFileDownloadLoggingService loggingService,
+            IDownloadService downloadService,
+            IFilePayloadSettingsService filePayloadSettingsService,
+            IResourceCleanupService resourceCleanupService,
+            IFileDownloadMinimumWaitTimeService
+                fileDownloadMinimumWaitTimeService,
+            IDateTimeService dateTimeService,
+            IFilePayloadUploadService filePayloadUploadService,
+            IFileDownloadEmailService fileDownloadEmailService)
         {
             return new FileDownloadProvider(fileDownloadDatabaseService, loggingService, downloadService,
                 filePayloadSettingsService, resourceCleanupService, fileDownloadMinimumWaitTimeService, dateTimeService,

@@ -2,7 +2,6 @@
 {
     using Castle.Facilities.WcfIntegration;
     using Castle.Windsor;
-
     using CastleWindsorContainer = Castle.Windsor.WindsorContainer;
 
     internal static class WindsorContainer

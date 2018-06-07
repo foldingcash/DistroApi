@@ -1,8 +1,7 @@
 ﻿namespace StatsDownload.Core.Interfaces.DataTransfer
 {
     using System.Collections.Generic;
-
-    using StatsDownload.Core.Interfaces.Enums;
+    using Enums;
 
     public class StatsUploadResults
     {
@@ -16,7 +15,8 @@
         {
         }
 
-        private StatsUploadResults(bool success, FailedReason failedReason, IEnumerable<StatsUploadResult> uploadResults)
+        private StatsUploadResults(bool success, FailedReason failedReason,
+            IEnumerable<StatsUploadResult> uploadResults)
         {
             Success = success;
             FailedReason = failedReason;

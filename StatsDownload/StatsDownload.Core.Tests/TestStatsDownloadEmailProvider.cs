@@ -2,20 +2,27 @@
 {
     using System;
     using System.Collections.Generic;
-
+    using Email;
+    using Implementations.Tested;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Email;
 
     [TestFixture]
     public class TestStatsDownloadEmailProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            emailServiceMock = Substitute.For<IEmailService>();
+
+            errorMessageServiceMock = Substitute.For<IErrorMessageService>();
+
+            systemUnderTest = NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock);
+        }
+
         private IEmailService emailServiceMock;
 
         private IErrorMessageService errorMessageServiceMock;
@@ -72,18 +79,8 @@
             emailServiceMock.Received().SendEmail("Stats Upload Failed", "ErrorMessage");
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            emailServiceMock = Substitute.For<IEmailService>();
-
-            errorMessageServiceMock = Substitute.For<IErrorMessageService>();
-
-            systemUnderTest = NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock);
-        }
-
         private IStatsDownloadEmailService NewStatsDownloadEmailProvider(IEmailService emailService,
-                                                                         IErrorMessageService errorMessageService)
+            IErrorMessageService errorMessageService)
         {
             return new StatsDownloadEmailProvider(emailService, errorMessageService);
         }

@@ -17,7 +17,6 @@
             return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
         }
 
-
         public string GetAcceptAnySslCert()
         {
             return ConfigurationManager.AppSettings["AcceptAnySslCert"];

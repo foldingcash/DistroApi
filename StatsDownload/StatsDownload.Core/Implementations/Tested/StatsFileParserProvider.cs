@@ -3,11 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-
-    using StatsDownload.Core.Exceptions;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
+    using Exceptions;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
 
     public class StatsFileParserProvider : IStatsFileParserService
     {
@@ -65,7 +64,8 @@
 
                 if (IsInvalidUserData(unparsedUserData))
                 {
-                    failedUsersData.Add(new FailedUserData(lineIndex + 1, currentLine, RejectionReason.UnexpectedFormat));
+                    failedUsersData.Add(
+                        new FailedUserData(lineIndex + 1, currentLine, RejectionReason.UnexpectedFormat));
                     continue;
                 }
 
