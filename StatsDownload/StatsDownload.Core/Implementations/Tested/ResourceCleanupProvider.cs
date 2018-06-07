@@ -1,10 +1,10 @@
 ﻿namespace StatsDownload.Core.Implementations.Tested
 {
     using System;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using Interfaces.Logging;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
 
     public class ResourceCleanupProvider : IResourceCleanupService
     {

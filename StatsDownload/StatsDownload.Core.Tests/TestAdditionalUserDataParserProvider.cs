@@ -90,7 +90,6 @@
             Assert.IsNull(userData.FriendlyName);
         }
 
-
         [TestCase("name")]
         [TestCase("Address")]
         public void Parse_WhenNoFriendlyName_ReturnsNoFriendlyName(string name)
@@ -101,7 +100,6 @@
 
             Assert.IsNull(userData.FriendlyName);
         }
-
 
         private IAdditionalUserDataParserService NewAdditionalUserDataParserProvider(
             IBitcoinAddressValidatorService bitcoinAddressValidatorService)

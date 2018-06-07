@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using StatsDownload.Core.Interfaces;
-using StatsDownload.Core.Interfaces.DataTransfer;
-
-namespace StatsDownload.Core.Implementations.Tested
+﻿namespace StatsDownload.Core.Implementations.Tested
 {
+    using System;
+    using System.Linq;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+
     public class GoogleUsersFilter : IStatsFileParserService
     {
         private readonly IStatsFileParserService innerService;

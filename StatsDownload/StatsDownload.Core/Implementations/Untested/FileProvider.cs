@@ -1,8 +1,7 @@
 ﻿namespace StatsDownload.Core.Implementations.Untested
 {
     using System.IO;
-
-    using StatsDownload.Core.Interfaces;
+    using Interfaces;
 
     public class FileProvider : IFileService
     {

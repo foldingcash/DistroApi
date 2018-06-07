@@ -1,18 +1,25 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-
+    using Implementations.Tested;
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestFileDownloadMinimumWaitTimeProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            filePayload = new FilePayload();
+
+            fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
+
+            systemUnderTest = NewFileDownloadMinimumWaitTimeProvider(fileDownloadDatabaseServiceMock);
+        }
+
         private IFileDownloadDatabaseService fileDownloadDatabaseServiceMock;
 
         private FilePayload filePayload;
@@ -77,16 +84,6 @@
             bool actual = InvokeIsMinimumWaitTimeMet();
 
             Assert.That(actual, Is.True);
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            filePayload = new FilePayload();
-
-            fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
-
-            systemUnderTest = NewFileDownloadMinimumWaitTimeProvider(fileDownloadDatabaseServiceMock);
         }
 
         private bool InvokeIsMinimumWaitTimeMet()

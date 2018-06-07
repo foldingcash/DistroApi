@@ -3,22 +3,21 @@
     using System.Configuration;
     using System.IO;
     using System.Reflection;
-
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Email;
+    using Core.Interfaces;
+    using Email;
 
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-                                                       IEmailSettingsService
+        IEmailSettingsService
     {
+        public string GetConnectionString()
+        {
+            return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
+        }
+
         // These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
         public string GetAcceptAnySslCert()
         {
             return ConfigurationManager.AppSettings["AcceptAnySslCert"];
-        }
-
-        public string GetConnectionString()
-        {
-            return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
         }
 
         public string GetDownloadDirectory()
@@ -37,6 +36,11 @@
             return ConfigurationManager.AppSettings["DownloadUri"];
         }
 
+        public string GetMinimumWaitTimeInHours()
+        {
+            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
+        }
+
         public string GetFromAddress()
         {
             return ConfigurationManager.AppSettings["FromAddress"];
@@ -45,11 +49,6 @@
         public string GetFromDisplayName()
         {
             return ConfigurationManager.AppSettings["DisplayName"];
-        }
-
-        public string GetMinimumWaitTimeInHours()
-        {
-            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
         }
 
         public string GetPassword()

@@ -1,12 +1,12 @@
-﻿using System.Linq;
-using NSubstitute;
-using NUnit.Framework;
-using StatsDownload.Core.Implementations.Tested;
-using StatsDownload.Core.Interfaces;
-using StatsDownload.Core.Interfaces.DataTransfer;
-
-namespace StatsDownload.Core.Tests
+﻿namespace StatsDownload.Core.Tests
 {
+    using System.Linq;
+    using Implementations.Tested;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using NSubstitute;
+    using NUnit.Framework;
+
     [TestFixture]
     public class TestWhitespaceNameUsersFilter
     {
@@ -53,7 +53,7 @@ namespace StatsDownload.Core.Tests
                                         new UserData("", 0, 0, 0),
                                         new UserData("\t", 0, 0, 0),
                                         new UserData("name", 0, 0, 0)
-                                    }, new[] {new FailedUserData()}));
+                                    }, new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse("fileData");
 

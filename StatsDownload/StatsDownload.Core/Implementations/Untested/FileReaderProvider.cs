@@ -1,9 +1,9 @@
 ﻿namespace StatsDownload.Core.Implementations.Untested
 {
     using System.IO;
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using Interfaces.Logging;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class FileReaderProvider : IFileReaderService
     {

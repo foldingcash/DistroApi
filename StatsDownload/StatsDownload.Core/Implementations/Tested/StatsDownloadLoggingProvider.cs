@@ -2,9 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using Extensions;
+    using Interfaces.DataTransfer;
     using Interfaces.Logging;
-    using StatsDownload.Core.Extensions;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class StatsDownloadLoggingProvider : IStatsDownloadLoggingService
     {

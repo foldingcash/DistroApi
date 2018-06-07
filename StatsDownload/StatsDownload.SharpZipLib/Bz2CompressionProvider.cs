@@ -1,11 +1,9 @@
 ﻿namespace StatsDownload.SharpZipLib
 {
     using System.IO;
-
+    using Core.Exceptions;
+    using Core.Interfaces;
     using ICSharpCode.SharpZipLib.BZip2;
-
-    using StatsDownload.Core.Exceptions;
-    using StatsDownload.Core.Interfaces;
 
     public class Bz2CompressionProvider : IFileCompressionService
     {

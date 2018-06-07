@@ -46,8 +46,8 @@
 
             innerServiceMock.Parse("fileData")
                             .Returns(new ParseResults(
-                                new[] {new UserData(), new UserData {BitcoinAddress = "addy"}},
-                                new[] {new FailedUserData()}));
+                                new[] { new UserData(), new UserData { BitcoinAddress = "addy" } },
+                                new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse("fileData");
 

@@ -3,78 +3,24 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
+    using Exceptions;
+    using Implementations.Tested;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Exceptions;
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestStatsFileParserProvider
     {
-        private const string EmptyStatsFile = @"Tue Dec 26 10:20:01 PST 2017
-name	newcredit	sum(total)	team";
+        [SetUp]
+        public void SetUp()
+        {
+            additionalUserDataParserServiceMock = Substitute.For<IAdditionalUserDataParserService>();
 
-        private const string GoodHeaderAndUsers = @"name	newcredit	sum(total)	team
-	25882218711	458785	224497
-war	20508731397	544139	37651
-msi_TW	15889476570	359312	31403
-anonymous	13937689581	64221589	0
-TheWasp	13660834951	734045	4294967295";
-
-        private const string GoodStatsFile = @"Tue Dec 26 10:20:01 PST 2017
-name	newcredit	sum(total)	team
-	25882218711	458785	224497
-war	20508731397	544139	37651
-msi_TW	15889476570	359312	31403
-anonymous	13937689581	64221589	0
-TheWasp	13660834951	734045	4294967295";
-
-        private const string GoodStatsFileWithDaylightSavingsTimeZone = @"Tue Dec 26 10:20:01 PDT 2017
-name	newcredit	sum(total)	team
-	25882218711	458785	224497
-war	20508731397	544139	37651
-msi_TW	15889476570	359312	31403
-anonymous	13937689581	64221589	0
-TheWasp	13660834951	734045	4294967295";
-
-        private const string GoodStatsFileWithOnlyNewLine =
-            "Tue Dec 26 10:20:01 PST 2017\n" + "name	newcredit	sum(total)	team\n"
-            + "PS3EdOlkkola	25882218711	458785	224497\n" + "war	20508731397	544139	37651\n"
-            + "msi_TW	15889476570	359312	31403\n" + "anonymous	13937689581	64221589	0\n"
-            + "TheWasp	13660834951	734045	70335";
-
-        private const string MalformedDateTime = @"a malformed date time not exactly matching the good stats file header
-name	newcredit	sum(total)	team
-PS3EdOlkkola	25882218711	458785	224497
-war	20508731397	544139	37651
-msi_TW	15889476570	359312	31403
-anonymous	13937689581	64221589	0
-TheWasp	13660834951	734045	70335";
-
-        private const string MalformedHeader = @"Tue Dec 26 10:20:01 PST 2017
-a malformed header not exactly matching the good stats file header
-PS3EdOlkkola	25882218711	458785	224497
-war	20508731397	544139	37651
-msi_TW	15889476570	359312	31403
-anonymous	13937689581	64221589	0
-TheWasp	13660834951	734045	70335";
-
-        private const string MalformedUserRecord = @"Tue Dec 26 10:20:01 PST 2017
-name	newcredit	sum(total)	team
-PS3EdOlkkola	25882218711	458785	224497
-war	20508731397	544139	37651
-msi_TW	15889476570	359312	31403
-a bad user record exists
-anonymous	not an ulong	64221589	489
-anonymous	13937689581	not an int	123
-anonymous	13937689581	64221589	not an int
-TheWasp	13660834951	734045	70335";
+            systemUnderTest = NewStatsFileParserProvider(additionalUserDataParserServiceMock);
+        }
 
         private IAdditionalUserDataParserService additionalUserDataParserServiceMock;
 
@@ -168,13 +114,66 @@ TheWasp	13660834951	734045	70335";
             Assert.That(actual[3].UserData.TeamNumber, Is.EqualTo(0));
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            additionalUserDataParserServiceMock = Substitute.For<IAdditionalUserDataParserService>();
+        private const string EmptyStatsFile = @"Tue Dec 26 10:20:01 PST 2017
+name	newcredit	sum(total)	team";
 
-            systemUnderTest = NewStatsFileParserProvider(additionalUserDataParserServiceMock);
-        }
+        private const string GoodHeaderAndUsers = @"name	newcredit	sum(total)	team
+	25882218711	458785	224497
+war	20508731397	544139	37651
+msi_TW	15889476570	359312	31403
+anonymous	13937689581	64221589	0
+TheWasp	13660834951	734045	4294967295";
+
+        private const string GoodStatsFile = @"Tue Dec 26 10:20:01 PST 2017
+name	newcredit	sum(total)	team
+	25882218711	458785	224497
+war	20508731397	544139	37651
+msi_TW	15889476570	359312	31403
+anonymous	13937689581	64221589	0
+TheWasp	13660834951	734045	4294967295";
+
+        private const string GoodStatsFileWithDaylightSavingsTimeZone = @"Tue Dec 26 10:20:01 PDT 2017
+name	newcredit	sum(total)	team
+	25882218711	458785	224497
+war	20508731397	544139	37651
+msi_TW	15889476570	359312	31403
+anonymous	13937689581	64221589	0
+TheWasp	13660834951	734045	4294967295";
+
+        private const string GoodStatsFileWithOnlyNewLine =
+            "Tue Dec 26 10:20:01 PST 2017\n" + "name	newcredit	sum(total)	team\n"
+                                             + "PS3EdOlkkola	25882218711	458785	224497\n" +
+                                             "war	20508731397	544139	37651\n"
+                                             + "msi_TW	15889476570	359312	31403\n" +
+                                             "anonymous	13937689581	64221589	0\n"
+                                             + "TheWasp	13660834951	734045	70335";
+
+        private const string MalformedDateTime = @"a malformed date time not exactly matching the good stats file header
+name	newcredit	sum(total)	team
+PS3EdOlkkola	25882218711	458785	224497
+war	20508731397	544139	37651
+msi_TW	15889476570	359312	31403
+anonymous	13937689581	64221589	0
+TheWasp	13660834951	734045	70335";
+
+        private const string MalformedHeader = @"Tue Dec 26 10:20:01 PST 2017
+a malformed header not exactly matching the good stats file header
+PS3EdOlkkola	25882218711	458785	224497
+war	20508731397	544139	37651
+msi_TW	15889476570	359312	31403
+anonymous	13937689581	64221589	0
+TheWasp	13660834951	734045	70335";
+
+        private const string MalformedUserRecord = @"Tue Dec 26 10:20:01 PST 2017
+name	newcredit	sum(total)	team
+PS3EdOlkkola	25882218711	458785	224497
+war	20508731397	544139	37651
+msi_TW	15889476570	359312	31403
+a bad user record exists
+anonymous	not an ulong	64221589	489
+anonymous	13937689581	not an int	123
+anonymous	13937689581	64221589	not an int
+TheWasp	13660834951	734045	70335";
 
         private ParseResults InvokeParse(string fileData = GoodStatsFile)
         {

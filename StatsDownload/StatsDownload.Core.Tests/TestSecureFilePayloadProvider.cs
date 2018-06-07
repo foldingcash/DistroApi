@@ -1,18 +1,26 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
+    using Implementations.Tested;
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using Interfaces.Logging;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestSecureFilePayloadProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            filePayload = new FilePayload();
+
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
+            systemUnderTest = NewSecureHttpFilePayloadProvider(loggingServiceMock);
+        }
+
         private FilePayload filePayload;
 
         private ILoggingService loggingServiceMock;
@@ -79,16 +87,6 @@
             bool actual = systemUnderTest.IsSecureConnection(filePayload);
 
             Assert.That(actual, Is.True);
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            filePayload = new FilePayload();
-
-            loggingServiceMock = Substitute.For<ILoggingService>();
-
-            systemUnderTest = NewSecureHttpFilePayloadProvider(loggingServiceMock);
         }
 
         private ISecureFilePayloadService NewSecureHttpFilePayloadProvider(ILoggingService loggingService)

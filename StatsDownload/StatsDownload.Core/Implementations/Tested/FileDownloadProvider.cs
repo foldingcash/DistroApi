@@ -2,11 +2,11 @@
 {
     using System;
     using System.Net;
+    using Exceptions;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using Interfaces.Logging;
-    using StatsDownload.Core.Exceptions;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
 
     public class FileDownloadProvider : IFileDownloadService
     {
@@ -29,12 +29,12 @@
         private readonly IResourceCleanupService resourceCleanupService;
 
         public FileDownloadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
-                                    IFileDownloadLoggingService loggingService, IDownloadService downloadService,
-                                    IFilePayloadSettingsService filePayloadSettingsService,
-                                    IResourceCleanupService resourceCleanupService,
-                                    IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
-                                    IDateTimeService dateTimeService, IFilePayloadUploadService filePayloadUploadService,
-                                    IFileDownloadEmailService fileDownloadEmailService)
+            IFileDownloadLoggingService loggingService, IDownloadService downloadService,
+            IFilePayloadSettingsService filePayloadSettingsService,
+            IResourceCleanupService resourceCleanupService,
+            IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
+            IDateTimeService dateTimeService, IFilePayloadUploadService filePayloadUploadService,
+            IFileDownloadEmailService fileDownloadEmailService)
         {
             ValidateCtorArgs(fileDownloadDatabaseService, loggingService, downloadService, filePayloadSettingsService,
                 resourceCleanupService, fileDownloadMinimumWaitTimeService, dateTimeService, filePayloadUploadService,
@@ -111,7 +111,8 @@
 
         private FileDownloadResult HandleDataStoreUnavailable(FilePayload filePayload)
         {
-            FileDownloadResult failedResult = NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable, filePayload);
+            FileDownloadResult failedResult =
+                NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable, filePayload);
             LogResult(failedResult);
             SendEmail(failedResult);
             return failedResult;
@@ -196,14 +197,17 @@
             {
                 return NewFailedFileDownloadResult(FailedReason.FileDownloadTimeout, filePayload);
             }
+
             if (exception is FileDownloadFailedDecompressionException)
             {
                 return NewFailedFileDownloadResult(FailedReason.FileDownloadFailedDecompression, filePayload);
             }
+
             if (exception is FileDownloadArgumentException)
             {
                 return NewFailedFileDownloadResult(FailedReason.RequiredSettingsInvalid, filePayload);
             }
+
             return NewFailedFileDownloadResult(FailedReason.UnexpectedException, filePayload);
         }
 
@@ -248,13 +252,13 @@
         }
 
         private void ValidateCtorArgs(IFileDownloadDatabaseService fileDownloadDatabaseService,
-                                      IFileDownloadLoggingService loggingService, IDownloadService downloadService,
-                                      IFilePayloadSettingsService filePayloadSettingsService,
-                                      IResourceCleanupService resourceCleanupService,
-                                      IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
-                                      IDateTimeService dateTimeService,
-                                      IFilePayloadUploadService filePayloadUploadService,
-                                      IFileDownloadEmailService fileDownloadEmailService)
+            IFileDownloadLoggingService loggingService, IDownloadService downloadService,
+            IFilePayloadSettingsService filePayloadSettingsService,
+            IResourceCleanupService resourceCleanupService,
+            IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
+            IDateTimeService dateTimeService,
+            IFilePayloadUploadService filePayloadUploadService,
+            IFileDownloadEmailService fileDownloadEmailService)
         {
             if (fileDownloadDatabaseService == null)
             {
