@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>StatsDownload.Email</RootNamespace>
     <AssemblyName>StatsDownload.Email</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj">
-      <Project>{8730A4D8-8070-4105-8198-F3A42743B961}</Project>
+      <Project>{9385A349-8796-4473-A3E0-EDFE3AFEEDE9}</Project>
       <Name>StatsDownload.Core.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
