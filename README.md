@@ -9,7 +9,7 @@
 ### Development Dependencies
 
 * .NET Framework 4.5.2
-* Visual Studio 2015
+* Visual Studio 2017
 * Microsoft SQL Server
 * ReSharper
 
