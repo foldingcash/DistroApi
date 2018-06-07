@@ -53,19 +53,38 @@ EXEC [FoldingCoin].[StartStatsUpload] @DownloadId;
 --PRINT 'Stats upload error'
 --EXEC [FoldingCoin].[StatsUploadError] @DownloadId, 'Stats Upload Error Message'
 
--- If there is a problem processing a particular FAH user in the stats file, then update the user to have a rejection status
---PRINT 'Adding user rejection'
---EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'FriendlyName_TAG_BitcoinAddress', '199', 'A Bad User';
+BEGIN TRY
+	BEGIN TRANSACTION
+		-- If there is a problem processing a particular FAH user in the stats file, then update the user to have a rejection status
+		--PRINT 'Adding user rejection'
+		--EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'FriendlyName_TAG_BitcoinAddress', '199', 'A Bad User';
+				
+		--PRINT 'Adding user rejection'
+		--EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'FriendlyName_TAG_BitcoinAddress', '199', 'A Bad User';
 
--- Use this to add user data
-PRINT 'Adding user data'
-EXEC [FoldingCoin].[AddUserData] @DownloadId
-	,'FriendlyName_TAG_BitcoinAddress'
-	,1000
-	,100
-	,10
-	,'FriendlyName'
-	,'BitcoinAddress';
+		-- Use this to add users
+		PRINT 'Adding user data'
+		EXEC [FoldingCoin].[AddUserData] @DownloadId
+			,'FriendlyName_TAG_BitcoinAddress'
+			,1000
+			,100
+			,10
+			,'FriendlyName'
+			,'BitcoinAddress';
+		
+		PRINT 'Adding user data'
+		EXEC [FoldingCoin].[AddUserData] @DownloadId
+			,'FriendlyName2_TAG_BitcoinAddress2'
+			,1000
+			,100
+			,10
+			,'FriendlyName2'
+			,'BitcoinAddress2';
+	COMMIT
+END TRY
+BEGIN CATCH
+	ROLLBACK
+END CATCH
 
 -- Use this to update the download status to show the stats upload has completed
 PRINT 'Stats upload finished'
