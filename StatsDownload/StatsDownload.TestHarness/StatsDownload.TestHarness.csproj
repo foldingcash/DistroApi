@@ -39,8 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Castle.Core.4.3.0\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Windsor, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Windsor.4.1.0\lib\net45\Castle.Windsor.dll</HintPath>
@@ -114,19 +113,19 @@
       <Name>StatsDownload.Core.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj">
-      <Project>{E7A915E2-603D-419F-8987-170CE7814ED4}</Project>
+      <Project>{9C2C5AA3-9E2C-4A2F-97E3-081633B83F6D}</Project>
       <Name>StatsDownload.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">
-      <Project>{3F8412A3-CC11-4D84-8BC3-FD81ACF81CDF}</Project>
+      <Project>{8098BF8B-6DE5-4F35-8C5B-F0296FDE5CD0}</Project>
       <Name>StatsDownload.Email</Name>
     </ProjectReference>
     <ProjectReference Include="..\StatsDownload.Logging\StatsDownload.Logging.csproj">
-      <Project>{1CA1F9A2-EAD1-4190-9E7E-6691773CEBE4}</Project>
+      <Project>{C1736684-1DED-4D9B-848E-CD857E9478F5}</Project>
       <Name>StatsDownload.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj">
-      <Project>{028E717E-7D47-41ED-AE08-23A40B68D68F}</Project>
+      <Project>{C37684C9-D044-4D42-B10F-3D670A95293E}</Project>
       <Name>StatsDownload.SharpZipLib</Name>
     </ProjectReference>
   </ItemGroup>
