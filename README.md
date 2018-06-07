@@ -1,23 +1,36 @@
 # FLDCDotNet
 
-### Hardware Requirements
+### DB Hardware Requirements
 
 * SSD 120GB+
 * i5 Intel / Ryzen 5 AMD
 * 16 GB
 
+### App Hardware Requirements
+
+* HDD 120GB+
+* i5 Intel / Ryzen 5 AMD
+* 16 GB
+
 ### Development Dependencies
 
-* .NET Framework 4.5.2
+* .NET Framework 4.7.1 (TestHarness and FileServer.TestHarness only)
+* .NET Core 2.0
 * Visual Studio 2017
 * Microsoft SQL Server
 * ReSharper
 
+#### Project Requirements
+
+* Projects meant to work with both .NET Framework and .NET Core should target .NET Standard (eg. StatsDownload.Core, etc.)
+* Test projects should be targeting .NET Core
+* Application projects that are able to use .NET Core should (eg. StatsDownload.FileDownload.Console, etc.)
+* Windows Forms and WCF applications should target .NET Framework (eg. StatsDownload.TestHarness, etc.)
+
 ### Getting Started
 
 1. Navigate to FLDCDotNet/Database 
-	* Restore FoldingCoin.bak to an instance of SQL Server
-	* Alternatively, run the schema and stored procedure scripts against a database
+	* Run the schema and stored procedure scripts against a database
 2. Build the solution and run Unit Tests to ensure all pass
 	* There are four applications available to use; two for production usage and two for testing
 3. Ensure application's connection string pointed to the database created in step 1
