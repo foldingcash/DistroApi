@@ -52,17 +52,10 @@
             this.errorMessageService = errorMessageService;
         }
 
-        public void AddUserRejections(int downloadId, IEnumerable<FailedUserData> failedUsersData)
+        public void AddUsers(int downloadId, IEnumerable<UserData> users, IEnumerable<FailedUserData> failedUsers)
         {
             LogMethodInvoked();
-            CreateDatabaseConnectionAndExecuteAction(
-                service => { AddUserRejections(service, downloadId, failedUsersData); });
-        }
-
-        public void AddUsersData(int downloadId, IEnumerable<UserData> usersData)
-        {
-            LogMethodInvoked();
-            CreateDatabaseConnectionAndExecuteAction(service => { AddUsersData(service, downloadId, usersData); });
+            CreateDatabaseConnectionAndExecuteAction(service => { AddUsers(service, downloadId, users, failedUsers); });
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
@@ -162,7 +155,7 @@
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddRange(parameters.AllParameters);
 
-                foreach (FailedUserData failedUserData in failedUsersData)
+                foreach (FailedUserData failedUserData in failedUsersData ?? new FailedUserData[0])
                 {
                     SetAddUserRejectionParameters(downloadId, failedUserData, parameters);
                     command.ExecuteNonQuery();
@@ -186,7 +179,7 @@
                     rebuildIndicesCommand.CommandText = Constants.StatsDownloadDatabase.RebuildIndicesProcedureName;
                     rebuildIndicesCommand.CommandType = CommandType.StoredProcedure;
 
-                    for (var index = 0; index < usersData.Count(); index++)
+                    for (var index = 0; index < (usersData?.Count() ?? 0); index++)
                     {
                         UserData userData = usersData.ElementAt(index);
                         SetAddUserDataParameterValues(downloadId, userData, parameters);
@@ -198,6 +191,24 @@
                         }
                     }
                 }
+            }
+        }
+
+        private void AddUsers(IDatabaseConnectionService databaseConnection, int downloadId,
+            IEnumerable<UserData> users, IEnumerable<FailedUserData> failedUsers)
+        {
+            var transaction = databaseConnection.CreateTransaction();
+
+            try
+            {
+                AddUserRejections(databaseConnection, downloadId, failedUsers);
+                AddUsersData(databaseConnection, downloadId, users);
+                transaction?.Commit();
+            }
+            catch (Exception)
+            {
+                transaction?.Rollback();
+                throw;
             }
         }
 

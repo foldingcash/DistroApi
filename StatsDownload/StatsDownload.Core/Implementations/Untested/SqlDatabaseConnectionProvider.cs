@@ -5,8 +5,7 @@
     using System.Data.Common;
     using System.Data.SqlClient;
     using System.Linq;
-
-    using StatsDownload.Core.Interfaces;
+    using Interfaces;
 
     public class SqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
@@ -24,6 +23,11 @@
         public DbCommand CreateDbCommand()
         {
             return sqlConnection.CreateCommand();
+        }
+
+        public DbTransaction CreateTransaction()
+        {
+            return sqlConnection.BeginTransaction();
         }
 
         public DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction)

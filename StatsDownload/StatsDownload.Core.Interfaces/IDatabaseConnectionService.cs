@@ -11,6 +11,8 @@
 
         DbCommand CreateDbCommand();
 
+        DbTransaction CreateTransaction();
+
         DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction);
 
         DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction, int size);

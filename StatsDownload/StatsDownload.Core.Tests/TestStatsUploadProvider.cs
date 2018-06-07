@@ -3,67 +3,19 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Exceptions;
+    using Implementations.Tested;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using Interfaces.Logging;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Exceptions;
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestStatsUploadProvider
     {
-        private FailedUserData failedUser1;
-
-        private FailedUserData failedUser2;
-
-        private FailedUserData failedUser3;
-
-        private FailedUserData failedUser4;
-
-        private IStatsUploadLoggingService loggingServiceMock;
-
-        private IStatsFileParserService statsFileParserServiceMock;
-
-        private IStatsUploadDatabaseService statsUploadDatabaseServiceMock;
-
-        private IStatsUploadEmailService statsUploadEmailServiceMock;
-
-        private IStatsUploadService systemUnderTest;
-
-        private UserData user1;
-
-        private UserData user2;
-
-        private UserData user3;
-
-        private UserData user4;
-
-        [Test]
-        public void Constructor_WhenNullDependencyProvided_ThrowsException()
-        {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                NewStatsUploadProvider(null, loggingServiceMock, statsFileParserServiceMock, statsUploadEmailServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                NewStatsUploadProvider(statsUploadDatabaseServiceMock, null, statsFileParserServiceMock,
-                    statsUploadEmailServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock, null,
-                    statsUploadEmailServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock, statsFileParserServiceMock,
-                    null));
-        }
-
         [SetUp]
         public void SetUp()
         {
@@ -97,6 +49,54 @@
 
             systemUnderTest = NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock,
                 statsFileParserServiceMock, statsUploadEmailServiceMock);
+        }
+
+        private FailedUserData failedUser1;
+
+        private FailedUserData failedUser2;
+
+        private FailedUserData failedUser3;
+
+        private FailedUserData failedUser4;
+
+        private IStatsUploadLoggingService loggingServiceMock;
+
+        private IStatsFileParserService statsFileParserServiceMock;
+
+        private IStatsUploadDatabaseService statsUploadDatabaseServiceMock;
+
+        private IStatsUploadEmailService statsUploadEmailServiceMock;
+
+        private IStatsUploadService systemUnderTest;
+
+        private UserData user1;
+
+        private UserData user2;
+
+        private UserData user3;
+
+        private UserData user4;
+
+        [Test]
+        public void Constructor_WhenNullDependencyProvided_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    NewStatsUploadProvider(null, loggingServiceMock, statsFileParserServiceMock,
+                        statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    NewStatsUploadProvider(statsUploadDatabaseServiceMock, null, statsFileParserServiceMock,
+                        statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock, null,
+                        statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock,
+                        statsFileParserServiceMock,
+                        null));
         }
 
         [Test]
@@ -194,7 +194,8 @@
             StatsUploadResults actual = InvokeUploadStatsFiles();
 
             Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
-            Assert.That(actual.UploadResults.ElementAt(0).FailedReason, Is.EqualTo(FailedReason.InvalidStatsFileUpload));
+            Assert.That(actual.UploadResults.ElementAt(0).FailedReason,
+                Is.EqualTo(FailedReason.InvalidStatsFileUpload));
         }
 
         [Test]
@@ -214,10 +215,14 @@
 
             Received.InOrder(() =>
             {
-                statsUploadDatabaseServiceMock.AddUsersData(1,
-                    Arg.Is<IEnumerable<UserData>>((datas => datas.Contains(user1) && datas.Contains(user2))));
-                statsUploadDatabaseServiceMock.AddUsersData(2,
-                    Arg.Is<IEnumerable<UserData>>((datas => datas.Contains(user3) && datas.Contains(user4))));
+                statsUploadDatabaseServiceMock.AddUsers(1,
+                    Arg.Is<IEnumerable<UserData>>((datas => datas.Contains(user1) && datas.Contains(user2))),
+                    Arg.Is<IEnumerable<FailedUserData>>(
+                        (data => data.Contains(failedUser1) && data.Contains(failedUser2))));
+                statsUploadDatabaseServiceMock.AddUsers(2,
+                    Arg.Is<IEnumerable<UserData>>((datas => datas.Contains(user3) && datas.Contains(user4))),
+                    Arg.Is<IEnumerable<FailedUserData>>(
+                        (data => data.Contains(failedUser3) && data.Contains(failedUser4))));
             });
         }
 
@@ -270,22 +275,6 @@
         }
 
         [Test]
-        public void UploadStatsFiles_WhenParsingUserDataFails_AddsUserRejection()
-        {
-            InvokeUploadStatsFiles();
-
-            Received.InOrder(() =>
-            {
-                statsUploadDatabaseServiceMock.AddUserRejections(1,
-                    Arg.Is<IEnumerable<FailedUserData>>(
-                        (data => data.Contains(failedUser1) && data.Contains(failedUser2))));
-                statsUploadDatabaseServiceMock.AddUserRejections(2,
-                    Arg.Is<IEnumerable<FailedUserData>>(
-                        (data => data.Contains(failedUser3) && data.Contains(failedUser4))));
-            });
-        }
-
-        [Test]
         public void UploadStatsFiles_WhenParsingUserDataFails_ErrorsLogged()
         {
             InvokeUploadStatsFiles();
@@ -308,11 +297,12 @@
         }
 
         private IStatsUploadService NewStatsUploadProvider(IStatsUploadDatabaseService statsUploadDatabaseService,
-                                                           IStatsUploadLoggingService statsUploadLoggingService,
-                                                           IStatsFileParserService statsFileParserService,
-                                                           IStatsUploadEmailService statsUploadEmailService)
+            IStatsUploadLoggingService statsUploadLoggingService,
+            IStatsFileParserService statsFileParserService,
+            IStatsUploadEmailService statsUploadEmailService)
         {
-            return new StatsUploadProvider(statsUploadDatabaseService, statsUploadLoggingService, statsFileParserService,
+            return new StatsUploadProvider(statsUploadDatabaseService, statsUploadLoggingService,
+                statsFileParserService,
                 statsUploadEmailService);
         }
 
