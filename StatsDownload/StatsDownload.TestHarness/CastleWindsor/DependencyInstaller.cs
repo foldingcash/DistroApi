@@ -39,8 +39,12 @@
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
+                Component.For<IDatabaseConnectionService>().ImplementedBy<MySqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<MicrosoftSqlDatabaseConnectionProvider>()
-                         .LifestyleSingleton(), Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
+                         .IsDefault(),
+                Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DatabaseFactoryComponentSelector>(),
+                Component.For<IDatabaseConnectionServiceFactory>().AsFactory(selector =>
+                    selector.SelectedWith<DatabaseFactoryComponentSelector>()),
                 Component.For<IFileDownloadDatabaseService, IStatsUploadDatabaseService>()
                          .ImplementedBy<StatsDownloadDatabaseProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),

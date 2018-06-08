@@ -6,6 +6,9 @@
     using Core.Interfaces;
     using Email;
 
+    /// <summary>
+    ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
+    /// </summary>
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
         IEmailSettingsService
     {
@@ -14,7 +17,11 @@
             return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
         }
 
-        // These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
+        public string GetDatabaseType()
+        {
+            return ConfigurationManager.AppSettings["DatabaseType"];
+        }
+
         public string GetAcceptAnySslCert()
         {
             return ConfigurationManager.AppSettings["AcceptAnySslCert"];

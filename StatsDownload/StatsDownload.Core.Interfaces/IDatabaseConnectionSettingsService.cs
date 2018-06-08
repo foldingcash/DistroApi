@@ -3,5 +3,7 @@
     public interface IDatabaseConnectionSettingsService
     {
         string GetConnectionString();
+
+        string GetDatabaseType();
     }
 }
