@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Extensions
+namespace StatsDownload.Core.Extensions
 {
     using System;
     using System.IO;

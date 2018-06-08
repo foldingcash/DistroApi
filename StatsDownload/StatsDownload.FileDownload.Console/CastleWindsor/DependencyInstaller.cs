@@ -5,10 +5,10 @@
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
     using Core.Implementations.Tested;
-    using Core.Implementations.Untested;
     using Core.Interfaces;
     using Core.Interfaces.Logging;
     using Core.Interfaces.Networking;
+    using Core.Wrappers;
     using Core.Wrappers.Networking;
     using Email;
     using Logging;

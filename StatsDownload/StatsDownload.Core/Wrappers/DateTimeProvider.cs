@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Implementations.Untested
+﻿namespace StatsDownload.Core.Wrappers
 {
     using System;
     using Interfaces;
