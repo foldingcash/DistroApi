@@ -1,6 +1,6 @@
 ﻿namespace StatsDownload.Core.Tests
 {
-    using Implementations.Tested;
+    using Implementations;
     using Interfaces;
     using NUnit.Framework;
 

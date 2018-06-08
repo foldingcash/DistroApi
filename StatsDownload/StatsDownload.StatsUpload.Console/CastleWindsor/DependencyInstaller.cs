@@ -4,7 +4,7 @@
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
-    using Core.Implementations.Tested;
+    using Core.Implementations;
     using Core.Interfaces;
     using Core.Interfaces.Logging;
     using Core.Wrappers;

@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Implementations.Tested;
+    using Implementations;
     using Interfaces;
     using Interfaces.DataTransfer;
     using Interfaces.Logging;
