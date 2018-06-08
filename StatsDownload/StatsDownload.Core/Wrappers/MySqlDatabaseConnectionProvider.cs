@@ -3,19 +3,19 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
-    using System.Data.SqlClient;
     using System.Linq;
     using Interfaces;
+    using MySql.Data.MySqlClient;
 
-    public class SqlDatabaseConnectionProvider : IDatabaseConnectionService
+    public class MySqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
         private bool disposed;
 
         private DbConnection sqlConnection;
 
-        public SqlDatabaseConnectionProvider(string connectionString)
+        public MySqlDatabaseConnectionProvider(string connectionString)
         {
-            sqlConnection = new SqlConnection(connectionString);
+            sqlConnection = new MySqlConnection(connectionString);
         }
 
         public ConnectionState ConnectionState => sqlConnection.State;
