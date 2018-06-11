@@ -7,6 +7,7 @@
     using Interfaces;
     using MySql.Data.MySqlClient;
 
+    // TODO: Need to finish converting DB scheme and testing with this provider
     public class MySqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
         private bool disposed;
