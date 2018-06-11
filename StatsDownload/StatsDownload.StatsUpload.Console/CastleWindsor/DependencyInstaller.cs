@@ -4,7 +4,7 @@
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
-    using Core.Implementations.Tested;
+    using Core.Implementations;
     using Core.Interfaces;
     using Core.Interfaces.Logging;
     using Core.Wrappers;
@@ -31,9 +31,12 @@
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
-                Component.For<IDatabaseConnectionService>()
-                         .ImplementedBy<SqlDatabaseConnectionProvider>()
-                         .LifestyleSingleton(), Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
+                Component.For<IDatabaseConnectionService>().ImplementedBy<MySqlDatabaseConnectionProvider>(),
+                Component.For<IDatabaseConnectionService>().ImplementedBy<MicrosoftSqlDatabaseConnectionProvider>()
+                         .IsDefault(),
+                Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DatabaseFactoryComponentSelector>(),
+                Component.For<IDatabaseConnectionServiceFactory>().AsFactory(selector =>
+                    selector.SelectedWith<DatabaseFactoryComponentSelector>()),
                 Component.For<IStatsUploadDatabaseService>().ImplementedBy<StatsDownloadDatabaseProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),

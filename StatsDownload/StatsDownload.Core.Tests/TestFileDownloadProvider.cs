@@ -3,7 +3,7 @@
     using System;
     using System.Net;
     using Exceptions;
-    using Implementations.Tested;
+    using Implementations;
     using Interfaces;
     using Interfaces.DataTransfer;
     using Interfaces.Enums;

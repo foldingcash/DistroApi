@@ -6,6 +6,9 @@
     using Core.Interfaces;
     using Email;
 
+    /// <summary>
+    ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
+    /// </summary>
     public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
         ITestHarnessSettingsService, IEmailSettingsService, IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
         IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings
@@ -13,6 +16,11 @@
         public string GetConnectionString()
         {
             return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
+        }
+
+        public string GetDatabaseType()
+        {
+            return ConfigurationManager.AppSettings["DatabaseType"];
         }
 
         public string GetAcceptAnySslCert()

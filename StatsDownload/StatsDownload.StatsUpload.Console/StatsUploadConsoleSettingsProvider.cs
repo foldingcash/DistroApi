@@ -17,6 +17,11 @@
             return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
         }
 
+        public string GetDatabaseType()
+        {
+            return ConfigurationManager.AppSettings["DatabaseType"];
+        }
+
         public string GetAcceptAnySslCert()
         {
             return ConfigurationManager.AppSettings["AcceptAnySslCert"];

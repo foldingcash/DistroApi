@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Implementations.Tested
+﻿namespace StatsDownload.Core.Implementations
 {
     using System;
     using System.Net;

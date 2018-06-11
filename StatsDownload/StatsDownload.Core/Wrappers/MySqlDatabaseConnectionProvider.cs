@@ -3,19 +3,20 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
-    using System.Data.SqlClient;
     using System.Linq;
     using Interfaces;
+    using MySql.Data.MySqlClient;
 
-    public class SqlDatabaseConnectionProvider : IDatabaseConnectionService
+    // TODO: Need to finish converting DB scheme and testing with this provider
+    public class MySqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
         private bool disposed;
 
         private DbConnection sqlConnection;
 
-        public SqlDatabaseConnectionProvider(string connectionString)
+        public MySqlDatabaseConnectionProvider(string connectionString)
         {
-            sqlConnection = new SqlConnection(connectionString);
+            sqlConnection = new MySqlConnection(connectionString);
         }
 
         public ConnectionState ConnectionState => sqlConnection.State;
