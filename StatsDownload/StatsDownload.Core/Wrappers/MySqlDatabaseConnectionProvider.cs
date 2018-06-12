@@ -10,20 +10,29 @@
     // TODO: Need to finish converting DB scheme and testing with this provider
     public class MySqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
+        private readonly int? commandTimeout;
+
         private bool disposed;
 
         private DbConnection sqlConnection;
 
-        public MySqlDatabaseConnectionProvider(string connectionString)
+        public MySqlDatabaseConnectionProvider(string connectionString, int? commandTimeout = null)
         {
+            // This class is instantiated by a Castle.Windsor TypedFactory. NULL is not a valid
+            // argument for typed factories and is ignored. Leaving it a required parameter
+            // throws an unresolved dependency exception. Marking it as optional lets be created
+            // with the NULL value when that's the argument.
             sqlConnection = new MySqlConnection(connectionString);
+            this.commandTimeout = commandTimeout;
         }
 
         public ConnectionState ConnectionState => sqlConnection.State;
 
         public DbCommand CreateDbCommand()
         {
-            return sqlConnection.CreateCommand();
+            DbCommand dbCommand = sqlConnection.CreateCommand();
+            SetCommandTimeout(dbCommand);
+            return dbCommand;
         }
 
         public DbTransaction CreateTransaction()
@@ -33,7 +42,7 @@
 
         public DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction)
         {
-            using (DbCommand command = sqlConnection.CreateCommand())
+            using (DbCommand command = CreateDbCommand())
             {
                 DbParameter parameter = command.CreateParameter();
                 parameter.ParameterName = parameterName;
@@ -45,7 +54,7 @@
 
         public DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction, int size)
         {
-            using (DbCommand command = sqlConnection.CreateCommand())
+            using (DbCommand command = CreateDbCommand())
             {
                 DbParameter parameter = command.CreateParameter();
                 parameter.ParameterName = parameterName;
@@ -68,7 +77,7 @@
 
         public DbDataReader ExecuteReader(string commandText)
         {
-            using (DbCommand command = sqlConnection.CreateCommand())
+            using (DbCommand command = CreateDbCommand())
             {
                 command.CommandText = commandText;
                 return command.ExecuteReader();
@@ -77,7 +86,7 @@
 
         public object ExecuteScalar(string commandText)
         {
-            using (DbCommand command = sqlConnection.CreateCommand())
+            using (DbCommand command = CreateDbCommand())
             {
                 command.CommandText = commandText;
                 return command.ExecuteScalar();
@@ -86,7 +95,7 @@
 
         public int ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters)
         {
-            using (DbCommand command = sqlConnection.CreateCommand())
+            using (DbCommand command = CreateDbCommand())
             {
                 command.CommandText = storedProcedure;
                 command.CommandType = CommandType.StoredProcedure;
@@ -103,6 +112,12 @@
         public void Open()
         {
             sqlConnection.Open();
+        }
+
+        private void SetCommandTimeout(DbCommand dbCommand)
+        {
+            if (commandTimeout.HasValue)
+                dbCommand.CommandTimeout = commandTimeout.Value;
         }
     }
 }

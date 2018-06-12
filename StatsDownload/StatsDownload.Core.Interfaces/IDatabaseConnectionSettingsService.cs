@@ -2,6 +2,8 @@
 {
     public interface IDatabaseConnectionSettingsService
     {
+        int? GetCommandTimeout();
+
         string GetConnectionString();
 
         string GetDatabaseType();

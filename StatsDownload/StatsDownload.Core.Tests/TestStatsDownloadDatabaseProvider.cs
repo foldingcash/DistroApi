@@ -22,10 +22,11 @@
         {
             databaseConnectionSettingsServiceMock = Substitute.For<IDatabaseConnectionSettingsService>();
             databaseConnectionSettingsServiceMock.GetConnectionString().Returns("connectionString");
+            databaseConnectionSettingsServiceMock.GetCommandTimeout().Returns(42);
 
             databaseConnectionServiceMock = Substitute.For<IDatabaseConnectionService>();
             databaseConnectionServiceFactoryMock = Substitute.For<IDatabaseConnectionServiceFactory>();
-            databaseConnectionServiceFactoryMock.Create("connectionString").Returns(databaseConnectionServiceMock);
+            databaseConnectionServiceFactoryMock.Create("connectionString", 42).Returns(databaseConnectionServiceMock);
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 

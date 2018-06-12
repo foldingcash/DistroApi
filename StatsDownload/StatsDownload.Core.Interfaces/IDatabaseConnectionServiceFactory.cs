@@ -2,6 +2,6 @@
 {
     public interface IDatabaseConnectionServiceFactory
     {
-        IDatabaseConnectionService Create(string connectionString);
+        IDatabaseConnectionService Create(string connectionString, int? commandTimeout);
     }
 }

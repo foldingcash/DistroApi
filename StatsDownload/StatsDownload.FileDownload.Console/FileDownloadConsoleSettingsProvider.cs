@@ -12,6 +12,15 @@
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
         IEmailSettingsService
     {
+        public int? GetCommandTimeout()
+        {
+            string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
+            int commandTimeoutValue;
+            if (int.TryParse(commandTimeoutString, out commandTimeoutValue))
+                return commandTimeoutValue;
+            return null;
+        }
+
         public string GetConnectionString()
         {
             return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
