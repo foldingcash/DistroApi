@@ -91,6 +91,11 @@
 4. EnableGoogleUsersFilter
 	* The stats upload will filter out users whoms name start with 'google'
 
+#### Database Connection Settings
+
+1. DbCommandTimeout
+	* The timeout value, in seconds, to use for all database command functions. If not included in the app.config file, the application will not explicitly set the value on the command, using the framework's default value.
+
 #### Test Harness Only Settings
 
 1. DisableMinimumWaitTime
