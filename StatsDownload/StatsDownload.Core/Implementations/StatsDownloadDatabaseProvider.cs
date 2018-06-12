@@ -258,16 +258,17 @@
             };
         }
 
-        private IDatabaseConnectionService CreateDatabaseConnection(string connectionString)
+        private IDatabaseConnectionService CreateDatabaseConnection(string connectionString, int? commandTimeout)
         {
-            return databaseConnectionServiceFactory.Create(connectionString);
+            return databaseConnectionServiceFactory.Create(connectionString, commandTimeout);
         }
 
         private void CreateDatabaseConnectionAndExecuteAction(Action<IDatabaseConnectionService> action)
         {
             string connectionString = GetConnectionString();
+            int? commandTimeout = GetCommandTimeout();
             EnsureValidConnectionString(connectionString);
-            IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(connectionString);
+            IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(connectionString, commandTimeout);
             EnsureDatabaseConnectionOpened(databaseConnection);
             action?.Invoke(databaseConnection);
         }
@@ -367,6 +368,11 @@
             databaseConnection.ExecuteStoredProcedure(
                 Constants.StatsDownloadDatabase.FileDownloadFinishedProcedureName,
                 new List<DbParameter> { downloadId, fileName, fileExtension, fileData });
+        }
+
+        private int? GetCommandTimeout()
+        {
+            return databaseConnectionSettingsService.GetCommandTimeout();
         }
 
         private string GetConnectionString()

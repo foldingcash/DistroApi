@@ -13,6 +13,15 @@
         ITestHarnessSettingsService, IEmailSettingsService, IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
         IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings
     {
+        public int? GetCommandTimeout()
+        {
+            string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
+            int commandTimeoutValue;
+            if (int.TryParse(commandTimeoutString, out commandTimeoutValue))
+                return commandTimeoutValue;
+            return null;
+        }
+
         public string GetConnectionString()
         {
             return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
