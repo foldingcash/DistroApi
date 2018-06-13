@@ -9,7 +9,7 @@ AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRANSACTION
-			IF (SELECT COUNT(*) FROM [FoldingCoin].Statuses) <> 6
+			IF (SELECT COUNT(*) FROM [FoldingCoin].[Statuses]) <> 6
 				BEGIN
 					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
 					VALUES ('FILE DOWNLOAD STARTED', 'The stats file download service has started.')
