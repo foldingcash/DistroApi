@@ -1,4 +1,6 @@
-#### File Server Test Harness Settings
+# File Server Test Harness
+
+## Settings
 
 1. FilePath
 	* The file path to the stats file resource to return in a happy scenario
