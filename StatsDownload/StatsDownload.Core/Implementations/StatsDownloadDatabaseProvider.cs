@@ -353,6 +353,10 @@
         {
             DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, filePayload.DownloadId);
 
+            var downloadDateTime =
+                databaseConnection.CreateParameter("@DownloadDateTime", DbType.DateTime, ParameterDirection.Input);
+            downloadDateTime.Value = filePayload.DownloadDateTime;
+
             DbParameter fileName = databaseConnection.CreateParameter("@FileName", DbType.String,
                 ParameterDirection.Input);
             fileName.Value = filePayload.DecompressedDownloadFileName;
@@ -367,7 +371,7 @@
 
             databaseConnection.ExecuteStoredProcedure(
                 Constants.StatsDownloadDatabase.FileDownloadFinishedProcedureName,
-                new List<DbParameter> { downloadId, fileName, fileExtension, fileData });
+                new List<DbParameter> { downloadId, downloadDateTime, fileName, fileExtension, fileData });
         }
 
         private int? GetCommandTimeout()

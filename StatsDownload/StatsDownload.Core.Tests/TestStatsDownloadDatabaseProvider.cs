@@ -77,9 +77,12 @@
                 return dbParameter;
             });
 
+            downloadDateTime = DateTime.UtcNow;
+
             filePayload = new FilePayload
             {
                 DownloadId = 100,
+                DownloadDateTime = downloadDateTime,
                 DecompressedDownloadFileName = "DecompressedDownloadFileName",
                 DecompressedDownloadFileExtension = "DecompressedDownloadFileExtension",
                 DecompressedDownloadFileData = "DecompressedDownloadFileData"
@@ -95,6 +98,8 @@
                 .ExecuteReader("SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]")
                 .Returns(dbDataReaderMock);
         }
+
+        private DateTime downloadDateTime;
 
         private IDatabaseConnectionServiceFactory databaseConnectionServiceFactoryMock;
 
@@ -481,23 +486,27 @@
 
             InvokeFileDownloadFinished();
 
-            Assert.That(actualParameters.Count, Is.EqualTo(4));
+            Assert.That(actualParameters.Count, Is.EqualTo(5));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
             Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
             Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters[0].Value, Is.EqualTo(100));
-            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@FileName"));
-            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@DownloadDateTime"));
+            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.DateTime));
             Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[1].Value, Is.EqualTo("DecompressedDownloadFileName"));
-            Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@FileExtension"));
+            Assert.That(actualParameters[1].Value, Is.EqualTo(downloadDateTime));
+            Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@FileName"));
             Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[2].Value, Is.EqualTo("DecompressedDownloadFileExtension"));
-            Assert.That(actualParameters[3].ParameterName, Is.EqualTo("@FileData"));
+            Assert.That(actualParameters[2].Value, Is.EqualTo("DecompressedDownloadFileName"));
+            Assert.That(actualParameters[3].ParameterName, Is.EqualTo("@FileExtension"));
             Assert.That(actualParameters[3].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[3].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[3].Value, Is.EqualTo("DecompressedDownloadFileData"));
+            Assert.That(actualParameters[3].Value, Is.EqualTo("DecompressedDownloadFileExtension"));
+            Assert.That(actualParameters[4].ParameterName, Is.EqualTo("@FileData"));
+            Assert.That(actualParameters[4].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[4].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[4].Value, Is.EqualTo("DecompressedDownloadFileData"));
         }
 
         [Test]
