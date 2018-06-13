@@ -17,11 +17,11 @@ This is a C# implementation for downloading FAH statistics on a scheduled basis,
 	1. Run the schema script to create a database (update path to database)
 	2. Run the stored procedure script against the database
 4. Create a task for each application
-	1. [Search for Task Scheduler](InstallPics/Windows_SearchTask.PNG)
-	2. [Create Task](InstallPics/Windows_CreateTask.PNG)
-	3. [Sample Task Properties](InstallPics/Windows_TaskProperties.PNG)
-	4. [Sample Task Trigger](InstallPics/Windows_Trigger.PNG)
-	5. [Sample Task Action](InstallPics/Windows_Action.PNG)
+	1. ![Search for Task Scheduler](InstallPics/Windows_SearchTask.PNG)
+	2. ![Create Task](InstallPics/Windows_CreateTask.PNG)
+	3. ![Sample Task Properties](InstallPics/Windows_TaskProperties.PNG)
+	4. ![Sample Task Trigger](InstallPics/Windows_Trigger.PNG)
+	5. ![Sample Task Action](InstallPics/Windows_Action.PNG)
 5. Use a batch script calling the appropriate application
 
 ```
