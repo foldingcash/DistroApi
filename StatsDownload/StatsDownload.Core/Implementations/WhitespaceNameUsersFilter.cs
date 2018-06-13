@@ -23,7 +23,8 @@
 
             if (settings.Enabled)
             {
-                return new ParseResults(results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.Name)),
+                return new ParseResults(results.DownloadDateTime,
+                    results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.Name)),
                     results.FailedUsersData);
             }
 

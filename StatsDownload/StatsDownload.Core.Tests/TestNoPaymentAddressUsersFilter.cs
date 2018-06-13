@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using System;
     using System.Linq;
     using Implementations;
     using Interfaces;
@@ -18,11 +19,15 @@
             settingsMock = Substitute.For<INoPaymentAddressUsersFilterSettings>();
 
             systemUnderTest = new NoPaymentAddressUsersFilter(innerServiceMock, settingsMock);
+
+            downloadDateTime = DateTime.Now;
         }
 
         private IStatsFileParserService innerServiceMock;
 
         private IStatsFileParserService systemUnderTest;
+
+        private DateTime downloadDateTime;
 
         private INoPaymentAddressUsersFilterSettings settingsMock;
 
@@ -31,7 +36,7 @@
         {
             settingsMock.Enabled.Returns(false);
 
-            var expected = new ParseResults(null, null);
+            var expected = new ParseResults(downloadDateTime, null, null);
             innerServiceMock.Parse("fileData").Returns(expected);
 
             var actual = systemUnderTest.Parse("fileData");
@@ -45,7 +50,7 @@
             settingsMock.Enabled.Returns(true);
 
             innerServiceMock.Parse("fileData")
-                            .Returns(new ParseResults(
+                            .Returns(new ParseResults(downloadDateTime,
                                 new[] { new UserData(), new UserData { BitcoinAddress = "addy" } },
                                 new[] { new FailedUserData() }));
 

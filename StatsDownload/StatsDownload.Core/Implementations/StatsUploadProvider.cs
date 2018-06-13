@@ -108,7 +108,7 @@
                 IEnumerable<UserData> usersData = results.UsersData;
                 IEnumerable<FailedUserData> failedUsersData = results.FailedUsersData;
                 HandleUsers(downloadId, usersData, failedUsersData);
-                statsUploadDatabaseService.StatsUploadFinished(downloadId);
+                statsUploadDatabaseService.StatsUploadFinished(downloadId, results.DownloadDateTime);
                 LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");
             }
             catch (InvalidStatsFileException)

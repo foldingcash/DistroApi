@@ -854,19 +854,25 @@
                                                      Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            systemUnderTest.StatsUploadFinished(100);
+            var dateTime = DateTime.UtcNow;
 
-            Assert.That(actualParameters.Count, Is.EqualTo(1));
+            systemUnderTest.StatsUploadFinished(100, dateTime);
+
+            Assert.That(actualParameters.Count, Is.EqualTo(2));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
             Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
             Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@DownloadDateTime"));
+            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.DateTime));
+            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[1].Value, Is.EqualTo(dateTime));
         }
 
         [Test]
         public void StatsUploadFinished_WhenInvoked_UpdatesStatsUploadToFinished()
         {
-            systemUnderTest.StatsUploadFinished(100);
+            systemUnderTest.StatsUploadFinished(100, DateTime.Now);
 
             Received.InOrder((() =>
             {

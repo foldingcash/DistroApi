@@ -132,10 +132,11 @@
             CreateDatabaseConnectionAndExecuteAction(service => StatsUploadError(service, statsUploadResult));
         }
 
-        public void StatsUploadFinished(int downloadId)
+        public void StatsUploadFinished(int downloadId, DateTime downloadDateTime)
         {
             LogMethodInvoked();
-            CreateDatabaseConnectionAndExecuteAction(service => StatsUploadFinished(service, downloadId));
+            CreateDatabaseConnectionAndExecuteAction(service =>
+                StatsUploadFinished(service, downloadId, downloadDateTime));
         }
 
         public void UpdateToLatest()
@@ -487,12 +488,17 @@
                 new List<DbParameter> { downloadId, errorMessage });
         }
 
-        private void StatsUploadFinished(IDatabaseConnectionService databaseConnection, int downloadId)
+        private void StatsUploadFinished(IDatabaseConnectionService databaseConnection, int downloadId,
+            DateTime downloadDateTime)
         {
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
+            var downloadDateTimeParameter =
+                databaseConnection.CreateParameter("@DownloadDateTime", DbType.DateTime, ParameterDirection.Input);
+            downloadDateTimeParameter.Value = downloadDateTime;
+
             databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.StatsUploadFinishedProcedureName,
-                new List<DbParameter> { download });
+                new List<DbParameter> { download, downloadDateTimeParameter });
         }
 
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)

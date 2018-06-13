@@ -22,7 +22,8 @@
 
             if (settings.Enabled)
             {
-                return new ParseResults(results.UsersData.Where(data => data.TotalPoints > 0), results.FailedUsersData);
+                return new ParseResults(results.DownloadDateTime, results.UsersData.Where(data => data.TotalPoints > 0),
+                    results.FailedUsersData);
             }
 
             return results;

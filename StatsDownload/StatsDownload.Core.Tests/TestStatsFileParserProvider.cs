@@ -43,6 +43,18 @@
             }
         }
 
+        [TestCase(GoodStatsFile, 2017, 12, 26, 18, 20, 1)]
+        [TestCase(GoodStatsFileWithDaylightSavingsTimeZone, 2017, 12, 26, 17, 20, 1)]
+        [TestCase("Tue Dec  5 10:20:01 PST 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 18, 20, 1)]
+        [TestCase("Tue Dec  5 10:20:01 PDT 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 17, 20, 1)]
+        public void Parse_WhenInvoked_ReturnsDownloadDateTimeInUTC(string fileData, int year, int month, int day,
+            int hour, int minute, int second)
+        {
+            var actual = InvokeParse(fileData).DownloadDateTime;
+
+            Assert.That(actual, Is.EqualTo(new DateTime(year, month, day, hour, minute, second)));
+        }
+
         [TestCase(GoodStatsFile, 5)]
         [TestCase(EmptyStatsFile, 0)]
         [TestCase(GoodStatsFileWithOnlyNewLine, 5)]

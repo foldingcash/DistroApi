@@ -34,9 +34,10 @@
                 throw new InvalidStatsFileException();
             }
 
+            var downloadDateTime = ParseDownloadDateTime(fileLines);
             Parse(fileLines, usersData, failedUsersData);
 
-            return new ParseResults(usersData, failedUsersData);
+            return new ParseResults(downloadDateTime, usersData, failedUsersData);
         }
 
         private string[] GetFileLines(string fileData)
@@ -46,8 +47,46 @@
 
         private bool IsInvalidStatsFile(string[] fileLines)
         {
-            return fileLines == null || fileLines.Length < 2 || !ValidDateTime(fileLines[0])
+            return fileLines == null || fileLines.Length < 2 || !ValidDateTime(fileLines)
                    || fileLines[1] != Constants.StatsFile.ExpectedHeader;
+        }
+
+        private string GetDateTimeLine(string[] fileLines)
+        {
+            return fileLines[0];
+        }
+
+        private DateTime ParseDownloadDateTime(string[] fileLines)
+        {
+            TryParseDownloadDateTime(fileLines, out DateTime downloadDateTime);
+            return downloadDateTime;
+        }
+
+        private bool TryParseDownloadDateTime(string[] fileLines, out DateTime downloadDateTime)
+        {
+            var rawDateTime = GetDateTimeLine(fileLines);
+            bool parsed = DateTime.TryParseExact(rawDateTime, Constants.StatsFile.StandardDateTimeFormats,
+                CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault, out downloadDateTime);
+            if (parsed)
+            {
+                downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, -8, 0, 0)).UtcDateTime;
+            }
+            else
+            {
+                parsed = DateTime.TryParseExact(rawDateTime, Constants.StatsFile.DaylightSavingsDateTimeFormats,
+                    CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault, out downloadDateTime);
+                if (parsed)
+                {
+                    downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, -7, 0, 0)).UtcDateTime;
+                }
+            }
+
+            return parsed;
+        }
+
+        private bool ValidDateTime(string[] fileLines)
+        {
+            return TryParseDownloadDateTime(fileLines, out DateTime downloadDateTime);
         }
 
         private bool IsInvalidUserData(string[] unparsedUserData)
@@ -69,9 +108,7 @@
                     continue;
                 }
 
-                UserData userData;
-
-                if (TryParseUserData(unparsedUserData, out userData))
+                if (TryParseUserData(unparsedUserData, out UserData userData))
                 {
                     additionalUserDataParserService.Parse(userData);
                     usersData.Add(userData);
@@ -95,27 +132,15 @@
                 index--;
             }
 
-            long totalPoints;
-            long totalWorkUnits;
-            long teamNumber;
-
-            bool totalPointsParsed = long.TryParse(unparsedUserData[index], out totalPoints);
+            bool totalPointsParsed = long.TryParse(unparsedUserData[index], out long totalPoints);
             index++;
-            bool totalWorkUnitsParsed = long.TryParse(unparsedUserData[index], out totalWorkUnits);
+            bool totalWorkUnitsParsed = long.TryParse(unparsedUserData[index], out long totalWorkUnits);
             index++;
-            bool teamNumberParsed = long.TryParse(unparsedUserData[index], out teamNumber);
+            bool teamNumberParsed = long.TryParse(unparsedUserData[index], out long teamNumber);
 
             userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
 
             return totalPointsParsed && totalWorkUnitsParsed && teamNumberParsed;
-        }
-
-        private bool ValidDateTime(string dateTime)
-        {
-            DateTime parsedDateTime;
-            bool parsed = DateTime.TryParseExact(dateTime, Constants.StatsFile.DateTimeFormats,
-                CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault, out parsedDateTime);
-            return parsed;
         }
     }
 }
