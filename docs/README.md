@@ -36,8 +36,17 @@ This is a C# implementation for downloading FAH statistics on a scheduled basis 
 
 ## Running the tests
 
+### Unit Tests
+
 1. Use ReSharper from Visual Studios
 2. nunit-console {path-to-assembly}
+
+### Integration Tests
+
+1. Use the FileServer.TestHarness for integration tests
+	* Several endpoints exist for testing various scenarios
+2. Update FileServer.TestHarness settings
+	* [FileServer Test Harness Settings](FileServer.TestHarness.SettingsConfiguration.md)
 
 ## Deployment
 
@@ -55,8 +64,6 @@ This is a C# implementation for downloading FAH statistics on a scheduled basis 
 
 ## Built With
 
-* .NET Framework 4.7.1
-* .NET Core 2.0
 * Visual Studio 2017
 * Microsoft SQL Server 2017
 * ReSharper
