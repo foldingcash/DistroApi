@@ -188,7 +188,7 @@ BEGIN
 			SELECT TOP 1 @FileId = @@Identity FROM [FoldingCoin].[Files];
 
 			INSERT INTO [FoldingCoin].[Downloads] (StatusId, FileId, DownloadDateTime)
-			VALUES (@FileDownloadStartedStatusId, @FileId, CURRENT_TIMESTAMP);
+			VALUES (@FileDownloadStartedStatusId, @FileId, GETUTCDATE());
 	
 			SELECT TOP 1 @DownloadId = @@Identity FROM [FoldingCoin].[Downloads];
 		COMMIT
@@ -210,6 +210,7 @@ GO
 
 CREATE PROCEDURE [FoldingCoin].[FileDownloadFinished] 
 	 @DownloadId INT
+	,@DownloadDateTime DATETIME
 	,@FileName NVARCHAR(50)
 	,@FileExtension NVARCHAR(5)
 	,@FileData NVARCHAR(max)
@@ -232,6 +233,7 @@ BEGIN
 			UPDATE [FoldingCoin].[Downloads] SET
 					 FileId = @FileId
 					,StatusId = FoldingCoin.GetFileDownloadFinishedStatusId()
+					,DownloadDateTime = @DownloadDateTime
 			WHERE DownloadId = @DownloadId;
 		COMMIT
 	END TRY
