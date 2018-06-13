@@ -4,9 +4,9 @@ GO
 CREATE DATABASE [FoldingCoin]
  CONTAINMENT = NONE
  ON  PRIMARY 
-( NAME = N'FoldingCoin', FILENAME = N'F:\Databases\FoldingCoin.mdf' , SIZE = 10240KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+( NAME = N'FoldingCoin', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\FoldingCoin.mdf' , SIZE = 10240KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
  LOG ON 
-( NAME = N'FoldingCoin_log', FILENAME = N'F:\Databases\FoldingCoin_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+( NAME = N'FoldingCoin_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\FoldingCoin_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
 GO
 ALTER DATABASE [FoldingCoin] SET COMPATIBILITY_LEVEL = 110
 GO
@@ -106,7 +106,7 @@ GO
 CREATE TABLE [FoldingCoin].[Downloads](
 	[DownloadId] [int] IDENTITY(1,1) NOT NULL,
 	[StatusId] [int] NOT NULL,
-	[FileId] [int] NOT NULL,
+	[FileId] [int] NULL,
 	[DownloadDateTime] [datetime] NOT NULL,
  CONSTRAINT [PK_Downloads] PRIMARY KEY CLUSTERED 
 (
