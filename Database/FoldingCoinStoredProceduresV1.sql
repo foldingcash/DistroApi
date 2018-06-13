@@ -9,7 +9,7 @@ AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRANSACTION
-			IF (SELECT COUNT(*) FROM [FoldingCoin].Statuses) <> 6
+			IF (SELECT COUNT(*) FROM [FoldingCoin].[Statuses]) <> 6
 				BEGIN
 					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
 					VALUES ('FILE DOWNLOAD STARTED', 'The stats file download service has started.')
@@ -41,7 +41,7 @@ AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE STATUS = 'FILE DOWNLOAD STARTED';
+	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD STARTED';
 	
 	RETURN @StatusId;
 END
@@ -60,7 +60,7 @@ AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE STATUS = 'FILE DOWNLOAD FINISHED';
+	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD FINISHED';
 				 
 	RETURN @StatusId;
 END
@@ -79,7 +79,7 @@ AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE STATUS = 'FILE DOWNLOAD ERROR';
+	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD ERROR';
 				 
 	RETURN @StatusId;
 END
@@ -98,7 +98,7 @@ AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId	FROM [FoldingCoin].[Statuses] WHERE STATUS = 'STATS UPLOAD STARTED';
+	SELECT @StatusId = StatusId	FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD STARTED';
 
 	RETURN @StatusId;
 END
@@ -117,7 +117,7 @@ AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId	FROM [FoldingCoin].[Statuses] WHERE STATUS = 'STATS UPLOAD FINISHED';
+	SELECT @StatusId = StatusId	FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD FINISHED';
 
 	RETURN @StatusId;
 END
@@ -136,7 +136,7 @@ AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId	FROM [FoldingCoin].[Statuses] WHERE STATUS = 'STATS UPLOAD ERROR';
+	SELECT @StatusId = StatusId	FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD ERROR';
 
 	RETURN @StatusId;
 END

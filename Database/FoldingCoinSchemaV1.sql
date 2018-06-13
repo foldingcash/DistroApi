@@ -7,6 +7,7 @@ CREATE DATABASE [FoldingCoin]
 ( NAME = N'FoldingCoin', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\FoldingCoin.mdf' , SIZE = 10240KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
  LOG ON 
 ( NAME = N'FoldingCoin_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\FoldingCoin_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+ COLLATE SQL_Latin1_General_CP1_CS_AS
 GO
 ALTER DATABASE [FoldingCoin] SET COMPATIBILITY_LEVEL = 110
 GO
