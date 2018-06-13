@@ -181,14 +181,8 @@ BEGIN
 		BEGIN TRANSACTION
 			SELECT @FileDownloadStartedStatusId = [FoldingCoin].[GetFileDownloadStartedStatusId]();
 	
-			INSERT INTO [FoldingCoin].[Files] ([FileName], FileExtension, FileData)
-			VALUES (NULL, NULL, NULL);
-
-			DECLARE @FileId INT;
-			SELECT TOP 1 @FileId = @@Identity FROM [FoldingCoin].[Files];
-
 			INSERT INTO [FoldingCoin].[Downloads] (StatusId, FileId, DownloadDateTime)
-			VALUES (@FileDownloadStartedStatusId, @FileId, GETUTCDATE());
+			VALUES (@FileDownloadStartedStatusId, NULL, GETUTCDATE());
 	
 			SELECT TOP 1 @DownloadId = @@Identity FROM [FoldingCoin].[Downloads];
 		COMMIT
@@ -219,13 +213,10 @@ BEGIN
 
 	BEGIN TRY
 		BEGIN TRANSACTION
-			SELECT @FileId = FileId FROM [FoldingCoin].[Downloads] WHERE DownloadId = @DownloadId;
+			INSERT INTO [FoldingCoin].[Files] ([FileName], FileExtension, FileData)
+			VALUES (@FileName, @FileExtension, @FileData);
 
-			UPDATE [FoldingCoin].[Files] SET
-					 [FileName] = @FileName
-					,FileExtension = @FileExtension
-					,FileData = @FileData
-			WHERE FileId = @FileId;
+			SELECT TOP 1 @FileId = @@Identity FROM [FoldingCoin].[Files];
 
 			DECLARE @FileDownloadFinishedStatusId INT;
 
