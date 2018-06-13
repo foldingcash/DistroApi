@@ -858,7 +858,7 @@
 
             systemUnderTest.StatsUploadFinished(100, dateTime);
 
-            Assert.That(actualParameters.Count, Is.EqualTo(1));
+            Assert.That(actualParameters.Count, Is.EqualTo(2));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
             Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
             Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
