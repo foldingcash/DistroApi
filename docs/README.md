@@ -11,17 +11,22 @@ This is a C# implementation for downloading FAH statistics on a scheduled basis,
 
 ## Installing on Windows
 
-1. Place FileDownload or StatsUpload console application(s) in the desired directory
-2. [Update application configuration file](SettingsConfiguration.md)
-3. Navigate to FLDCDotNet/Database 
+1. Place FileDownload and StatsUpload console applications in the desired directory
+2. [Update applications configuration file](SettingsConfiguration.md)
+3. Navigate to FLDCDotNet/Database
 	1. Run the schema script to create a database (update path to database)
 	2. Run the stored procedure script against the database
 4. Create a task for each application
-	1. 
+	1. [Search for Task Scheduler](InstallPics/Windows_SearchTask.PNG)
+	2. [Create Task](InstallPics/Windows_CreateTask.PNG)
+	3. [Sample Task Properties](InstallPics/Windows_TaskProperties.PNG)
+	4. [Sample Task Trigger](InstallPics/Windows_Trigger.PNG)
+	5. [Sample Task Action](InstallPics/Windows_Action.PNG)
 5. Use a batch script calling the appropriate application
 
 ```
 dotnet StatsDownload.FileDownload.Console.dll >> Log.txt
+dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 ```
 
 ### Applications
@@ -76,7 +81,3 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 ## Acknowledgments
 
 * SharpZipLib
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzOTM1MDYyMTYsLTEwMjk3NDg1NTldfQ
-==
--->
