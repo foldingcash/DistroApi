@@ -2,26 +2,27 @@
 
 ## Getting Started
 
-This is a C# implementation for downloading FAH statistics on a scheduled basis and loading the statistics into a database.
+This is a C# implementation for downloading FAH statistics on a scheduled basis, parsing and loading the statistics into a database, and parsing metadata out of a FAH user's name.
 
 ## Prerequisites
 
-* .NET Framework 4.7.1
 * .NET Core 2.0
 * Microsoft SQL Server 2017
 
-## Installing
+## Installing on Windows
 
-1. Run publish on project to install
-2. Take published files for installation
-3. Update application configuration file
-	* [Settings Doc](SettingsConfiguration.md)
-4. Navigate to FLDCDotNet/Database 
-	* Run the schema and stored procedure scripts against a database
-5. Build the solution and run Unit Tests to ensure all pass
-	* There are four applications available to use; two for production usage and two for testing
-6. Ensure application's connection string pointed to the database created in step 1
-7. Run application(s)
+1. Place FileDownload or StatsUpload console application(s) in the desired directory
+2. [Update application configuration file](SettingsConfiguration.md)
+3. Navigate to FLDCDotNet/Database 
+	1. Run the schema script to create a database (update path to database)
+	2. Run the stored procedure script against the database
+4. Create a task for each application
+	1. 
+5. Use a batch script calling the appropriate application
+
+```
+dotnet StatsDownload.FileDownload.Console.dll >> Log.txt
+```
 
 ### Applications
 
