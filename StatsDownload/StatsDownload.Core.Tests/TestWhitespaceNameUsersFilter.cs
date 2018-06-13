@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using System;
     using System.Linq;
     using Implementations;
     using Interfaces;
@@ -18,6 +19,8 @@
             settingsMock = Substitute.For<IWhitespaceNameUsersFilterSettings>();
 
             systemUnderTest = new WhitespaceNameUsersFilter(innerServiceMock, settingsMock);
+
+            downloadDateTime = DateTime.Now;
         }
 
         private IStatsFileParserService innerServiceMock;
@@ -26,12 +29,14 @@
 
         private IWhitespaceNameUsersFilterSettings settingsMock;
 
+        private DateTime downloadDateTime;
+
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()
         {
             settingsMock.Enabled.Returns(false);
 
-            var expected = new ParseResults(null, null);
+            var expected = new ParseResults(downloadDateTime, null, null);
             innerServiceMock.Parse("fileData").Returns(expected);
 
             var actual = systemUnderTest.Parse("fileData");
@@ -46,7 +51,7 @@
 
             innerServiceMock.Parse("fileData")
                             .Returns(
-                                new ParseResults(
+                                new ParseResults(downloadDateTime,
                                     new[]
                                     {
                                         new UserData(),

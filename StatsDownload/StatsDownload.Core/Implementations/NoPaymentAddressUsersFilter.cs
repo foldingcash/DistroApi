@@ -23,7 +23,7 @@
 
             if (settings.Enabled)
             {
-                return new ParseResults(
+                return new ParseResults(results.DownloadDateTime,
                     results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.BitcoinAddress)),
                     results.FailedUsersData);
             }

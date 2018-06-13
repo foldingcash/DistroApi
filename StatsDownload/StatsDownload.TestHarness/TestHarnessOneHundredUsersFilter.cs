@@ -22,7 +22,7 @@
             if (settingsService.IsOneHundredUsersFilterEnabled())
             {
                 ParseResults results = innerService.Parse(fileData);
-                return new ParseResults(results.UsersData.Take(100), results.FailedUsersData);
+                return new ParseResults(results.DownloadDateTime, results.UsersData.Take(100), results.FailedUsersData);
             }
 
             return innerService.Parse(fileData);

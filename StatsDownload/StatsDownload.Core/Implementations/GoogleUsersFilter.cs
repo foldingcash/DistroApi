@@ -24,7 +24,7 @@
             if (settings.Enabled)
             {
                 return
-                    new ParseResults(
+                    new ParseResults(results.DownloadDateTime,
                         results.UsersData.Where(
                             data => !data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ??
                                     true),

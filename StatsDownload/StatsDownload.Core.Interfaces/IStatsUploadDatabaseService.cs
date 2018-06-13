@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
+    using System;
     using System.Collections.Generic;
     using DataTransfer;
 
@@ -17,6 +18,6 @@
 
         void StatsUploadError(StatsUploadResult statsUploadResult);
 
-        void StatsUploadFinished(int downloadId);
+        void StatsUploadFinished(int downloadId, DateTime downloadDateTime);
     }
 }

@@ -132,10 +132,11 @@
             CreateDatabaseConnectionAndExecuteAction(service => StatsUploadError(service, statsUploadResult));
         }
 
-        public void StatsUploadFinished(int downloadId)
+        public void StatsUploadFinished(int downloadId, DateTime downloadDateTime)
         {
             LogMethodInvoked();
-            CreateDatabaseConnectionAndExecuteAction(service => StatsUploadFinished(service, downloadId));
+            CreateDatabaseConnectionAndExecuteAction(service =>
+                StatsUploadFinished(service, downloadId, downloadDateTime));
         }
 
         public void UpdateToLatest()
@@ -353,10 +354,6 @@
         {
             DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, filePayload.DownloadId);
 
-            var downloadDateTime =
-                databaseConnection.CreateParameter("@DownloadDateTime", DbType.DateTime, ParameterDirection.Input);
-            downloadDateTime.Value = filePayload.DownloadDateTime;
-
             DbParameter fileName = databaseConnection.CreateParameter("@FileName", DbType.String,
                 ParameterDirection.Input);
             fileName.Value = filePayload.DecompressedDownloadFileName;
@@ -371,7 +368,7 @@
 
             databaseConnection.ExecuteStoredProcedure(
                 Constants.StatsDownloadDatabase.FileDownloadFinishedProcedureName,
-                new List<DbParameter> { downloadId, downloadDateTime, fileName, fileExtension, fileData });
+                new List<DbParameter> { downloadId, fileName, fileExtension, fileData });
         }
 
         private int? GetCommandTimeout()
@@ -491,12 +488,17 @@
                 new List<DbParameter> { downloadId, errorMessage });
         }
 
-        private void StatsUploadFinished(IDatabaseConnectionService databaseConnection, int downloadId)
+        private void StatsUploadFinished(IDatabaseConnectionService databaseConnection, int downloadId,
+            DateTime downloadDateTime)
         {
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
+            var downloadDateTimeParameter =
+                databaseConnection.CreateParameter("@DownloadDateTime", DbType.DateTime, ParameterDirection.Input);
+            downloadDateTimeParameter.Value = downloadDateTime;
+
             databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.StatsUploadFinishedProcedureName,
-                new List<DbParameter> { download });
+                new List<DbParameter> { download, downloadDateTimeParameter });
         }
 
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)

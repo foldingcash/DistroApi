@@ -27,6 +27,8 @@
 
             loggingServiceMock = Substitute.For<IStatsUploadLoggingService>();
 
+            downloadDateTime = DateTime.Now;
+
             user1 = new UserData();
             user2 = new UserData();
             user3 = new UserData();
@@ -39,10 +41,10 @@
 
             statsFileParserServiceMock = Substitute.For<IStatsFileParserService>();
             statsFileParserServiceMock.Parse("File1")
-                                      .Returns(new ParseResults(new List<UserData> { user1, user2 },
+                                      .Returns(new ParseResults(downloadDateTime, new List<UserData> { user1, user2 },
                                           new List<FailedUserData> { failedUser1, failedUser2 }));
             statsFileParserServiceMock.Parse("File2")
-                                      .Returns(new ParseResults(new List<UserData> { user3, user4 },
+                                      .Returns(new ParseResults(downloadDateTime, new List<UserData> { user3, user4 },
                                           new List<FailedUserData> { failedUser3, failedUser4 }));
 
             statsUploadEmailServiceMock = Substitute.For<IStatsUploadEmailService>();
@@ -50,6 +52,8 @@
             systemUnderTest = NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock,
                 statsFileParserServiceMock, statsUploadEmailServiceMock);
         }
+
+        private DateTime downloadDateTime;
 
         private FailedUserData failedUser1;
 
@@ -267,10 +271,10 @@
             {
                 statsUploadDatabaseServiceMock.StartStatsUpload(1);
                 statsUploadDatabaseServiceMock.GetFileData(1);
-                statsUploadDatabaseServiceMock.StatsUploadFinished(1);
+                statsUploadDatabaseServiceMock.StatsUploadFinished(1, downloadDateTime);
                 statsUploadDatabaseServiceMock.StartStatsUpload(2);
                 statsUploadDatabaseServiceMock.GetFileData(2);
-                statsUploadDatabaseServiceMock.StatsUploadFinished(2);
+                statsUploadDatabaseServiceMock.StatsUploadFinished(2, downloadDateTime);
             });
         }
 

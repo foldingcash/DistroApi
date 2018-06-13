@@ -210,7 +210,6 @@ GO
 
 CREATE PROCEDURE [FoldingCoin].[FileDownloadFinished] 
 	 @DownloadId INT
-	,@DownloadDateTime DATETIME
 	,@FileName NVARCHAR(50)
 	,@FileExtension NVARCHAR(5)
 	,@FileData NVARCHAR(max)
@@ -233,7 +232,6 @@ BEGIN
 			UPDATE [FoldingCoin].[Downloads] SET
 					 FileId = @FileId
 					,StatusId = FoldingCoin.GetFileDownloadFinishedStatusId()
-					,DownloadDateTime = @DownloadDateTime
 			WHERE DownloadId = @DownloadId;
 		COMMIT
 	END TRY
@@ -499,13 +497,13 @@ IF OBJECT_ID('FoldingCoin.StatsUploadFinished') IS NOT NULL
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[StatsUploadFinished] @DownloadId INT
+CREATE PROCEDURE [FoldingCoin].[StatsUploadFinished] @DownloadId INT, @DownloadDateTime DATETIME
 AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRANSACTION
 			UPDATE [FoldingCoin].[Downloads]
-			SET StatusId = FoldingCoin.GetStatsUploadFinishedStatusId()
+			SET StatusId = FoldingCoin.GetStatsUploadFinishedStatusId(), DownloadDateTime = @DownloadDateTime
 			WHERE DownloadId = @DownloadId
 		COMMIT
 	END TRY

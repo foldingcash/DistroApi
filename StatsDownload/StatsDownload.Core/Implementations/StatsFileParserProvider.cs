@@ -36,7 +36,7 @@
 
             Parse(fileLines, usersData, failedUsersData);
 
-            return new ParseResults(usersData, failedUsersData);
+            return new ParseResults(DateTime.Now, usersData, failedUsersData);
         }
 
         private string[] GetFileLines(string fileData)

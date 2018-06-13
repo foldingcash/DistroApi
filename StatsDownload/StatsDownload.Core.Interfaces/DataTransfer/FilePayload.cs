@@ -4,8 +4,6 @@
 
     public class FilePayload
     {
-        public DateTime DownloadDateTime { get; set; }
-
         public bool AcceptAnySslCert { get; set; }
 
         public string DecompressedDownloadDirectory { get; set; }

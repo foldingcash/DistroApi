@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using System;
     using System.Linq;
     using Implementations;
     using Interfaces;
@@ -18,6 +19,8 @@
             settingsMock = Substitute.For<IZeroPointUsersFilterSettings>();
 
             systemUnderTest = new ZeroPointUsersFilter(innerServiceMock, settingsMock);
+
+            downloadDateTime = DateTime.Now;
         }
 
         private IZeroPointUsersFilterSettings settingsMock;
@@ -26,12 +29,14 @@
 
         private IStatsFileParserService systemUnderTest;
 
+        private DateTime downloadDateTime;
+
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()
         {
             settingsMock.Enabled.Returns(false);
 
-            var expected = new ParseResults(null, null);
+            var expected = new ParseResults(downloadDateTime, null, null);
             innerServiceMock.Parse("fileData").Returns(expected);
 
             var actual = systemUnderTest.Parse("fileData");
@@ -45,7 +50,8 @@
             settingsMock.Enabled.Returns(true);
 
             innerServiceMock.Parse("fileData")
-                            .Returns(new ParseResults(new[] { new UserData(), new UserData(null, 1, 0, 0) },
+                            .Returns(new ParseResults(downloadDateTime,
+                                new[] { new UserData(), new UserData(null, 1, 0, 0) },
                                 new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse("fileData");
