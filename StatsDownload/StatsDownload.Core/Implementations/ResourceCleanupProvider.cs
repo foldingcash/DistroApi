@@ -4,7 +4,7 @@
     using Interfaces;
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
-    using Logging;
+    using Interfaces.Logging;
 
     public class ResourceCleanupProvider : IResourceCleanupService
     {

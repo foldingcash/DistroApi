@@ -3,7 +3,7 @@
     using System;
     using Interfaces;
     using Interfaces.DataTransfer;
-    using Logging;
+    using Interfaces.Logging;
 
     public class SecureFilePayloadProvider : ISecureFilePayloadService
     {

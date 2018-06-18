@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Logging
+﻿namespace StatsDownload.Core.Interfaces.Logging
 {
     using System;
 

@@ -9,7 +9,7 @@
     using Interfaces;
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
-    using Logging;
+    using Interfaces.Logging;
     using NSubstitute;
     using NSubstitute.ClearExtensions;
     using NUnit.Framework;

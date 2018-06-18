@@ -6,6 +6,7 @@
     using Castle.Windsor;
     using Core.Implementations;
     using Core.Interfaces;
+    using Core.Interfaces.Logging;
     using Core.Interfaces.Networking;
     using Core.Wrappers;
     using Core.Wrappers.Networking;

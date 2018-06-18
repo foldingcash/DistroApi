@@ -2,6 +2,7 @@
 {
     using System;
     using Core.Interfaces;
+    using Core.Interfaces.Logging;
 
     public class LoggingProvider : ILoggingService
     {

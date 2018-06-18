@@ -6,7 +6,7 @@
     using Exceptions;
     using Interfaces;
     using Interfaces.DataTransfer;
-    using Logging;
+    using Interfaces.Logging;
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
     {
