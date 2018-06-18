@@ -11,7 +11,7 @@
     /// </summary>
     public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
         ITestHarnessSettingsService, IEmailSettingsService, IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
-        IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings
+        IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings, ITestHarnessStatsDownloadSettings
     {
         public int? GetCommandTimeout()
         {
@@ -106,6 +106,8 @@
         {
             return GetBoolConfig("DisableSecureFilePayload");
         }
+
+        bool ITestHarnessStatsDownloadSettings.Enabled => GetBoolConfig("EnableTestingSqlExceptionDuringAddUsers");
 
         bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
 
