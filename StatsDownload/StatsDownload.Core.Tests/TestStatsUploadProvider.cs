@@ -8,7 +8,6 @@
     using Interfaces;
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
-    using Interfaces.Logging;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
     using NUnit.Framework;

@@ -8,7 +8,7 @@
     using System.Runtime.CompilerServices;
     using Interfaces;
     using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+    using Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
     {

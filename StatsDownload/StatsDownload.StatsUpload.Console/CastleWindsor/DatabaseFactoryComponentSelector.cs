@@ -20,12 +20,12 @@
             var databaseType = settings.GetDatabaseType();
             if (string.Equals(databaseType, "MySql", StringComparison.OrdinalIgnoreCase))
             {
-                return typeof(MySqlDatabaseConnectionProvider).FullName;
+                return typeof (MySqlDatabaseConnectionProvider).FullName;
             }
 
             if (string.Equals(databaseType, "MicrosoftSql", StringComparison.OrdinalIgnoreCase))
             {
-                return typeof(MicrosoftSqlDatabaseConnectionProvider).FullName;
+                return typeof (MicrosoftSqlDatabaseConnectionProvider).FullName;
             }
 
             return base.GetComponentName(method, arguments);

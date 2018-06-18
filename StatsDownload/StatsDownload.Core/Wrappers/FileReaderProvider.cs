@@ -3,7 +3,7 @@
     using System.IO;
     using Interfaces;
     using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+    using Logging;
 
     public class FileReaderProvider : IFileReaderService
     {

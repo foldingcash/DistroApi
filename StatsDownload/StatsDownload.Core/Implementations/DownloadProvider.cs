@@ -4,8 +4,8 @@
     using System.Net.Security;
     using Interfaces;
     using Interfaces.DataTransfer;
-    using Interfaces.Logging;
     using Interfaces.Networking;
+    using Logging;
 
     public class DownloadProvider : IDownloadService
     {

@@ -3,8 +3,9 @@
     using System;
     using System.Collections.Generic;
     using Extensions;
+    using Interfaces;
     using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+    using Logging;
 
     public class StatsDownloadLoggingProvider : IStatsDownloadLoggingService
     {

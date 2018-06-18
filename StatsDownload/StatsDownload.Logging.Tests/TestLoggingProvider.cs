@@ -2,7 +2,6 @@
 {
     using System;
     using Core.Interfaces;
-    using Core.Interfaces.Logging;
     using NSubstitute;
     using NUnit.Framework;
 

@@ -4,7 +4,7 @@
     using System.Net;
     using Interfaces;
     using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+    using Logging;
 
     public class SecureDownloadProvider : IDownloadService
     {

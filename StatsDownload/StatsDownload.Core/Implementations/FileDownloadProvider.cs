@@ -6,7 +6,6 @@
     using Interfaces;
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
-    using Interfaces.Logging;
 
     public class FileDownloadProvider : IFileDownloadService
     {

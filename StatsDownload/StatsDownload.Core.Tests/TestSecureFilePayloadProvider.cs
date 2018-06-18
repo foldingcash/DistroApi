@@ -4,7 +4,7 @@
     using Implementations;
     using Interfaces;
     using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+    using Logging;
     using NSubstitute;
     using NUnit.Framework;
 

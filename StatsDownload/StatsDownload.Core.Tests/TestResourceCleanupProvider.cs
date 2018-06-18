@@ -5,7 +5,7 @@
     using Interfaces;
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
-    using Interfaces.Logging;
+    using Logging;
     using NSubstitute;
     using NUnit.Framework;
 

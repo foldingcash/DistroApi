@@ -1,8 +1,7 @@
 ﻿namespace StatsDownload.FileDownload.Console
 {
     using System;
-
-    using StatsDownload.Logging;
+    using Logging;
 
     public class FileDownloadConsoleLoggingProvider : IApplicationLoggingService
     {
