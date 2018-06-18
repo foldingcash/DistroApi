@@ -26,5 +26,7 @@
         int ExecuteStoredProcedure(string storedProcedure);
 
         void Open();
+
+        void Close();
     }
 }

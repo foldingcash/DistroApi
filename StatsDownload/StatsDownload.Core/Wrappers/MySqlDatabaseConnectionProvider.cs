@@ -114,6 +114,11 @@
             sqlConnection.Open();
         }
 
+        public void Close()
+        {
+            sqlConnection.Close();
+        }
+
         private void SetCommandTimeout(DbCommand dbCommand)
         {
             if (commandTimeout.HasValue)

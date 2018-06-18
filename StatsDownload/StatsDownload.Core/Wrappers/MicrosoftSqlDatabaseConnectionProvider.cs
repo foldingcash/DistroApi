@@ -27,6 +27,11 @@
 
         public ConnectionState ConnectionState => sqlConnection.State;
 
+        public void Close()
+        {
+            sqlConnection.Close();
+        }
+
         public DbCommand CreateDbCommand()
         {
             DbCommand dbCommand = sqlConnection.CreateCommand();
