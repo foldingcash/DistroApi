@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.TestHarness
 {
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
+    using Core.Interfaces;
+    using Core.Interfaces.DataTransfer;
 
     public class TestHarnessMinimumWaitTimeProvider : IFileDownloadMinimumWaitTimeService
     {

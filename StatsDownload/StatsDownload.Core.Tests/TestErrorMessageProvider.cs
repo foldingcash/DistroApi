@@ -2,18 +2,22 @@
 {
     using System;
     using System.Collections.Generic;
-
+    using DataTransfer;
+    using Implementations;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using NUnit.Framework;
-
-    using StatsDownload.Core.DataTransfer;
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestErrorMessageProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            systemUnderTest = new ErrorMessageProvider();
+        }
+
         private IErrorMessageService systemUnderTest;
 
         [Test]
@@ -130,10 +134,13 @@
                     "There was a problem parsing a user from the stats file. The user 'userdata' was in an unexpected format. You should contact your technical advisor to review the logs and rejected users."));
         }
 
-        [SetUp]
-        public void SetUp()
+        [Test]
+        public void GetErrorMessage_WhenUnknownRejectionReason_ReturnsEmptyString()
         {
-            systemUnderTest = new ErrorMessageProvider();
+            var actual = systemUnderTest.GetErrorMessage(new FailedUserData(0, string.Empty,
+                (RejectionReason) Enum.Parse(typeof (RejectionReason), "-1")));
+
+            Assert.IsEmpty(actual);
         }
     }
 }

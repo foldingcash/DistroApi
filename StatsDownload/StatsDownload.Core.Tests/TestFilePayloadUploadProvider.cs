@@ -1,21 +1,33 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-
+    using Implementations;
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestFilePayloadUploadProvider
     {
-        private const string DecompressedDownloadFilePath = "test decompressed download file path";
+        [SetUp]
+        public void SetUp()
+        {
+            filePayload = new FilePayload
+            {
+                DownloadFilePath = DownloadFilePath,
+                DecompressedDownloadFilePath = DecompressedDownloadFilePath
+            };
 
-        private const string DownloadFilePath = "test download file path";
+            fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
+
+            fileReaderServiceMock = Substitute.For<IFileReaderService>();
+
+            fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
+
+            systemUnderTest = NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock,
+                fileDownloadDatabaseServiceMock);
+        }
 
         private IFileCompressionService fileCompressionServiceMock;
 
@@ -38,25 +50,6 @@
                 () => NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, null));
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            filePayload = new FilePayload
-                          {
-                              DownloadFilePath = DownloadFilePath,
-                              DecompressedDownloadFilePath = DecompressedDownloadFilePath
-                          };
-
-            fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
-
-            fileReaderServiceMock = Substitute.For<IFileReaderService>();
-
-            fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
-
-            systemUnderTest = NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock,
-                fileDownloadDatabaseServiceMock);
-        }
-
         [Test]
         public void UploadFile_WhenInvoked_UploadsFile()
         {
@@ -70,17 +63,22 @@
             });
         }
 
+        private const string DecompressedDownloadFilePath = "test decompressed download file path";
+
+        private const string DownloadFilePath = "test download file path";
+
         private void InvokeUploadFile()
         {
             systemUnderTest.UploadFile(filePayload);
         }
 
         private IFilePayloadUploadService NewFilePayloadUploadProvider(IFileCompressionService fileCompressionService,
-                                                                       IFileReaderService fileReaderService,
-                                                                       IFileDownloadDatabaseService
-                                                                           fileDownloadDatabaseService)
+            IFileReaderService fileReaderService,
+            IFileDownloadDatabaseService
+                fileDownloadDatabaseService)
         {
-            return new FilePayloadUploadProvider(fileCompressionService, fileReaderService, fileDownloadDatabaseService);
+            return new FilePayloadUploadProvider(fileCompressionService, fileReaderService,
+                fileDownloadDatabaseService);
         }
     }
 }

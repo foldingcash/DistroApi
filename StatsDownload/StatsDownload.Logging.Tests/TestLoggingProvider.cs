@@ -1,16 +1,27 @@
 ﻿namespace StatsDownload.Logging.Tests
 {
     using System;
-
+    using Core.Interfaces;
+    using Core.Interfaces.Logging;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Interfaces;
 
     [TestFixture]
     public class TestLoggingProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            dateTime = DateTime.Now;
+
+            applicationLoggingServiceMock = Substitute.For<IApplicationLoggingService>();
+            dateTimeServiceMock = Substitute.For<IDateTimeService>();
+
+            systemUnderTest = NewLoggingProvider(applicationLoggingServiceMock, dateTimeServiceMock);
+
+            dateTimeServiceMock.DateTimeNow().Returns(dateTime);
+        }
+
         private IApplicationLoggingService applicationLoggingServiceMock;
 
         private DateTime dateTime;
@@ -66,21 +77,8 @@
             applicationLoggingServiceMock.DidNotReceiveWithAnyArgs().LogVerbose(noMessage);
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            dateTime = DateTime.Now;
-
-            applicationLoggingServiceMock = Substitute.For<IApplicationLoggingService>();
-            dateTimeServiceMock = Substitute.For<IDateTimeService>();
-
-            systemUnderTest = NewLoggingProvider(applicationLoggingServiceMock, dateTimeServiceMock);
-
-            dateTimeServiceMock.DateTimeNow().Returns(dateTime);
-        }
-
         private ILoggingService NewLoggingProvider(IApplicationLoggingService applicationLoggingService,
-                                                   IDateTimeService dateTimeService)
+            IDateTimeService dateTimeService)
         {
             return new LoggingProvider(applicationLoggingService, dateTimeService);
         }

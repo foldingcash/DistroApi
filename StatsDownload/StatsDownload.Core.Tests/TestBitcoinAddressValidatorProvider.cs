@@ -1,13 +1,18 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using Implementations;
+    using Interfaces;
     using NUnit.Framework;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
 
     [TestFixture]
     public class TestBitcoinAddressValidatorProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            systemUnderTest = new BitcoinAddressValidatorProvider();
+        }
+
         private IBitcoinAddressValidatorService systemUnderTest;
 
         [TestCase("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62X")]
@@ -28,12 +33,6 @@
             bool actual = systemUnderTest.IsValidBitcoinAddress(bitcoinAddress);
 
             Assert.IsTrue(actual);
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            systemUnderTest = new BitcoinAddressValidatorProvider();
         }
     }
 }

@@ -2,19 +2,31 @@
 {
     using System;
     using System.Net;
-
+    using Implementations;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Logging;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Logging;
 
     [TestFixture]
     public class TestSecureDownloadProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            filePayload = new FilePayload();
+
+            downloadServiceMock = Substitute.For<IDownloadService>();
+
+            secureFilePayloadServiceMock = Substitute.For<ISecureFilePayloadService>();
+
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
+            systemUnderTest = NewSecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock,
+                loggingServiceMock);
+        }
+
         private IDownloadService downloadServiceMock;
 
         private FilePayload filePayload;
@@ -142,24 +154,9 @@
             }));
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            filePayload = new FilePayload();
-
-            downloadServiceMock = Substitute.For<IDownloadService>();
-
-            secureFilePayloadServiceMock = Substitute.For<ISecureFilePayloadService>();
-
-            loggingServiceMock = Substitute.For<ILoggingService>();
-
-            systemUnderTest = NewSecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock,
-                loggingServiceMock);
-        }
-
         private IDownloadService NewSecureDownloadProvider(IDownloadService downloadService,
-                                                           ISecureFilePayloadService secureFilePayloadService,
-                                                           ILoggingService loggingService)
+            ISecureFilePayloadService secureFilePayloadService,
+            ILoggingService loggingService)
         {
             return new SecureDownloadProvider(downloadService, secureFilePayloadService, loggingService);
         }

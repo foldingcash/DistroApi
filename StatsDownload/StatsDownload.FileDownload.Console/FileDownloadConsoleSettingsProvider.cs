@@ -3,22 +3,37 @@
     using System.Configuration;
     using System.IO;
     using System.Reflection;
+    using Core.Interfaces;
+    using Email;
 
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Email;
-
+    /// <summary>
+    ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
+    /// </summary>
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-                                                       IEmailSettingsService
+        IEmailSettingsService
     {
-        // These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
-        public string GetAcceptAnySslCert()
+        public int? GetCommandTimeout()
         {
-            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
+            string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
+            int commandTimeoutValue;
+            if (int.TryParse(commandTimeoutString, out commandTimeoutValue))
+                return commandTimeoutValue;
+            return null;
         }
 
         public string GetConnectionString()
         {
             return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
+        }
+
+        public string GetDatabaseType()
+        {
+            return ConfigurationManager.AppSettings["DatabaseType"];
+        }
+
+        public string GetAcceptAnySslCert()
+        {
+            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
         }
 
         public string GetDownloadDirectory()
@@ -37,6 +52,11 @@
             return ConfigurationManager.AppSettings["DownloadUri"];
         }
 
+        public string GetMinimumWaitTimeInHours()
+        {
+            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
+        }
+
         public string GetFromAddress()
         {
             return ConfigurationManager.AppSettings["FromAddress"];
@@ -45,11 +65,6 @@
         public string GetFromDisplayName()
         {
             return ConfigurationManager.AppSettings["DisplayName"];
-        }
-
-        public string GetMinimumWaitTimeInHours()
-        {
-            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
         }
 
         public string GetPassword()

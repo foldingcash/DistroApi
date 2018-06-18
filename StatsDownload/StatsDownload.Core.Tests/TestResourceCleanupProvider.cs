@@ -1,20 +1,34 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-
+    using Implementations;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
+    using Interfaces.Logging;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Logging;
 
     [TestFixture]
     public class TestResourceCleanupProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            fileDownloadResult = new FileDownloadResult(filePayload = new FilePayload());
+            filePayload.DownloadFilePath = "DownloadFilePath";
+            filePayload.DecompressedDownloadFilePath = "DecompressedDownloadFilePath";
+            filePayload.FailedDownloadFilePath = "FailedDownloadFilePath";
+
+            fileServiceMock = Substitute.For<IFileService>();
+            fileServiceMock.Exists("DecompressedDownloadFilePath").Returns(true);
+            fileServiceMock.Exists("DownloadFilePath").Returns(true);
+
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
+            systemUnderTest = NewResourceCleanupProvider(fileServiceMock, loggingServiceMock);
+        }
+
         private FileDownloadResult fileDownloadResult;
 
         private FilePayload filePayload;
@@ -79,25 +93,8 @@
             Assert.Throws<ArgumentNullException>(() => NewResourceCleanupProvider(fileServiceMock, null));
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            fileDownloadResult = new FileDownloadResult(filePayload = new FilePayload());
-            filePayload.DownloadFilePath = "DownloadFilePath";
-            filePayload.DecompressedDownloadFilePath = "DecompressedDownloadFilePath";
-            filePayload.FailedDownloadFilePath = "FailedDownloadFilePath";
-
-            fileServiceMock = Substitute.For<IFileService>();
-            fileServiceMock.Exists("DecompressedDownloadFilePath").Returns(true);
-            fileServiceMock.Exists("DownloadFilePath").Returns(true);
-
-            loggingServiceMock = Substitute.For<ILoggingService>();
-
-            systemUnderTest = NewResourceCleanupProvider(fileServiceMock, loggingServiceMock);
-        }
-
         private IResourceCleanupService NewResourceCleanupProvider(IFileService fileService,
-                                                                   ILoggingService loggingService)
+            ILoggingService loggingService)
         {
             return new ResourceCleanupProvider(fileService, loggingService);
         }

@@ -70,18 +70,24 @@
 
             public static readonly string UpdateToLatestStoredProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[UpdateToLatest]";
+
+            public static string RebuildIndicesProcedureName = $"{DatabaseSchema}{SchemaSeparator}[RebuildIndices]";
         }
 
         public static class StatsFile
         {
             public const string ExpectedHeader = @"name	newcredit	sum(total)	team";
 
-            public static string[] DateTimeFormats =
+            public static string[] StandardDateTimeFormats =
             {
-                "ddd MMM  d HH:mm:ss PDT yyyy",
-                "ddd MMM dd HH:mm:ss PDT yyyy",
                 "ddd MMM  d HH:mm:ss PST yyyy",
                 "ddd MMM dd HH:mm:ss PST yyyy"
+            };
+
+            public static string[] DaylightSavingsDateTimeFormats =
+            {
+                "ddd MMM  d HH:mm:ss PDT yyyy",
+                "ddd MMM dd HH:mm:ss PDT yyyy"
             };
         }
     }

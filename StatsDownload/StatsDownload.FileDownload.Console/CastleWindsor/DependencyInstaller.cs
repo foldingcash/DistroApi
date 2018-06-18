@@ -4,15 +4,15 @@
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
-
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Implementations.Untested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.Networking;
-    using StatsDownload.Core.Wrappers.Networking;
-    using StatsDownload.Email;
-    using StatsDownload.Logging;
-    using StatsDownload.SharpZipLib;
+    using Core.Implementations;
+    using Core.Interfaces;
+    using Core.Interfaces.Logging;
+    using Core.Interfaces.Networking;
+    using Core.Wrappers;
+    using Core.Wrappers.Networking;
+    using Email;
+    using Logging;
+    using SharpZipLib;
 
     public class DependencyInstaller : IWindsorInstaller
     {
@@ -24,7 +24,6 @@
                          .ImplementedBy<FileDownloadConsoleSettingsProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
-                Component.For<IGuidService>().ImplementedBy<GuidProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
                 Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>(),
                 Component.For<IResourceCleanupService>().ImplementedBy<ResourceCleanupProvider>(),
@@ -33,9 +32,12 @@
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
-                Component.For<IDatabaseConnectionService>()
-                         .ImplementedBy<SqlDatabaseConnectionProvider>()
-                         .LifestyleSingleton(), Component.For<IDatabaseConnectionServiceFactory>().AsFactory(),
+                Component.For<IDatabaseConnectionService>().ImplementedBy<MySqlDatabaseConnectionProvider>(),
+                Component.For<IDatabaseConnectionService>().ImplementedBy<MicrosoftSqlDatabaseConnectionProvider>()
+                         .IsDefault(),
+                Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DatabaseFactoryComponentSelector>(),
+                Component.For<IDatabaseConnectionServiceFactory>().AsFactory(selector =>
+                    selector.SelectedWith<DatabaseFactoryComponentSelector>()),
                 Component.For<IFileDownloadDatabaseService>().ImplementedBy<StatsDownloadDatabaseProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),

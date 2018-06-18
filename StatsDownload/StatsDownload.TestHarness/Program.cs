@@ -2,8 +2,7 @@
 {
     using System;
     using System.Windows.Forms;
-
-    using StatsDownload.TestHarness.CastleWindsor;
+    using CastleWindsor;
 
     internal static class Program
     {

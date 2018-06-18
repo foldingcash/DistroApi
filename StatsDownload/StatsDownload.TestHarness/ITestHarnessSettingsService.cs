@@ -4,6 +4,8 @@
     {
         bool IsMinimumWaitTimeMetDisabled();
 
+        bool IsOneHundredUsersFilterEnabled();
+
         bool IsSecureFilePayloadDisabled();
     }
 }

@@ -2,21 +2,25 @@
 {
     using System;
     using System.Collections.Generic;
-
+    using Extensions;
+    using Implementations;
+    using Interfaces.DataTransfer;
+    using Interfaces.Enums;
+    using Interfaces.Logging;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Extensions;
-    using StatsDownload.Core.Implementations.Tested;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Logging;
 
     [TestFixture]
     public class TestStatsDownloadLoggingProvider
     {
+        [SetUp]
+        public void SetUp()
+        {
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
+            systemUnderTest = NewStatsDownloadLoggingProvider(loggingServiceMock);
+        }
+
         private ILoggingService loggingServiceMock;
 
         private IStatsDownloadLoggingService systemUnderTest;
@@ -73,23 +77,24 @@
         public void LogResult_WhenFileDownloadResult_LogsResult(int decompressedFileDataLength)
         {
             var filePayload = new FilePayload
-                              {
-                                  DownloadId = 100,
-                                  DownloadUri = new Uri("http://localhost"),
-                                  TimeoutSeconds = 101,
-                                  AcceptAnySslCert = true,
-                                  DownloadDirectory = "download directory",
-                                  DownloadFileName = "download file name",
-                                  DownloadFileExtension = "download file extension",
-                                  DownloadFilePath = "download file path",
-                                  DecompressedDownloadDirectory = "decompressed download directory",
-                                  DecompressedDownloadFileName = "decompressed download file name",
-                                  DecompressedDownloadFileExtension =
-                                      "decompressed download file extension",
-                                  DecompressedDownloadFilePath = "decompressed download file path",
-                                  FailedDownloadFilePath = "failed download file path",
-                                  DecompressedDownloadFileData = decompressedFileDataLength < 0 ? null : new string('A', decompressedFileDataLength)
-                              };
+            {
+                DownloadId = 100,
+                DownloadUri = new Uri("http://localhost"),
+                TimeoutSeconds = 101,
+                AcceptAnySslCert = true,
+                DownloadDirectory = "download directory",
+                DownloadFileName = "download file name",
+                DownloadFileExtension = "download file extension",
+                DownloadFilePath = "download file path",
+                DecompressedDownloadDirectory = "decompressed download directory",
+                DecompressedDownloadFileName = "decompressed download file name",
+                DecompressedDownloadFileExtension =
+                    "decompressed download file extension",
+                DecompressedDownloadFilePath = "decompressed download file path",
+                FailedDownloadFilePath = "failed download file path",
+                DecompressedDownloadFileData =
+                    decompressedFileDataLength < 0 ? null : new string('A', decompressedFileDataLength)
+            };
             var result = new FileDownloadResult(FailedReason.UnexpectedException, filePayload);
             systemUnderTest.LogResult(result);
 
@@ -148,14 +153,6 @@
             systemUnderTest.LogVerbose("verbose");
 
             loggingServiceMock.Received().LogVerbose("verbose");
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            loggingServiceMock = Substitute.For<ILoggingService>();
-
-            systemUnderTest = NewStatsDownloadLoggingProvider(loggingServiceMock);
         }
 
         private IStatsDownloadLoggingService NewStatsDownloadLoggingProvider(ILoggingService loggingService)
