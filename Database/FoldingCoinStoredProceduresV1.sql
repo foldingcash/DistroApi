@@ -248,7 +248,7 @@ BEGIN
 
 	BEGIN TRY
 		BEGIN TRANSACTION
-			SELECT @FileDownloadErrorStatusId = FoldingCoin.GetfileDownloadErrorStatusId();
+			SELECT @FileDownloadErrorStatusId = [FoldingCoin].GetFileDownloadErrorStatusId();
 
 			UPDATE [FoldingCoin].[Downloads] 
 			SET StatusId = @FileDownloadErrorStatusId
