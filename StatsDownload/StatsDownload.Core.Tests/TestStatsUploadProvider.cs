@@ -104,6 +104,18 @@
         }
 
         [Test]
+        public void UploadStatsFiles_WhenDatabaseTimeoutExceptionThrown_ReturnsDatabaseTimeoutResult()
+        {
+            SetUpWhenDatabaseTimeoutExceptionThrown();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
+            Assert.That(actual.UploadResults.ElementAt(0).FailedReason,
+                Is.EqualTo(FailedReason.StatsUploadTimeout));
+        }
+
+        [Test]
         public void UploadStatsFiles_WhenDataStoreIsNotAvailable_LogsResult()
         {
             SetUpWhenDataStoreIsNotAvailable();
@@ -371,6 +383,12 @@
                 statsUploadEmailService);
         }
 
+        private void SetUpWhenDatabaseTimeoutExceptionThrown()
+        {
+            var exception = new TestDbTimeoutException();
+            statsUploadDatabaseServiceMock.GetFileData(1).Throws(exception);
+        }
+
         private void SetUpWhenDataStoreIsNotAvailable()
         {
             statsUploadDatabaseServiceMock.IsAvailable().Returns(false);
@@ -387,6 +405,13 @@
         {
             var exception = new InvalidStatsFileException();
             statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(exception);
+        }
+
+        private class TestDbTimeoutException : DbException
+        {
+            public TestDbTimeoutException() : base("Mock timeout exception", -2146232060)
+            {
+            }
         }
     }
 }
