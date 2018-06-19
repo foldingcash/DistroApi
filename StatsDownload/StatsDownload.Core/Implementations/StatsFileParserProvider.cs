@@ -34,10 +34,15 @@
                 throw new InvalidStatsFileException();
             }
 
-            var downloadDateTime = ParseDownloadDateTime(fileLines);
+            DateTime downloadDateTime = ParseDownloadDateTime(fileLines);
             Parse(fileLines, usersData, failedUsersData);
 
             return new ParseResults(downloadDateTime, usersData, failedUsersData);
+        }
+
+        private string GetDateTimeLine(string[] fileLines)
+        {
+            return fileLines[0];
         }
 
         private string[] GetFileLines(string fileData)
@@ -49,44 +54,6 @@
         {
             return fileLines == null || fileLines.Length < 2 || !ValidDateTime(fileLines)
                    || fileLines[1] != Constants.StatsFile.ExpectedHeader;
-        }
-
-        private string GetDateTimeLine(string[] fileLines)
-        {
-            return fileLines[0];
-        }
-
-        private DateTime ParseDownloadDateTime(string[] fileLines)
-        {
-            TryParseDownloadDateTime(fileLines, out DateTime downloadDateTime);
-            return downloadDateTime;
-        }
-
-        private bool TryParseDownloadDateTime(string[] fileLines, out DateTime downloadDateTime)
-        {
-            var rawDateTime = GetDateTimeLine(fileLines);
-            bool parsed = DateTime.TryParseExact(rawDateTime, Constants.StatsFile.StandardDateTimeFormats,
-                CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault, out downloadDateTime);
-            if (parsed)
-            {
-                downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, -8, 0, 0)).UtcDateTime;
-            }
-            else
-            {
-                parsed = DateTime.TryParseExact(rawDateTime, Constants.StatsFile.DaylightSavingsDateTimeFormats,
-                    CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault, out downloadDateTime);
-                if (parsed)
-                {
-                    downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, -7, 0, 0)).UtcDateTime;
-                }
-            }
-
-            return parsed;
-        }
-
-        private bool ValidDateTime(string[] fileLines)
-        {
-            return TryParseDownloadDateTime(fileLines, out DateTime downloadDateTime);
         }
 
         private bool IsInvalidUserData(string[] unparsedUserData)
@@ -120,6 +87,34 @@
             }
         }
 
+        private DateTime ParseDownloadDateTime(string[] fileLines)
+        {
+            TryParseDownloadDateTime(fileLines, out DateTime downloadDateTime);
+            return downloadDateTime;
+        }
+
+        private bool TryParseDownloadDateTime(string[] fileLines, out DateTime downloadDateTime)
+        {
+            string rawDateTime = GetDateTimeLine(fileLines);
+            bool parsed = DateTime.TryParseExact(rawDateTime, Constants.StatsFile.StandardDateTimeFormats,
+                CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault, out downloadDateTime);
+            if (parsed)
+            {
+                downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, -8, 0, 0)).UtcDateTime;
+            }
+            else
+            {
+                parsed = DateTime.TryParseExact(rawDateTime, Constants.StatsFile.DaylightSavingsDateTimeFormats,
+                    CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault, out downloadDateTime);
+                if (parsed)
+                {
+                    downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, -7, 0, 0)).UtcDateTime;
+                }
+            }
+
+            return parsed;
+        }
+
         private bool TryParseUserData(string[] unparsedUserData, out UserData userData)
         {
             var index = 0;
@@ -141,6 +136,11 @@
             userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
 
             return totalPointsParsed && totalWorkUnitsParsed && teamNumberParsed;
+        }
+
+        private bool ValidDateTime(string[] fileLines)
+        {
+            return TryParseDownloadDateTime(fileLines, out DateTime downloadDateTime);
         }
     }
 }

@@ -6,9 +6,9 @@
 
     internal static class WindsorContainer
     {
-        private static readonly object sync = new object();
-
         private static IWindsorContainer innerContainer;
+
+        private static readonly object sync = new object();
 
         internal static IWindsorContainer Instance
         {
@@ -21,6 +21,13 @@
             }
         }
 
+        private static IWindsorContainer CreateWindsorContainer()
+        {
+            var container = new CastleWindsorContainer();
+            container.AddFacility<TypedFactoryFacility>();
+            return container;
+        }
+
         public static void Dispose()
         {
             lock (sync)
@@ -28,13 +35,6 @@
                 innerContainer?.Dispose();
                 innerContainer = null;
             }
-        }
-
-        private static IWindsorContainer CreateWindsorContainer()
-        {
-            var container = new CastleWindsorContainer();
-            container.AddFacility<TypedFactoryFacility>();
-            return container;
         }
     }
 }

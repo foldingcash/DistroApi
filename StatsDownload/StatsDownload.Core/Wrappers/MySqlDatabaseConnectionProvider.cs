@@ -35,6 +35,19 @@
             return dbCommand;
         }
 
+        public int ExecuteStoredProcedure(DbTransaction transaction, string storedProcedure,
+            IEnumerable<DbParameter> parameters)
+        {
+            using (DbCommand command = CreateDbCommand())
+            {
+                command.CommandText = storedProcedure;
+                command.CommandType = CommandType.StoredProcedure;
+                command.Transaction = transaction;
+                command.Parameters.AddRange(parameters?.ToArray() ?? new DbParameter[0]);
+                return command.ExecuteNonQuery();
+            }
+        }
+
         public DbTransaction CreateTransaction()
         {
             return sqlConnection.BeginTransaction();
@@ -112,6 +125,11 @@
         public void Open()
         {
             sqlConnection.Open();
+        }
+
+        public void Close()
+        {
+            sqlConnection.Close();
         }
 
         private void SetCommandTimeout(DbCommand dbCommand)

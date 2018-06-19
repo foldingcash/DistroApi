@@ -50,7 +50,7 @@
         public void Parse_WhenInvoked_ReturnsDownloadDateTimeInUTC(string fileData, int year, int month, int day,
             int hour, int minute, int second)
         {
-            var actual = InvokeParse(fileData).DownloadDateTime;
+            DateTime actual = InvokeParse(fileData).DownloadDateTime;
 
             Assert.That(actual, Is.EqualTo(new DateTime(year, month, day, hour, minute, second)));
         }

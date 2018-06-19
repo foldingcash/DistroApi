@@ -52,10 +52,19 @@
             this.errorMessageService = errorMessageService;
         }
 
-        public void AddUsers(int downloadId, IEnumerable<UserData> users, IEnumerable<FailedUserData> failedUsers)
+        public void Rollback(DbTransaction transaction)
+        {
+            transaction?.Rollback();
+        }
+
+        public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> users,
+            IEnumerable<FailedUserData> failedUsers)
         {
             LogMethodInvoked();
-            CreateDatabaseConnectionAndExecuteAction(service => { AddUsers(service, downloadId, users, failedUsers); });
+            CreateDatabaseConnectionAndExecuteAction(service =>
+            {
+                AddUsers(transaction, service, downloadId, users, failedUsers);
+            });
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
@@ -68,6 +77,11 @@
         {
             LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
+        }
+
+        public void Commit(DbTransaction transaction)
+        {
+            transaction?.Commit();
         }
 
         public IEnumerable<int> GetDownloadsReadyForUpload()
@@ -120,10 +134,12 @@
             filePayload.DownloadId = downloadId;
         }
 
-        public void StartStatsUpload(int downloadId)
+        public DbTransaction StartStatsUpload(int downloadId)
         {
             LogMethodInvoked();
-            CreateDatabaseConnectionAndExecuteAction(service => StartStatsUpload(service, downloadId));
+            DbTransaction transaction = null;
+            CreateDatabaseConnectionAndExecuteAction(service => transaction = StartStatsUpload(service, downloadId));
+            return transaction;
         }
 
         public void StatsUploadError(StatsUploadResult statsUploadResult)
@@ -132,11 +148,11 @@
             CreateDatabaseConnectionAndExecuteAction(service => StatsUploadError(service, statsUploadResult));
         }
 
-        public void StatsUploadFinished(int downloadId, DateTime downloadDateTime)
+        public void StatsUploadFinished(DbTransaction transaction, int downloadId, DateTime downloadDateTime)
         {
             LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service =>
-                StatsUploadFinished(service, downloadId, downloadDateTime));
+                StatsUploadFinished(transaction, service, downloadId, downloadDateTime));
         }
 
         public void UpdateToLatest()
@@ -164,6 +180,13 @@
                     command.ExecuteNonQuery();
                 }
             }
+        }
+
+        private void AddUsers(DbTransaction transaction, IDatabaseConnectionService databaseConnection, int downloadId,
+            IEnumerable<UserData> users, IEnumerable<FailedUserData> failedUsers)
+        {
+            AddUserRejections(databaseConnection, transaction, downloadId, failedUsers);
+            AddUsersData(databaseConnection, transaction, downloadId, users);
         }
 
         private void AddUsersData(IDatabaseConnectionService databaseConnection, DbTransaction transaction,
@@ -197,24 +220,6 @@
                         }
                     }
                 }
-            }
-        }
-
-        private void AddUsers(IDatabaseConnectionService databaseConnection, int downloadId,
-            IEnumerable<UserData> users, IEnumerable<FailedUserData> failedUsers)
-        {
-            var transaction = databaseConnection.CreateTransaction();
-
-            try
-            {
-                AddUserRejections(databaseConnection, transaction, downloadId, failedUsers);
-                AddUsersData(databaseConnection, transaction, downloadId, users);
-                transaction?.Commit();
-            }
-            catch (Exception)
-            {
-                transaction?.Rollback();
-                throw;
             }
         }
 
@@ -470,12 +475,17 @@
             parameters.RejectionReason.Value = errorMessageService.GetErrorMessage(failedUserData);
         }
 
-        private void StartStatsUpload(IDatabaseConnectionService databaseConnection, int downloadId)
+        private DbTransaction StartStatsUpload(IDatabaseConnectionService databaseConnection, int downloadId)
         {
+            DbTransaction transaction = databaseConnection.CreateTransaction();
+
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
-            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.StartStatsUploadProcedureName,
+            databaseConnection.ExecuteStoredProcedure(transaction,
+                Constants.StatsDownloadDatabase.StartStatsUploadProcedureName,
                 new List<DbParameter> { download });
+
+            return transaction;
         }
 
         private void StatsUploadError(IDatabaseConnectionService databaseConnection,
@@ -488,16 +498,18 @@
                 new List<DbParameter> { downloadId, errorMessage });
         }
 
-        private void StatsUploadFinished(IDatabaseConnectionService databaseConnection, int downloadId,
+        private void StatsUploadFinished(DbTransaction transaction, IDatabaseConnectionService databaseConnection,
+            int downloadId,
             DateTime downloadDateTime)
         {
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
-            var downloadDateTimeParameter =
+            DbParameter downloadDateTimeParameter =
                 databaseConnection.CreateParameter("@DownloadDateTime", DbType.DateTime, ParameterDirection.Input);
             downloadDateTimeParameter.Value = downloadDateTime;
 
-            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.StatsUploadFinishedProcedureName,
+            databaseConnection.ExecuteStoredProcedure(transaction,
+                Constants.StatsDownloadDatabase.StatsUploadFinishedProcedureName,
                 new List<DbParameter> { download, downloadDateTimeParameter });
         }
 

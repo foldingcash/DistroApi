@@ -73,6 +73,7 @@
     <Compile Include="CastleWindsor\DependencyRegistration.cs" />
     <Compile Include="CastleWindsor\DatabaseFactoryComponentSelector.cs" />
     <Compile Include="ITestHarnessSettingsService.cs" />
+    <Compile Include="ITestHarnessStatsDownloadSettings.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -87,6 +88,7 @@
     <Compile Include="TestHarnessSettingsProvider.cs" />
     <Compile Include="TestHarnessLoggingProvider.cs" />
     <Compile Include="TestHarnessOneHundredUsersFilter.cs" />
+    <Compile Include="TestHarnessStatsDownloadDatabaseProvider.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

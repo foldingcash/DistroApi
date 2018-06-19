@@ -9,19 +9,24 @@
     {
         ConnectionState ConnectionState { get; }
 
-        DbCommand CreateDbCommand();
+        void Close();
 
-        DbTransaction CreateTransaction();
+        DbCommand CreateDbCommand();
 
         DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction);
 
         DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction, int size);
+
+        DbTransaction CreateTransaction();
 
         DbDataReader ExecuteReader(string commandText);
 
         object ExecuteScalar(string commandText);
 
         int ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters);
+
+        int ExecuteStoredProcedure(DbTransaction transaction, string storedProcedure,
+            IEnumerable<DbParameter> parameters);
 
         int ExecuteStoredProcedure(string storedProcedure);
 

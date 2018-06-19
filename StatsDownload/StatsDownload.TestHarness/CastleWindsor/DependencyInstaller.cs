@@ -21,13 +21,16 @@
             container.Register(Component.For<IApplicationLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
                 Component
                     .For<IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService,
-                        IEmailSettingsService>().ImplementedBy<TestHarnessSettingsProvider>()
+                        IEmailSettingsService, ITestHarnessStatsDownloadSettings>()
+                    .ImplementedBy<TestHarnessSettingsProvider>()
                     .Forward<IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
                         IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),
-                Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessOneHundredUsersFilter>());
+                Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessOneHundredUsersFilter>(),
+                Component.For<IFileDownloadDatabaseService, IStatsUploadDatabaseService>()
+                         .ImplementedBy<TestHarnessStatsDownloadDatabaseProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
@@ -45,8 +48,9 @@
                 Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DatabaseFactoryComponentSelector>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(selector =>
                     selector.SelectedWith<DatabaseFactoryComponentSelector>()),
-                Component.For<IFileDownloadDatabaseService, IStatsUploadDatabaseService>()
-                         .ImplementedBy<StatsDownloadDatabaseProvider>(),
+                Component
+                    .For<IFileDownloadDatabaseService, IStatsUploadDatabaseService, IStatsDownloadDatabaseService>()
+                    .ImplementedBy<StatsDownloadDatabaseProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),

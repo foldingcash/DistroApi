@@ -154,13 +154,13 @@
 
             InvokeDownloadFile();
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
                 fileDownloadDatabaseServiceMock.IsAvailable();
                 loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                 loggingServiceMock.LogException(expected);
-            }));
+            });
         }
 
         [Test]
@@ -219,11 +219,11 @@
 
             InvokeDownloadFile();
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                 loggingServiceMock.LogException(exception);
-            }));
+            });
         }
 
         [Test]
@@ -287,11 +287,11 @@
 
             InvokeDownloadFile();
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
                 loggingServiceMock.LogException(exception);
-            }));
+            });
         }
 
         [Test]
@@ -340,7 +340,7 @@
         {
             InvokeDownloadFile();
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
                 fileDownloadDatabaseServiceMock.IsAvailable();
@@ -356,7 +356,7 @@
                 filePayloadUploadServiceMock.UploadFile(Arg.Any<FilePayload>());
                 resourceCleanupServiceMock.Cleanup(Arg.Any<FileDownloadResult>());
                 loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
-            }));
+            });
         }
 
         [Test]
