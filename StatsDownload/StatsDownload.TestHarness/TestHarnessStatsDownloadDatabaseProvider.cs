@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Common;
     using System.Data.SqlTypes;
     using System.Linq;
     using Core.Interfaces;
@@ -18,6 +19,16 @@
         {
             this.innerService = innerService;
             this.settings = settings;
+        }
+
+        public void Rollback(DbTransaction transaction)
+        {
+            innerService.Rollback(transaction);
+        }
+
+        public void Commit(DbTransaction transaction)
+        {
+            innerService.Commit(transaction);
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
@@ -40,9 +51,10 @@
             return innerService.IsAvailable();
         }
 
-        public void AddUsers(int downloadId, IEnumerable<UserData> usersData, IEnumerable<FailedUserData> failedUsers)
+        public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
+            IEnumerable<FailedUserData> failedUsers)
         {
-            innerService.AddUsers(downloadId, ModifiedUsers(usersData), failedUsers);
+            innerService.AddUsers(transaction, downloadId, ModifiedUsers(usersData), failedUsers);
         }
 
         public IEnumerable<int> GetDownloadsReadyForUpload()
@@ -55,9 +67,9 @@
             return innerService.GetFileData(downloadId);
         }
 
-        public void StartStatsUpload(int downloadId)
+        public DbTransaction StartStatsUpload(int downloadId)
         {
-            innerService.StartStatsUpload(downloadId);
+            return innerService.StartStatsUpload(downloadId);
         }
 
         public void StatsUploadError(StatsUploadResult statsUploadResult)
@@ -65,9 +77,9 @@
             innerService.StatsUploadError(statsUploadResult);
         }
 
-        public void StatsUploadFinished(int downloadId, DateTime downloadDateTime)
+        public void StatsUploadFinished(DbTransaction transaction, int downloadId, DateTime downloadDateTime)
         {
-            innerService.StatsUploadFinished(downloadId, downloadDateTime);
+            innerService.StatsUploadFinished(transaction, downloadId, downloadDateTime);
         }
 
         public void NewFileDownloadStarted(FilePayload filePayload)

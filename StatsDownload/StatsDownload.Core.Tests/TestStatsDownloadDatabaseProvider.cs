@@ -115,24 +115,6 @@
         private IStatsDownloadDatabaseService systemUnderTest;
 
         [Test]
-        public void AddUsers_WhenExceptionThrown_RollbackTransaction()
-        {
-            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
-            {
-                dbCommand => { throw new Exception(); }
-            });
-
-            var transactionMock = Substitute.For<DbTransaction>();
-            databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
-
-            Assert.Throws<Exception>(() =>
-                systemUnderTest.AddUsers(1, new List<UserData> { new UserData(), new UserData(), new UserData() },
-                    new List<FailedUserData> { new FailedUserData(), new FailedUserData() }));
-
-            transactionMock.Received(1).Rollback();
-        }
-
-        [Test]
         public void AddUsers_WhenInvoked_AddsUsers()
         {
             DbCommand failedUsersCommand = null;
@@ -145,24 +127,19 @@
                 dbCommand => rebuildIndicesCommand = dbCommand
             });
 
-            var transactionMock = Substitute.For<DbTransaction>();
-            databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
-
-            systemUnderTest.AddUsers(1, new List<UserData> { new UserData(), new UserData(), new UserData() },
+            systemUnderTest.AddUsers(null, 1, new List<UserData> { new UserData(), new UserData(), new UserData() },
                 new List<FailedUserData> { new FailedUserData(), new FailedUserData() });
 
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("AddUsers Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
-                databaseConnectionServiceMock.CreateTransaction();
                 failedUsersCommand.ExecuteNonQuery();
                 failedUsersCommand.ExecuteNonQuery();
                 addUsersCommand.ExecuteNonQuery();
                 rebuildIndicesCommand.ExecuteNonQuery();
                 addUsersCommand.ExecuteNonQuery();
                 addUsersCommand.ExecuteNonQuery();
-                transactionMock.Commit();
             });
         }
 
@@ -174,7 +151,7 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
-            systemUnderTest.AddUsers(1,
+            systemUnderTest.AddUsers(null, 1,
                 new List<UserData>
                 {
                     new UserData("name", 10, 100, 1000)
@@ -225,7 +202,7 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
 
-            systemUnderTest.AddUsers(1, null, new[] { failedUserData });
+            systemUnderTest.AddUsers(null, 1, null, new[] { failedUserData });
 
             Assert.That(actualParameters.Count, Is.EqualTo(3));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
@@ -255,7 +232,7 @@
                 dbCommand => rebuildIndicesCommand = dbCommand
             });
 
-            systemUnderTest.AddUsers(1, new[] { new UserData(), new UserData() }, null);
+            systemUnderTest.AddUsers(null, 1, new[] { new UserData(), new UserData() }, null);
 
             failedUsersCommand.Received(1).Dispose();
             addUsersCommand.Received(1).Dispose();
@@ -279,7 +256,7 @@
                 users[index] = new UserData();
             }
 
-            systemUnderTest.AddUsers(1, users, null);
+            systemUnderTest.AddUsers(null, 1, users, null);
 
             command.Received(2).ExecuteNonQuery();
         }
@@ -289,7 +266,7 @@
         {
             SetUpDatabaseConnectionCreateDbCommandMock();
 
-            systemUnderTest.AddUsers(0, null, null);
+            systemUnderTest.AddUsers(null, 0, null, null);
 
             databaseConnectionServiceMock.Received(3).CreateDbCommand();
         }
@@ -299,7 +276,7 @@
         {
             SetUpDatabaseConnectionCreateDbCommandMock();
 
-            systemUnderTest.AddUsers(0, null, null);
+            systemUnderTest.AddUsers(null, 0, null, null);
 
             databaseConnectionServiceMock.ReceivedWithAnyArgs(10)
                                          .CreateParameter(null, DbType.AnsiString, ParameterDirection.Input);
@@ -316,9 +293,8 @@
             });
 
             var transactionMock = Substitute.For<DbTransaction>();
-            databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
 
-            systemUnderTest.AddUsers(1, null, null);
+            systemUnderTest.AddUsers(transactionMock, 1, null, null);
 
             command.Received(1).CommandText = "[FoldingCoin].[AddUserData]";
             command.Received(1).CommandType = CommandType.StoredProcedure;
@@ -332,9 +308,8 @@
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
             var transactionMock = Substitute.For<DbTransaction>();
-            databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
 
-            systemUnderTest.AddUsers(1, null, null);
+            systemUnderTest.AddUsers(transactionMock, 1, null, null);
 
             command.Received(1).CommandText = "[FoldingCoin].[AddUserRejection]";
             command.Received(1).CommandType = CommandType.StoredProcedure;
@@ -353,9 +328,8 @@
             });
 
             var transactionMock = Substitute.For<DbTransaction>();
-            databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
 
-            systemUnderTest.AddUsers(1, null, null);
+            systemUnderTest.AddUsers(transactionMock, 1, null, null);
 
             command.Received(1).CommandText = "[FoldingCoin].[RebuildIndices]";
             command.Received(1).CommandType = CommandType.StoredProcedure;
@@ -369,7 +343,7 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
-            systemUnderTest.AddUsers(1,
+            systemUnderTest.AddUsers(null, 1,
                 new List<UserData> { new UserData("name", 10, 100, 1000) { FriendlyName = "friendly" } }, null);
 
             Assert.That(actualParameters.Count, Is.EqualTo(7));
@@ -384,12 +358,22 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
-            systemUnderTest.AddUsers(1,
+            systemUnderTest.AddUsers(null, 1,
                 new List<UserData> { new UserData("name", 10, 100, 1000) { BitcoinAddress = "address" } }, null);
 
             Assert.That(actualParameters.Count, Is.EqualTo(7));
             Assert.That(actualParameters[5].ParameterName, Is.EqualTo("@FriendlyName"));
             Assert.That(actualParameters[5].Value, Is.EqualTo(DBNull.Value));
+        }
+
+        [Test]
+        public void Commit_WhenInvoked_CommitsTransaction()
+        {
+            var transaction = Substitute.For<DbTransaction>();
+
+            systemUnderTest.Commit(transaction);
+
+            transaction.Received(1).Commit();
         }
 
         [Test]
@@ -771,13 +755,27 @@
         }
 
         [Test]
+        public void Rollback_WhenInvoked_RollsBackTransaction()
+        {
+            var transaction = Substitute.For<DbTransaction>();
+
+            systemUnderTest.Rollback(transaction);
+
+            transaction.Received(1).Rollback();
+        }
+
+        [Test]
         public void StartStatsUpload_WhenInvoked_ParameterIsProvided()
         {
+            var transaction = Substitute.For<DbTransaction>();
+            databaseConnectionServiceMock.CreateTransaction().Returns(transaction);
+
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock.When(
                                              service =>
-                                                 service.ExecuteStoredProcedure("[FoldingCoin].[StartStatsUpload]",
+                                                 service.ExecuteStoredProcedure(transaction,
+                                                     "[FoldingCoin].[StartStatsUpload]",
                                                      Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
@@ -791,15 +789,29 @@
         }
 
         [Test]
+        public void StartStatsUpload_WhenInvoked_ReturnsTransaction()
+        {
+            var expected = Substitute.For<DbTransaction>();
+            databaseConnectionServiceMock.CreateTransaction().Returns(expected);
+
+            DbTransaction actual = systemUnderTest.StartStatsUpload(100);
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
         public void StartStatsUpload_WhenInvoked_StartsStatsUpload()
         {
+            var transaction = Substitute.For<DbTransaction>();
+            databaseConnectionServiceMock.CreateTransaction().Returns(transaction);
+
             systemUnderTest.StartStatsUpload(1);
 
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("StartStatsUpload Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[StartStatsUpload]",
+                databaseConnectionServiceMock.ExecuteStoredProcedure(transaction, "[FoldingCoin].[StartStatsUpload]",
                     Arg.Any<List<DbParameter>>());
             });
         }
@@ -846,17 +858,20 @@
         [Test]
         public void StatsUploadFinished_WhenInvoked_ParametersAreProvided()
         {
+            var transaction = Substitute.For<DbTransaction>();
+
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock.When(
                                              service =>
-                                                 service.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadFinished]",
+                                                 service.ExecuteStoredProcedure(transaction,
+                                                     "[FoldingCoin].[StatsUploadFinished]",
                                                      Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             DateTime dateTime = DateTime.UtcNow;
 
-            systemUnderTest.StatsUploadFinished(100, dateTime);
+            systemUnderTest.StatsUploadFinished(transaction, 100, dateTime);
 
             Assert.That(actualParameters.Count, Is.EqualTo(2));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
@@ -872,13 +887,15 @@
         [Test]
         public void StatsUploadFinished_WhenInvoked_UpdatesStatsUploadToFinished()
         {
-            systemUnderTest.StatsUploadFinished(100, DateTime.Now);
+            var transaction = Substitute.For<DbTransaction>();
+
+            systemUnderTest.StatsUploadFinished(transaction, 100, DateTime.Now);
 
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("StatsUploadFinished Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadFinished]",
+                databaseConnectionServiceMock.ExecuteStoredProcedure(transaction, "[FoldingCoin].[StatsUploadFinished]",
                     Arg.Any<List<DbParameter>>());
             });
         }

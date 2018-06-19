@@ -2,11 +2,15 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Common;
     using DataTransfer;
 
     public interface IStatsUploadDatabaseService
     {
-        void AddUsers(int downloadId, IEnumerable<UserData> usersData, IEnumerable<FailedUserData> failedUsers);
+        void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
+            IEnumerable<FailedUserData> failedUsers);
+
+        void Commit(DbTransaction transaction);
 
         IEnumerable<int> GetDownloadsReadyForUpload();
 
@@ -14,10 +18,12 @@
 
         bool IsAvailable();
 
-        void StartStatsUpload(int downloadId);
+        void Rollback(DbTransaction transaction);
+
+        DbTransaction StartStatsUpload(int downloadId);
 
         void StatsUploadError(StatsUploadResult statsUploadResult);
 
-        void StatsUploadFinished(int downloadId, DateTime downloadDateTime);
+        void StatsUploadFinished(DbTransaction transaction, int downloadId, DateTime downloadDateTime);
     }
 }
