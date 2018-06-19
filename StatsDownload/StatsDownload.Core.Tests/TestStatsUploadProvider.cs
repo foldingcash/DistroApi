@@ -292,12 +292,12 @@
 
             Received.InOrder(() =>
             {
-                statsUploadDatabaseServiceMock.StartStatsUpload(1);
                 statsUploadDatabaseServiceMock.GetFileData(1);
+                statsUploadDatabaseServiceMock.StartStatsUpload(1);
                 statsUploadDatabaseServiceMock.StatsUploadFinished(tranaction1, 1, downloadDateTime);
                 statsUploadDatabaseServiceMock.Commit(tranaction1);
-                statsUploadDatabaseServiceMock.StartStatsUpload(2);
                 statsUploadDatabaseServiceMock.GetFileData(2);
+                statsUploadDatabaseServiceMock.StartStatsUpload(2);
                 statsUploadDatabaseServiceMock.StatsUploadFinished(tranaction2, 2, downloadDateTime);
                 statsUploadDatabaseServiceMock.Commit(tranaction2);
             });

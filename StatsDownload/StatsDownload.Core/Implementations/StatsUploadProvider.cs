@@ -120,8 +120,8 @@
             try
             {
                 LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
-                transaction = statsUploadDatabaseService.StartStatsUpload(downloadId);
                 string fileData = statsUploadDatabaseService.GetFileData(downloadId);
+                transaction = statsUploadDatabaseService.StartStatsUpload(downloadId);
                 ParseResults results = statsFileParserService.Parse(fileData);
                 IEnumerable<UserData> usersData = results.UsersData;
                 IEnumerable<FailedUserData> failedUsersData = results.FailedUsersData;
