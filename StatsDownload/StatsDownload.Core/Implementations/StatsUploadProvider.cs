@@ -118,9 +118,10 @@
             loggingService.LogVerbose(message);
         }
 
-        private StatsUploadResult NewFailedStatsUploadResult(int downloadId, FailedReason failedReason)
+        private StatsUploadResult NewFailedStatsUploadResult(int downloadId, FailedReason failedReason,
+            Exception exception)
         {
-            return new StatsUploadResult(downloadId, failedReason);
+            return new StatsUploadResult(downloadId, failedReason, exception);
         }
 
         private void UploadStatsFile(List<StatsUploadResult> statsUploadResults, int downloadId)
@@ -144,7 +145,8 @@
             {
                 statsUploadDatabaseService.Rollback(transaction);
                 FailedReason failedReason = GetFailedReason(exception);
-                StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId, failedReason);
+                StatsUploadResult failedStatsUploadResult =
+                    NewFailedStatsUploadResult(downloadId, failedReason, exception);
                 loggingService.LogResult(failedStatsUploadResult);
                 statsUploadEmailService.SendEmail(failedStatsUploadResult);
                 statsUploadDatabaseService.StatsUploadError(failedStatsUploadResult);
