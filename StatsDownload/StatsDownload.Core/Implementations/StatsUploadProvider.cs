@@ -94,6 +94,11 @@
                 return FailedReason.InvalidStatsFileUpload;
             }
 
+            if (exception is DbException dbException && dbException.ErrorCode == -2146232060)
+            {
+                return FailedReason.StatsUploadTimeout;
+            }
+
             return FailedReason.UnexpectedException;
         }
 
@@ -146,6 +151,7 @@
                 FailedReason failedReason = GetFailedReason(exception);
                 StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId, failedReason);
                 loggingService.LogResult(failedStatsUploadResult);
+                loggingService.LogException(exception);
                 statsUploadEmailService.SendEmail(failedStatsUploadResult);
                 statsUploadDatabaseService.StatsUploadError(failedStatsUploadResult);
                 statsUploadResults.Add(failedStatsUploadResult);

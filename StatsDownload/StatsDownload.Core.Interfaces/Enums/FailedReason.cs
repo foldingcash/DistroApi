@@ -16,6 +16,8 @@
 
         InvalidStatsFileUpload,
 
+        StatsUploadTimeout,
+
         UnexpectedException
     }
 }

@@ -115,6 +115,16 @@
         }
 
         [Test]
+        public void GetErrorMessage_WhenStatsUploadTimeout_ReturnsStatsUploadTimeoutMessage()
+        {
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.StatsUploadTimeout);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem uploading the file payload. There was a timeout when uploading the stats and the file has been marked rejected. If a timeout occurs again, then you can try increasing the configurable command timeout."));
+        }
+
+        [Test]
         public void GetErrorMessage_WhenUnexpectedException_ReturnsUnexpectedExceptionMessage()
         {
             string actual = systemUnderTest.GetErrorMessage(FailedReason.UnexpectedException, new FilePayload());
