@@ -150,6 +150,18 @@
         }
 
         [Test]
+        public void UploadStatsFiles_WhenExceptionThrown_ResultInvalidStatFileData()
+        {
+            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(new Exception());
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
+            Assert.That(actual.UploadResults.ElementAt(0).FailedReason,
+                Is.EqualTo(FailedReason.UnexpectedException));
+        }
+
+        [Test]
         public void UploadStatsFiles_WhenExceptionThrown_ReturnsUnexpectedExceptionResult()
         {
             SetUpWhenExceptionThrown();
@@ -158,6 +170,19 @@
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenExceptionThrown_RollsBackTransaction()
+        {
+            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(new Exception());
+
+            var tranaction = Substitute.For<DbTransaction>();
+            statsUploadDatabaseServiceMock.StartStatsUpload(1).Returns(tranaction);
+
+            InvokeUploadStatsFiles();
+
+            statsUploadDatabaseServiceMock.Received().Rollback(tranaction);
         }
 
         [Test]
@@ -203,16 +228,6 @@
         }
 
         [Test]
-        public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_UpdatesStatsUploadToError()
-        {
-            SetUpWhenInvalidStatsFileExceptionThrown();
-
-            InvokeUploadStatsFiles();
-
-            statsUploadDatabaseServiceMock.Received().StatsUploadError(Arg.Any<StatsUploadResult>());
-        }
-
-        [Test]
         public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_RollsBackTransaction()
         {
             SetUpWhenInvalidStatsFileExceptionThrown();
@@ -223,6 +238,16 @@
             InvokeUploadStatsFiles();
 
             statsUploadDatabaseServiceMock.Received().Rollback(tranaction);
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_UpdatesStatsUploadToError()
+        {
+            SetUpWhenInvalidStatsFileExceptionThrown();
+
+            InvokeUploadStatsFiles();
+
+            statsUploadDatabaseServiceMock.Received().StatsUploadError(Arg.Any<StatsUploadResult>());
         }
 
         [Test]

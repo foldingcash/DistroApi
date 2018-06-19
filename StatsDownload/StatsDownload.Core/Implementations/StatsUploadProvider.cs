@@ -87,6 +87,16 @@
             return !statsUploadDatabaseService.IsAvailable();
         }
 
+        private FailedReason GetFailedReason(Exception exception)
+        {
+            if (exception is InvalidStatsFileException)
+            {
+                return FailedReason.InvalidStatsFileUpload;
+            }
+
+            return FailedReason.UnexpectedException;
+        }
+
         private void HandleUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
             IEnumerable<FailedUserData> failedUsersData)
         {
@@ -108,9 +118,9 @@
             loggingService.LogVerbose(message);
         }
 
-        private StatsUploadResult NewFailedStatsUploadResult(int downloadId)
+        private StatsUploadResult NewFailedStatsUploadResult(int downloadId, FailedReason failedReason)
         {
-            return new StatsUploadResult(downloadId, FailedReason.InvalidStatsFileUpload);
+            return new StatsUploadResult(downloadId, failedReason);
         }
 
         private void UploadStatsFile(List<StatsUploadResult> statsUploadResults, int downloadId)
@@ -130,10 +140,11 @@
                 statsUploadDatabaseService.Commit(transaction);
                 LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");
             }
-            catch (InvalidStatsFileException)
+            catch (Exception exception)
             {
                 statsUploadDatabaseService.Rollback(transaction);
-                StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId);
+                FailedReason failedReason = GetFailedReason(exception);
+                StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId, failedReason);
                 loggingService.LogResult(failedStatsUploadResult);
                 statsUploadEmailService.SendEmail(failedStatsUploadResult);
                 statsUploadDatabaseService.StatsUploadError(failedStatsUploadResult);
