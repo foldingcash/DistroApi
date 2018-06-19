@@ -107,7 +107,7 @@
             return GetBoolConfig("DisableSecureFilePayload");
         }
 
-        bool ITestHarnessStatsDownloadSettings.Enabled => GetBoolConfig("EnableTestingSqlExceptionDuringAddUsers");
+        bool ITestHarnessStatsDownloadSettings.Enabled => GetBoolConfig("EnableSqlExceptionDuringAddUsersTest");
 
         bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
 
