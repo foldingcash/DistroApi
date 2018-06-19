@@ -146,6 +146,7 @@
                 FailedReason failedReason = GetFailedReason(exception);
                 StatsUploadResult failedStatsUploadResult = NewFailedStatsUploadResult(downloadId, failedReason);
                 loggingService.LogResult(failedStatsUploadResult);
+                loggingService.LogException(exception);
                 statsUploadEmailService.SendEmail(failedStatsUploadResult);
                 statsUploadDatabaseService.StatsUploadError(failedStatsUploadResult);
                 statsUploadResults.Add(failedStatsUploadResult);

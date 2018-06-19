@@ -135,9 +135,9 @@
         }
 
         [Test]
-        public void UploadStatsFiles_WhenExceptionThrown_LogsException()
+        public void UploadStatsFiles_WhenExceptionBeforeAnUploadStarts_LogsException()
         {
-            Exception expected = SetUpWhenExceptionThrown();
+            Exception expected = SetUpWhenExceptionBeforeAnUploadStarts();
 
             InvokeUploadStatsFiles();
 
@@ -147,6 +147,38 @@
                 statsUploadDatabaseServiceMock.IsAvailable();
                 loggingServiceMock.LogException(expected);
             });
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenExceptionBeforeAnUploadStarts_ReturnsUnexpectedExceptionResult()
+        {
+            SetUpWhenExceptionBeforeAnUploadStarts();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenExceptionBeforeAnUploadStartsThrown_SendsEmail()
+        {
+            SetUpWhenExceptionBeforeAnUploadStarts();
+
+            InvokeUploadStatsFiles();
+
+            statsUploadEmailServiceMock.Received().SendEmail(Arg.Any<StatsUploadResults>());
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenExceptionThrown_LogsException()
+        {
+            var expected = new Exception();
+            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(expected);
+
+            InvokeUploadStatsFiles();
+
+            loggingServiceMock.Received(2).LogException(expected);
         }
 
         [Test]
@@ -162,17 +194,6 @@
         }
 
         [Test]
-        public void UploadStatsFiles_WhenExceptionThrown_ReturnsUnexpectedExceptionResult()
-        {
-            SetUpWhenExceptionThrown();
-
-            StatsUploadResults actual = InvokeUploadStatsFiles();
-
-            Assert.That(actual.Success, Is.False);
-            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
-        }
-
-        [Test]
         public void UploadStatsFiles_WhenExceptionThrown_RollsBackTransaction()
         {
             statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(new Exception());
@@ -183,16 +204,6 @@
             InvokeUploadStatsFiles();
 
             statsUploadDatabaseServiceMock.Received().Rollback(tranaction);
-        }
-
-        [Test]
-        public void UploadStatsFiles_WhenExceptionThrown_SendsEmail()
-        {
-            SetUpWhenExceptionThrown();
-
-            InvokeUploadStatsFiles();
-
-            statsUploadEmailServiceMock.Received().SendEmail(Arg.Any<StatsUploadResults>());
         }
 
         [Test]
@@ -365,7 +376,7 @@
             statsUploadDatabaseServiceMock.IsAvailable().Returns(false);
         }
 
-        private Exception SetUpWhenExceptionThrown()
+        private Exception SetUpWhenExceptionBeforeAnUploadStarts()
         {
             var exception = new Exception();
             statsUploadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
