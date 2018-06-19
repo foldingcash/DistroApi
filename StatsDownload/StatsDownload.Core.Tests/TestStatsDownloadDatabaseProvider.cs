@@ -122,7 +122,7 @@
                 dbCommand => { throw new Exception(); }
             });
 
-            DbTransaction transactionMock = Substitute.For<DbTransaction>();
+            var transactionMock = Substitute.For<DbTransaction>();
             databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
 
             Assert.Throws<Exception>(() =>
@@ -145,7 +145,7 @@
                 dbCommand => rebuildIndicesCommand = dbCommand
             });
 
-            DbTransaction transactionMock = Substitute.For<DbTransaction>();
+            var transactionMock = Substitute.For<DbTransaction>();
             databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
 
             systemUnderTest.AddUsers(1, new List<UserData> { new UserData(), new UserData(), new UserData() },
@@ -315,7 +315,7 @@
                 dbCommand => command = dbCommand
             });
 
-            DbTransaction transactionMock = Substitute.For<DbTransaction>();
+            var transactionMock = Substitute.For<DbTransaction>();
             databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
 
             systemUnderTest.AddUsers(1, null, null);
@@ -331,7 +331,7 @@
             DbCommand command = default(DbCommand);
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
-            DbTransaction transactionMock = Substitute.For<DbTransaction>();
+            var transactionMock = Substitute.For<DbTransaction>();
             databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
 
             systemUnderTest.AddUsers(1, null, null);
@@ -352,7 +352,7 @@
                 dbCommand => command = dbCommand
             });
 
-            DbTransaction transactionMock = Substitute.For<DbTransaction>();
+            var transactionMock = Substitute.For<DbTransaction>();
             databaseConnectionServiceMock.CreateTransaction().Returns(transactionMock);
 
             systemUnderTest.AddUsers(1, null, null);
@@ -446,13 +446,13 @@
         {
             InvokeFileDownloadError();
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("FileDownloadError Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]",
                     Arg.Any<List<DbParameter>>());
-            }));
+            });
         }
 
         [Test]
@@ -641,12 +641,12 @@
 
             InvokeIsAvailable();
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("IsAvailable Invoked");
                 databaseConnectionServiceMock.Open();
                 loggingServiceMock.LogVerbose("Database connection was successful");
-            }));
+            });
         }
 
         [Test]
@@ -668,12 +668,12 @@
 
             InvokeIsAvailable();
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("IsAvailable Invoked");
                 databaseConnectionServiceMock.Open();
                 loggingServiceMock.LogException(expected);
-            }));
+            });
         }
 
         [Test]
@@ -718,13 +718,13 @@
         {
             InvokeNewFileDownloadStarted();
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("NewFileDownloadStarted Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[NewFileDownloadStarted]",
                     Arg.Any<List<DbParameter>>());
-            }));
+            });
         }
 
         [Test]
@@ -854,7 +854,7 @@
                                                      Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            var dateTime = DateTime.UtcNow;
+            DateTime dateTime = DateTime.UtcNow;
 
             systemUnderTest.StatsUploadFinished(100, dateTime);
 
@@ -874,13 +874,13 @@
         {
             systemUnderTest.StatsUploadFinished(100, DateTime.Now);
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("StatsUploadFinished Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadFinished]",
                     Arg.Any<List<DbParameter>>());
-            }));
+            });
         }
 
         [Test]
@@ -891,13 +891,13 @@
 
             InvokeUpdateToLatest();
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 loggingServiceMock.LogVerbose("UpdateToLatest Invoked");
                 loggingServiceMock.LogVerbose("Database connection was successful");
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[UpdateToLatest]");
                 loggingServiceMock.LogVerbose($"'{NumberOfRowsEffectedExpected}' rows were effected");
-            }));
+            });
         }
 
         private const int NumberOfRowsEffectedExpected = 5;

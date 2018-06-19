@@ -15,20 +15,6 @@
             WindsorContainer.Instance.Register(Component.For<Action<string>>().Instance(Log));
         }
 
-        internal void Log(string message)
-        {
-            if (LoggingTextBox.InvokeRequired)
-            {
-                LoggingTextBox.Invoke(new Action((() => Log(message))));
-            }
-            else
-            {
-                AppendToLog(message);
-                AppendToLog(Environment.NewLine);
-                AppendToLog(Environment.NewLine);
-            }
-        }
-
         private void AppendToLog(string message)
         {
             LoggingTextBox.AppendText(message);
@@ -69,6 +55,20 @@
             await
                 RunActionAsync(
                     () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
+        }
+
+        internal void Log(string message)
+        {
+            if (LoggingTextBox.InvokeRequired)
+            {
+                LoggingTextBox.Invoke(new Action(() => Log(message)));
+            }
+            else
+            {
+                AppendToLog(message);
+                AppendToLog(Environment.NewLine);
+                AppendToLog(Environment.NewLine);
+            }
         }
 
         private async Task RunActionAsync(Action action)

@@ -166,6 +166,24 @@
             }
         }
 
+        private void AddUsers(IDatabaseConnectionService databaseConnection, int downloadId,
+            IEnumerable<UserData> users, IEnumerable<FailedUserData> failedUsers)
+        {
+            DbTransaction transaction = databaseConnection.CreateTransaction();
+
+            try
+            {
+                AddUserRejections(databaseConnection, transaction, downloadId, failedUsers);
+                AddUsersData(databaseConnection, transaction, downloadId, users);
+                transaction?.Commit();
+            }
+            catch (Exception)
+            {
+                transaction?.Rollback();
+                throw;
+            }
+        }
+
         private void AddUsersData(IDatabaseConnectionService databaseConnection, DbTransaction transaction,
             int downloadId,
             IEnumerable<UserData> usersData)
@@ -197,24 +215,6 @@
                         }
                     }
                 }
-            }
-        }
-
-        private void AddUsers(IDatabaseConnectionService databaseConnection, int downloadId,
-            IEnumerable<UserData> users, IEnumerable<FailedUserData> failedUsers)
-        {
-            var transaction = databaseConnection.CreateTransaction();
-
-            try
-            {
-                AddUserRejections(databaseConnection, transaction, downloadId, failedUsers);
-                AddUsersData(databaseConnection, transaction, downloadId, users);
-                transaction?.Commit();
-            }
-            catch (Exception)
-            {
-                transaction?.Rollback();
-                throw;
             }
         }
 
@@ -493,7 +493,7 @@
         {
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
-            var downloadDateTimeParameter =
+            DbParameter downloadDateTimeParameter =
                 databaseConnection.CreateParameter("@DownloadDateTime", DbType.DateTime, ParameterDirection.Input);
             downloadDateTimeParameter.Value = downloadDateTime;
 

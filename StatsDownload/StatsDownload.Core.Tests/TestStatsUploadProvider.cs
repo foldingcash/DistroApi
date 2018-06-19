@@ -219,13 +219,13 @@
             Received.InOrder(() =>
             {
                 statsUploadDatabaseServiceMock.AddUsers(1,
-                    Arg.Is<IEnumerable<UserData>>((datas => datas.Contains(user1) && datas.Contains(user2))),
+                    Arg.Is<IEnumerable<UserData>>(datas => datas.Contains(user1) && datas.Contains(user2)),
                     Arg.Is<IEnumerable<FailedUserData>>(
-                        (data => data.Contains(failedUser1) && data.Contains(failedUser2))));
+                        data => data.Contains(failedUser1) && data.Contains(failedUser2)));
                 statsUploadDatabaseServiceMock.AddUsers(2,
-                    Arg.Is<IEnumerable<UserData>>((datas => datas.Contains(user3) && datas.Contains(user4))),
+                    Arg.Is<IEnumerable<UserData>>(datas => datas.Contains(user3) && datas.Contains(user4)),
                     Arg.Is<IEnumerable<FailedUserData>>(
-                        (data => data.Contains(failedUser3) && data.Contains(failedUser4))));
+                        data => data.Contains(failedUser3) && data.Contains(failedUser4)));
             });
         }
 

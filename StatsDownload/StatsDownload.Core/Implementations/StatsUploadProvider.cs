@@ -86,6 +86,22 @@
             return !statsUploadDatabaseService.IsAvailable();
         }
 
+        private void HandleUsers(int downloadId, IEnumerable<UserData> usersData,
+            IEnumerable<FailedUserData> failedUsersData)
+        {
+            statsUploadDatabaseService.AddUsers(downloadId, usersData, failedUsersData);
+
+            if (failedUsersData.Any())
+            {
+                statsUploadEmailService.SendEmail(failedUsersData);
+            }
+
+            foreach (FailedUserData failedUserData in failedUsersData)
+            {
+                loggingService.LogFailedUserData(downloadId, failedUserData);
+            }
+        }
+
         private void LogVerbose(string message)
         {
             loggingService.LogVerbose(message);
@@ -117,22 +133,6 @@
                 statsUploadEmailService.SendEmail(failedStatsUploadResult);
                 statsUploadDatabaseService.StatsUploadError(failedStatsUploadResult);
                 statsUploadResults.Add(failedStatsUploadResult);
-            }
-        }
-
-        private void HandleUsers(int downloadId, IEnumerable<UserData> usersData,
-            IEnumerable<FailedUserData> failedUsersData)
-        {
-            statsUploadDatabaseService.AddUsers(downloadId, usersData, failedUsersData);
-
-            if (failedUsersData.Any())
-            {
-                statsUploadEmailService.SendEmail(failedUsersData);
-            }
-
-            foreach (FailedUserData failedUserData in failedUsersData)
-            {
-                loggingService.LogFailedUserData(downloadId, failedUserData);
             }
         }
     }
