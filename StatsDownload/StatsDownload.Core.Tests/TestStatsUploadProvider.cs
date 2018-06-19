@@ -150,18 +150,15 @@
         }
 
         [Test]
-        public void UploadStatsFiles_WhenExceptionThrown_ResultUnexpectedException()
+        public void UploadStatsFiles_WhenExceptionThrown_ResultInvalidStatFileData()
         {
-            var exception = new Exception();
-            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(exception);
+            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(new Exception());
 
             StatsUploadResults actual = InvokeUploadStatsFiles();
 
             Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
             Assert.That(actual.UploadResults.ElementAt(0).FailedReason,
                 Is.EqualTo(FailedReason.UnexpectedException));
-            Assert.That(actual.UploadResults.ElementAt(0).Exception,
-                Is.EqualTo(exception));
         }
 
         [Test]
