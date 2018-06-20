@@ -8,6 +8,7 @@
     using System.Runtime.CompilerServices;
     using Interfaces;
     using Interfaces.DataTransfer;
+    using Interfaces.Enums;
     using Interfaces.Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
@@ -162,6 +163,16 @@
             CreateDatabaseConnectionAndExecuteAction(UpdateToLatest);
         }
 
+        private bool AddUserCommandFailed(AddUserDataParameters addUserParameters)
+        {
+            return !AddUserCommandSuccess(addUserParameters);
+        }
+
+        private bool AddUserCommandSuccess(AddUserDataParameters addUserParameters)
+        {
+            return addUserParameters.ReturnValue.Value is int returnValue && returnValue == 0;
+        }
+
         private void AddUserRejections(IDatabaseConnectionService databaseConnection, DbTransaction transaction,
             int downloadId,
             IEnumerable<FailedUserData> failedUsersData)
@@ -195,7 +206,7 @@
             IEnumerable<UserData> usersData,
             IList<FailedUserData> failedUsers)
         {
-            AddUserDataParameters parameters = CreateAddUserDataParameters(databaseConnection);
+            AddUserDataParameters addUserParameters = CreateAddUserDataParameters(databaseConnection);
 
             using (DbCommand addUserDataCommand = databaseConnection.CreateDbCommand())
             {
@@ -204,7 +215,7 @@
                     addUserDataCommand.CommandText = Constants.StatsDownloadDatabase.AddUserDataProcedureName;
                     addUserDataCommand.CommandType = CommandType.StoredProcedure;
                     addUserDataCommand.Transaction = transaction;
-                    addUserDataCommand.Parameters.AddRange(parameters.AllParameters);
+                    addUserDataCommand.Parameters.AddRange(addUserParameters.AllParameters);
 
                     rebuildIndicesCommand.CommandText = Constants.StatsDownloadDatabase.RebuildIndicesProcedureName;
                     rebuildIndicesCommand.CommandType = CommandType.StoredProcedure;
@@ -213,8 +224,14 @@
                     for (var index = 0; index < (usersData?.Count() ?? 0); index++)
                     {
                         UserData userData = usersData.ElementAt(index);
-                        SetAddUserDataParameterValues(downloadId, userData, parameters);
+                        SetAddUserDataParameterValues(downloadId, userData, addUserParameters);
                         addUserDataCommand.ExecuteNonQuery();
+
+                        if (AddUserCommandFailed(addUserParameters))
+                        {
+                            failedUsers.Add(new FailedUserData(userData.LineNumber, RejectionReason.FailedAddToDatabase,
+                                userData));
+                        }
 
                         if (index % 2500 == 0)
                         {

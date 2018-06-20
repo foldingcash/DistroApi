@@ -117,6 +117,49 @@
         private IStatsDownloadDatabaseService systemUnderTest;
 
         [Test]
+        public void AddUsers_WhenAddUserDataFails_AddsFailedUserToFailedList()
+        {
+            var dbParameter = Substitute.For<DbParameter>();
+            dbParameter.Value.Returns(1);
+
+            databaseConnectionServiceMock.ClearSubstitute();
+            var command = Substitute.For<DbCommand>();
+            command.Parameters.Returns(Substitute.For<DbParameterCollection>());
+            databaseConnectionServiceMock.CreateDbCommand().Returns(command);
+            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
+                ParameterDirection.Input).Returns(Substitute.For<DbParameter>());
+            databaseConnectionServiceMock.CreateParameter("@ReturnValue", DbType.Int32, ParameterDirection.ReturnValue)
+                                         .Returns(dbParameter);
+
+            var user1 = new UserData(999, "name", 10, 100, 1000)
+            {
+                BitcoinAddress = "address",
+                FriendlyName = "friendly"
+            };
+            var user2 = new UserData(900, "name", 10, 100, 1000)
+            {
+                BitcoinAddress = "address",
+                FriendlyName = "friendly"
+            };
+            IList<FailedUserData> failedUsers = new List<FailedUserData>();
+
+            systemUnderTest.AddUsers(null, 1,
+                new List<UserData>
+                {
+                    user1,
+                    user2
+                }, failedUsers);
+
+            Assert.That(failedUsers.Count, Is.EqualTo(2));
+            Assert.That(failedUsers[0].RejectionReason, Is.EqualTo(RejectionReason.FailedAddToDatabase));
+            Assert.That(failedUsers[0].UserData, Is.EqualTo(user1));
+            Assert.That(failedUsers[0].LineNumber, Is.EqualTo(999));
+            Assert.That(failedUsers[1].RejectionReason, Is.EqualTo(RejectionReason.FailedAddToDatabase));
+            Assert.That(failedUsers[1].UserData, Is.EqualTo(user2));
+            Assert.That(failedUsers[1].LineNumber, Is.EqualTo(900));
+        }
+
+        [Test]
         public void AddUsers_WhenInvoked_AddsUsers()
         {
             DbCommand failedUsersCommand = null;
