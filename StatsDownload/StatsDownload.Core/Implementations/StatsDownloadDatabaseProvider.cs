@@ -248,7 +248,9 @@
                         ParameterDirection.Input),
                 BitcoinAddress =
                     databaseConnection.CreateParameter("@BitcoinAddress", DbType.String,
-                        ParameterDirection.Input)
+                        ParameterDirection.Input),
+                ReturnValue =
+                    databaseConnection.CreateParameter("@ReturnValue", DbType.Int32, ParameterDirection.ReturnValue)
             };
         }
 
@@ -542,7 +544,8 @@
                     WorkUnits,
                     TeamNumber,
                     FriendlyName,
-                    BitcoinAddress
+                    BitcoinAddress,
+                    ReturnValue
                 };
 
             public DbParameter BitcoinAddress { get; set; }
@@ -554,6 +557,8 @@
             public DbParameter FriendlyName { get; set; }
 
             public DbParameter LineNumber { get; set; }
+
+            public DbParameter ReturnValue { get; set; }
 
             public DbParameter TeamNumber { get; set; }
 

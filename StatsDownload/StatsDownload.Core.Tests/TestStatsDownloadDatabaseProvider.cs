@@ -163,7 +163,7 @@
                     }
                 }, null);
 
-            Assert.That(actualParameters.Count, Is.EqualTo(8));
+            Assert.That(actualParameters.Count, Is.EqualTo(9));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
             Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
             Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
@@ -196,6 +196,10 @@
             Assert.That(actualParameters[7].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[7].Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters[7].Value, Is.EqualTo("address"));
+            Assert.That(actualParameters[8].ParameterName, Is.EqualTo("@ReturnValue"));
+            Assert.That(actualParameters[8].DbType, Is.EqualTo(DbType.Int32));
+            Assert.That(actualParameters[8].Direction, Is.EqualTo(ParameterDirection.ReturnValue));
+            Assert.That(actualParameters[8].Value, Is.EqualTo(0));
         }
 
         [Test]
@@ -284,7 +288,7 @@
 
             systemUnderTest.AddUsers(null, 0, null, null);
 
-            databaseConnectionServiceMock.ReceivedWithAnyArgs(11)
+            databaseConnectionServiceMock.ReceivedWithAnyArgs(12)
                                          .CreateParameter(null, DbType.AnsiString, ParameterDirection.Input);
         }
 
@@ -352,7 +356,7 @@
             systemUnderTest.AddUsers(null, 1,
                 new List<UserData> { new UserData(0, "name", 10, 100, 1000) { FriendlyName = "friendly" } }, null);
 
-            Assert.That(actualParameters.Count, Is.EqualTo(8));
+            Assert.That(actualParameters.Count, Is.EqualTo(9));
             Assert.That(actualParameters[7].ParameterName, Is.EqualTo("@BitcoinAddress"));
             Assert.That(actualParameters[7].Value, Is.EqualTo(DBNull.Value));
         }
@@ -367,7 +371,7 @@
             systemUnderTest.AddUsers(null, 1,
                 new List<UserData> { new UserData(0, "name", 10, 100, 1000) { BitcoinAddress = "address" } }, null);
 
-            Assert.That(actualParameters.Count, Is.AtLeast(8));
+            Assert.That(actualParameters.Count, Is.AtLeast(9));
             Assert.That(actualParameters[6].ParameterName, Is.EqualTo("@FriendlyName"));
             Assert.That(actualParameters[6].Value, Is.EqualTo(DBNull.Value));
         }
