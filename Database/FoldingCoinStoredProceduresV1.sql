@@ -437,6 +437,17 @@ BEGIN
 		
 							SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
 
+							DECLARE @DownloadDateTime DATETIME;
+							SELECT @DownloadDateTime = DownloadDateTime FROM [FoldingCoin].[Downloads] WHERE DownloadId = @DownloadId;
+
+							IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
+									[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] INNER JOIN
+									[FoldingCoin].[Downloads] ON [FoldingCoin].[FAHDataRuns].[DownloadId] = [FoldingCoin].[Downloads].[DownloadId]
+									WHERE TeamMemberId = @TeamMemberId AND DownloadDateTime < @DownloadDateTime AND (Points > @TotalPoints OR WorkUnits > @WorkUnits)) >= 1
+								BEGIN
+									RAISERROR('A newer stats file contains a user with less points or work units than a previous file and won''t be inserted into the database. If this problem continues, then contact your technical advisor and have them review the logs and database.', 10, 1);
+								END
+
 							IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
 									[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] 
 									WHERE TeamMemberId = @TeamMemberId AND Points >= @TotalPoints AND WorkUnits >= @WorkUnits) = 0

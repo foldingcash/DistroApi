@@ -61,29 +61,45 @@ BEGIN TRY
 	BEGIN TRANSACTION
 		-- If there is a problem processing a particular FAH user in the stats file, then update the user to have a rejection status
 		--PRINT 'Adding user rejection'
-		--EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'FriendlyName_TAG_BitcoinAddress', '199', 'A Bad User';
+		--EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'BadUser1_TAG_BitcoinAddress', '197', 'A Bad User 1';
 				
 		--PRINT 'Adding user rejection'
-		--EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'FriendlyName_TAG_BitcoinAddress', '199', 'A Bad User';
+		--EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'BadUser2_TAG_BitcoinAddress', '198', 'A Bad User 2';
 
 		-- Use this to add users
-		PRINT 'Adding user data'
-		EXEC [FoldingCoin].[AddUserData] @DownloadId
-			,'FriendlyName_TAG_BitcoinAddress'
-			,1000
-			,100
-			,10
-			,'FriendlyName'
-			,'BitcoinAddress';
+		BEGIN TRY
+			PRINT 'Adding user data'
+			EXEC [FoldingCoin].[AddUserData] @DownloadId
+				,'FriendlyName1_TAG_BitcoinAddress'
+				,1000
+				,100
+				,10
+				,'FriendlyName1'
+				,'BitcoinAddress';
+		END TRY
+		BEGIN CATCH
+			PRINT 'Exception caught:';
+			PRINT ERROR_MESSAGE();
+			PRINT 'Adding user rejection';
+			EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'FriendlyName_TAG_BitcoinAddress', '199', 'FriendlyName1';
+		END CATCH
 		
-		PRINT 'Adding user data'
-		EXEC [FoldingCoin].[AddUserData] @DownloadId
-			,'FriendlyName2_TAG_BitcoinAddress2'
-			,1000
-			,100
-			,10
-			,'FriendlyName2'
-			,'BitcoinAddress2';
+		BEGIN TRY
+			PRINT 'Adding user data'
+			EXEC [FoldingCoin].[AddUserData] @DownloadId
+				,'FriendlyName2_TAG_BitcoinAddress2'
+				,1000
+				,100
+				,10
+				,'FriendlyName2'
+				,'BitcoinAddress2';
+		END TRY
+		BEGIN CATCH
+			PRINT 'Exception caught:';
+			PRINT ERROR_MESSAGE();
+			PRINT 'Adding user rejection';
+			EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'FriendlyName2_TAG_BitcoinAddress', '200', 'FriendlyName2';
+		END CATCH
 	COMMIT
 END TRY
 BEGIN CATCH
