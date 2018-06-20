@@ -352,9 +352,9 @@
             systemUnderTest.AddUsers(null, 1,
                 new List<UserData> { new UserData(0, "name", 10, 100, 1000) { FriendlyName = "friendly" } }, null);
 
-            Assert.That(actualParameters.Count, Is.AtLeast(7));
-            Assert.That(actualParameters[6].ParameterName, Is.EqualTo("@BitcoinAddress"));
-            Assert.That(actualParameters[6].Value, Is.EqualTo(DBNull.Value));
+            Assert.That(actualParameters.Count, Is.EqualTo(8));
+            Assert.That(actualParameters[7].ParameterName, Is.EqualTo("@BitcoinAddress"));
+            Assert.That(actualParameters[7].Value, Is.EqualTo(DBNull.Value));
         }
 
         [Test]
@@ -367,9 +367,9 @@
             systemUnderTest.AddUsers(null, 1,
                 new List<UserData> { new UserData(0, "name", 10, 100, 1000) { BitcoinAddress = "address" } }, null);
 
-            Assert.That(actualParameters.Count, Is.AtLeast(6));
-            Assert.That(actualParameters[5].ParameterName, Is.EqualTo("@FriendlyName"));
-            Assert.That(actualParameters[5].Value, Is.EqualTo(DBNull.Value));
+            Assert.That(actualParameters.Count, Is.AtLeast(8));
+            Assert.That(actualParameters[6].ParameterName, Is.EqualTo("@FriendlyName"));
+            Assert.That(actualParameters[6].Value, Is.EqualTo(DBNull.Value));
         }
 
         [Test]
