@@ -3,12 +3,13 @@
     public class UserData
     {
         public UserData()
-            : this(null, 0, 0, 0)
+            : this(0, null, 0, 0, 0)
         {
         }
 
-        public UserData(string name, long totalPoints, long totalWorkUnits, long teamNumber)
+        public UserData(int lineNumber, string name, long totalPoints, long totalWorkUnits, long teamNumber)
         {
+            LineNumber = lineNumber;
             Name = name;
             TotalPoints = totalPoints;
             TotalWorkUnits = totalWorkUnits;
@@ -18,6 +19,8 @@
         public string BitcoinAddress { get; set; }
 
         public string FriendlyName { get; set; }
+
+        public int LineNumber { get; }
 
         public string Name { get; }
 

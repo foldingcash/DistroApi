@@ -23,13 +23,13 @@
             downloadDateTime = DateTime.Now;
         }
 
-        private IStatsFileParserService innerServiceMock;
+        private DateTime downloadDateTime;
 
-        private IStatsFileParserService systemUnderTest;
+        private IStatsFileParserService innerServiceMock;
 
         private IGoogleUsersFilterSettings settingsMock;
 
-        private DateTime downloadDateTime;
+        private IStatsFileParserService systemUnderTest;
 
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()
@@ -55,11 +55,11 @@
                                     new[]
                                     {
                                         new UserData(),
-                                        new UserData("user", 0, 0, 0),
-                                        new UserData("GOOGLE", 0, 0, 0),
-                                        new UserData("Google", 0, 0, 0),
-                                        new UserData("google", 0, 0, 0),
-                                        new UserData("google123456", 0, 0, 0)
+                                        new UserData(0, "user", 0, 0, 0),
+                                        new UserData(0, "GOOGLE", 0, 0, 0),
+                                        new UserData(0, "Google", 0, 0, 0),
+                                        new UserData(0, "google", 0, 0, 0),
+                                        new UserData(0, "google123456", 0, 0, 0)
                                     }, new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse("fileData");
