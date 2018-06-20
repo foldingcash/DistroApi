@@ -53,7 +53,11 @@
         public void LogFailedUserData_WhenInvoked_LogsFailedUserData()
         {
             var failedUserData = new FailedUserData(100, "data", RejectionReason.UnexpectedFormat,
-                new UserData("name", 1, 2, 3) { BitcoinAddress = "bitcoin address", FriendlyName = "friendly name" });
+                new UserData(0, "name", 1, 2, 3)
+                {
+                    BitcoinAddress = "bitcoin address",
+                    FriendlyName = "friendly name"
+                });
 
             systemUnderTest.LogFailedUserData(10, failedUserData);
 
