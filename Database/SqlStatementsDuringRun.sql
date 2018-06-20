@@ -86,6 +86,10 @@ BEGIN CATCH
 	ROLLBACK;
 END CATCH
 
+--File Download UTC DateTime
+DECLARE @DownloadDateTime DATETIME;
+SELECT @DownloadDateTime = GETUTCDATE();
+
 -- Use this to update the download status to show the stats upload has completed
 PRINT 'Stats upload finished'
-EXEC [FoldingCoin].[StatsUploadFinished] @DownloadId;
+EXEC [FoldingCoin].[StatsUploadFinished] @DownloadId, @DownloadDateTime;
