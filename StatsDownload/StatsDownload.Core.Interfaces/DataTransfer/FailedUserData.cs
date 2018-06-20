@@ -9,6 +9,11 @@
         {
         }
 
+        public FailedUserData(int lineNumber, RejectionReason rejectionReason, UserData userdata) : this(lineNumber,
+            null, rejectionReason, userdata)
+        {
+        }
+
         public FailedUserData(int lineNumber, string data, RejectionReason rejectionReason)
             : this(lineNumber, data, rejectionReason, null)
         {

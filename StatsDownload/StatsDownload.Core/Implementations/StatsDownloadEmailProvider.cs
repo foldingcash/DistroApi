@@ -14,7 +14,7 @@
 
         private const string StatsUploadFailedSubject = "Stats Upload Failed";
 
-        private const string UserDataFailedParsingSubject = "User Data Failed Parsing";
+        private const string UserDataFailedParsingSubject = "User Data Failed";
 
         private readonly IEmailService emailService;
 

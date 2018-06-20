@@ -38,7 +38,7 @@
         [TestCase("Name-TAG-Address")]
         public void Parse_WhenInvoked_ReturnsBitcoinAddress(string name)
         {
-            var userData = new UserData(name, 0, 0, 0);
+            var userData = new UserData(0, name, 0, 0, 0);
 
             systemUnderTest.Parse(userData);
 
@@ -53,7 +53,7 @@
         [TestCase("Name-TAG-Address")]
         public void Parse_WhenInvoked_ReturnsFriendlyName(string name)
         {
-            var userData = new UserData(name, 0, 0, 0);
+            var userData = new UserData(0, name, 0, 0, 0);
 
             systemUnderTest.Parse(userData);
 
@@ -65,7 +65,7 @@
         [TestCase("part1.part2.part3.part4")]
         public void Parse_WhenNoAdditionalUserData_ReturnsUserData(string name)
         {
-            var userData = new UserData(name, 0, 0, 0);
+            var userData = new UserData(0, name, 0, 0, 0);
 
             systemUnderTest.Parse(userData);
 
@@ -82,7 +82,7 @@
         [TestCase("Name-TAG-BadAddress")]
         public void Parse_WhenNoBitcoinAddress_ReturnsNoAdditionalData(string name)
         {
-            var userData = new UserData(name, 0, 0, 0);
+            var userData = new UserData(0, name, 0, 0, 0);
 
             systemUnderTest.Parse(userData);
 
@@ -94,7 +94,7 @@
         [TestCase("Address")]
         public void Parse_WhenNoFriendlyName_ReturnsNoFriendlyName(string name)
         {
-            var userData = new UserData(name, 0, 0, 0);
+            var userData = new UserData(0, name, 0, 0, 0);
 
             systemUnderTest.Parse(userData);
 

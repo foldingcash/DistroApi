@@ -44,7 +44,7 @@
 
             systemUnderTest.SendEmail(failedUsersData);
 
-            emailServiceMock.Received(1).SendEmail("User Data Failed Parsing", "ErrorMessage");
+            emailServiceMock.Received(1).SendEmail("User Data Failed", "ErrorMessage");
         }
 
         [Test]
