@@ -65,24 +65,25 @@
         {
             for (var lineIndex = 2; lineIndex < fileLines.Length; lineIndex++)
             {
+                int lineNumber = lineIndex + 1;
                 string currentLine = fileLines[lineIndex];
                 string[] unparsedUserData = currentLine.Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (IsInvalidUserData(unparsedUserData))
                 {
                     failedUsersData.Add(
-                        new FailedUserData(lineIndex + 1, currentLine, RejectionReason.UnexpectedFormat));
+                        new FailedUserData(lineNumber, currentLine, RejectionReason.UnexpectedFormat));
                     continue;
                 }
 
-                if (TryParseUserData(unparsedUserData, out UserData userData))
+                if (TryParseUserData(lineNumber, unparsedUserData, out UserData userData))
                 {
                     additionalUserDataParserService.Parse(userData);
                     usersData.Add(userData);
                     continue;
                 }
 
-                failedUsersData.Add(new FailedUserData(lineIndex + 1, currentLine, RejectionReason.FailedParsing,
+                failedUsersData.Add(new FailedUserData(lineNumber, currentLine, RejectionReason.FailedParsing,
                     userData));
             }
         }
@@ -115,7 +116,7 @@
             return parsed;
         }
 
-        private bool TryParseUserData(string[] unparsedUserData, out UserData userData)
+        private bool TryParseUserData(int lineNumber, string[] unparsedUserData, out UserData userData)
         {
             var index = 0;
             string name = unparsedUserData[index];
@@ -133,7 +134,7 @@
             index++;
             bool teamNumberParsed = long.TryParse(unparsedUserData[index], out long teamNumber);
 
-            userData = new UserData(name, totalPoints, totalWorkUnits, teamNumber);
+            userData = new UserData(lineNumber, name, totalPoints, totalWorkUnits, teamNumber);
 
             return totalPointsParsed && totalWorkUnitsParsed && teamNumberParsed;
         }
