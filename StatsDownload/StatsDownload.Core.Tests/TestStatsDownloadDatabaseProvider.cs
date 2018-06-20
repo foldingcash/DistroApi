@@ -112,6 +112,8 @@
 
         private ILoggingService loggingServiceMock;
 
+        private const int NumberOfRowsEffectedExpected = 5;
+
         private IStatsDownloadDatabaseService systemUnderTest;
 
         [Test]
@@ -154,42 +156,46 @@
             systemUnderTest.AddUsers(null, 1,
                 new List<UserData>
                 {
-                    new UserData("name", 10, 100, 1000)
+                    new UserData(999, "name", 10, 100, 1000)
                     {
                         BitcoinAddress = "address",
                         FriendlyName = "friendly"
                     }
                 }, null);
 
-            Assert.That(actualParameters.Count, Is.EqualTo(7));
+            Assert.That(actualParameters.Count, Is.EqualTo(8));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
             Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
             Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters[0].Value, Is.EqualTo(1));
-            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@FAHUserName"));
-            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@LineNumber"));
+            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.Int32));
             Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[1].Value, Is.EqualTo("name"));
-            Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@TotalPoints"));
-            Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.Int64));
+            Assert.That(actualParameters[1].Value, Is.EqualTo(999));
+            Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@FAHUserName"));
+            Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[2].Value, Is.EqualTo(10));
-            Assert.That(actualParameters[3].ParameterName, Is.EqualTo("@WorkUnits"));
+            Assert.That(actualParameters[2].Value, Is.EqualTo("name"));
+            Assert.That(actualParameters[3].ParameterName, Is.EqualTo("@TotalPoints"));
             Assert.That(actualParameters[3].DbType, Is.EqualTo(DbType.Int64));
             Assert.That(actualParameters[3].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[3].Value, Is.EqualTo(100));
-            Assert.That(actualParameters[4].ParameterName, Is.EqualTo("@TeamNumber"));
+            Assert.That(actualParameters[3].Value, Is.EqualTo(10));
+            Assert.That(actualParameters[4].ParameterName, Is.EqualTo("@WorkUnits"));
             Assert.That(actualParameters[4].DbType, Is.EqualTo(DbType.Int64));
             Assert.That(actualParameters[4].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[4].Value, Is.EqualTo(1000));
-            Assert.That(actualParameters[5].ParameterName, Is.EqualTo("@FriendlyName"));
-            Assert.That(actualParameters[5].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[4].Value, Is.EqualTo(100));
+            Assert.That(actualParameters[5].ParameterName, Is.EqualTo("@TeamNumber"));
+            Assert.That(actualParameters[5].DbType, Is.EqualTo(DbType.Int64));
             Assert.That(actualParameters[5].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[5].Value, Is.EqualTo("friendly"));
-            Assert.That(actualParameters[6].ParameterName, Is.EqualTo("@BitcoinAddress"));
+            Assert.That(actualParameters[5].Value, Is.EqualTo(1000));
+            Assert.That(actualParameters[6].ParameterName, Is.EqualTo("@FriendlyName"));
             Assert.That(actualParameters[6].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[6].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[6].Value, Is.EqualTo("address"));
+            Assert.That(actualParameters[6].Value, Is.EqualTo("friendly"));
+            Assert.That(actualParameters[7].ParameterName, Is.EqualTo("@BitcoinAddress"));
+            Assert.That(actualParameters[7].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[7].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[7].Value, Is.EqualTo("address"));
         }
 
         [Test]
@@ -278,7 +284,7 @@
 
             systemUnderTest.AddUsers(null, 0, null, null);
 
-            databaseConnectionServiceMock.ReceivedWithAnyArgs(10)
+            databaseConnectionServiceMock.ReceivedWithAnyArgs(11)
                                          .CreateParameter(null, DbType.AnsiString, ParameterDirection.Input);
         }
 
@@ -344,9 +350,9 @@
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
             systemUnderTest.AddUsers(null, 1,
-                new List<UserData> { new UserData("name", 10, 100, 1000) { FriendlyName = "friendly" } }, null);
+                new List<UserData> { new UserData(0, "name", 10, 100, 1000) { FriendlyName = "friendly" } }, null);
 
-            Assert.That(actualParameters.Count, Is.EqualTo(7));
+            Assert.That(actualParameters.Count, Is.AtLeast(7));
             Assert.That(actualParameters[6].ParameterName, Is.EqualTo("@BitcoinAddress"));
             Assert.That(actualParameters[6].Value, Is.EqualTo(DBNull.Value));
         }
@@ -359,9 +365,9 @@
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
             systemUnderTest.AddUsers(null, 1,
-                new List<UserData> { new UserData("name", 10, 100, 1000) { BitcoinAddress = "address" } }, null);
+                new List<UserData> { new UserData(0, "name", 10, 100, 1000) { BitcoinAddress = "address" } }, null);
 
-            Assert.That(actualParameters.Count, Is.EqualTo(7));
+            Assert.That(actualParameters.Count, Is.AtLeast(6));
             Assert.That(actualParameters[5].ParameterName, Is.EqualTo("@FriendlyName"));
             Assert.That(actualParameters[5].Value, Is.EqualTo(DBNull.Value));
         }
@@ -956,8 +962,6 @@
                 databaseConnectionServiceFactory,
                 loggingService, errorMessageService);
         }
-
-        private const int NumberOfRowsEffectedExpected = 5;
 
         private void SetUpDatabaseConnectionCreateDbCommandMock(
             Action<DbCommand>[] additionalCreateDbCommandSetupActions = null,

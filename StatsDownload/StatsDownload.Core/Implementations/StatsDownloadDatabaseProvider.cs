@@ -229,6 +229,7 @@
             return new AddUserDataParameters
             {
                 DownloadId = CreateDownloadIdParameter(databaseConnection),
+                LineNumber = CreateLineNumberParameter(databaseConnection),
                 FahUserName =
                     databaseConnection.CreateParameter("@FAHUserName", DbType.String,
                         ParameterDirection.Input),
@@ -256,9 +257,7 @@
             return new AddUserRejectionParameters
             {
                 DownloadId = CreateDownloadIdParameter(databaseConnection),
-                LineNumber =
-                    databaseConnection.CreateParameter("@LineNumber", DbType.Int32,
-                        ParameterDirection.Input),
+                LineNumber = CreateLineNumberParameter(databaseConnection),
                 RejectionReason =
                     databaseConnection.CreateParameter("@RejectionReason",
                         DbType.String, ParameterDirection.Input)
@@ -313,6 +312,12 @@
         {
             string message = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason);
             return CreateErrorMessageParameter(databaseConnection, message);
+        }
+
+        private DbParameter CreateLineNumberParameter(IDatabaseConnectionService databaseConnection)
+        {
+            return databaseConnection.CreateParameter("@LineNumber", DbType.Int32,
+                ParameterDirection.Input);
         }
 
         private void EnsureDatabaseConnectionOpened(IDatabaseConnectionService databaseConnection)
@@ -460,6 +465,7 @@
         private void SetAddUserDataParameterValues(int downloadId, UserData userData, AddUserDataParameters parameters)
         {
             parameters.DownloadId.Value = downloadId;
+            parameters.LineNumber.Value = userData.LineNumber;
             parameters.FahUserName.Value = userData.Name;
             parameters.TotalPoints.Value = userData.TotalPoints;
             parameters.WorkUnits.Value = userData.TotalWorkUnits;
@@ -526,7 +532,17 @@
         private class AddUserDataParameters
         {
             public DbParameter[] AllParameters
-                => new[] { DownloadId, FahUserName, TotalPoints, WorkUnits, TeamNumber, FriendlyName, BitcoinAddress };
+                => new[]
+                {
+                    DownloadId,
+                    LineNumber,
+                    FahUserName,
+                    TotalPoints,
+                    WorkUnits,
+                    TeamNumber,
+                    FriendlyName,
+                    BitcoinAddress
+                };
 
             public DbParameter BitcoinAddress { get; set; }
 
@@ -535,6 +551,8 @@
             public DbParameter FahUserName { get; set; }
 
             public DbParameter FriendlyName { get; set; }
+
+            public DbParameter LineNumber { get; set; }
 
             public DbParameter TeamNumber { get; set; }
 
