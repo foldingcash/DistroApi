@@ -58,7 +58,7 @@
         }
 
         public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> users,
-            IEnumerable<FailedUserData> failedUsers)
+            IList<FailedUserData> failedUsers)
         {
             LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service =>
@@ -184,15 +184,16 @@
         }
 
         private void AddUsers(DbTransaction transaction, IDatabaseConnectionService databaseConnection, int downloadId,
-            IEnumerable<UserData> users, IEnumerable<FailedUserData> failedUsers)
+            IEnumerable<UserData> users, IList<FailedUserData> failedUsers)
         {
             AddUserRejections(databaseConnection, transaction, downloadId, failedUsers);
-            AddUsersData(databaseConnection, transaction, downloadId, users);
+            AddUsersData(databaseConnection, transaction, downloadId, users, failedUsers);
         }
 
         private void AddUsersData(IDatabaseConnectionService databaseConnection, DbTransaction transaction,
             int downloadId,
-            IEnumerable<UserData> usersData)
+            IEnumerable<UserData> usersData,
+            IList<FailedUserData> failedUsers)
         {
             AddUserDataParameters parameters = CreateAddUserDataParameters(databaseConnection);
 

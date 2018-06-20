@@ -103,7 +103,7 @@
         }
 
         private void HandleUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
-            IEnumerable<FailedUserData> failedUsersData)
+            IList<FailedUserData> failedUsersData)
         {
             statsUploadDatabaseService.AddUsers(transaction, downloadId, usersData, failedUsersData);
 
@@ -139,7 +139,7 @@
                 ParseResults results = statsFileParserService.Parse(fileData);
                 transaction = statsUploadDatabaseService.StartStatsUpload(downloadId, results.DownloadDateTime);
                 IEnumerable<UserData> usersData = results.UsersData;
-                IEnumerable<FailedUserData> failedUsersData = results.FailedUsersData;
+                IList<FailedUserData> failedUsersData = results.FailedUsersData.ToList();
                 HandleUsers(transaction, downloadId, usersData, failedUsersData);
                 statsUploadDatabaseService.StatsUploadFinished(transaction, downloadId);
                 statsUploadDatabaseService.Commit(transaction);

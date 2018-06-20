@@ -278,11 +278,11 @@
             {
                 statsUploadDatabaseServiceMock.AddUsers(tranaction1, 1,
                     Arg.Is<IEnumerable<UserData>>(datas => datas.Contains(user1) && datas.Contains(user2)),
-                    Arg.Is<IEnumerable<FailedUserData>>(
+                    Arg.Is<IList<FailedUserData>>(
                         data => data.Contains(failedUser1) && data.Contains(failedUser2)));
                 statsUploadDatabaseServiceMock.AddUsers(tranaction2, 2,
                     Arg.Is<IEnumerable<UserData>>(datas => datas.Contains(user3) && datas.Contains(user4)),
-                    Arg.Is<IEnumerable<FailedUserData>>(
+                    Arg.Is<IList<FailedUserData>>(
                         data => data.Contains(failedUser3) && data.Contains(failedUser4)));
             });
         }

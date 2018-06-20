@@ -8,7 +8,7 @@
     public interface IStatsUploadDatabaseService
     {
         void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
-            IEnumerable<FailedUserData> failedUsers);
+            IList<FailedUserData> failedUsers);
 
         void Commit(DbTransaction transaction);
 
