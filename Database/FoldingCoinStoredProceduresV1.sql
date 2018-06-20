@@ -313,13 +313,13 @@ IF OBJECT_ID('FoldingCoin.StartStatsUpload') IS NOT NULL
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[StartStatsUpload] @DownloadId INT
+CREATE PROCEDURE [FoldingCoin].[StartStatsUpload] @DownloadId INT, @DownloadDateTime DATETIME
 AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRANSACTION
 			UPDATE [FoldingCoin].[Downloads]
-			SET StatusId = FoldingCoin.GetStatsUploadStartedStatusId()
+			SET StatusId = FoldingCoin.GetStatsUploadStartedStatusId(), DownloadDateTime = @DownloadDateTime
 			WHERE DownloadId = @DownloadId;
 		COMMIT
 	END TRY
@@ -437,7 +437,9 @@ BEGIN
 		
 							SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
 
-							IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN [FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] WHERE TeamMemberId = @TeamMemberId AND Points >= @TotalPoints AND WorkUnits >= @WorkUnits) = 0
+							IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
+									[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] 
+									WHERE TeamMemberId = @TeamMemberId AND Points >= @TotalPoints AND WorkUnits >= @WorkUnits) = 0
 								BEGIN
 									INSERT INTO [FoldingCoin].[UserStats] (FAHDataRunId, Points, WorkUnits)
 									VALUES (@FAHDataRunId, @TotalPoints, @WorkUnits);
@@ -488,13 +490,13 @@ IF OBJECT_ID('FoldingCoin.StatsUploadFinished') IS NOT NULL
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[StatsUploadFinished] @DownloadId INT, @DownloadDateTime DATETIME
+CREATE PROCEDURE [FoldingCoin].[StatsUploadFinished] @DownloadId INT
 AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRANSACTION
 			UPDATE [FoldingCoin].[Downloads]
-			SET StatusId = FoldingCoin.GetStatsUploadFinishedStatusId(), DownloadDateTime = @DownloadDateTime
+			SET StatusId = FoldingCoin.GetStatsUploadFinishedStatusId()
 			WHERE DownloadId = @DownloadId
 		COMMIT
 	END TRY

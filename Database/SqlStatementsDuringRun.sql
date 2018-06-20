@@ -45,9 +45,13 @@ EXEC [FoldingCoin].[GetFileData] @DownloadId
 -- The file name, extension, and data
 --SELECT @FileName, @FileExtension, @FileData;
 
+--File Download UTC DateTime
+DECLARE @DownloadDateTime DATETIME;
+SELECT @DownloadDateTime = GETUTCDATE();
+
 -- Use this to update the download status to show the stats upload has started
 PRINT 'Start stats upload'
-EXEC [FoldingCoin].[StartStatsUpload] @DownloadId;
+EXEC [FoldingCoin].[StartStatsUpload] @DownloadId, @DownloadDateTime;
 
 -- If there is a problem during the stats upload process that prevents the file from being processed at all, update to stats upload error
 --PRINT 'Stats upload error'
@@ -86,10 +90,6 @@ BEGIN CATCH
 	ROLLBACK;
 END CATCH
 
---File Download UTC DateTime
-DECLARE @DownloadDateTime DATETIME;
-SELECT @DownloadDateTime = GETUTCDATE();
-
 -- Use this to update the download status to show the stats upload has completed
 PRINT 'Stats upload finished'
-EXEC [FoldingCoin].[StatsUploadFinished] @DownloadId, @DownloadDateTime;
+EXEC [FoldingCoin].[StatsUploadFinished] @DownloadId;
