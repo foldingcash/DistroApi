@@ -134,11 +134,12 @@
             filePayload.DownloadId = downloadId;
         }
 
-        public DbTransaction StartStatsUpload(int downloadId)
+        public DbTransaction StartStatsUpload(int downloadId, DateTime downloadDateTime)
         {
             LogMethodInvoked();
             DbTransaction transaction = null;
-            CreateDatabaseConnectionAndExecuteAction(service => transaction = StartStatsUpload(service, downloadId));
+            CreateDatabaseConnectionAndExecuteAction(service =>
+                transaction = StartStatsUpload(service, downloadId, downloadDateTime));
             return transaction;
         }
 
@@ -148,11 +149,11 @@
             CreateDatabaseConnectionAndExecuteAction(service => StatsUploadError(service, statsUploadResult));
         }
 
-        public void StatsUploadFinished(DbTransaction transaction, int downloadId, DateTime downloadDateTime)
+        public void StatsUploadFinished(DbTransaction transaction, int downloadId)
         {
             LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service =>
-                StatsUploadFinished(transaction, service, downloadId, downloadDateTime));
+                StatsUploadFinished(transaction, service, downloadId));
         }
 
         public void UpdateToLatest()
@@ -475,15 +476,20 @@
             parameters.RejectionReason.Value = errorMessageService.GetErrorMessage(failedUserData);
         }
 
-        private DbTransaction StartStatsUpload(IDatabaseConnectionService databaseConnection, int downloadId)
+        private DbTransaction StartStatsUpload(IDatabaseConnectionService databaseConnection, int downloadId,
+            DateTime downloadDateTime)
         {
             DbTransaction transaction = databaseConnection.CreateTransaction();
 
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
+            DbParameter downloadDateTimeParameter =
+                databaseConnection.CreateParameter("@DownloadDateTime", DbType.DateTime, ParameterDirection.Input);
+            downloadDateTimeParameter.Value = downloadDateTime;
+
             databaseConnection.ExecuteStoredProcedure(transaction,
                 Constants.StatsDownloadDatabase.StartStatsUploadProcedureName,
-                new List<DbParameter> { download });
+                new List<DbParameter> { download, downloadDateTimeParameter });
 
             return transaction;
         }
@@ -499,18 +505,13 @@
         }
 
         private void StatsUploadFinished(DbTransaction transaction, IDatabaseConnectionService databaseConnection,
-            int downloadId,
-            DateTime downloadDateTime)
+            int downloadId)
         {
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
-            DbParameter downloadDateTimeParameter =
-                databaseConnection.CreateParameter("@DownloadDateTime", DbType.DateTime, ParameterDirection.Input);
-            downloadDateTimeParameter.Value = downloadDateTime;
-
             databaseConnection.ExecuteStoredProcedure(transaction,
                 Constants.StatsDownloadDatabase.StatsUploadFinishedProcedureName,
-                new List<DbParameter> { download, downloadDateTimeParameter });
+                new List<DbParameter> { download });
         }
 
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)

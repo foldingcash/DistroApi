@@ -779,13 +779,19 @@
                                                      Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            systemUnderTest.StartStatsUpload(100);
+            DateTime dateTime = DateTime.UtcNow;
 
-            Assert.That(actualParameters.Count, Is.EqualTo(1));
+            systemUnderTest.StartStatsUpload(100, dateTime);
+
+            Assert.That(actualParameters.Count, Is.EqualTo(2));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
             Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
             Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@DownloadDateTime"));
+            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.DateTime));
+            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[1].Value, Is.EqualTo(dateTime));
         }
 
         [Test]
@@ -794,7 +800,7 @@
             var expected = Substitute.For<DbTransaction>();
             databaseConnectionServiceMock.CreateTransaction().Returns(expected);
 
-            DbTransaction actual = systemUnderTest.StartStatsUpload(100);
+            DbTransaction actual = systemUnderTest.StartStatsUpload(100, DateTime.Now);
 
             Assert.That(actual, Is.EqualTo(expected));
         }
@@ -805,7 +811,7 @@
             var transaction = Substitute.For<DbTransaction>();
             databaseConnectionServiceMock.CreateTransaction().Returns(transaction);
 
-            systemUnderTest.StartStatsUpload(1);
+            systemUnderTest.StartStatsUpload(1, DateTime.Now);
 
             Received.InOrder(() =>
             {
@@ -869,19 +875,13 @@
                                                      Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            DateTime dateTime = DateTime.UtcNow;
+            systemUnderTest.StatsUploadFinished(transaction, 100);
 
-            systemUnderTest.StatsUploadFinished(transaction, 100, dateTime);
-
-            Assert.That(actualParameters.Count, Is.EqualTo(2));
+            Assert.That(actualParameters.Count, Is.EqualTo(1));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
             Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
             Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters[0].Value, Is.EqualTo(100));
-            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@DownloadDateTime"));
-            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.DateTime));
-            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[1].Value, Is.EqualTo(dateTime));
         }
 
         [Test]
@@ -889,7 +889,7 @@
         {
             var transaction = Substitute.For<DbTransaction>();
 
-            systemUnderTest.StatsUploadFinished(transaction, 100, DateTime.Now);
+            systemUnderTest.StatsUploadFinished(transaction, 100);
 
             Received.InOrder(() =>
             {
@@ -916,8 +916,6 @@
                 loggingServiceMock.LogVerbose($"'{NumberOfRowsEffectedExpected}' rows were effected");
             });
         }
-
-        private const int NumberOfRowsEffectedExpected = 5;
 
         private void InvokeFileDownloadError()
         {
@@ -958,6 +956,8 @@
                 databaseConnectionServiceFactory,
                 loggingService, errorMessageService);
         }
+
+        private const int NumberOfRowsEffectedExpected = 5;
 
         private void SetUpDatabaseConnectionCreateDbCommandMock(
             Action<DbCommand>[] additionalCreateDbCommandSetupActions = null,

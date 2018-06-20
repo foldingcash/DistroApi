@@ -20,10 +20,10 @@
 
         void Rollback(DbTransaction transaction);
 
-        DbTransaction StartStatsUpload(int downloadId);
+        DbTransaction StartStatsUpload(int downloadId, DateTime downloadDateTime);
 
         void StatsUploadError(StatsUploadResult statsUploadResult);
 
-        void StatsUploadFinished(DbTransaction transaction, int downloadId, DateTime downloadDateTime);
+        void StatsUploadFinished(DbTransaction transaction, int downloadId);
     }
 }

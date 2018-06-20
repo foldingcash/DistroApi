@@ -136,12 +136,12 @@
             {
                 LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
                 string fileData = statsUploadDatabaseService.GetFileData(downloadId);
-                transaction = statsUploadDatabaseService.StartStatsUpload(downloadId);
                 ParseResults results = statsFileParserService.Parse(fileData);
+                transaction = statsUploadDatabaseService.StartStatsUpload(downloadId, results.DownloadDateTime);
                 IEnumerable<UserData> usersData = results.UsersData;
                 IEnumerable<FailedUserData> failedUsersData = results.FailedUsersData;
                 HandleUsers(transaction, downloadId, usersData, failedUsersData);
-                statsUploadDatabaseService.StatsUploadFinished(transaction, downloadId, results.DownloadDateTime);
+                statsUploadDatabaseService.StatsUploadFinished(transaction, downloadId);
                 statsUploadDatabaseService.Commit(transaction);
                 LogVerbose($"Finished stats file upload. DownloadId: {downloadId}");
             }
