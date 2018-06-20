@@ -45,67 +45,48 @@ EXEC [FoldingCoin].[GetFileData] @DownloadId
 -- The file name, extension, and data
 --SELECT @FileName, @FileExtension, @FileData;
 
---File Download UTC DateTime
-DECLARE @DownloadDateTime DATETIME;
-SELECT @DownloadDateTime = GETUTCDATE();
-
--- Use this to update the download status to show the stats upload has started
-PRINT 'Start stats upload'
-EXEC [FoldingCoin].[StartStatsUpload] @DownloadId, @DownloadDateTime;
-
 -- If there is a problem during the stats upload process that prevents the file from being processed at all, update to stats upload error
 --PRINT 'Stats upload error'
 --EXEC [FoldingCoin].[StatsUploadError] @DownloadId, 'Stats Upload Error Message'
 
+--File Download UTC DateTime
+DECLARE @DownloadDateTime DATETIME;
+SELECT @DownloadDateTime = GETUTCDATE();
+
 BEGIN TRY
 	BEGIN TRANSACTION
+		-- Use this to update the download status to show the stats upload has started
+		PRINT 'Start stats upload'
+		EXEC [FoldingCoin].[StartStatsUpload] @DownloadId, @DownloadDateTime;
+		
 		-- If there is a problem processing a particular FAH user in the stats file, then update the user to have a rejection status
 		--PRINT 'Adding user rejection'
 		--EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'BadUser1_TAG_BitcoinAddress', '197', 'A Bad User 1';
-				
-		--PRINT 'Adding user rejection'
-		--EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'BadUser2_TAG_BitcoinAddress', '198', 'A Bad User 2';
+
+		DECLARE @ReturnValue INT;
 
 		-- Use this to add users
-		BEGIN TRY
-			PRINT 'Adding user data'
-			EXEC [FoldingCoin].[AddUserData] @DownloadId
-				,'FriendlyName1_TAG_BitcoinAddress'
-				,1000
-				,100
-				,10
-				,'FriendlyName1'
-				,'BitcoinAddress';
-		END TRY
-		BEGIN CATCH
-			PRINT 'Exception caught:';
-			PRINT ERROR_MESSAGE();
-			PRINT 'Adding user rejection';
-			EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'FriendlyName_TAG_BitcoinAddress', '199', 'FriendlyName1';
-		END CATCH
-		
-		BEGIN TRY
-			PRINT 'Adding user data'
-			EXEC [FoldingCoin].[AddUserData] @DownloadId
-				,'FriendlyName2_TAG_BitcoinAddress2'
-				,1000
-				,100
-				,10
-				,'FriendlyName2'
-				,'BitcoinAddress2';
-		END TRY
-		BEGIN CATCH
-			PRINT 'Exception caught:';
-			PRINT ERROR_MESSAGE();
-			PRINT 'Adding user rejection';
-			EXEC [FoldingCoin].[AddUserRejection] @DownloadId, 'FriendlyName2_TAG_BitcoinAddress', '200', 'FriendlyName2';
-		END CATCH
+		PRINT 'Adding user data'
+		EXEC @ReturnValue = [FoldingCoin].[AddUserData] @DownloadId
+			,200
+			,'FriendlyName1_TAG_BitcoinAddress'
+			,1000
+			,100
+			,10
+			,'FriendlyName1'
+			,'BitcoinAddress';
+
+		PRINT 'Return Value: ';
+		PRINT @ReturnValue;
+
+		-- Use this to update the download status to show the stats upload has completed
+		PRINT 'Stats upload finished';
+		EXEC [FoldingCoin].[StatsUploadFinished] @DownloadId;
 	COMMIT
 END TRY
 BEGIN CATCH
+	PRINT 'Caught exception, rolling back';
+	PRINT ERROR_MESSAGE();
+	PRINT ERROR_LINE();
 	ROLLBACK;
 END CATCH
-
--- Use this to update the download status to show the stats upload has completed
-PRINT 'Stats upload finished'
-EXEC [FoldingCoin].[StatsUploadFinished] @DownloadId;
