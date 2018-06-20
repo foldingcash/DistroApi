@@ -80,7 +80,7 @@
         public string GetErrorMessage(IEnumerable<FailedUserData> failedUsersData)
         {
             return
-                $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count()} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings.";
+                $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count()} lines failed; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed users.";
         }
 
         public string GetErrorMessage(FailedUserData failedUserData)
@@ -92,6 +92,12 @@
             {
                 return
                     $"There was a problem parsing a user from the stats file. The user '{data}' failed data parsing. You should contact your technical advisor to review the logs and rejected users.";
+            }
+
+            if (rejectionReason == RejectionReason.FailedAddToDatabase)
+            {
+                return
+                    "There was a problem adding a user to the database. Contact your technical advisor to review the logs and rejected users.";
             }
 
             if (rejectionReason == RejectionReason.UnexpectedFormat)

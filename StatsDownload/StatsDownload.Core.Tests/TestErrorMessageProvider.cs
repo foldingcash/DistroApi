@@ -31,6 +31,18 @@
         }
 
         [Test]
+        public void GetErrorMessage_WhenFailedAddToDatabase_ReturnsFailedAddToDatabaseMessage()
+        {
+            var failedUserData = new FailedUserData(0, RejectionReason.FailedAddToDatabase, new UserData());
+
+            string actual = systemUnderTest.GetErrorMessage(failedUserData);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem adding a user to the database. Contact your technical advisor to review the logs and rejected users."));
+        }
+
+        [Test]
         public void GetErrorMessage_WhenFailedParsing_ReturnsFailedParsingMessage()
         {
             var failedUserData = new FailedUserData(0, "userdata", RejectionReason.FailedParsing);
@@ -49,7 +61,7 @@
 
             Assert.That(actual,
                 Is.EqualTo(
-                    $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings."));
+                    $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed users."));
         }
 
         [Test]
