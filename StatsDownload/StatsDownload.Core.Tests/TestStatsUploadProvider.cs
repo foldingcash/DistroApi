@@ -115,7 +115,7 @@
 
             Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
             Assert.That(actual.UploadResults.ElementAt(0).FailedReason,
-                Is.EqualTo(FailedReason.StatsUploadTimeout));
+                Is.EqualTo(FailedReason.UnexpectedDatabaseException));
         }
 
         [Test]
@@ -400,7 +400,7 @@
 
         private class TestDbTimeoutException : DbException
         {
-            public TestDbTimeoutException() : base("Mock timeout exception", -2146232060)
+            public TestDbTimeoutException() : base("Mock timeout exception")
             {
             }
         }

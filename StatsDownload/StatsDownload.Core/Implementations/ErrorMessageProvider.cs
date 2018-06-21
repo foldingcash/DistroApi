@@ -63,10 +63,10 @@
                        + " The file failed validation; check the logs for more information. If this problem occurs again, then you should contact your technical advisor to review the logs and failed uploads.";
             }
 
-            if (failedReason == FailedReason.StatsUploadTimeout)
+            if (failedReason == FailedReason.UnexpectedDatabaseException)
             {
                 return StatsUploadFailBodyStart +
-                       " There was a timeout when uploading the stats and the file has been marked rejected. If a timeout occurs again, then you can try increasing the configurable command timeout.";
+                       " There was an unexpected database exception and the file has been marked rejected. If this problem occurs again, then you should contact your technical advisor to review the rejections and logs.";
             }
 
             if (failedReason == FailedReason.UnexpectedException)
