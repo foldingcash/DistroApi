@@ -488,21 +488,21 @@ BEGIN
 								RETURN(1);
 							END
 
-						UPDATE [FoldingCoin].[FAHData]
-						SET TotalPoints = @TotalPoints, WorkUnits = @WorkUnits
-						WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
-		
-						SELECT @FAHDataId = FAHDataId FROM [FoldingCoin].[FAHData] WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
-
-						INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
-						VALUES (@FAHDataId, @DownloadId, @TeamMemberId);
-		
-						SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
-
 						IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
 								[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] 
 								WHERE TeamMemberId = @TeamMemberId AND Points >= @TotalPoints AND WorkUnits >= @WorkUnits) = 0
 							BEGIN
+								UPDATE [FoldingCoin].[FAHData] 
+								SET TotalPoints = @TotalPoints, WorkUnits = @WorkUnits
+								WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
+		
+								SELECT @FAHDataId = FAHDataId FROM [FoldingCoin].[FAHData] WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
+
+								INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
+								VALUES (@FAHDataId, @DownloadId, @TeamMemberId);
+		
+								SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
+						
 								INSERT INTO [FoldingCoin].[UserStats] (FAHDataRunId, Points, WorkUnits)
 								VALUES (@FAHDataRunId, @TotalPoints, @WorkUnits);
 							END
