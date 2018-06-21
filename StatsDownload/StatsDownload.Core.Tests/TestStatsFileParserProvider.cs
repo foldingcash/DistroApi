@@ -22,8 +22,6 @@
             systemUnderTest = NewStatsFileParserProvider(additionalUserDataParserServiceMock);
         }
 
-        private IAdditionalUserDataParserService additionalUserDataParserServiceMock;
-
         private const string EmptyStatsFile = @"Tue Dec 26 10:20:01 PST 2017
 name	newcredit	sum(total)	team";
 
@@ -84,6 +82,8 @@ anonymous	not an ulong	64221589	489
 anonymous	13937689581	not an int	123
 anonymous	13937689581	64221589	not an int
 TheWasp	13660834951	734045	70335";
+
+        private IAdditionalUserDataParserService additionalUserDataParserServiceMock;
 
         private IStatsFileParserService systemUnderTest;
 

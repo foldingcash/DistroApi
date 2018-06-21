@@ -20,7 +20,7 @@
 
             systemUnderTest = new WhitespaceNameUsersFilter(innerServiceMock, settingsMock);
 
-            downloadDateTime = DateTime.Now;
+            downloadDateTime = DateTime.UtcNow;
         }
 
         private DateTime downloadDateTime;

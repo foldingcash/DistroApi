@@ -12,7 +12,7 @@
         [SetUp]
         public void SetUp()
         {
-            dateTime = DateTime.Now;
+            dateTime = DateTime.UtcNow;
 
             applicationLoggingServiceMock = Substitute.For<IApplicationLoggingService>();
             dateTimeServiceMock = Substitute.For<IDateTimeService>();

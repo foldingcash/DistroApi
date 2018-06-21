@@ -16,7 +16,7 @@
         [SetUp]
         public void SetUp()
         {
-            dateTime = DateTime.Now;
+            dateTime = DateTime.UtcNow;
             timeSpan = TimeSpan.MaxValue;
             uri = new Uri("http://localhost");
 
