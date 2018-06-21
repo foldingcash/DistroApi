@@ -215,7 +215,7 @@
                                           .Do(info => throw new Exception());
 
             var tranaction = Substitute.For<DbTransaction>();
-            statsUploadDatabaseServiceMock.StartStatsUpload(1, downloadDateTime1).Returns(tranaction);
+            statsUploadDatabaseServiceMock.CreateTransaction().Returns(tranaction);
 
             InvokeUploadStatsFiles();
 
@@ -268,9 +268,8 @@
         public void UploadStatsFiles_WhenInvoked_AddsUsersData()
         {
             var tranaction1 = Substitute.For<DbTransaction>();
-            statsUploadDatabaseServiceMock.StartStatsUpload(1, downloadDateTime1).Returns(tranaction1);
             var tranaction2 = Substitute.For<DbTransaction>();
-            statsUploadDatabaseServiceMock.StartStatsUpload(2, downloadDateTime2).Returns(tranaction2);
+            statsUploadDatabaseServiceMock.CreateTransaction().Returns(tranaction1, tranaction2);
 
             InvokeUploadStatsFiles();
 
@@ -323,20 +322,19 @@
         public void UploadStatsFiles_WhenInvoked_UpdatesTheDownloadFileState()
         {
             var tranaction1 = Substitute.For<DbTransaction>();
-            statsUploadDatabaseServiceMock.StartStatsUpload(1, downloadDateTime1).Returns(tranaction1);
             var tranaction2 = Substitute.For<DbTransaction>();
-            statsUploadDatabaseServiceMock.StartStatsUpload(2, downloadDateTime2).Returns(tranaction2);
+            statsUploadDatabaseServiceMock.CreateTransaction().Returns(tranaction1, tranaction2);
 
             InvokeUploadStatsFiles();
 
             Received.InOrder(() =>
             {
                 statsUploadDatabaseServiceMock.GetFileData(1);
-                statsUploadDatabaseServiceMock.StartStatsUpload(1, downloadDateTime1);
+                statsUploadDatabaseServiceMock.StartStatsUpload(tranaction1, 1, downloadDateTime1);
                 statsUploadDatabaseServiceMock.StatsUploadFinished(tranaction1, 1);
                 statsUploadDatabaseServiceMock.Commit(tranaction1);
                 statsUploadDatabaseServiceMock.GetFileData(2);
-                statsUploadDatabaseServiceMock.StartStatsUpload(2, downloadDateTime2);
+                statsUploadDatabaseServiceMock.StartStatsUpload(tranaction2, 2, downloadDateTime2);
                 statsUploadDatabaseServiceMock.StatsUploadFinished(tranaction2, 2);
                 statsUploadDatabaseServiceMock.Commit(tranaction2);
             });

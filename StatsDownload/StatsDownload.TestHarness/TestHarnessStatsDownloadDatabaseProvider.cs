@@ -21,6 +21,11 @@
             this.settings = settings;
         }
 
+        public DbTransaction CreateTransaction()
+        {
+            return innerService.CreateTransaction();
+        }
+
         public void Rollback(DbTransaction transaction)
         {
             innerService.Rollback(transaction);
@@ -67,9 +72,9 @@
             return innerService.GetFileData(downloadId);
         }
 
-        public DbTransaction StartStatsUpload(int downloadId, DateTime downloadDateTime)
+        public void StartStatsUpload(DbTransaction transaction, int downloadId, DateTime downloadDateTime)
         {
-            return innerService.StartStatsUpload(downloadId, downloadDateTime);
+            innerService.StartStatsUpload(transaction, downloadId, downloadDateTime);
         }
 
         public void StatsUploadError(StatsUploadResult statsUploadResult)

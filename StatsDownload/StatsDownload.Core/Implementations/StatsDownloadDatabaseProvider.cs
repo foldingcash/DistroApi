@@ -55,7 +55,16 @@
 
         public void Rollback(DbTransaction transaction)
         {
+            LogMethodInvoked();
             transaction?.Rollback();
+        }
+
+        public DbTransaction CreateTransaction()
+        {
+            LogMethodInvoked();
+            DbTransaction transaction = null;
+            CreateDatabaseConnectionAndExecuteAction(service => { transaction = CreateTransaction(service); });
+            return transaction;
         }
 
         public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> users,
@@ -135,13 +144,11 @@
             filePayload.DownloadId = downloadId;
         }
 
-        public DbTransaction StartStatsUpload(int downloadId, DateTime downloadDateTime)
+        public void StartStatsUpload(DbTransaction transaction, int downloadId, DateTime downloadDateTime)
         {
             LogMethodInvoked();
-            DbTransaction transaction = null;
             CreateDatabaseConnectionAndExecuteAction(service =>
-                transaction = StartStatsUpload(service, downloadId, downloadDateTime));
-            return transaction;
+                StartStatsUpload(service, transaction, downloadId, downloadDateTime));
         }
 
         public void StatsUploadError(StatsUploadResult statsUploadResult)
@@ -342,6 +349,11 @@
                 ParameterDirection.Input);
         }
 
+        private DbTransaction CreateTransaction(IDatabaseConnectionService service)
+        {
+            return service.CreateTransaction();
+        }
+
         private void EnsureDatabaseConnectionOpened(IDatabaseConnectionService databaseConnection)
         {
             if (databaseConnection.ConnectionState == ConnectionState.Closed)
@@ -504,11 +516,10 @@
             parameters.RejectionReason.Value = errorMessageService.GetErrorMessage(failedUserData);
         }
 
-        private DbTransaction StartStatsUpload(IDatabaseConnectionService databaseConnection, int downloadId,
+        private void StartStatsUpload(IDatabaseConnectionService databaseConnection, DbTransaction transaction,
+            int downloadId,
             DateTime downloadDateTime)
         {
-            DbTransaction transaction = databaseConnection.CreateTransaction();
-
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
             DbParameter downloadDateTimeParameter =
@@ -518,8 +529,6 @@
             databaseConnection.ExecuteStoredProcedure(transaction,
                 Constants.StatsDownloadDatabase.StartStatsUploadProcedureName,
                 new List<DbParameter> { download, downloadDateTimeParameter });
-
-            return transaction;
         }
 
         private void StatsUploadError(IDatabaseConnectionService databaseConnection,
