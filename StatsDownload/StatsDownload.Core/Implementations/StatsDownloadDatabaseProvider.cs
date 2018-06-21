@@ -315,7 +315,8 @@
             FileDownloadResult fileDownloadResult)
         {
             FilePayload filePayload = fileDownloadResult.FilePayload;
-            string message = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason, filePayload);
+            string message = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason, filePayload,
+                StatsDownloadService.FileDownload);
             return CreateErrorMessageParameter(databaseConnection, message);
         }
 
@@ -330,7 +331,8 @@
         private DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection,
             StatsUploadResult fileDownloadResult)
         {
-            string message = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason);
+            string message =
+                errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason, StatsDownloadService.StatsUpload);
             return CreateErrorMessageParameter(databaseConnection, message);
         }
 
