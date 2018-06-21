@@ -357,6 +357,30 @@ GO
 
 -----------------------------------------------------------------
 
+IF OBJECT_ID('FoldingCoin.AddUserRejection') IS NOT NULL
+	BEGIN
+		DROP PROCEDURE [FoldingCoin].[AddUserRejection];
+	END
+GO
+
+CREATE PROCEDURE [FoldingCoin].[AddUserRejection] 
+	 @DownloadId INT
+	,@LineNumber INT
+	,@RejectionReason NVARCHAR(500)
+AS
+BEGIN	
+	BEGIN TRY
+		INSERT INTO [FoldingCoin].[Rejections] (DownloadId, LineNumber, Reason)
+		VALUES (@DownloadId, @LineNumber, @RejectionReason);
+	END TRY
+	BEGIN CATCH
+		THROW;
+	END CATCH
+END
+GO
+
+-----------------------------------------------------------------
+
 IF OBJECT_ID('FoldingCoin.AddUserData') IS NOT NULL
 BEGIN
 	DROP PROCEDURE [FoldingCoin].[AddUserData];
@@ -493,30 +517,6 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.AddUserRejection') IS NOT NULL
-	BEGIN
-		DROP PROCEDURE [FoldingCoin].[AddUserRejection];
-	END
-GO
-
-CREATE PROCEDURE [FoldingCoin].[AddUserRejection] 
-	 @DownloadId INT
-	,@LineNumber INT
-	,@RejectionReason NVARCHAR(500)
-AS
-BEGIN	
-	BEGIN TRY
-		INSERT INTO [FoldingCoin].[Rejections] (DownloadId, LineNumber, Reason)
-		VALUES (@DownloadId, @LineNumber, @RejectionReason);
-	END TRY
-	BEGIN CATCH
-		THROW;
-	END CATCH
-END
-GO
-
------------------------------------------------------------------
-
 IF OBJECT_ID('FoldingCoin.StatsUploadFinished') IS NOT NULL
 	BEGIN
 		DROP PROCEDURE [FoldingCoin].[StatsUploadFinished];
@@ -550,9 +550,21 @@ AS
 BEGIN
 	BEGIN TRY
 		IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.Users'), 
-			(SELECT index_id FROM sys.indexes WHERE name = 'IX_Users'), NULL, NULL)) > 50.0
+			(SELECT index_id FROM sys.indexes WHERE name = 'IX_Users'), NULL, NULL)) > 60.0
 		BEGIN 
 			ALTER INDEX [IX_Users] ON [FoldingCoin].[Users] REBUILD; 
+		END
+
+		IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.FAHDataRuns'), 
+			(SELECT index_id FROM sys.indexes WHERE name = 'IX_FAHDataRuns'), NULL, NULL)) > 60.0
+		BEGIN 
+			ALTER INDEX [IX_FAHDataRuns] ON [FoldingCoin].[FAHDataRuns] REBUILD; 
+		END
+
+		IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.TeamMembers'), 
+			(SELECT index_id FROM sys.indexes WHERE name = 'IX_TeamMembers'), NULL, NULL)) > 60.0
+		BEGIN 
+			ALTER INDEX [IX_TeamMembers] ON [FoldingCoin].[TeamMembers] REBUILD; 
 		END
 	END TRY
 	BEGIN CATCH

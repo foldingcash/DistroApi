@@ -1,13 +1,13 @@
 USE [master]
 GO
-/****** Object:  Database [FoldingCoin]    Script Date: 4/17/2018 7:19:39 PM ******/
+/****** Object:  Database [FoldingCoin]    Script Date: 6/21/2018 9:02:31 AM ******/
 CREATE DATABASE [FoldingCoin]
  CONTAINMENT = NONE
  ON  PRIMARY 
 ( NAME = N'FoldingCoin', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\FoldingCoin.mdf' , SIZE = 10240KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
  LOG ON 
-( NAME = N'FoldingCoin_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\FoldingCoin_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
- COLLATE SQL_Latin1_General_CP1_CS_AS
+( NAME = N'FoldingCoin_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\FoldingCoin_log.ldf' , SIZE = 1280KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+ COLLATE SQL_Latin1_General_CP1_CI_AS
 GO
 ALTER DATABASE [FoldingCoin] SET COMPATIBILITY_LEVEL = 110
 GO
@@ -74,9 +74,13 @@ ALTER DATABASE [FoldingCoin] SET TARGET_RECOVERY_TIME = 0 SECONDS
 GO
 ALTER DATABASE [FoldingCoin] SET DELAYED_DURABILITY = DISABLED 
 GO
+EXEC sys.sp_db_vardecimal_storage_format N'FoldingCoin', N'ON'
+GO
 ALTER DATABASE [FoldingCoin] SET QUERY_STORE = OFF
 GO
 USE [FoldingCoin]
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET IDENTITY_CACHE = ON;
 GO
 ALTER DATABASE SCOPED CONFIGURATION SET LEGACY_CARDINALITY_ESTIMATION = OFF;
 GO
@@ -96,10 +100,10 @@ ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET QUERY_OPTIMIZER_HOTFIXES =
 GO
 USE [FoldingCoin]
 GO
-/****** Object:  Schema [FoldingCoin]    Script Date: 4/17/2018 7:19:39 PM ******/
+/****** Object:  Schema [FoldingCoin]    Script Date: 6/21/2018 9:02:31 AM ******/
 CREATE SCHEMA [FoldingCoin]
 GO
-/****** Object:  Table [FoldingCoin].[Downloads]    Script Date: 4/17/2018 7:19:39 PM ******/
+/****** Object:  Table [FoldingCoin].[Downloads]    Script Date: 6/21/2018 9:02:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -115,14 +119,14 @@ CREATE TABLE [FoldingCoin].[Downloads](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[FAHData]    Script Date: 4/17/2018 7:19:40 PM ******/
+/****** Object:  Table [FoldingCoin].[FAHData]    Script Date: 6/21/2018 9:02:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [FoldingCoin].[FAHData](
 	[FAHDataId] [int] IDENTITY(1,1) NOT NULL,
-	[UserName] [nvarchar](50) NOT NULL,
+	[UserName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
 	[TotalPoints] [bigint] NOT NULL,
 	[WorkUnits] [bigint] NOT NULL,
 	[TeamNumber] [bigint] NOT NULL,
@@ -132,7 +136,7 @@ CREATE TABLE [FoldingCoin].[FAHData](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[FAHDataRuns]    Script Date: 4/17/2018 7:19:40 PM ******/
+/****** Object:  Table [FoldingCoin].[FAHDataRuns]    Script Date: 6/21/2018 9:02:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -148,23 +152,23 @@ CREATE TABLE [FoldingCoin].[FAHDataRuns](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Files]    Script Date: 4/17/2018 7:19:40 PM ******/
+/****** Object:  Table [FoldingCoin].[Files]    Script Date: 6/21/2018 9:02:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [FoldingCoin].[Files](
 	[FileId] [int] IDENTITY(1,1) NOT NULL,
-	[FileName] [nvarchar](50) NULL,
-	[FileExtension] [nvarchar](5) NULL,
-	[FileData] [nvarchar](max) NULL,
+	[FileName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[FileExtension] [nvarchar](5) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[FileData] [nvarchar](max) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
  CONSTRAINT [PK_Files] PRIMARY KEY CLUSTERED 
 (
 	[FileId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Rejections]    Script Date: 4/17/2018 7:19:40 PM ******/
+/****** Object:  Table [FoldingCoin].[Rejections]    Script Date: 6/21/2018 9:02:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -173,29 +177,29 @@ CREATE TABLE [FoldingCoin].[Rejections](
 	[RejectionId] [int] IDENTITY(1,1) NOT NULL,
 	[DownloadId] [int] NOT NULL,
 	[LineNumber] [int] NULL,
-	[Reason] [nvarchar](500) NOT NULL,
+	[Reason] [nvarchar](500) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
  CONSTRAINT [PK_Rejections] PRIMARY KEY CLUSTERED 
 (
 	[RejectionId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Statuses]    Script Date: 4/17/2018 7:19:40 PM ******/
+/****** Object:  Table [FoldingCoin].[Statuses]    Script Date: 6/21/2018 9:02:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [FoldingCoin].[Statuses](
 	[StatusId] [int] IDENTITY(1,1) NOT NULL,
-	[Status] [nvarchar](50) NOT NULL,
-	[StatusDescription] [nvarchar](100) NOT NULL,
+	[Status] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[StatusDescription] [nvarchar](100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
  CONSTRAINT [PK_Statuses] PRIMARY KEY CLUSTERED 
 (
 	[StatusId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[TeamMembers]    Script Date: 4/17/2018 7:19:40 PM ******/
+/****** Object:  Table [FoldingCoin].[TeamMembers]    Script Date: 6/21/2018 9:02:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -210,7 +214,7 @@ CREATE TABLE [FoldingCoin].[TeamMembers](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Teams]    Script Date: 4/17/2018 7:19:40 PM ******/
+/****** Object:  Table [FoldingCoin].[Teams]    Script Date: 6/21/2018 9:02:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -218,23 +222,23 @@ GO
 CREATE TABLE [FoldingCoin].[Teams](
 	[TeamId] [int] IDENTITY(1,1) NOT NULL,
 	[TeamNumber] [bigint] NOT NULL,
-	[TeamName] [nvarchar](50) NULL,
+	[TeamName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
  CONSTRAINT [PK_Teams] PRIMARY KEY CLUSTERED 
 (
 	[TeamId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Users]    Script Date: 4/17/2018 7:19:40 PM ******/
+/****** Object:  Table [FoldingCoin].[Users]    Script Date: 6/21/2018 9:02:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [FoldingCoin].[Users](
 	[UserId] [int] IDENTITY(1,1) NOT NULL,
-	[UserName] [nvarchar](50) NOT NULL,
-	[FriendlyName] [nvarchar](50) NULL,
-	[BitcoinAddress] [nvarchar](50) NULL,
+	[UserName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
+	[FriendlyName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
+	[BitcoinAddress] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
  CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
 (
 	[UserId] ASC
@@ -245,7 +249,7 @@ CREATE TABLE [FoldingCoin].[Users](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[UserStats]    Script Date: 4/17/2018 7:19:40 PM ******/
+/****** Object:  Table [FoldingCoin].[UserStats]    Script Date: 6/21/2018 9:02:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -260,6 +264,19 @@ CREATE TABLE [FoldingCoin].[UserStats](
 	[UserStatId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_FAHDataRuns]    Script Date: 6/21/2018 9:02:31 AM ******/
+CREATE NONCLUSTERED INDEX [IX_FAHDataRuns] ON [FoldingCoin].[FAHDataRuns]
+(
+	[TeamMemberId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_TeamMembers]    Script Date: 6/21/2018 9:02:31 AM ******/
+CREATE NONCLUSTERED INDEX [IX_TeamMembers] ON [FoldingCoin].[TeamMembers]
+(
+	[TeamId] ASC,
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 ALTER TABLE [FoldingCoin].[Downloads]  WITH CHECK ADD  CONSTRAINT [FK_Downloads_Files] FOREIGN KEY([FileId])
 REFERENCES [FoldingCoin].[Files] ([FileId])
