@@ -94,9 +94,9 @@
                 return FailedReason.InvalidStatsFileUpload;
             }
 
-            if (exception is DbException dbException && dbException.ErrorCode == -2146232060)
+            if (exception is DbException)
             {
-                return FailedReason.StatsUploadTimeout;
+                return FailedReason.UnexpectedDatabaseException;
             }
 
             return FailedReason.UnexpectedException;

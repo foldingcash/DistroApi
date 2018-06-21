@@ -148,11 +148,12 @@
         public void GetErrorMessage_WhenStatsUploadTimeout_ReturnsStatsUploadTimeoutMessage()
         {
             string actual =
-                systemUnderTest.GetErrorMessage(FailedReason.StatsUploadTimeout, StatsDownloadService.StatsUpload);
+                systemUnderTest.GetErrorMessage(FailedReason.UnexpectedDatabaseException,
+                    StatsDownloadService.StatsUpload);
 
             Assert.That(actual,
                 Is.EqualTo(
-                    "There was a problem uploading the file payload. There was a timeout when uploading the stats and the file has been marked rejected. If a timeout occurs again, then you can try increasing the configurable command timeout."));
+                    "There was a problem uploading the file payload. There was an unexpected database exception and the file has been marked rejected. If this problem occurs again, then you should contact your technical advisor to review the rejections and logs."));
         }
 
         [Test]
