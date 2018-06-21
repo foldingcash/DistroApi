@@ -51,7 +51,8 @@
         public void SendEmail_WhenInvokedWithFileDownloadResult_SendsEmail()
         {
             var filePayload = new FilePayload();
-            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload)
+            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload,
+                                       StatsDownloadService.FileDownload)
                                    .Returns("ErrorMessage");
 
             systemUnderTest.SendEmail(new FileDownloadResult(FailedReason.UnexpectedException, filePayload));
@@ -62,7 +63,8 @@
         [Test]
         public void SendEmail_WhenInvokedWithStatsUploadResult_SendsEmail()
         {
-            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException).Returns("ErrorMessage");
+            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, StatsDownloadService.StatsUpload)
+                                   .Returns("ErrorMessage");
 
             systemUnderTest.SendEmail(new StatsUploadResult(1, FailedReason.UnexpectedException));
 
@@ -72,7 +74,8 @@
         [Test]
         public void SendEmail_WhenInvokedWithStatsUploadResults_SendsEmail()
         {
-            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException).Returns("ErrorMessage");
+            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, StatsDownloadService.StatsUpload)
+                                   .Returns("ErrorMessage");
 
             systemUnderTest.SendEmail(new StatsUploadResults(FailedReason.UnexpectedException));
 

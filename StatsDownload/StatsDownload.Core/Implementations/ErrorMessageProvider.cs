@@ -18,7 +18,7 @@
 
         private const string StatsUploadFailBodyStart = "There was a problem uploading the file payload.";
 
-        public string GetErrorMessage(FailedReason failedReason, FilePayload filePayload)
+        public string GetErrorMessage(FailedReason failedReason, FilePayload filePayload, StatsDownloadService service)
         {
             if (failedReason == FailedReason.MinimumWaitTimeNotMet)
             {
@@ -28,15 +28,15 @@
                        + $" The file download service was run before the minimum wait time {minimumWaitTimeSpan} or the configured wait time {configuredWaitTime}. Configure to run the service less often or decrease your configured wait time and try again.";
             }
 
-            return GetErrorMessage(failedReason);
+            return GetErrorMessage(failedReason, service);
         }
 
-        public string GetErrorMessage(FailedReason failedReason)
+        public string GetErrorMessage(FailedReason failedReason, StatsDownloadService service)
         {
             if (failedReason == FailedReason.DataStoreUnavailable)
             {
-                return
-                    "There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.";
+                return GetBodyStart(service) +
+                       " There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.";
             }
 
             if (failedReason == FailedReason.RequiredSettingsInvalid)
@@ -71,7 +71,8 @@
 
             if (failedReason == FailedReason.UnexpectedException)
             {
-                return FileDownloadFailBodyStart + " Check the log for more information.";
+                return GetBodyStart(service) +
+                       " There was an unexpected exception. Check the log for more information.";
             }
 
             return string.Empty;
@@ -104,6 +105,21 @@
             {
                 return
                     $"There was a problem parsing a user from the stats file. The user '{data}' was in an unexpected format. You should contact your technical advisor to review the logs and rejected users.";
+            }
+
+            return string.Empty;
+        }
+
+        private string GetBodyStart(StatsDownloadService service)
+        {
+            if (service == StatsDownloadService.FileDownload)
+            {
+                return FileDownloadFailBodyStart;
+            }
+
+            if (service == StatsDownloadService.StatsUpload)
+            {
+                return StatsUploadFailBodyStart;
             }
 
             return string.Empty;

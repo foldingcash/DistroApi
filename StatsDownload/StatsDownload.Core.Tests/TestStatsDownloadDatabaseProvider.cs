@@ -453,7 +453,8 @@
         [Test]
         public void FileDownloadError_WhenInvoked_ParametersAreProvided()
         {
-            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload)
+            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload,
+                                       StatsDownloadService.FileDownload)
                                    .Returns("ErrorMessage");
             fileDownloadResult = new FileDownloadResult(FailedReason.UnexpectedException, filePayload);
 
@@ -878,7 +879,8 @@
         [Test]
         public void StatsUploadError_WhenInvoked_ParametersAreProvided()
         {
-            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException).Returns("ErrorMessage");
+            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, StatsDownloadService.StatsUpload)
+                                   .Returns("ErrorMessage");
 
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
