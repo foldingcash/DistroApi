@@ -12,6 +12,8 @@
 
         void Commit(DbTransaction transaction);
 
+        DbTransaction CreateTransaction();
+
         IEnumerable<int> GetDownloadsReadyForUpload();
 
         string GetFileData(int downloadId);
@@ -20,7 +22,7 @@
 
         void Rollback(DbTransaction transaction);
 
-        DbTransaction StartStatsUpload(int downloadId, DateTime downloadDateTime);
+        void StartStatsUpload(DbTransaction transaction, int downloadId, DateTime downloadDateTime);
 
         void StatsUploadError(StatsUploadResult statsUploadResult);
 

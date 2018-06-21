@@ -451,6 +451,17 @@
         }
 
         [Test]
+        public void CreateTransaction_WhenInvoked_ReturnsTransaction()
+        {
+            var expected = Substitute.For<DbTransaction>();
+            databaseConnectionServiceMock.CreateTransaction().Returns(expected);
+
+            DbTransaction actual = systemUnderTest.CreateTransaction();
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
         public void FileDownloadError_WhenInvoked_ParametersAreProvided()
         {
             errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload,
@@ -822,7 +833,6 @@
         public void StartStatsUpload_WhenInvoked_ParameterIsProvided()
         {
             var transaction = Substitute.For<DbTransaction>();
-            databaseConnectionServiceMock.CreateTransaction().Returns(transaction);
 
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
@@ -835,7 +845,7 @@
 
             DateTime dateTime = DateTime.UtcNow;
 
-            systemUnderTest.StartStatsUpload(100, dateTime);
+            systemUnderTest.StartStatsUpload(transaction, 100, dateTime);
 
             Assert.That(actualParameters.Count, Is.EqualTo(2));
             Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
@@ -849,23 +859,11 @@
         }
 
         [Test]
-        public void StartStatsUpload_WhenInvoked_ReturnsTransaction()
-        {
-            var expected = Substitute.For<DbTransaction>();
-            databaseConnectionServiceMock.CreateTransaction().Returns(expected);
-
-            DbTransaction actual = systemUnderTest.StartStatsUpload(100, DateTime.UtcNow);
-
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
         public void StartStatsUpload_WhenInvoked_StartsStatsUpload()
         {
             var transaction = Substitute.For<DbTransaction>();
-            databaseConnectionServiceMock.CreateTransaction().Returns(transaction);
 
-            systemUnderTest.StartStatsUpload(1, DateTime.UtcNow);
+            systemUnderTest.StartStatsUpload(transaction, 1, DateTime.UtcNow);
 
             Received.InOrder(() =>
             {
