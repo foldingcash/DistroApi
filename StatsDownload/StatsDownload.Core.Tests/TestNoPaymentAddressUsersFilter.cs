@@ -20,7 +20,7 @@
 
             systemUnderTest = new NoPaymentAddressUsersFilter(innerServiceMock, settingsMock);
 
-            downloadDateTime = DateTime.Now;
+            downloadDateTime = DateTime.UtcNow;
         }
 
         private IStatsFileParserService innerServiceMock;

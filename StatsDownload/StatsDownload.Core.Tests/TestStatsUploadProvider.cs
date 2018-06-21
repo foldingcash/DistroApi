@@ -27,8 +27,8 @@
 
             loggingServiceMock = Substitute.For<IStatsUploadLoggingService>();
 
-            downloadDateTime1 = DateTime.Now;
-            downloadDateTime2 = DateTime.Now;
+            downloadDateTime1 = DateTime.UtcNow;
+            downloadDateTime2 = DateTime.UtcNow;
 
             user1 = new UserData();
             user2 = new UserData();

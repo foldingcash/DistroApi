@@ -654,7 +654,7 @@
         [Test]
         public void GetLastFileDownloadDateTime_WhenInvoked_ReturnsDateTime()
         {
-            DateTime dateTime = DateTime.Now;
+            DateTime dateTime = DateTime.UtcNow;
             databaseConnectionServiceMock.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()")
                                          .Returns(dateTime);
 
@@ -853,7 +853,7 @@
             var expected = Substitute.For<DbTransaction>();
             databaseConnectionServiceMock.CreateTransaction().Returns(expected);
 
-            DbTransaction actual = systemUnderTest.StartStatsUpload(100, DateTime.Now);
+            DbTransaction actual = systemUnderTest.StartStatsUpload(100, DateTime.UtcNow);
 
             Assert.That(actual, Is.EqualTo(expected));
         }
@@ -864,7 +864,7 @@
             var transaction = Substitute.For<DbTransaction>();
             databaseConnectionServiceMock.CreateTransaction().Returns(transaction);
 
-            systemUnderTest.StartStatsUpload(1, DateTime.Now);
+            systemUnderTest.StartStatsUpload(1, DateTime.UtcNow);
 
             Received.InOrder(() =>
             {
