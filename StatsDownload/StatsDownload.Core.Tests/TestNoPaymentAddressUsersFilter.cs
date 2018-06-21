@@ -23,13 +23,13 @@
             downloadDateTime = DateTime.UtcNow;
         }
 
-        private IStatsFileParserService innerServiceMock;
-
-        private IStatsFileParserService systemUnderTest;
-
         private DateTime downloadDateTime;
 
+        private IStatsFileParserService innerServiceMock;
+
         private INoPaymentAddressUsersFilterSettings settingsMock;
+
+        private IStatsFileParserService systemUnderTest;
 
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()

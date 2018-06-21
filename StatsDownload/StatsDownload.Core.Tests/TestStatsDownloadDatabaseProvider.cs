@@ -96,6 +96,8 @@
                 .Returns(dbDataReaderMock);
         }
 
+        private const int NumberOfRowsEffectedExpected = 5;
+
         private IDatabaseConnectionServiceFactory databaseConnectionServiceFactoryMock;
 
         private IDatabaseConnectionService databaseConnectionServiceMock;
@@ -111,8 +113,6 @@
         private FilePayload filePayload;
 
         private ILoggingService loggingServiceMock;
-
-        private const int NumberOfRowsEffectedExpected = 5;
 
         private IStatsDownloadDatabaseService systemUnderTest;
 

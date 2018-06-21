@@ -21,13 +21,6 @@
             }
         }
 
-        private static IWindsorContainer CreateWindsorContainer()
-        {
-            var container = new CastleWindsorContainer();
-            container.AddFacility<TypedFactoryFacility>();
-            return container;
-        }
-
         public static void Dispose()
         {
             lock (sync)
@@ -35,6 +28,13 @@
                 innerContainer?.Dispose();
                 innerContainer = null;
             }
+        }
+
+        private static IWindsorContainer CreateWindsorContainer()
+        {
+            var container = new CastleWindsorContainer();
+            container.AddFacility<TypedFactoryFacility>();
+            return container;
         }
     }
 }
