@@ -566,6 +566,18 @@ BEGIN
 		BEGIN 
 			ALTER INDEX [IX_TeamMembers] ON [FoldingCoin].[TeamMembers] REBUILD; 
 		END
+
+		IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.Teams'), 
+			(SELECT index_id FROM sys.indexes WHERE name = 'IX_Teams'), NULL, NULL)) > 60.0
+		BEGIN 
+			ALTER INDEX [IX_Teams] ON [FoldingCoin].[Teams] REBUILD; 
+		END
+
+		IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.UserStats'), 
+			(SELECT index_id FROM sys.indexes WHERE name = 'IX_UserStats'), NULL, NULL)) > 60.0
+		BEGIN 
+			ALTER INDEX [IX_UserStats] ON [FoldingCoin].[UserStats] REBUILD; 
+		END
 	END TRY
 	BEGIN CATCH
 		THROW;
