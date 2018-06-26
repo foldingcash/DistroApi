@@ -26,6 +26,8 @@ This is a C# implementation for downloading FAH statistics on a scheduled basis,
 
 ```
 dotnet StatsDownload.FileDownload.Console.dll >> Log.txt
+```
+```
 dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 ```
 
@@ -44,8 +46,12 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 
 ### Unit Tests
 
-1. Use ReSharper from Visual Studios
-2. nunit-console {path-to-assembly}
+Options for running the unit tests:
+* Use ReSharper's Test Runner from within Visual Studio
+* Use the nunit console runner, using a command such as:
+```
+nunit-console {path-to-assembly}
+```
 
 ### Integration Tests
 
