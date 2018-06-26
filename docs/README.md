@@ -58,7 +58,7 @@ nunit-console {path-to-assembly}
 1. Use the FileServer.TestHarness for integration tests
 	* Several endpoints exist for testing various scenarios
 2. Update FileServer.TestHarness settings
-	* [FileServer Test Harness Settings](FileServer.TestHarness.SettingsConfiguration.md)
+	* [FileServer Test Harness ReadMe](FileServer.TestHarness.ReadMe.md#settings)
 
 ## Deployment
 
