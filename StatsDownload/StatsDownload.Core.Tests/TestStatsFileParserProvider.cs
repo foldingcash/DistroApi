@@ -40,6 +40,14 @@ msi_TW	15889476570	359312	31403
 anonymous	13937689581	64221589	0
 TheWasp	13660834951	734045	4294967295";
 
+        private const string GoodStatsFile2 = @"Tue Dec 26 10:20:01 PST 2017
+name	score	wu	team
+	25882218711	458785	224497
+war	20508731397	544139	37651
+msi_TW	15889476570	359312	31403
+anonymous	13937689581	64221589	0
+TheWasp	13660834951	734045	4294967295";
+
         private const string GoodStatsFileWithDaylightSavingsTimeZone = @"Tue Dec 26 10:20:01 PDT 2017
 name	newcredit	sum(total)	team
 	25882218711	458785	224497
@@ -108,6 +116,8 @@ TheWasp	13660834951	734045	70335";
         [TestCase(GoodStatsFileWithDaylightSavingsTimeZone, 2017, 12, 26, 17, 20, 1)]
         [TestCase("Tue Dec  5 10:20:01 PST 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 18, 20, 1)]
         [TestCase("Tue Dec  5 10:20:01 PDT 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 17, 20, 1)]
+        [TestCase("Tue Dec  5 10:20:01 CST 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 16, 20, 1)]
+        [TestCase("Tue Dec  5 10:20:01 CDT 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 15, 20, 1)]
         public void Parse_WhenInvoked_ReturnsDownloadDateTimeInUTC(string fileData, int year, int month, int day,
             int hour, int minute, int second)
         {
@@ -117,6 +127,7 @@ TheWasp	13660834951	734045	70335";
         }
 
         [TestCase(GoodStatsFile, 5)]
+        [TestCase(GoodStatsFile2, 5)]
         [TestCase(EmptyStatsFile, 0)]
         [TestCase(GoodStatsFileWithOnlyNewLine, 5)]
         [TestCase(GoodStatsFileWithDaylightSavingsTimeZone, 5)]
