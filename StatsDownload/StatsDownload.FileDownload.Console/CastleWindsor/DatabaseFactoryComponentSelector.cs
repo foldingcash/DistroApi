@@ -17,7 +17,7 @@
 
         protected override string GetComponentName(MethodInfo method, object[] arguments)
         {
-            var databaseType = settings.GetDatabaseType();
+            string databaseType = settings.GetDatabaseType();
             if (string.Equals(databaseType, "MySql", StringComparison.OrdinalIgnoreCase))
             {
                 return typeof (MySqlDatabaseConnectionProvider).FullName;

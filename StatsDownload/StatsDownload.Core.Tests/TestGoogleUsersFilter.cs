@@ -39,7 +39,7 @@
             var expected = new ParseResults(downloadDateTime, null, null);
             innerServiceMock.Parse("fileData").Returns(expected);
 
-            var actual = systemUnderTest.Parse("fileData");
+            ParseResults actual = systemUnderTest.Parse("fileData");
 
             Assert.That(actual, Is.EqualTo(expected));
         }

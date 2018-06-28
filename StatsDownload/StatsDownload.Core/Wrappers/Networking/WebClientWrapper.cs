@@ -18,14 +18,14 @@
 
         public Func<X509Certificate, X509Chain, SslPolicyErrors, bool> SslPolicyOverride
         {
-            get { return innerWebClient.SslPolicyOverride; }
-            set { innerWebClient.SslPolicyOverride = value; }
+            get => innerWebClient.SslPolicyOverride;
+            set => innerWebClient.SslPolicyOverride = value;
         }
 
         public TimeSpan Timeout
         {
-            get { return innerWebClient.Timeout; }
-            set { innerWebClient.Timeout = value; }
+            get => innerWebClient.Timeout;
+            set => innerWebClient.Timeout = value;
         }
 
         public void Dispose()

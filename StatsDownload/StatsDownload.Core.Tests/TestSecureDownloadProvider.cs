@@ -98,11 +98,11 @@
 
             systemUnderTest.DownloadFile(filePayload);
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
                 downloadServiceMock.DownloadFile(filePayload);
-            }));
+            });
         }
 
         [Test]
@@ -144,14 +144,14 @@
 
             systemUnderTest.DownloadFile(filePayload);
 
-            Received.InOrder((() =>
+            Received.InOrder(() =>
             {
                 secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
                 downloadServiceMock.DownloadFile(filePayload);
                 loggingServiceMock.LogException(webException);
                 secureFilePayloadServiceMock.DisableSecureFilePayload(filePayload);
                 downloadServiceMock.DownloadFile(filePayload);
-            }));
+            });
         }
 
         private IDownloadService NewSecureDownloadProvider(IDownloadService downloadService,

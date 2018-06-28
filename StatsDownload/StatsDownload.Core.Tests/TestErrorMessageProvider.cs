@@ -137,7 +137,7 @@
         [Test]
         public void GetErrorMessage_WhenUnknownRejectionReason_ReturnsEmptyString()
         {
-            var actual = systemUnderTest.GetErrorMessage(new FailedUserData(0, string.Empty,
+            string actual = systemUnderTest.GetErrorMessage(new FailedUserData(0, string.Empty,
                 (RejectionReason) Enum.Parse(typeof (RejectionReason), "-1")));
 
             Assert.IsEmpty(actual);

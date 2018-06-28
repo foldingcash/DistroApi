@@ -19,7 +19,7 @@
         [TestCase(null)]
         public void ParseFromAddress_WhenInvalidFromAddress_ThrowsEmailArgumentException(string unsafeFromAddress)
         {
-            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParseFromAddress(unsafeFromAddress)));
+            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParseFromAddress(unsafeFromAddress));
         }
 
         [TestCase("user@domain.com")]
@@ -35,7 +35,7 @@
         public void ParseFromDisplayName_WhenInvalidFromDisplayName_ThrowsEmailArgumentException(
             string unsafeFromDisplayName)
         {
-            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParseFromDisplayName(unsafeFromDisplayName)));
+            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParseFromDisplayName(unsafeFromDisplayName));
         }
 
         [TestCase("Display Name")]
@@ -50,7 +50,7 @@
         [TestCase(null)]
         public void ParsePassword_WhenInvalidPassword_ThrowsEmailArgumentException(string unsafePassword)
         {
-            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParsePassword(unsafePassword)));
+            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParsePassword(unsafePassword));
         }
 
         [TestCase("password")]
@@ -90,7 +90,7 @@
         [TestCase("")]
         public void ParseReceivers_WhenInvokedWithInvalidReceiver_ThrowsEmailArgumentException(string unsafeReceivers)
         {
-            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParseReceivers(unsafeReceivers)));
+            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParseReceivers(unsafeReceivers));
         }
 
         [TestCase("user@domain.tld")]
@@ -118,7 +118,7 @@
         [TestCase(null)]
         public void ParseSmtpHost_WhenInvalidSmtpHost_ThrowsEmailArgumentException(string unsafeSmtpHost)
         {
-            Assert.Throws<EmailArgumentException>((() => systemUnderTest.ParseSmtpHost(unsafeSmtpHost)));
+            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParseSmtpHost(unsafeSmtpHost));
         }
 
         [TestCase("google.com")]

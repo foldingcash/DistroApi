@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Common;
     using System.Linq;
     using Exceptions;
     using Implementations;
@@ -149,6 +150,18 @@
         }
 
         [Test]
+        public void UploadStatsFiles_WhenExceptionThrown_ResultInvalidStatFileData()
+        {
+            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(new Exception());
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
+            Assert.That(actual.UploadResults.ElementAt(0).FailedReason,
+                Is.EqualTo(FailedReason.UnexpectedException));
+        }
+
+        [Test]
         public void UploadStatsFiles_WhenExceptionThrown_ReturnsUnexpectedExceptionResult()
         {
             SetUpWhenExceptionThrown();
@@ -157,6 +170,19 @@
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenExceptionThrown_RollsBackTransaction()
+        {
+            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(new Exception());
+
+            var tranaction = Substitute.For<DbTransaction>();
+            statsUploadDatabaseServiceMock.StartStatsUpload(1).Returns(tranaction);
+
+            InvokeUploadStatsFiles();
+
+            statsUploadDatabaseServiceMock.Received().Rollback(tranaction);
         }
 
         [Test]
@@ -202,6 +228,19 @@
         }
 
         [Test]
+        public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_RollsBackTransaction()
+        {
+            SetUpWhenInvalidStatsFileExceptionThrown();
+
+            var tranaction = Substitute.For<DbTransaction>();
+            statsUploadDatabaseServiceMock.StartStatsUpload(1).Returns(tranaction);
+
+            InvokeUploadStatsFiles();
+
+            statsUploadDatabaseServiceMock.Received().Rollback(tranaction);
+        }
+
+        [Test]
         public void UploadStatsFiles_WhenInvalidStatsFileExceptionThrown_UpdatesStatsUploadToError()
         {
             SetUpWhenInvalidStatsFileExceptionThrown();
@@ -214,18 +253,23 @@
         [Test]
         public void UploadStatsFiles_WhenInvoked_AddsUsersData()
         {
+            var tranaction1 = Substitute.For<DbTransaction>();
+            statsUploadDatabaseServiceMock.StartStatsUpload(1).Returns(tranaction1);
+            var tranaction2 = Substitute.For<DbTransaction>();
+            statsUploadDatabaseServiceMock.StartStatsUpload(2).Returns(tranaction2);
+
             InvokeUploadStatsFiles();
 
             Received.InOrder(() =>
             {
-                statsUploadDatabaseServiceMock.AddUsers(1,
-                    Arg.Is<IEnumerable<UserData>>((datas => datas.Contains(user1) && datas.Contains(user2))),
+                statsUploadDatabaseServiceMock.AddUsers(tranaction1, 1,
+                    Arg.Is<IEnumerable<UserData>>(datas => datas.Contains(user1) && datas.Contains(user2)),
                     Arg.Is<IEnumerable<FailedUserData>>(
-                        (data => data.Contains(failedUser1) && data.Contains(failedUser2))));
-                statsUploadDatabaseServiceMock.AddUsers(2,
-                    Arg.Is<IEnumerable<UserData>>((datas => datas.Contains(user3) && datas.Contains(user4))),
+                        data => data.Contains(failedUser1) && data.Contains(failedUser2)));
+                statsUploadDatabaseServiceMock.AddUsers(tranaction2, 2,
+                    Arg.Is<IEnumerable<UserData>>(datas => datas.Contains(user3) && datas.Contains(user4)),
                     Arg.Is<IEnumerable<FailedUserData>>(
-                        (data => data.Contains(failedUser3) && data.Contains(failedUser4))));
+                        data => data.Contains(failedUser3) && data.Contains(failedUser4)));
             });
         }
 
@@ -264,16 +308,23 @@
         [Test]
         public void UploadStatsFiles_WhenInvoked_UpdatesTheDownloadFileState()
         {
+            var tranaction1 = Substitute.For<DbTransaction>();
+            statsUploadDatabaseServiceMock.StartStatsUpload(1).Returns(tranaction1);
+            var tranaction2 = Substitute.For<DbTransaction>();
+            statsUploadDatabaseServiceMock.StartStatsUpload(2).Returns(tranaction2);
+
             InvokeUploadStatsFiles();
 
             Received.InOrder(() =>
             {
-                statsUploadDatabaseServiceMock.StartStatsUpload(1);
                 statsUploadDatabaseServiceMock.GetFileData(1);
-                statsUploadDatabaseServiceMock.StatsUploadFinished(1, downloadDateTime);
-                statsUploadDatabaseServiceMock.StartStatsUpload(2);
+                statsUploadDatabaseServiceMock.StartStatsUpload(1);
+                statsUploadDatabaseServiceMock.StatsUploadFinished(tranaction1, 1, downloadDateTime);
+                statsUploadDatabaseServiceMock.Commit(tranaction1);
                 statsUploadDatabaseServiceMock.GetFileData(2);
-                statsUploadDatabaseServiceMock.StatsUploadFinished(2, downloadDateTime);
+                statsUploadDatabaseServiceMock.StartStatsUpload(2);
+                statsUploadDatabaseServiceMock.StatsUploadFinished(tranaction2, 2, downloadDateTime);
+                statsUploadDatabaseServiceMock.Commit(tranaction2);
             });
         }
 
