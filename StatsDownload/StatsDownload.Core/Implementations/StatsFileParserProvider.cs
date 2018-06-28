@@ -97,19 +97,20 @@
         private bool TryParseDownloadDateTime(string[] fileLines, out DateTime downloadDateTime)
         {
             string rawDateTime = GetDateTimeLine(fileLines);
-            bool parsed = DateTime.TryParseExact(rawDateTime, Constants.StatsFile.StandardDateTimeFormats,
-                CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault, out downloadDateTime);
-            if (parsed)
+
+            var parsed = false;
+            downloadDateTime = default(DateTime);
+
+            foreach ((string format, int hourOffset) in Constants.StatsFile.DateTimeFormatsAndOffset)
             {
-                downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, -8, 0, 0)).UtcDateTime;
-            }
-            else
-            {
-                parsed = DateTime.TryParseExact(rawDateTime, Constants.StatsFile.DaylightSavingsDateTimeFormats,
-                    CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault, out downloadDateTime);
+                parsed = DateTime.TryParseExact(rawDateTime, format, CultureInfo.CurrentCulture,
+                    DateTimeStyles.NoCurrentDateDefault, out downloadDateTime);
+
                 if (parsed)
                 {
-                    downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, -7, 0, 0)).UtcDateTime;
+                    downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, hourOffset, 0, 0))
+                        .UtcDateTime;
+                    break;
                 }
             }
 
