@@ -20,16 +20,16 @@
 
             systemUnderTest = new WhitespaceNameUsersFilter(innerServiceMock, settingsMock);
 
-            downloadDateTime = DateTime.Now;
+            downloadDateTime = DateTime.UtcNow;
         }
+
+        private DateTime downloadDateTime;
 
         private IStatsFileParserService innerServiceMock;
 
-        private IStatsFileParserService systemUnderTest;
-
         private IWhitespaceNameUsersFilterSettings settingsMock;
 
-        private DateTime downloadDateTime;
+        private IStatsFileParserService systemUnderTest;
 
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()
@@ -55,9 +55,9 @@
                                     new[]
                                     {
                                         new UserData(),
-                                        new UserData("", 0, 0, 0),
-                                        new UserData("\t", 0, 0, 0),
-                                        new UserData("name", 0, 0, 0)
+                                        new UserData(0, "", 0, 0, 0),
+                                        new UserData(0, "\t", 0, 0, 0),
+                                        new UserData(0, "name", 0, 0, 0)
                                     }, new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse("fileData");

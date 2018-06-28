@@ -20,16 +20,16 @@
 
             systemUnderTest = new ZeroPointUsersFilter(innerServiceMock, settingsMock);
 
-            downloadDateTime = DateTime.Now;
+            downloadDateTime = DateTime.UtcNow;
         }
 
-        private IZeroPointUsersFilterSettings settingsMock;
+        private DateTime downloadDateTime;
 
         private IStatsFileParserService innerServiceMock;
 
-        private IStatsFileParserService systemUnderTest;
+        private IZeroPointUsersFilterSettings settingsMock;
 
-        private DateTime downloadDateTime;
+        private IStatsFileParserService systemUnderTest;
 
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()
@@ -51,7 +51,7 @@
 
             innerServiceMock.Parse("fileData")
                             .Returns(new ParseResults(downloadDateTime,
-                                new[] { new UserData(), new UserData(null, 1, 0, 0) },
+                                new[] { new UserData(), new UserData(0, null, 1, 0, 0) },
                                 new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse("fileData");

@@ -18,7 +18,7 @@
 
         private const string StatsUploadFailBodyStart = "There was a problem uploading the file payload.";
 
-        public string GetErrorMessage(FailedReason failedReason, FilePayload filePayload)
+        public string GetErrorMessage(FailedReason failedReason, FilePayload filePayload, StatsDownloadService service)
         {
             if (failedReason == FailedReason.MinimumWaitTimeNotMet)
             {
@@ -28,15 +28,15 @@
                        + $" The file download service was run before the minimum wait time {minimumWaitTimeSpan} or the configured wait time {configuredWaitTime}. Configure to run the service less often or decrease your configured wait time and try again.";
             }
 
-            return GetErrorMessage(failedReason);
+            return GetErrorMessage(failedReason, service);
         }
 
-        public string GetErrorMessage(FailedReason failedReason)
+        public string GetErrorMessage(FailedReason failedReason, StatsDownloadService service)
         {
             if (failedReason == FailedReason.DataStoreUnavailable)
             {
-                return
-                    "There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.";
+                return GetBodyStart(service) +
+                       " There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.";
             }
 
             if (failedReason == FailedReason.RequiredSettingsInvalid)
@@ -63,15 +63,16 @@
                        + " The file failed validation; check the logs for more information. If this problem occurs again, then you should contact your technical advisor to review the logs and failed uploads.";
             }
 
-            if (failedReason == FailedReason.StatsUploadTimeout)
+            if (failedReason == FailedReason.UnexpectedDatabaseException)
             {
                 return StatsUploadFailBodyStart +
-                       " There was a timeout when uploading the stats and the file has been marked rejected. If a timeout occurs again, then you can try increasing the configurable command timeout.";
+                       " There was an unexpected database exception and the file has been marked rejected. If this problem occurs again, then you should contact your technical advisor to review the rejections and logs.";
             }
 
             if (failedReason == FailedReason.UnexpectedException)
             {
-                return FileDownloadFailBodyStart + " Check the log for more information.";
+                return GetBodyStart(service) +
+                       " There was an unexpected exception. Check the log for more information.";
             }
 
             return string.Empty;
@@ -80,7 +81,7 @@
         public string GetErrorMessage(IEnumerable<FailedUserData> failedUsersData)
         {
             return
-                $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count()} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings.";
+                $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count()} lines failed; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed users.";
         }
 
         public string GetErrorMessage(FailedUserData failedUserData)
@@ -94,10 +95,31 @@
                     $"There was a problem parsing a user from the stats file. The user '{data}' failed data parsing. You should contact your technical advisor to review the logs and rejected users.";
             }
 
+            if (rejectionReason == RejectionReason.FailedAddToDatabase)
+            {
+                return
+                    "There was a problem adding a user to the database. Contact your technical advisor to review the logs and rejected users.";
+            }
+
             if (rejectionReason == RejectionReason.UnexpectedFormat)
             {
                 return
                     $"There was a problem parsing a user from the stats file. The user '{data}' was in an unexpected format. You should contact your technical advisor to review the logs and rejected users.";
+            }
+
+            return string.Empty;
+        }
+
+        private string GetBodyStart(StatsDownloadService service)
+        {
+            if (service == StatsDownloadService.FileDownload)
+            {
+                return FileDownloadFailBodyStart;
+            }
+
+            if (service == StatsDownloadService.StatsUpload)
+            {
+                return StatsUploadFailBodyStart;
             }
 
             return string.Empty;

@@ -29,6 +29,10 @@
                 fileDownloadDatabaseServiceMock);
         }
 
+        private const string DecompressedDownloadFilePath = "test decompressed download file path";
+
+        private const string DownloadFilePath = "test download file path";
+
         private IFileCompressionService fileCompressionServiceMock;
 
         private IFileDownloadDatabaseService fileDownloadDatabaseServiceMock;
@@ -62,10 +66,6 @@
                 fileDownloadDatabaseServiceMock.FileDownloadFinished(filePayload);
             });
         }
-
-        private const string DecompressedDownloadFilePath = "test decompressed download file path";
-
-        private const string DownloadFilePath = "test download file path";
 
         private void InvokeUploadFile()
         {

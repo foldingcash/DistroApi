@@ -7,7 +7,7 @@
     {
         public DateTime DateTimeNow()
         {
-            return DateTime.Now;
+            return DateTime.UtcNow;
         }
     }
 }

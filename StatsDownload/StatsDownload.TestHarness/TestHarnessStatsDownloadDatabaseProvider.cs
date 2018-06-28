@@ -21,6 +21,11 @@
             this.settings = settings;
         }
 
+        public DbTransaction CreateTransaction()
+        {
+            return innerService.CreateTransaction();
+        }
+
         public void Rollback(DbTransaction transaction)
         {
             innerService.Rollback(transaction);
@@ -52,7 +57,7 @@
         }
 
         public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
-            IEnumerable<FailedUserData> failedUsers)
+            IList<FailedUserData> failedUsers)
         {
             innerService.AddUsers(transaction, downloadId, ModifiedUsers(usersData), failedUsers);
         }
@@ -67,9 +72,9 @@
             return innerService.GetFileData(downloadId);
         }
 
-        public DbTransaction StartStatsUpload(int downloadId)
+        public void StartStatsUpload(DbTransaction transaction, int downloadId, DateTime downloadDateTime)
         {
-            return innerService.StartStatsUpload(downloadId);
+            innerService.StartStatsUpload(transaction, downloadId, downloadDateTime);
         }
 
         public void StatsUploadError(StatsUploadResult statsUploadResult)
@@ -77,9 +82,9 @@
             innerService.StatsUploadError(statsUploadResult);
         }
 
-        public void StatsUploadFinished(DbTransaction transaction, int downloadId, DateTime downloadDateTime)
+        public void StatsUploadFinished(DbTransaction transaction, int downloadId)
         {
-            innerService.StatsUploadFinished(transaction, downloadId, downloadDateTime);
+            innerService.StatsUploadFinished(transaction, downloadId);
         }
 
         public void NewFileDownloadStarted(FilePayload filePayload)

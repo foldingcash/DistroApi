@@ -6,9 +6,9 @@
 
     public interface IErrorMessageService
     {
-        string GetErrorMessage(FailedReason failedReason, FilePayload filePayload);
+        string GetErrorMessage(FailedReason failedReason, FilePayload filePayload, StatsDownloadService service);
 
-        string GetErrorMessage(FailedReason failedReason);
+        string GetErrorMessage(FailedReason failedReason, StatsDownloadService service);
 
         string GetErrorMessage(IEnumerable<FailedUserData> failedUsersData);
 

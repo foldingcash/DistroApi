@@ -14,7 +14,7 @@
 
         private const string StatsUploadFailedSubject = "Stats Upload Failed";
 
-        private const string UserDataFailedParsingSubject = "User Data Failed Parsing";
+        private const string UserDataFailedParsingSubject = "User Data Failed";
 
         private readonly IEmailService emailService;
 
@@ -40,7 +40,8 @@
         {
             FailedReason failedReason = fileDownloadResult.FailedReason;
 
-            string errorMessage = errorMessageService.GetErrorMessage(failedReason, fileDownloadResult.FilePayload);
+            string errorMessage = errorMessageService.GetErrorMessage(failedReason, fileDownloadResult.FilePayload,
+                StatsDownloadService.FileDownload);
 
             SendEmail(FileDownloadFailedSubject, errorMessage);
         }
@@ -49,7 +50,7 @@
         {
             FailedReason failedReason = statsUploadResult.FailedReason;
 
-            string errorMessage = errorMessageService.GetErrorMessage(failedReason);
+            string errorMessage = errorMessageService.GetErrorMessage(failedReason, StatsDownloadService.StatsUpload);
 
             SendEmail(StatsUploadFailedSubject, errorMessage);
         }
@@ -58,7 +59,7 @@
         {
             FailedReason failedReason = statsUploadResults.FailedReason;
 
-            string errorMessage = errorMessageService.GetErrorMessage(failedReason);
+            string errorMessage = errorMessageService.GetErrorMessage(failedReason, StatsDownloadService.StatsUpload);
 
             SendEmail(StatsUploadFailedSubject, errorMessage);
         }

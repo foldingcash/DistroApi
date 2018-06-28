@@ -21,13 +21,39 @@
         private IErrorMessageService systemUnderTest;
 
         [Test]
-        public void GetErrorMessage_WhenDataStoreUnavailable_ReturnsDataStoreUnavailableMessage()
+        public void
+            GetErrorMessage_WhenDataStoreUnavailableDuringFileDownload_ReturnsFileDownloadDataStoreUnavailableMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.DataStoreUnavailable, new FilePayload());
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.DataStoreUnavailable, new FilePayload(),
+                StatsDownloadService.FileDownload);
 
             Assert.That(actual,
                 Is.EqualTo(
-                    "There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again."));
+                    "There was a problem downloading the file payload. There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again."));
+        }
+
+        [Test]
+        public void
+            GetErrorMessage_WhenDataStoreUnavailableDuringStatsUpload_ReturnsStatsUploadDataStoreUnavailableMessage()
+        {
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.DataStoreUnavailable, new FilePayload(),
+                StatsDownloadService.StatsUpload);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem uploading the file payload. There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again."));
+        }
+
+        [Test]
+        public void GetErrorMessage_WhenFailedAddToDatabase_ReturnsFailedAddToDatabaseMessage()
+        {
+            var failedUserData = new FailedUserData(0, RejectionReason.FailedAddToDatabase, new UserData());
+
+            string actual = systemUnderTest.GetErrorMessage(failedUserData);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem adding a user to the database. Contact your technical advisor to review the logs and rejected users."));
         }
 
         [Test]
@@ -49,14 +75,14 @@
 
             Assert.That(actual,
                 Is.EqualTo(
-                    $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed validation; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed user parsings."));
+                    $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed users."));
         }
 
         [Test]
         public void GetErrorMessage_WhenFileDownloadFailedDecompression_ReturnsFileDownloadFailedDecompressionMessage()
         {
             string actual = systemUnderTest.GetErrorMessage(FailedReason.FileDownloadFailedDecompression,
-                new FilePayload());
+                new FilePayload(), StatsDownloadService.FileDownload);
 
             Assert.That(actual,
                 Is.EqualTo(
@@ -66,7 +92,8 @@
         [Test]
         public void GetErrorMessage_WhenFileDownloadTimeout_ReturnsFileDownloadTimeoutMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.FileDownloadTimeout, new FilePayload());
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.FileDownloadTimeout, new FilePayload(),
+                StatsDownloadService.FileDownload);
 
             Assert.That(actual,
                 Is.EqualTo(
@@ -76,7 +103,8 @@
         [Test]
         public void GetErrorMessage_WhenInvalidStatsFile_ReturnsInvalidStatsFileMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.InvalidStatsFileUpload);
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.InvalidStatsFileUpload,
+                StatsDownloadService.StatsUpload);
 
             Assert.That(actual,
                 Is.EqualTo(
@@ -89,7 +117,7 @@
             var configuredWaitTime = new TimeSpan(1, 0, 0, 0);
 
             string actual = systemUnderTest.GetErrorMessage(FailedReason.MinimumWaitTimeNotMet,
-                new FilePayload { MinimumWaitTimeSpan = configuredWaitTime });
+                new FilePayload { MinimumWaitTimeSpan = configuredWaitTime }, StatsDownloadService.FileDownload);
 
             Assert.That(actual,
                 Is.EqualTo(
@@ -99,7 +127,8 @@
         [Test]
         public void GetErrorMessage_WhenNoFailedReason_ReturnsEmptyMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.None, new FilePayload());
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.None, new FilePayload(),
+                StatsDownloadService.FileDownload);
 
             Assert.That(actual, Is.Empty);
         }
@@ -107,7 +136,8 @@
         [Test]
         public void GetErrorMessage_WhenRequiredSettingsInvalid_ReturnsRequiredSettingsInvalidMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.RequiredSettingsInvalid, new FilePayload());
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.RequiredSettingsInvalid, new FilePayload(),
+                StatsDownloadService.FileDownload);
 
             Assert.That(actual,
                 Is.EqualTo(
@@ -117,20 +147,37 @@
         [Test]
         public void GetErrorMessage_WhenStatsUploadTimeout_ReturnsStatsUploadTimeoutMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.StatsUploadTimeout);
+            string actual =
+                systemUnderTest.GetErrorMessage(FailedReason.UnexpectedDatabaseException,
+                    StatsDownloadService.StatsUpload);
 
             Assert.That(actual,
                 Is.EqualTo(
-                    "There was a problem uploading the file payload. There was a timeout when uploading the stats and the file has been marked rejected. If a timeout occurs again, then you can try increasing the configurable command timeout."));
+                    "There was a problem uploading the file payload. There was an unexpected database exception and the file has been marked rejected. If this problem occurs again, then you should contact your technical advisor to review the rejections and logs."));
         }
 
         [Test]
-        public void GetErrorMessage_WhenUnexpectedException_ReturnsUnexpectedExceptionMessage()
+        public void
+            GetErrorMessage_WhenUnexpectedExceptionDuringFileDownload_ReturnsFileDownloadUnexpectedExceptionMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.UnexpectedException, new FilePayload());
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.UnexpectedException, new FilePayload(),
+                StatsDownloadService.FileDownload);
 
             Assert.That(actual,
-                Is.EqualTo("There was a problem downloading the file payload. Check the log for more information."));
+                Is.EqualTo(
+                    "There was a problem downloading the file payload. There was an unexpected exception. Check the log for more information."));
+        }
+
+        [Test]
+        public void
+            GetErrorMessage_WhenUnexpectedExceptionDuringStatsUpload_ReturnsStatsUploadUnexpectedExceptionMessage()
+        {
+            string actual =
+                systemUnderTest.GetErrorMessage(FailedReason.UnexpectedException, StatsDownloadService.StatsUpload);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem uploading the file payload. There was an unexpected exception. Check the log for more information."));
         }
 
         [Test]

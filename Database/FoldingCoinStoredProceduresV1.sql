@@ -307,206 +307,6 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.StartStatsUpload') IS NOT NULL
-	BEGIN
-		DROP PROCEDURE [FoldingCoin].[StartStatsUpload];
-	END
-GO
-
-CREATE PROCEDURE [FoldingCoin].[StartStatsUpload] @DownloadId INT
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRANSACTION
-			UPDATE [FoldingCoin].[Downloads]
-			SET StatusId = FoldingCoin.GetStatsUploadStartedStatusId()
-			WHERE DownloadId = @DownloadId;
-		COMMIT
-	END TRY
-	BEGIN CATCH
-		ROLLBACK;
-		THROW;
-	END CATCH
-END
-GO
-
------------------------------------------------------------------
-
-IF OBJECT_ID('FoldingCoin.AddUserData') IS NOT NULL
-BEGIN
-	DROP PROCEDURE [FoldingCoin].[AddUserData];
-END
-GO
-
-CREATE PROCEDURE [FoldingCoin].[AddUserData]
-	 @DownloadId INT
-	,@FAHUserName NVARCHAR(50)
-	,@TotalPoints BIGINT
-	,@WorkUnits BIGINT
-	,@TeamNumber BIGINT
-	,@FriendlyName NVARCHAR(50)
-	,@BitcoinAddress NVARCHAR(50)
-AS
-BEGIN
-	DECLARE @TeamId INT;
-	DECLARE @UserId INT;
-	DECLARE @TeamMemberId INT;
-	DECLARE @FAHDataId INT;
-	DECLARE @FAHDataRunId INT;
-
-	BEGIN TRY
-		BEGIN TRANSACTION
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Teams] WHERE TeamNumber = @TeamNumber) = 0
-				BEGIN
-					INSERT INTO [FoldingCoin].[Teams] (TeamNumber, TeamName)
-					VALUES (@TeamNumber, NULL);
-
-					SELECT TOP 1 @TeamId = @@Identity FROM [FoldingCoin].[Teams];
-				END
-			ELSE
-				BEGIN
-					SELECT @TeamId = TeamId FROM [FoldingCoin].[Teams] WHERE TeamNumber = @TeamNumber;
-				END
-		
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Users] WHERE UserName = @FAHUserName) = 0
-				BEGIN
-					INSERT INTO [FoldingCoin].[Users] (UserName, FriendlyName, BitcoinAddress)
-					VALUES (@FAHUserName, @FriendlyName, @BitcoinAddress);
-
-					SELECT TOP 1 @UserId = @@Identity FROM [FoldingCoin].[Users];
-
-					INSERT INTO [FoldingCoin].[TeamMembers] (TeamId, UserId)
-					VALUES (@TeamId, @UserId);
-			
-					SELECT TOP 1 @TeamMemberId = @@Identity FROM [FoldingCoin].[TeamMembers];
-
-					INSERT INTO [FoldingCoin].[FAHData] (UserName, TotalPoints, WorkUnits, TeamNumber)
-					VALUES (@FAHUserName, @TotalPoints, @WorkUnits, @TeamNumber);
-
-					SELECT TOP 1 @FAHDataId = @@Identity FROM [FoldingCoin].[FAHData];
-
-					INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
-					VALUES (@FAHDataId, @DownloadId, @TeamMemberId);
-
-					SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
-
-					INSERT INTO [FoldingCoin].[UserStats] (FAHDataRunId, Points, WorkUnits)
-					VALUES (@FAHDataRunId, @TotalPoints, @WorkUnits);
-				END
-			ELSE
-				BEGIN
-					SELECT @UserId = UserId FROM [FoldingCoin].[Users] WHERE UserName = @FAHUserName;
-
-					UPDATE [FoldingCoin].[Users]
-					SET FriendlyName = @FriendlyName, BitcoinAddress = @BitcoinAddress
-					WHERE (UserId = @UserId AND FriendlyName <> @FriendlyName) 
-					   OR (UserId = @UserId AND BitcoinAddress <> @BitcoinAddress)
-
-					IF (SELECT COUNT(1) FROM [FoldingCoin].[TeamMembers] WHERE TeamId = @TeamId AND UserId = @UserId) = 0
-						BEGIN
-							INSERT INTO [FoldingCoin].[TeamMembers] (TeamId, UserId)
-							VALUES (@TeamId, @UserId);
-		
-							SELECT TOP 1 @TeamMemberId = @@Identity FROM [FoldingCoin].[TeamMembers];
-
-							INSERT INTO [FoldingCoin].[FAHData] (UserName, TotalPoints, WorkUnits, TeamNumber)
-							VALUES (@FAHUserName, @TotalPoints, @WorkUnits, @TeamNumber);
-		
-							SELECT TOP 1 @FAHDataId = @@Identity FROM [FoldingCoin].[FAHData];
-
-							INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
-							VALUES (@FAHDataId, @DownloadId, @TeamMemberId);
-		
-							SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
-
-							INSERT INTO [FoldingCoin].[UserStats] (FAHDataRunId, Points, WorkUnits)
-							VALUES (@FAHDataRunId, @TotalPoints, @WorkUnits);
-						END
-					ELSE
-						BEGIN
-							SELECT @TeamMemberId = TeamMemberId FROM [FoldingCoin].[TeamMembers] WHERE TeamId = @TeamId AND UserId = @UserId;
-
-							UPDATE [FoldingCoin].[FAHData]
-							SET TotalPoints = @TotalPoints, WorkUnits = @WorkUnits
-							WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
-		
-							SELECT @FAHDataId = FAHDataId FROM [FoldingCoin].[FAHData] WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
-
-							INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
-							VALUES (@FAHDataId, @DownloadId, @TeamMemberId);
-		
-							SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
-
-							IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN [FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] WHERE TeamMemberId = @TeamMemberId AND Points >= @TotalPoints AND WorkUnits >= @WorkUnits) = 0
-								BEGIN
-									INSERT INTO [FoldingCoin].[UserStats] (FAHDataRunId, Points, WorkUnits)
-									VALUES (@FAHDataRunId, @TotalPoints, @WorkUnits);
-								END
-						END
-				END
-		COMMIT
-	END TRY
-	BEGIN CATCH
-		ROLLBACK;
-		THROW;
-	END CATCH
-END
-GO
-
------------------------------------------------------------------
-
-IF OBJECT_ID('FoldingCoin.AddUserRejection') IS NOT NULL
-	BEGIN
-		DROP PROCEDURE [FoldingCoin].[AddUserRejection];
-	END
-GO
-
-CREATE PROCEDURE [FoldingCoin].[AddUserRejection] 
-	 @DownloadId INT
-	,@LineNumber INT
-	,@RejectionReason NVARCHAR(500)
-AS
-BEGIN	
-	BEGIN TRY
-		BEGIN TRANSACTION
-			INSERT INTO [FoldingCoin].[Rejections] (DownloadId, LineNumber, Reason)
-			VALUES (@DownloadId, @LineNumber, @RejectionReason);
-		COMMIT
-	END TRY
-	BEGIN CATCH
-		ROLLBACK;
-		THROW;
-	END CATCH
-END
-GO
-
------------------------------------------------------------------
-
-IF OBJECT_ID('FoldingCoin.StatsUploadFinished') IS NOT NULL
-	BEGIN
-		DROP PROCEDURE [FoldingCoin].[StatsUploadFinished];
-	END
-GO
-
-CREATE PROCEDURE [FoldingCoin].[StatsUploadFinished] @DownloadId INT, @DownloadDateTime DATETIME
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRANSACTION
-			UPDATE [FoldingCoin].[Downloads]
-			SET StatusId = FoldingCoin.GetStatsUploadFinishedStatusId(), DownloadDateTime = @DownloadDateTime
-			WHERE DownloadId = @DownloadId
-		COMMIT
-	END TRY
-	BEGIN CATCH
-		ROLLBACK;
-		THROW;
-	END CATCH
-END
-GO
-
------------------------------------------------------------------
-
 IF OBJECT_ID('FoldingCoin.StatsUploadError') IS NOT NULL
 	BEGIN
 		DROP PROCEDURE [FoldingCoin].[StatsUploadError];
@@ -535,6 +335,210 @@ GO
 
 -----------------------------------------------------------------
 
+IF OBJECT_ID('FoldingCoin.StartStatsUpload') IS NOT NULL
+	BEGIN
+		DROP PROCEDURE [FoldingCoin].[StartStatsUpload];
+	END
+GO
+
+CREATE PROCEDURE [FoldingCoin].[StartStatsUpload] @DownloadId INT, @DownloadDateTime DATETIME
+AS
+BEGIN
+	BEGIN TRY
+		UPDATE [FoldingCoin].[Downloads]
+		SET StatusId = FoldingCoin.GetStatsUploadStartedStatusId(), DownloadDateTime = @DownloadDateTime
+		WHERE DownloadId = @DownloadId;
+	END TRY
+	BEGIN CATCH
+		THROW;
+	END CATCH
+END
+GO
+
+-----------------------------------------------------------------
+
+IF OBJECT_ID('FoldingCoin.AddUserRejection') IS NOT NULL
+	BEGIN
+		DROP PROCEDURE [FoldingCoin].[AddUserRejection];
+	END
+GO
+
+CREATE PROCEDURE [FoldingCoin].[AddUserRejection] 
+	 @DownloadId INT
+	,@LineNumber INT
+	,@RejectionReason NVARCHAR(500)
+AS
+BEGIN	
+	BEGIN TRY
+		INSERT INTO [FoldingCoin].[Rejections] (DownloadId, LineNumber, Reason)
+		VALUES (@DownloadId, @LineNumber, @RejectionReason);
+	END TRY
+	BEGIN CATCH
+		THROW;
+	END CATCH
+END
+GO
+
+-----------------------------------------------------------------
+
+IF OBJECT_ID('FoldingCoin.AddUserData') IS NOT NULL
+BEGIN
+	DROP PROCEDURE [FoldingCoin].[AddUserData];
+END
+GO
+
+CREATE PROCEDURE [FoldingCoin].[AddUserData]
+	 @DownloadId INT
+	,@LineNumber INT
+	,@FAHUserName NVARCHAR(50)
+	,@TotalPoints BIGINT
+	,@WorkUnits BIGINT
+	,@TeamNumber BIGINT
+	,@FriendlyName NVARCHAR(50)
+	,@BitcoinAddress NVARCHAR(50)
+AS
+BEGIN
+	DECLARE @TeamId INT;
+	DECLARE @UserId INT;
+	DECLARE @TeamMemberId INT;
+	DECLARE @FAHDataId INT;
+	DECLARE @FAHDataRunId INT;
+	DECLARE @DownloadDateTime DATETIME;
+	DECLARE @RejectionMessage NVARCHAR(500);
+
+	BEGIN TRY
+		IF (SELECT COUNT(1) FROM [FoldingCoin].[Teams] WHERE TeamNumber = @TeamNumber) = 0
+			BEGIN
+				INSERT INTO [FoldingCoin].[Teams] (TeamNumber, TeamName)
+				VALUES (@TeamNumber, NULL);
+
+				SELECT TOP 1 @TeamId = @@Identity FROM [FoldingCoin].[Teams];
+			END
+		ELSE
+			BEGIN
+				SELECT @TeamId = TeamId FROM [FoldingCoin].[Teams] WHERE TeamNumber = @TeamNumber;
+			END
+		
+		IF (SELECT COUNT(1) FROM [FoldingCoin].[Users] WHERE UserName = @FAHUserName) = 0
+			BEGIN
+				INSERT INTO [FoldingCoin].[Users] (UserName, FriendlyName, BitcoinAddress)
+				VALUES (@FAHUserName, @FriendlyName, @BitcoinAddress);
+
+				SELECT TOP 1 @UserId = @@Identity FROM [FoldingCoin].[Users];
+
+				INSERT INTO [FoldingCoin].[TeamMembers] (TeamId, UserId)
+				VALUES (@TeamId, @UserId);
+			
+				SELECT TOP 1 @TeamMemberId = @@Identity FROM [FoldingCoin].[TeamMembers];
+
+				INSERT INTO [FoldingCoin].[FAHData] (UserName, TotalPoints, WorkUnits, TeamNumber)
+				VALUES (@FAHUserName, @TotalPoints, @WorkUnits, @TeamNumber);
+
+				SELECT TOP 1 @FAHDataId = @@Identity FROM [FoldingCoin].[FAHData];
+
+				INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
+				VALUES (@FAHDataId, @DownloadId, @TeamMemberId);
+
+				SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
+
+				INSERT INTO [FoldingCoin].[UserStats] (FAHDataRunId, Points, WorkUnits)
+				VALUES (@FAHDataRunId, @TotalPoints, @WorkUnits);
+			END
+		ELSE
+			BEGIN
+				SELECT @UserId = UserId FROM [FoldingCoin].[Users] WHERE UserName = @FAHUserName;
+
+				UPDATE [FoldingCoin].[Users]
+				SET FriendlyName = @FriendlyName, BitcoinAddress = @BitcoinAddress
+				WHERE (UserId = @UserId AND FriendlyName <> @FriendlyName) 
+					OR (UserId = @UserId AND BitcoinAddress <> @BitcoinAddress)
+
+				IF (SELECT COUNT(1) FROM [FoldingCoin].[TeamMembers] WHERE TeamId = @TeamId AND UserId = @UserId) = 0
+					BEGIN
+						INSERT INTO [FoldingCoin].[TeamMembers] (TeamId, UserId)
+						VALUES (@TeamId, @UserId);
+		
+						SELECT TOP 1 @TeamMemberId = @@Identity FROM [FoldingCoin].[TeamMembers];
+
+						INSERT INTO [FoldingCoin].[FAHData] (UserName, TotalPoints, WorkUnits, TeamNumber)
+						VALUES (@FAHUserName, @TotalPoints, @WorkUnits, @TeamNumber);
+		
+						SELECT TOP 1 @FAHDataId = @@Identity FROM [FoldingCoin].[FAHData];
+
+						INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
+						VALUES (@FAHDataId, @DownloadId, @TeamMemberId);
+		
+						SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
+
+						INSERT INTO [FoldingCoin].[UserStats] (FAHDataRunId, Points, WorkUnits)
+						VALUES (@FAHDataRunId, @TotalPoints, @WorkUnits);
+					END
+				ELSE
+					BEGIN
+						SELECT @TeamMemberId = TeamMemberId FROM [FoldingCoin].[TeamMembers] WHERE TeamId = @TeamId AND UserId = @UserId;
+						SELECT @DownloadDateTime = DownloadDateTime FROM [FoldingCoin].[Downloads] WHERE DownloadId = @DownloadId;
+
+						IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
+								[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] INNER JOIN
+								[FoldingCoin].[Downloads] ON [FoldingCoin].[FAHDataRuns].[DownloadId] = [FoldingCoin].[Downloads].[DownloadId]
+								WHERE TeamMemberId = @TeamMemberId AND DownloadDateTime < @DownloadDateTime AND (Points > @TotalPoints OR WorkUnits > @WorkUnits)) >= 1
+							BEGIN
+								SET @RejectionMessage = 'The newer stats file contains a user with less points or work units than a previous file. If this problem continues, then contact your technical advisor and have them review the logs and database.';
+								EXEC [FoldingCoin].[AddUserRejection] @DownloadId, @LineNumber, @RejectionMessage;
+								RETURN(1);
+							END
+
+						IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
+								[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] 
+								WHERE TeamMemberId = @TeamMemberId AND Points >= @TotalPoints AND WorkUnits >= @WorkUnits) = 0
+							BEGIN
+								UPDATE [FoldingCoin].[FAHData] 
+								SET TotalPoints = @TotalPoints, WorkUnits = @WorkUnits
+								WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
+		
+								SELECT @FAHDataId = FAHDataId FROM [FoldingCoin].[FAHData] WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
+
+								INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
+								VALUES (@FAHDataId, @DownloadId, @TeamMemberId);
+		
+								SELECT TOP 1 @FAHDataRunId = @@Identity FROM [FoldingCoin].[FAHDataRuns];
+						
+								INSERT INTO [FoldingCoin].[UserStats] (FAHDataRunId, Points, WorkUnits)
+								VALUES (@FAHDataRunId, @TotalPoints, @WorkUnits);
+							END
+					END
+			END
+	END TRY
+	BEGIN CATCH
+		THROW;
+	END CATCH
+END
+GO
+
+-----------------------------------------------------------------
+
+IF OBJECT_ID('FoldingCoin.StatsUploadFinished') IS NOT NULL
+	BEGIN
+		DROP PROCEDURE [FoldingCoin].[StatsUploadFinished];
+	END
+GO
+
+CREATE PROCEDURE [FoldingCoin].[StatsUploadFinished] @DownloadId INT
+AS
+BEGIN
+	BEGIN TRY
+		UPDATE [FoldingCoin].[Downloads]
+		SET StatusId = FoldingCoin.GetStatsUploadFinishedStatusId()
+		WHERE DownloadId = @DownloadId;
+	END TRY
+	BEGIN CATCH
+		THROW;
+	END CATCH
+END
+GO
+
+-----------------------------------------------------------------
+
 IF OBJECT_ID('FoldingCoin.RebuildIndices') IS NOT NULL
 	BEGIN
 		DROP PROCEDURE [FoldingCoin].[RebuildIndices];
@@ -545,16 +549,37 @@ CREATE PROCEDURE [FoldingCoin].[RebuildIndices]
 AS
 BEGIN
 	BEGIN TRY
-		BEGIN TRANSACTION
-			IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.Users'), 
-				(SELECT index_id FROM sys.indexes WHERE name = 'IX_Users'), NULL, NULL)) > 50.0
-			BEGIN 
-				ALTER INDEX [IX_Users] ON [FoldingCoin].[Users] REBUILD; 
-			END
-		COMMIT
+		IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.Users'), 
+			(SELECT index_id FROM sys.indexes WHERE name = 'IX_Users'), NULL, NULL)) > 60.0
+		BEGIN 
+			ALTER INDEX [IX_Users] ON [FoldingCoin].[Users] REBUILD; 
+		END
+
+		IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.FAHDataRuns'), 
+			(SELECT index_id FROM sys.indexes WHERE name = 'IX_FAHDataRuns'), NULL, NULL)) > 60.0
+		BEGIN 
+			ALTER INDEX [IX_FAHDataRuns] ON [FoldingCoin].[FAHDataRuns] REBUILD; 
+		END
+
+		IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.TeamMembers'), 
+			(SELECT index_id FROM sys.indexes WHERE name = 'IX_TeamMembers'), NULL, NULL)) > 60.0
+		BEGIN 
+			ALTER INDEX [IX_TeamMembers] ON [FoldingCoin].[TeamMembers] REBUILD; 
+		END
+
+		IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.Teams'), 
+			(SELECT index_id FROM sys.indexes WHERE name = 'IX_Teams'), NULL, NULL)) > 60.0
+		BEGIN 
+			ALTER INDEX [IX_Teams] ON [FoldingCoin].[Teams] REBUILD; 
+		END
+
+		IF(SELECT avg_fragmentation_in_percent FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID('FoldingCoin.UserStats'), 
+			(SELECT index_id FROM sys.indexes WHERE name = 'IX_UserStats'), NULL, NULL)) > 60.0
+		BEGIN 
+			ALTER INDEX [IX_UserStats] ON [FoldingCoin].[UserStats] REBUILD; 
+		END
 	END TRY
 	BEGIN CATCH
-		ROLLBACK;
 		THROW;
 	END CATCH
 END

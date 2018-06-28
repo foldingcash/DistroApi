@@ -8,9 +8,11 @@
     public interface IStatsUploadDatabaseService
     {
         void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
-            IEnumerable<FailedUserData> failedUsers);
+            IList<FailedUserData> failedUsers);
 
         void Commit(DbTransaction transaction);
+
+        DbTransaction CreateTransaction();
 
         IEnumerable<int> GetDownloadsReadyForUpload();
 
@@ -20,10 +22,10 @@
 
         void Rollback(DbTransaction transaction);
 
-        DbTransaction StartStatsUpload(int downloadId);
+        void StartStatsUpload(DbTransaction transaction, int downloadId, DateTime downloadDateTime);
 
         void StatsUploadError(StatsUploadResult statsUploadResult);
 
-        void StatsUploadFinished(DbTransaction transaction, int downloadId, DateTime downloadDateTime);
+        void StatsUploadFinished(DbTransaction transaction, int downloadId);
     }
 }
