@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using Exceptions;
     using Interfaces;
     using Interfaces.DataTransfer;
@@ -53,7 +54,7 @@
         private bool IsInvalidStatsFile(string[] fileLines)
         {
             return fileLines == null || fileLines.Length < 2 || !ValidDateTime(fileLines)
-                   || fileLines[1] != Constants.StatsFile.ExpectedHeader;
+                   || !Constants.StatsFile.ExpectedHeaders.Contains(fileLines[1]);
         }
 
         private bool IsInvalidUserData(string[] unparsedUserData)
