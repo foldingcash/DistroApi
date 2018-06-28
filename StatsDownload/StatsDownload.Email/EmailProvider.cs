@@ -48,15 +48,17 @@
 
             try
             {
+                sb.AppendLine("Attempting to send email:");
+                sb.AppendLine($"Subject: {subject}");
+                sb.Append($"Body: {body}");
+
                 MailAddress fromAddress = NewMailAddress();
 
                 IEnumerable<string> receivers = ParseReceivers(settingsService.GetReceivers());
 
                 using (SmtpClient smtpClient = NewSmtpClient(sb, fromAddress))
                 {
-                    sb.AppendLine("Sending email:");
-                    sb.AppendLine($"Subject: {subject}");
-                    sb.AppendLine($"Body: {body}");
+                    sb.AppendLine();
                     sb.AppendLine();
 
                     foreach (string address in receivers)
