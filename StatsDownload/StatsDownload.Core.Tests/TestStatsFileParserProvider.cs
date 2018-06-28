@@ -108,6 +108,8 @@ TheWasp	13660834951	734045	70335";
         [TestCase(GoodStatsFileWithDaylightSavingsTimeZone, 2017, 12, 26, 17, 20, 1)]
         [TestCase("Tue Dec  5 10:20:01 PST 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 18, 20, 1)]
         [TestCase("Tue Dec  5 10:20:01 PDT 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 17, 20, 1)]
+        [TestCase("Tue Dec  5 10:20:01 CST 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 16, 20, 1)]
+        [TestCase("Tue Dec  5 10:20:01 CDT 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 15, 20, 1)]
         public void Parse_WhenInvoked_ReturnsDownloadDateTimeInUTC(string fileData, int year, int month, int day,
             int hour, int minute, int second)
         {
