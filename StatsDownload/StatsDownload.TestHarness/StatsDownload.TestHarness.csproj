@@ -117,6 +117,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Shared\StatsDownload.Extensions\StatsDownload.Extensions.csproj">
+      <Project>{7E3039C8-E356-4C20-93CC-2F395F82F11F}</Project>
+      <Name>StatsDownload.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj">
       <Project>{9385A349-8796-4473-A3E0-EDFE3AFEEDE9}</Project>
       <Name>StatsDownload.Core.Interfaces</Name>

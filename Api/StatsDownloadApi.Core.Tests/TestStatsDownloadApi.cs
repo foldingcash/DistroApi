@@ -11,14 +11,14 @@
             systemUnderTest = new StatsDownloadApi();
         }
 
-        private StatsDownloadApi systemUnderTest;
+        private IStatsDownloadApi systemUnderTest;
 
         [Test]
-        public void ReturnTrue_WhenInvoked_ReturnsTrue()
+        public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
         {
-            var actual = systemUnderTest.ReturnTrue();
+            var actual = systemUnderTest.GetDistro();
 
-            Assert.That(actual, Is.True);
+            Assert.That(actual.Success, Is.True);
         }
     }
 }

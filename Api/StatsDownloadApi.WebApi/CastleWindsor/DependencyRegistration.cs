@@ -1,9 +1,9 @@
-﻿namespace StatsDownload.StatsUpload.Console.CastleWindsor
+﻿namespace StatsDownloadApi.WebApi.CastleWindsor
 {
     using System.Reflection;
     using Castle.MicroKernel.Registration;
     using Castle.Windsor.Installer;
-    using Extensions;
+    using StatsDownload.Extensions;
 
     internal static class DependencyRegistration
     {

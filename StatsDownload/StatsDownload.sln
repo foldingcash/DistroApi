@@ -7,25 +7,27 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.TestHarness",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.FileServer.TestHarness", "StatsDownload.FileServer.TestHarness\StatsDownload.FileServer.TestHarness.csproj", "{F8F536D7-CFD1-4F46-890B-F53AEF11216A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Core.Interfaces", "StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj", "{9385A349-8796-4473-A3E0-EDFE3AFEEDE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Core.Interfaces", "StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj", "{9385A349-8796-4473-A3E0-EDFE3AFEEDE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.FileDownload.Console", "StatsDownload.FileDownload.Console\StatsDownload.FileDownload.Console.csproj", "{DE963BFD-054A-49EA-A389-F3FF5843B122}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.FileDownload.Console", "StatsDownload.FileDownload.Console\StatsDownload.FileDownload.Console.csproj", "{DE963BFD-054A-49EA-A389-F3FF5843B122}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.StatsUpload.Console", "StatsDownload.StatsUpload.Console\StatsDownload.StatsUpload.Console.csproj", "{D35DB992-D67B-4312-96D2-1BA32ED0A96F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.StatsUpload.Console", "StatsDownload.StatsUpload.Console\StatsDownload.StatsUpload.Console.csproj", "{D35DB992-D67B-4312-96D2-1BA32ED0A96F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Core", "StatsDownload.Core\StatsDownload.Core.csproj", "{9C2C5AA3-9E2C-4A2F-97E3-081633B83F6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Core", "StatsDownload.Core\StatsDownload.Core.csproj", "{9C2C5AA3-9E2C-4A2F-97E3-081633B83F6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.SharpZipLib", "StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj", "{C37684C9-D044-4D42-B10F-3D670A95293E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.SharpZipLib", "StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj", "{C37684C9-D044-4D42-B10F-3D670A95293E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Email", "StatsDownload.Email\StatsDownload.Email.csproj", "{8098BF8B-6DE5-4F35-8C5B-F0296FDE5CD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Email", "StatsDownload.Email\StatsDownload.Email.csproj", "{8098BF8B-6DE5-4F35-8C5B-F0296FDE5CD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Logging", "StatsDownload.Logging\StatsDownload.Logging.csproj", "{C1736684-1DED-4D9B-848E-CD857E9478F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Logging", "StatsDownload.Logging\StatsDownload.Logging.csproj", "{C1736684-1DED-4D9B-848E-CD857E9478F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Core.Tests", "StatsDownload.Core.Tests\StatsDownload.Core.Tests.csproj", "{7B944D10-A498-4F26-98D3-1228F7D25043}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Core.Tests", "StatsDownload.Core.Tests\StatsDownload.Core.Tests.csproj", "{7B944D10-A498-4F26-98D3-1228F7D25043}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Email.Tests", "StatsDownload.Email.Tests\StatsDownload.Email.Tests.csproj", "{DA2D20B6-2A19-4CDD-8CF8-61C44F2BE62A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Email.Tests", "StatsDownload.Email.Tests\StatsDownload.Email.Tests.csproj", "{DA2D20B6-2A19-4CDD-8CF8-61C44F2BE62A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Logging.Tests", "StatsDownload.Logging.Tests\StatsDownload.Logging.Tests.csproj", "{0ABFAC12-F9D3-4906-98F6-587E6322D8B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Logging.Tests", "StatsDownload.Logging.Tests\StatsDownload.Logging.Tests.csproj", "{0ABFAC12-F9D3-4906-98F6-587E6322D8B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Extensions", "..\Shared\StatsDownload.Extensions\StatsDownload.Extensions.csproj", "{7E3039C8-E356-4C20-93CC-2F395F82F11F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{0ABFAC12-F9D3-4906-98F6-587E6322D8B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0ABFAC12-F9D3-4906-98F6-587E6322D8B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0ABFAC12-F9D3-4906-98F6-587E6322D8B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E3039C8-E356-4C20-93CC-2F395F82F11F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E3039C8-E356-4C20-93CC-2F395F82F11F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E3039C8-E356-4C20-93CC-2F395F82F11F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E3039C8-E356-4C20-93CC-2F395F82F11F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

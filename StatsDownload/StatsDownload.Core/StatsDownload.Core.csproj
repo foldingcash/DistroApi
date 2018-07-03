@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Shared\StatsDownload.Extensions\StatsDownload.Extensions.csproj" />
     <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
     <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj" />
   </ItemGroup>
