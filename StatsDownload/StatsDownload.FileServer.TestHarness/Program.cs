@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.FileServer.TestHarness
 {
     using System;
+    using CastleWindsor;
 
     public class Program
     {

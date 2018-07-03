@@ -1,10 +1,10 @@
 ﻿namespace StatsDownloadApi.Core
 {
-    public class StatsDownloadApi
+    public class StatsDownloadApi : IStatsDownloadApi
     {
-        public bool ReturnTrue()
+        public DistroResponse GetDistro()
         {
-            return true;
+            return new DistroResponse();
         }
     }
 }
