@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-This is a C# implementation for downloading FAH statistics on a scheduled basis, parsing and loading the statistics into a database, and parsing metadata out of a FAH user's name.
+This is a C# implementation for downloading FAH statistics on a scheduled basis, parsing and loading the statistics into a database, and parsing metadata out of a FAH user's name. An API is used to expose the data in the database.
 
 ## Prerequisites
 
@@ -30,6 +30,13 @@ dotnet StatsDownload.FileDownload.Console.dll >> Log.txt
 ```
 dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 ```
+
+### Solutions
+
+1. StatsDownload
+	* The downloader interfaces with the StatsDownload database to upload the database with user statistics
+2. StatsDownloadApi
+	* The API interfaces with the StatsDownload database to return the data within based on query parameters
 
 ### Applications
 
