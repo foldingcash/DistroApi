@@ -16,17 +16,6 @@ This is a C# implementation for downloading FAH statistics on a scheduled basis,
 2. [StatsDownloadApi](StatsDownloadApi.ReadMe.md)
 	* The API interfaces with the StatsDownload database to return the data within based on query parameters
 
-## Running the tests
-
-### Unit Tests
-
-Options for running the unit tests:
-* Use ReSharper's Test Runner from within Visual Studio
-* Use the nunit console runner, using a command such as:
-```
-nunit-console {path-to-assembly}
-```
-
 ## Built With
 
 * Visual Studio 2017

@@ -29,6 +29,17 @@
 1. WebApi
 	* This is an API meant to provide services to various web applications
 
+## Running the tests
+
+### Unit Tests
+
+Options for running the unit tests:
+* Use ReSharper's Test Runner from within Visual Studio
+* Use the nunit console runner, using a command such as:
+```
+nunit-console {path-to-assembly}
+```
+	
 ### Integration Tests
 
 1. Integration tests

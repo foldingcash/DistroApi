@@ -41,6 +41,17 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 4. StatsDownload.StatsUpload.Console
 	* This is a console application meant to be executed via command line or task scheduler and will execute only the stats upload portion of the stats download process
 	
+## Running the tests
+
+### Unit Tests
+
+Options for running the unit tests:
+* Use ReSharper's Test Runner from within Visual Studio
+* Use the nunit console runner, using a command such as:
+```
+nunit-console {path-to-assembly}
+```
+	
 ### Integration Tests
 
 1. Use the FileServer.TestHarness for integration tests
