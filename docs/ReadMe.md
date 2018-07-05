@@ -9,7 +9,7 @@ This is a C# implementation for downloading FAH statistics on a scheduled basis,
 * .NET Core 2.0
 * Microsoft SQL Server 2017
 
-### Solutions
+## Solutions
 
 1. [StatsDownload](StatsDownload.ReadMe.md)
 	* The downloader interfaces with the StatsDownload database to upload the database with user statistics
