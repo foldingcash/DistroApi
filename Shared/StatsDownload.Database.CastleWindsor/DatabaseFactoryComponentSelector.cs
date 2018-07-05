@@ -1,10 +1,10 @@
-﻿namespace StatsDownload.StatsUpload.Console.CastleWindsor
+﻿namespace StatsDownload.Database.CastleWindsor
 {
     using System;
     using System.Reflection;
     using Castle.Facilities.TypedFactory;
     using Core.Interfaces;
-    using Core.Wrappers;
+    using Wrappers;
 
     public class DatabaseFactoryComponentSelector : DefaultTypedFactoryComponentSelector
     {

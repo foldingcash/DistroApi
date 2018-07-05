@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Wrappers.Networking
+﻿namespace StatsDownload.Wrappers.Networking
 {
     using System;
     using System.Net;

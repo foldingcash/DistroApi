@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Implementations
+﻿namespace StatsDownload.Database
 {
     using System;
     using System.Collections.Generic;
@@ -6,10 +6,10 @@
     using System.Data.Common;
     using System.Linq;
     using System.Runtime.CompilerServices;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
-    using Interfaces.Logging;
+    using Core.Interfaces;
+    using Core.Interfaces.DataTransfer;
+    using Core.Interfaces.Enums;
+    using Core.Interfaces.Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
     {

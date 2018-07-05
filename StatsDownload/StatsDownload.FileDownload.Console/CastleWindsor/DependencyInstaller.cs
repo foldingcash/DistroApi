@@ -8,11 +8,14 @@
     using Core.Interfaces;
     using Core.Interfaces.Logging;
     using Core.Interfaces.Networking;
-    using Core.Wrappers;
-    using Core.Wrappers.Networking;
+    using Database;
+    using Database.CastleWindsor;
+    using Database.Wrappers;
     using Email;
     using Logging;
     using SharpZipLib;
+    using Wrappers;
+    using Wrappers.Networking;
 
     public class DependencyInstaller : IWindsorInstaller
     {

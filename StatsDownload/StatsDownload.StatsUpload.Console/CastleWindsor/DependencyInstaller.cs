@@ -7,10 +7,13 @@
     using Core.Implementations;
     using Core.Interfaces;
     using Core.Interfaces.Logging;
-    using Core.Wrappers;
+    using Database;
+    using Database.CastleWindsor;
+    using Database.Wrappers;
     using Email;
     using Logging;
     using SharpZipLib;
+    using Wrappers;
 
     public class DependencyInstaller : IWindsorInstaller
     {

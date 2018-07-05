@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\StatsDownload\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
-    <ProjectReference Include="..\StatsDownloadApi.Core\StatsDownloadApi.Core.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Database\StatsDownload.Database.csproj" />
+    <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

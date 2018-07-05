@@ -1,15 +1,14 @@
-﻿namespace StatsDownload.Core.Tests
+﻿namespace StatsDownload.Database.Tests
 {
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
     using System.Linq;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
-    using Interfaces.Logging;
+    using Core.Interfaces;
+    using Core.Interfaces.DataTransfer;
+    using Core.Interfaces.Enums;
+    using Core.Interfaces.Logging;
     using NSubstitute;
     using NSubstitute.ClearExtensions;
     using NUnit.Framework;

@@ -1,12 +1,10 @@
-﻿namespace StatsDownload.Core.Tests
+﻿namespace StatsDownload.Logging.Tests
 {
     using System;
     using System.Collections.Generic;
-    using DataTransfer;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+    using Core.Interfaces;
+    using Core.Interfaces.DataTransfer;
+    using Core.Interfaces.Enums;
     using NUnit.Framework;
 
     [TestFixture]

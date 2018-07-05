@@ -1,9 +1,9 @@
-﻿namespace StatsDownload.Core.Wrappers.Networking
+﻿namespace StatsDownload.Wrappers.Networking
 {
     using System;
     using System.Net.Security;
     using System.Security.Cryptography.X509Certificates;
-    using Interfaces.Networking;
+    using Core.Interfaces.Networking;
 
     public class WebClientWrapper : IWebClient
     {

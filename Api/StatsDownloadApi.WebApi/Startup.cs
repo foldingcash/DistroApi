@@ -1,5 +1,7 @@
 ﻿namespace StatsDownloadApi.WebApi
 {
+    using Castle.MicroKernel.Registration;
+    using CastleWindsor;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -29,6 +31,7 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            WindsorContainer.Instance.Register(Component.For<IConfiguration>().Instance(Configuration));
         }
     }
 }
