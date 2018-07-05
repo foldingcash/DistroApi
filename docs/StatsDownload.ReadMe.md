@@ -1,15 +1,17 @@
-# FLDCDotNet
+# Stats Downloader
 
 ## Getting Started
 
-This is a C# implementation for downloading FAH statistics on a scheduled basis, parsing and loading the statistics into a database, and parsing metadata out of a FAH user's name. An API is used to expose the data in the database.
+The stats downloader is used to download the stats data on a scheduled basis.
 
 ## Prerequisites
 
 * .NET Core 2.0
 * Microsoft SQL Server 2017
 
-## Installing on Windows
+## Installation
+
+### Installing on Windows
 
 1. Place FileDownload and StatsUpload console applications in the desired directory
 2. [Update applications configuration file](SettingsConfiguration.md)
@@ -31,24 +33,25 @@ dotnet StatsDownload.FileDownload.Console.dll >> Log.txt
 dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 ```
 
-### Solutions
+### Settings
 
-1. StatsDownload
-	* The downloader interfaces with the StatsDownload database to upload the database with user statistics
-2. StatsDownloadApi
-	* The API interfaces with the StatsDownload database to return the data within based on query parameters
+1. [Database Settings](SettingsConfiguration.md#stats-download-database-connection-settings)
+2. [Email Settings](SettingsConfiguration.md#stats-download-email-settings)
+3. [Download Settings](SettingsConfiguration.md#file-download-settings)
+4. [Filter Settings](SettingsConfiguration.md#stats-upload-filter-settings)
+5. [Test Harness Settings](SettingsConfiguration.md#test-harness-only-settings)
 
 ### Applications
 
 1. StatsDownload.TestHarness
 	* This is a windows forms application meant to provide a GUI interface to the file download and stats upload processes for rapid testing
-2. StatsDownload.FileServer.TestHarness
+2. [StatsDownload.FileServer.TestHarness](FileServer.TestHarness.ReadMe.md)
 	* This is a WCF application meant to provide a test server for the file download i.e. for mocking Stanford's server
 3. StatsDownload.FileDownload.Console
 	* This is a console application meant to be executed via command line or task scheduler and will execute only the file download portion of the stats download process
 4. StatsDownload.StatsUpload.Console
 	* This is a console application meant to be executed via command line or task scheduler and will execute only the stats upload portion of the stats download process
-
+	
 ## Running the tests
 
 ### Unit Tests
@@ -59,14 +62,14 @@ Options for running the unit tests:
 ```
 nunit-console {path-to-assembly}
 ```
-
+	
 ### Integration Tests
 
 1. Use the FileServer.TestHarness for integration tests
 	* Several endpoints exist for testing various scenarios
 2. Update FileServer.TestHarness settings
 	* [FileServer Test Harness ReadMe](FileServer.TestHarness.ReadMe.md#settings)
-
+	
 ## Deployment
 
 ### App Hardware Requirements
@@ -80,17 +83,3 @@ nunit-console {path-to-assembly}
 * SSD 120GB+
 * i5 Intel / Ryzen 5 AMD
 * 16 GB
-
-## Built With
-
-* Visual Studio 2017
-* Microsoft SQL Server 2017
-* ReSharper
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details
-
-## Acknowledgments
-
-* SharpZipLib
