@@ -15,8 +15,7 @@
         public int? GetCommandTimeout()
         {
             string commandTimeoutString = GetAppSetting("DbCommandTimeout");
-            int commandTimeoutValue;
-            if (int.TryParse(commandTimeoutString, out commandTimeoutValue))
+            if (int.TryParse(commandTimeoutString, out int commandTimeoutValue))
                 return commandTimeoutValue;
             return null;
         }
