@@ -1,5 +1,6 @@
 ﻿namespace StatsDownloadApi.Core
 {
+    using System.Collections.Generic;
     using StatsDownload.Core.Interfaces;
 
     public class StatsDownloadApi : IStatsDownloadApi
@@ -13,12 +14,20 @@
 
         public DistroResponse GetDistro()
         {
+            IList<DistroError> errors = new List<DistroError>();
+
             if (!databaseService.IsAvailable())
             {
-                return new DistroResponse(false);
+                AddDatabaseUnavailableError(errors);
+                return new DistroResponse(errors);
             }
 
-            return new DistroResponse(true);
+            return new DistroResponse();
+        }
+
+        private void AddDatabaseUnavailableError(IList<DistroError> errors)
+        {
+            errors.Add(Constants.DistroErrors.DatabaseUnavailable);
         }
     }
 }

@@ -28,6 +28,12 @@
             var actual = systemUnderTest.GetDistro();
 
             Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.DatabaseUnavailable));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.DatabaseUnavailable));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    "The database is unavailable. Try again in a short period of time. If the problem continues, then contact the technical team."));
         }
 
         [Test]
@@ -36,6 +42,9 @@
             var actual = systemUnderTest.GetDistro();
 
             Assert.That(actual.Success, Is.True);
+            Assert.That(actual.Errors, Is.Null);
+            Assert.That(actual.ErrorCount, Is.Zero);
+            Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.None));
         }
     }
 }
