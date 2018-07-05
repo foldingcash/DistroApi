@@ -1,6 +1,13 @@
 # File Server Test Harness
 
+## Getting Started
+
 The File Server Test Harness allows for mocking a file server for use with the Stats Download. It provides URIs for testing different permutations.
+
+## Prerequisites
+
+* .NET Framework
+* Microsoft SQL Server 2017
 
 ## Installing
 

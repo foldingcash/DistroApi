@@ -4,11 +4,6 @@
 
 This is a C# implementation for downloading FAH statistics on a scheduled basis, parsing and loading the statistics into a database, and parsing metadata out of a FAH user's name. An API is used to expose the data in the database.
 
-## Prerequisites
-
-* .NET Core 2.0
-* Microsoft SQL Server 2017
-
 ## Solutions
 
 1. [StatsDownload](StatsDownload.ReadMe.md)

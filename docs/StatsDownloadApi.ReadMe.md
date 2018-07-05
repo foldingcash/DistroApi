@@ -1,9 +1,29 @@
 # Stats API
 
+## Getting Started
+
+The stats API is used to expose the stats data in the stats database.
+
+## Prerequisites
+
+* .NET Core 2.0
+* Microsoft SQL Server 2017
+
 ## Installing on Windows
 
 1. Step 1
-	
+
+### Settings
+
+1. [Database Settings](SettingsConfiguration.md#stats-download-database-connection-settings)	
+
+### Applications
+
+1. WebApi
+	* This is an API meant to provide services to various web applications
+
+## Using the API
+
 #### Error Codes
 
 | Error Code Range | Error Reason            |
@@ -19,16 +39,7 @@
 |:----------:|------------|
 |    0000    | No errors were encountered. |
 |    8000    | Database is unavailable. Wait a short period of time before trying to connect again. If the problem continues, then contact the technical advisor. |
-
-### Settings
-
-1. [Database Settings](SettingsConfiguration.md#stats-download-database-connection-settings)	
-
-### Applications
-
-1. WebApi
-	* This is an API meant to provide services to various web applications
-
+	
 ## Running the tests
 
 ### Unit Tests
