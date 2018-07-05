@@ -2,6 +2,11 @@
 {
     public class DistroResponse
     {
-        public bool Success = true;
+        public DistroResponse(bool success)
+        {
+            Success = success;
+        }
+
+        public bool Success { get; }
     }
 }

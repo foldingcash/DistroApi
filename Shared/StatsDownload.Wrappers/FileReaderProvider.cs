@@ -1,9 +1,9 @@
-﻿namespace StatsDownload.Core.Wrappers
+﻿namespace StatsDownload.Wrappers
 {
     using System.IO;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+    using Core.Interfaces;
+    using Core.Interfaces.DataTransfer;
+    using Core.Interfaces.Logging;
 
     public class FileReaderProvider : IFileReaderService
     {

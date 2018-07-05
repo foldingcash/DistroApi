@@ -1,7 +1,7 @@
-﻿namespace StatsDownload.Core.Wrappers
+﻿namespace StatsDownload.Wrappers
 {
     using System;
-    using Interfaces;
+    using Core.Interfaces;
 
     public class DateTimeProvider : IDateTimeService
     {

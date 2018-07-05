@@ -1,7 +1,6 @@
 ﻿namespace StatsDownload.Core.Implementations
 {
     using System;
-    using DataTransfer;
     using Interfaces;
     using Interfaces.DataTransfer;
 
