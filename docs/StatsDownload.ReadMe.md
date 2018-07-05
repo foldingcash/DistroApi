@@ -1,4 +1,4 @@
-# StatsDownload
+# Stats Downloader
 
 ## Installing on Windows
 

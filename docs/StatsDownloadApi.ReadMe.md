@@ -1,4 +1,4 @@
-# Stats API
+# API
 
 ## Installing on Windows
 
