@@ -9,7 +9,9 @@ The stats downloader is used to download the stats data on a scheduled basis.
 * .NET Core 2.0
 * Microsoft SQL Server 2017
 
-## Installing on Windows
+## Installation
+
+### Installing on Windows
 
 1. Place FileDownload and StatsUpload console applications in the desired directory
 2. [Update applications configuration file](SettingsConfiguration.md)

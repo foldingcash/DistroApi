@@ -9,7 +9,9 @@ The stats API is used to expose the stats data in the stats database.
 * .NET Core 2.0
 * Microsoft SQL Server 2017
 
-## Installing on Windows
+## Installation
+
+### Installing on Windows
 
 1. Step 1
 
