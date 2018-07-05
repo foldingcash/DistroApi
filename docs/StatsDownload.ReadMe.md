@@ -34,7 +34,7 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 
 1. StatsDownload.TestHarness
 	* This is a windows forms application meant to provide a GUI interface to the file download and stats upload processes for rapid testing
-2. StatsDownload.FileServer.TestHarness
+2. [StatsDownload.FileServer.TestHarness](FileServer.TestHarness.ReadMe.md)
 	* This is a WCF application meant to provide a test server for the file download i.e. for mocking Stanford's server
 3. StatsDownload.FileDownload.Console
 	* This is a console application meant to be executed via command line or task scheduler and will execute only the file download portion of the stats download process

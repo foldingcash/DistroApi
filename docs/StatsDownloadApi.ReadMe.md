@@ -1,13 +1,8 @@
-# API
+# Stats API
 
 ## Installing on Windows
 
 1. Step 1
-
-### Applications
-
-1. WebApi
-	* This is an API meant to provide services to various web applications
 	
 #### Error Codes
 
@@ -28,6 +23,11 @@
 ### Settings
 
 1. [Database Settings](SettingsConfiguration.md#stats-download-database-connection-settings)	
+
+### Applications
+
+1. WebApi
+	* This is an API meant to provide services to various web applications
 
 ### Integration Tests
 
