@@ -25,7 +25,7 @@
         {
             databaseServiceMock.IsAvailable().Returns(false);
 
-            var actual = systemUnderTest.GetDistro();
+            DistroResponse actual = systemUnderTest.GetDistro();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -41,7 +41,7 @@
         [Test]
         public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
         {
-            var actual = systemUnderTest.GetDistro();
+            DistroResponse actual = systemUnderTest.GetDistro();
 
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.Errors, Is.Null);

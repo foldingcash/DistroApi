@@ -15,7 +15,7 @@
             try
             {
                 api = WindsorContainer.Instance.Resolve<IStatsDownloadApi>();
-                var response = api.GetDistro();
+                DistroResponse response = api.GetDistro();
                 return response;
             }
             finally
