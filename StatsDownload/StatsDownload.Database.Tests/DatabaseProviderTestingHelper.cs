@@ -6,7 +6,7 @@
     using NSubstitute;
     using NSubstitute.Core;
 
-    internal static class TestDatabaseProviderHelper
+    internal static class DatabaseProviderTestingHelper
     {
         internal static void SetUpDatabaseConnectionServiceReturns(
             IDatabaseConnectionService databaseConnectionServiceMock)

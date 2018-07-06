@@ -31,7 +31,7 @@
             systemUnderTest = NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
                 databaseConnectionServiceFactoryMock, loggingServiceMock, errorMessageServiceMock);
 
-            TestDatabaseProviderHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
+            DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
             dbDataReaderMock = Substitute.For<DbDataReader>();
             dbDataReaderMock.Read().Returns(true, true, true, false);

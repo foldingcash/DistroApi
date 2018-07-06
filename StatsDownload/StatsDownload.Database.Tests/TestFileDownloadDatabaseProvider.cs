@@ -36,7 +36,7 @@
             systemUnderTest = NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock,
                 loggingServiceMock);
 
-            TestDatabaseProviderHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
+            DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
             filePayload = new FilePayload
             {
