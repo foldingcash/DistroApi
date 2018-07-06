@@ -8,27 +8,23 @@
     using Core.Interfaces;
     using Core.Interfaces.DataTransfer;
 
-    public class TestHarnessStatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
+    public class TestHarnessStatsUploadDatabaseProvider : IStatsUploadDatabaseService
     {
-        private readonly IStatsDownloadDatabaseService innerService;
+        private readonly IStatsUploadDatabaseService innerService;
 
         private readonly ITestHarnessStatsDownloadSettings settings;
 
-        public TestHarnessStatsDownloadDatabaseProvider(IStatsDownloadDatabaseService innerService,
+        public TestHarnessStatsUploadDatabaseProvider(IStatsUploadDatabaseService innerService,
             ITestHarnessStatsDownloadSettings settings)
         {
             this.innerService = innerService;
             this.settings = settings;
         }
 
-        public DbTransaction CreateTransaction()
+        public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
+            IList<FailedUserData> failedUsers)
         {
-            return innerService.CreateTransaction();
-        }
-
-        public void Rollback(DbTransaction transaction)
-        {
-            innerService.Rollback(transaction);
+            innerService.AddUsers(transaction, downloadId, ModifiedUsers(usersData), failedUsers);
         }
 
         public void Commit(DbTransaction transaction)
@@ -36,30 +32,9 @@
             innerService.Commit(transaction);
         }
 
-        public void FileDownloadError(FileDownloadResult fileDownloadResult)
+        public DbTransaction CreateTransaction()
         {
-            innerService.FileDownloadError(fileDownloadResult);
-        }
-
-        public void FileDownloadFinished(FilePayload filePayload)
-        {
-            innerService.FileDownloadFinished(filePayload);
-        }
-
-        public DateTime GetLastFileDownloadDateTime()
-        {
-            return innerService.GetLastFileDownloadDateTime();
-        }
-
-        public bool IsAvailable()
-        {
-            return innerService.IsAvailable();
-        }
-
-        public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
-            IList<FailedUserData> failedUsers)
-        {
-            innerService.AddUsers(transaction, downloadId, ModifiedUsers(usersData), failedUsers);
+            return innerService.CreateTransaction();
         }
 
         public IEnumerable<int> GetDownloadsReadyForUpload()
@@ -70,6 +45,16 @@
         public string GetFileData(int downloadId)
         {
             return innerService.GetFileData(downloadId);
+        }
+
+        public bool IsAvailable()
+        {
+            return innerService.IsAvailable();
+        }
+
+        public void Rollback(DbTransaction transaction)
+        {
+            innerService.Rollback(transaction);
         }
 
         public void StartStatsUpload(DbTransaction transaction, int downloadId, DateTime downloadDateTime)
@@ -85,16 +70,6 @@
         public void StatsUploadFinished(DbTransaction transaction, int downloadId)
         {
             innerService.StatsUploadFinished(transaction, downloadId);
-        }
-
-        public void NewFileDownloadStarted(FilePayload filePayload)
-        {
-            innerService.NewFileDownloadStarted(filePayload);
-        }
-
-        public void UpdateToLatest()
-        {
-            innerService.UpdateToLatest();
         }
 
         private IEnumerable<UserData> ModifiedUsers(IEnumerable<UserData> usersData)

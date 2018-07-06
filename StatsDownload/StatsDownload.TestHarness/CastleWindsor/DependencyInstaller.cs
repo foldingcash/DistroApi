@@ -32,8 +32,8 @@
                          .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessOneHundredUsersFilter>(),
-                Component.For<IFileDownloadDatabaseService, IStatsUploadDatabaseService>()
-                         .ImplementedBy<TestHarnessStatsDownloadDatabaseProvider>());
+                Component.For<IStatsUploadDatabaseService>()
+                         .ImplementedBy<TestHarnessStatsUploadDatabaseProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
@@ -52,8 +52,14 @@
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(selector =>
                     selector.SelectedWith<DatabaseFactoryComponentSelector>()),
                 Component
-                    .For<IFileDownloadDatabaseService, IStatsUploadDatabaseService, IStatsDownloadDatabaseService>()
+                    .For<IStatsDownloadDatabaseService>()
                     .ImplementedBy<StatsDownloadDatabaseProvider>(),
+                Component
+                    .For<IFileDownloadDatabaseService>()
+                    .ImplementedBy<FileDownloadDatabaseProvider>(),
+                Component
+                    .For<IStatsUploadDatabaseService>()
+                    .ImplementedBy<StatsUploadDatabaseProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
