@@ -5,7 +5,6 @@
     using System.Data;
     using System.Data.Common;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using Core.Interfaces;
     using Core.Interfaces.DataTransfer;
     using Core.Interfaces.Enums;
@@ -13,50 +12,26 @@
 
     public class StatsUploadDatabaseProvider : IStatsUploadDatabaseService
     {
-        private const string DatabaseConnectionSuccessfulLogMessage = "Database connection was successful";
-
-        private readonly IDatabaseConnectionServiceFactory databaseConnectionServiceFactory;
-
-        private readonly IDatabaseConnectionSettingsService databaseConnectionSettingsService;
-
         private readonly IErrorMessageService errorMessageService;
 
         private readonly ILoggingService loggingService;
 
-        public StatsUploadDatabaseProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
-            IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
+        private readonly IStatsDownloadDatabaseService statsDownloadDatabaseService;
+
+        public StatsUploadDatabaseProvider(IStatsDownloadDatabaseService statsDownloadDatabaseService,
             ILoggingService loggingService, IErrorMessageService errorMessageService)
         {
-            if (databaseConnectionSettingsService == null)
-            {
-                throw new ArgumentNullException(nameof(databaseConnectionSettingsService));
-            }
-
-            if (databaseConnectionServiceFactory == null)
-            {
-                throw new ArgumentNullException(nameof(databaseConnectionServiceFactory));
-            }
-
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            if (errorMessageService == null)
-            {
-                throw new ArgumentNullException(nameof(errorMessageService));
-            }
-
-            this.databaseConnectionSettingsService = databaseConnectionSettingsService;
-            this.databaseConnectionServiceFactory = databaseConnectionServiceFactory;
-            this.loggingService = loggingService;
-            this.errorMessageService = errorMessageService;
+            this.statsDownloadDatabaseService = statsDownloadDatabaseService ??
+                                                throw new ArgumentNullException(nameof(statsDownloadDatabaseService));
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            this.errorMessageService =
+                errorMessageService ?? throw new ArgumentNullException(nameof(errorMessageService));
         }
 
         public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> users,
             IList<FailedUserData> failedUsers)
         {
-            LogMethodInvoked();
+            loggingService.LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service =>
             {
                 AddUsers(transaction, service, downloadId, users, failedUsers);
@@ -65,20 +40,17 @@
 
         public void Commit(DbTransaction transaction)
         {
-            transaction?.Commit();
+            statsDownloadDatabaseService.Commit(transaction);
         }
 
         public DbTransaction CreateTransaction()
         {
-            LogMethodInvoked();
-            DbTransaction transaction = null;
-            CreateDatabaseConnectionAndExecuteAction(service => { transaction = CreateTransaction(service); });
-            return transaction;
+            return statsDownloadDatabaseService.CreateTransaction();
         }
 
         public IEnumerable<int> GetDownloadsReadyForUpload()
         {
-            LogMethodInvoked();
+            loggingService.LogMethodInvoked();
             List<int> downloadsReadyForUpload = default(List<int>);
             CreateDatabaseConnectionAndExecuteAction(
                 service => downloadsReadyForUpload = GetDownloadsReadyForUpload(service));
@@ -87,7 +59,7 @@
 
         public string GetFileData(int downloadId)
         {
-            LogMethodInvoked();
+            loggingService.LogMethodInvoked();
             string fileData = default(string);
             CreateDatabaseConnectionAndExecuteAction(service => fileData = GetFileData(service, downloadId));
             return fileData;
@@ -95,42 +67,30 @@
 
         public bool IsAvailable()
         {
-            LogMethodInvoked();
-
-            try
-            {
-                CreateDatabaseConnectionAndExecuteAction(null);
-                return true;
-            }
-            catch (Exception exception)
-            {
-                LogException(exception);
-                return false;
-            }
+            return statsDownloadDatabaseService.IsAvailable();
         }
 
         public void Rollback(DbTransaction transaction)
         {
-            LogMethodInvoked();
-            transaction?.Rollback();
+            statsDownloadDatabaseService.Rollback(transaction);
         }
 
         public void StartStatsUpload(DbTransaction transaction, int downloadId, DateTime downloadDateTime)
         {
-            LogMethodInvoked();
+            loggingService.LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service =>
                 StartStatsUpload(service, transaction, downloadId, downloadDateTime));
         }
 
         public void StatsUploadError(StatsUploadResult statsUploadResult)
         {
-            LogMethodInvoked();
+            loggingService.LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => StatsUploadError(service, statsUploadResult));
         }
 
         public void StatsUploadFinished(DbTransaction transaction, int downloadId)
         {
-            LogMethodInvoked();
+            loggingService.LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service =>
                 StatsUploadFinished(transaction, service, downloadId));
         }
@@ -251,52 +211,23 @@
                 DownloadId = CreateDownloadIdParameter(databaseConnection),
                 LineNumber = CreateLineNumberParameter(databaseConnection),
                 RejectionReason =
-                    databaseConnection.CreateParameter("@RejectionReason",
-                        DbType.String, ParameterDirection.Input)
+                    statsDownloadDatabaseService.CreateRejectionReasonParameter(databaseConnection)
             };
-        }
-
-        private IDatabaseConnectionService CreateDatabaseConnection(string connectionString, int? commandTimeout)
-        {
-            return databaseConnectionServiceFactory.Create(connectionString, commandTimeout);
         }
 
         private void CreateDatabaseConnectionAndExecuteAction(Action<IDatabaseConnectionService> action)
         {
-            string connectionString = GetConnectionString();
-            int? commandTimeout = GetCommandTimeout();
-            EnsureValidConnectionString(connectionString);
-            IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(connectionString, commandTimeout);
-            EnsureDatabaseConnectionOpened(databaseConnection);
-            action?.Invoke(databaseConnection);
+            statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(action);
         }
 
         private DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection, int downloadId)
         {
-            DbParameter downloadIdParameter = CreateDownloadIdParameter(databaseConnection);
-            downloadIdParameter.Value = downloadId;
-            return downloadIdParameter;
+            return statsDownloadDatabaseService.CreateDownloadIdParameter(databaseConnection, downloadId);
         }
 
         private DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection)
         {
-            return databaseConnection.CreateParameter("@DownloadId", DbType.Int32, ParameterDirection.Input);
-        }
-
-        private DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection, string message)
-        {
-            DbParameter errorMessage = databaseConnection.CreateParameter("@ErrorMessage", DbType.String,
-                ParameterDirection.Input);
-            errorMessage.Value = message;
-            return errorMessage;
-        }
-
-        private DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection,
-            StatsUploadResult fileDownloadResult)
-        {
-            string message =
-                errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason, StatsDownloadService.StatsUpload);
-            return CreateErrorMessageParameter(databaseConnection, message);
+            return statsDownloadDatabaseService.CreateDownloadIdParameter(databaseConnection);
         }
 
         private DbParameter CreateLineNumberParameter(IDatabaseConnectionService databaseConnection)
@@ -305,47 +236,10 @@
                 ParameterDirection.Input);
         }
 
-        private DbTransaction CreateTransaction(IDatabaseConnectionService service)
-        {
-            return service.CreateTransaction();
-        }
-
-        private void EnsureDatabaseConnectionOpened(IDatabaseConnectionService databaseConnection)
-        {
-            if (databaseConnection.ConnectionState == ConnectionState.Closed)
-            {
-                databaseConnection.Open();
-                LogVerbose(DatabaseConnectionSuccessfulLogMessage);
-            }
-        }
-
-        private void EnsureValidConnectionString(string connectionString)
-        {
-            if (connectionString == null)
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentException("Argument is empty", nameof(connectionString));
-            }
-        }
-
         private void ExecuteStoredProcedure(IDatabaseConnectionService databaseConnection, string storedProcedure,
             List<DbParameter> parameters)
         {
             databaseConnection.ExecuteStoredProcedure(storedProcedure, parameters);
-        }
-
-        private int? GetCommandTimeout()
-        {
-            return databaseConnectionSettingsService.GetCommandTimeout();
-        }
-
-        private string GetConnectionString()
-        {
-            return databaseConnectionSettingsService.GetConnectionString();
         }
 
         private List<int> GetDownloadsReadyForUpload(IDatabaseConnectionService databaseConnection)
@@ -382,21 +276,6 @@
                 new List<DbParameter> { download, fileName, fileExtension, fileData });
 
             return (string) fileData.Value;
-        }
-
-        private void LogException(Exception exception)
-        {
-            loggingService.LogException(exception);
-        }
-
-        private void LogMethodInvoked([CallerMemberName] string method = "")
-        {
-            LogVerbose($"{method} Invoked");
-        }
-
-        private void LogVerbose(string message)
-        {
-            loggingService.LogVerbose(message);
         }
 
         private void SetAddUserDataParameterValues(int downloadId, UserData userData, AddUserDataParameters parameters)
@@ -438,7 +317,8 @@
             StatsUploadResult statsUploadResult)
         {
             DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, statsUploadResult.DownloadId);
-            DbParameter errorMessage = CreateErrorMessageParameter(databaseConnection, statsUploadResult);
+            DbParameter errorMessage =
+                statsDownloadDatabaseService.CreateErrorMessageParameter(databaseConnection, statsUploadResult);
 
             ExecuteStoredProcedure(databaseConnection, Constants.StatsDownloadDatabase.StatsUploadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });

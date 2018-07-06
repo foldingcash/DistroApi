@@ -19,20 +19,25 @@
         [SetUp]
         public void SetUp()
         {
-            databaseConnectionSettingsServiceMock = Substitute.For<IDatabaseConnectionSettingsService>();
-            databaseConnectionSettingsServiceMock.GetConnectionString().Returns("connectionString");
-            databaseConnectionSettingsServiceMock.GetCommandTimeout().Returns(42);
-
             databaseConnectionServiceMock = Substitute.For<IDatabaseConnectionService>();
-            databaseConnectionServiceFactoryMock = Substitute.For<IDatabaseConnectionServiceFactory>();
-            databaseConnectionServiceFactoryMock.Create("connectionString", 42).Returns(databaseConnectionServiceMock);
+
+            statsDownloadDatabaseServiceMock = Substitute.For<IStatsDownloadDatabaseService>();
+            statsDownloadDatabaseServiceMock.When(service =>
+                service.CreateDatabaseConnectionAndExecuteAction(
+                    Arg.Any<Action<IDatabaseConnectionService>>())).Do(
+                callInfo =>
+                {
+                    var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
+
+                    service.Invoke(databaseConnectionServiceMock);
+                });
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
-            systemUnderTest = NewStatsUploadDatabaseProvider(databaseConnectionSettingsServiceMock,
-                databaseConnectionServiceFactoryMock, loggingServiceMock, errorMessageServiceMock);
+            systemUnderTest = NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock, loggingServiceMock,
+                errorMessageServiceMock);
 
             databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
                 Arg.Any<ParameterDirection>()).Returns(info =>
@@ -76,16 +81,6 @@
                 return dbParameter;
             });
 
-            filePayload = new FilePayload
-            {
-                DownloadId = 100,
-                DecompressedDownloadFileName = "DecompressedDownloadFileName",
-                DecompressedDownloadFileExtension = "DecompressedDownloadFileExtension",
-                DecompressedDownloadFileData = "DecompressedDownloadFileData"
-            };
-
-            fileDownloadResult = new FileDownloadResult(filePayload);
-
             dbDataReaderMock = Substitute.For<DbDataReader>();
             dbDataReaderMock.Read().Returns(true, true, true, false);
             dbDataReaderMock.GetInt32(0).Returns(100, 200, 300);
@@ -93,25 +88,38 @@
             databaseConnectionServiceMock
                 .ExecuteReader("SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]")
                 .Returns(dbDataReaderMock);
+
+            downloadIdParameterMock = Substitute.For<DbParameter>();
+            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 100)
+                                            .Returns(downloadIdParameterMock);
+            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 200)
+                                            .Returns(downloadIdParameterMock);
+            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 300)
+                                            .Returns(downloadIdParameterMock);
+            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock)
+                                            .Returns(downloadIdParameterMock);
+
+            errorMessageParameterMock = Substitute.For<DbParameter>();
+            rejectionReasonParameterMock = Substitute.For<DbParameter>();
+            statsDownloadDatabaseServiceMock.CreateRejectionReasonParameter(databaseConnectionServiceMock)
+                                            .Returns(rejectionReasonParameterMock);
         }
-
-        private const int NumberOfRowsEffectedExpected = 5;
-
-        private IDatabaseConnectionServiceFactory databaseConnectionServiceFactoryMock;
 
         private IDatabaseConnectionService databaseConnectionServiceMock;
 
-        private IDatabaseConnectionSettingsService databaseConnectionSettingsServiceMock;
-
         private DbDataReader dbDataReaderMock;
+
+        private DbParameter downloadIdParameterMock;
+
+        private DbParameter errorMessageParameterMock;
 
         private IErrorMessageService errorMessageServiceMock;
 
-        private FileDownloadResult fileDownloadResult;
-
-        private FilePayload filePayload;
-
         private ILoggingService loggingServiceMock;
+
+        private DbParameter rejectionReasonParameterMock;
+
+        private IStatsDownloadDatabaseService statsDownloadDatabaseServiceMock;
 
         private IStatsUploadDatabaseService systemUnderTest;
 
@@ -142,7 +150,7 @@
             };
             IList<FailedUserData> failedUsers = new List<FailedUserData>();
 
-            systemUnderTest.AddUsers(null, 1,
+            systemUnderTest.AddUsers(null, 100,
                 new List<UserData>
                 {
                     user1,
@@ -176,8 +184,7 @@
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogVerbose("AddUsers Invoked");
-                loggingServiceMock.LogVerbose("Database connection was successful");
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.AddUsers));
                 failedUsersCommand.ExecuteNonQuery();
                 failedUsersCommand.ExecuteNonQuery();
                 addUsersCommand.ExecuteNonQuery();
@@ -195,7 +202,7 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
-            systemUnderTest.AddUsers(null, 1,
+            systemUnderTest.AddUsers(null, 100,
                 new List<UserData>
                 {
                     new UserData(999, "name", 10, 100, 1000)
@@ -206,10 +213,7 @@
                 }, null);
 
             Assert.That(actualParameters.Count, Is.EqualTo(9));
-            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
-            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
-            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[0].Value, Is.EqualTo(1));
+            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
             Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@LineNumber"));
             Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.Int32));
             Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
@@ -254,20 +258,15 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
 
-            systemUnderTest.AddUsers(null, 1, null, new[] { failedUserData });
+            systemUnderTest.AddUsers(null, 100, null, new[] { failedUserData });
 
             Assert.That(actualParameters.Count, Is.EqualTo(3));
-            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
-            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
-            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[0].Value, Is.EqualTo(1));
+            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
             Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@LineNumber"));
             Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.Int32));
             Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters[1].Value, Is.EqualTo(10));
-            Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@RejectionReason"));
-            Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
-            Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[2], Is.EqualTo(rejectionReasonParameterMock));
             Assert.That(actualParameters[2].Value, Is.EqualTo("RejectionReason"));
         }
 
@@ -308,7 +307,7 @@
                 users[index] = new UserData();
             }
 
-            systemUnderTest.AddUsers(null, 1, users, null);
+            systemUnderTest.AddUsers(null, 100, users, null);
 
             command.Received(2).ExecuteNonQuery();
         }
@@ -318,7 +317,7 @@
         {
             SetUpDatabaseConnectionCreateDbCommandMock();
 
-            systemUnderTest.AddUsers(null, 0, null, null);
+            systemUnderTest.AddUsers(null, 100, null, null);
 
             databaseConnectionServiceMock.Received(3).CreateDbCommand();
         }
@@ -328,9 +327,9 @@
         {
             SetUpDatabaseConnectionCreateDbCommandMock();
 
-            systemUnderTest.AddUsers(null, 0, null, null);
+            systemUnderTest.AddUsers(null, 100, null, null);
 
-            databaseConnectionServiceMock.ReceivedWithAnyArgs(12)
+            databaseConnectionServiceMock.ReceivedWithAnyArgs(9)
                                          .CreateParameter(null, DbType.AnsiString, ParameterDirection.Input);
         }
 
@@ -381,7 +380,7 @@
 
             var transactionMock = Substitute.For<DbTransaction>();
 
-            systemUnderTest.AddUsers(transactionMock, 1, null, null);
+            systemUnderTest.AddUsers(transactionMock, 100, null, null);
 
             command.Received(1).CommandText = "[FoldingCoin].[RebuildIndices]";
             command.Received(1).CommandType = CommandType.StoredProcedure;
@@ -395,7 +394,7 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
-            systemUnderTest.AddUsers(null, 1,
+            systemUnderTest.AddUsers(null, 100,
                 new List<UserData> { new UserData(0, "name", 10, 100, 1000) { FriendlyName = "friendly" } }, null);
 
             Assert.That(actualParameters.Count, Is.EqualTo(9));
@@ -410,7 +409,7 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
-            systemUnderTest.AddUsers(null, 1,
+            systemUnderTest.AddUsers(null, 100,
                 new List<UserData> { new UserData(0, "name", 10, 100, 1000) { BitcoinAddress = "address" } }, null);
 
             Assert.That(actualParameters.Count, Is.AtLeast(9));
@@ -425,7 +424,7 @@
 
             systemUnderTest.Commit(transaction);
 
-            transaction.Received(1).Commit();
+            statsDownloadDatabaseServiceMock.Received().Commit(transaction);
         }
 
         [Test]
@@ -433,27 +432,19 @@
         {
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewStatsUploadDatabaseProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock,
+                    NewStatsUploadDatabaseProvider(null, loggingServiceMock,
                         errorMessageServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewStatsUploadDatabaseProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock,
+                    NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock, null,
                         errorMessageServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadDatabaseProvider(databaseConnectionSettingsServiceMock,
-                        databaseConnectionServiceFactoryMock, null, errorMessageServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadDatabaseProvider(databaseConnectionSettingsServiceMock,
-                        databaseConnectionServiceFactoryMock, loggingServiceMock, null));
         }
 
         [Test]
         public void CreateTransaction_WhenInvoked_ReturnsTransaction()
         {
             var expected = Substitute.For<DbTransaction>();
-            databaseConnectionServiceMock.CreateTransaction().Returns(expected);
+            statsDownloadDatabaseServiceMock.CreateTransaction().Returns(expected);
 
             DbTransaction actual = systemUnderTest.CreateTransaction();
 
@@ -475,7 +466,7 @@
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogVerbose("GetDownloadsReadyForUpload Invoked");
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetDownloadsReadyForUpload));
                 databaseConnectionServiceMock.ExecuteReader(
                     "SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]");
             });
@@ -508,7 +499,7 @@
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogVerbose("GetFileData Invoked");
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetFileData));
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[GetFileData]",
                     Arg.Any<List<DbParameter>>());
             });
@@ -527,10 +518,7 @@
             systemUnderTest.GetFileData(100);
 
             Assert.That(actualParameters.Count, Is.EqualTo(4));
-            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
-            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
-            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
             Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@FileName"));
             Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Output));
@@ -562,75 +550,15 @@
             Assert.That(actual, Is.EqualTo("FileData"));
         }
 
-        [Test]
-        public void IsAvailable_WhenConnectionClosed_ConnectionOpened()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expected)
         {
-            databaseConnectionServiceMock.ConnectionState.Returns(ConnectionState.Closed);
-
-            InvokeIsAvailable();
-
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogVerbose("IsAvailable Invoked");
-                databaseConnectionServiceMock.Open();
-                loggingServiceMock.LogVerbose("Database connection was successful");
-            });
-        }
-
-        [Test]
-        public void IsAvailable_WhenConnectionOpen_ConnectionNotOpened()
-        {
-            databaseConnectionServiceMock.ConnectionState.Returns(ConnectionState.Open);
-
-            InvokeIsAvailable();
-
-            loggingServiceMock.DidNotReceive().LogVerbose("Database connection was successful");
-            databaseConnectionServiceMock.DidNotReceive().Open();
-        }
-
-        [Test]
-        public void IsAvailable_WhenDatabaseConnectionFails_LogsException()
-        {
-            var expected = new Exception();
-            databaseConnectionServiceMock.When(mock => mock.Open()).Throw(expected);
-
-            InvokeIsAvailable();
-
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogVerbose("IsAvailable Invoked");
-                databaseConnectionServiceMock.Open();
-                loggingServiceMock.LogException(expected);
-            });
-        }
-
-        [Test]
-        public void IsAvailable_WhenDatabaseConnectionFails_ReturnsFalse()
-        {
-            databaseConnectionServiceMock.When(mock => mock.Open()).Throw<Exception>();
+            statsDownloadDatabaseServiceMock.IsAvailable().Returns(expected);
 
             bool actual = InvokeIsAvailable();
 
-            Assert.That(actual, Is.False);
-        }
-
-        [TestCase(null)]
-        [TestCase("")]
-        public void IsAvailable_WhenInvalidConnectionString_ReturnsFalse(string connectionString)
-        {
-            databaseConnectionSettingsServiceMock.GetConnectionString().Returns(connectionString);
-
-            bool actual = InvokeIsAvailable();
-
-            Assert.That(actual, Is.False);
-        }
-
-        [Test]
-        public void IsAvailable_WhenInvoked_ReturnsTrue()
-        {
-            bool actual = InvokeIsAvailable();
-
-            Assert.That(actual, Is.True);
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
@@ -640,7 +568,7 @@
 
             systemUnderTest.Rollback(transaction);
 
-            transaction.Received(1).Rollback();
+            statsDownloadDatabaseServiceMock.Received().Rollback(transaction);
         }
 
         [Test]
@@ -662,10 +590,7 @@
             systemUnderTest.StartStatsUpload(transaction, 100, dateTime);
 
             Assert.That(actualParameters.Count, Is.EqualTo(2));
-            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
-            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
-            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
             Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@DownloadDateTime"));
             Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.DateTime));
             Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
@@ -681,8 +606,7 @@
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogVerbose("StartStatsUpload Invoked");
-                loggingServiceMock.LogVerbose("Database connection was successful");
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.StartStatsUpload));
                 databaseConnectionServiceMock.ExecuteStoredProcedure(transaction, "[FoldingCoin].[StartStatsUpload]",
                     Arg.Any<List<DbParameter>>());
             });
@@ -691,9 +615,6 @@
         [Test]
         public void StatsUploadError_WhenInvoked_ParametersAreProvided()
         {
-            errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, StatsDownloadService.StatsUpload)
-                                   .Returns("ErrorMessage");
-
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock.When(
@@ -702,17 +623,16 @@
                                                      Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            systemUnderTest.StatsUploadError(new StatsUploadResult(100, FailedReason.UnexpectedException));
+            var uploadResult = new StatsUploadResult(100, FailedReason.UnexpectedException);
+
+            statsDownloadDatabaseServiceMock.CreateErrorMessageParameter(databaseConnectionServiceMock, uploadResult)
+                                            .Returns(errorMessageParameterMock);
+
+            systemUnderTest.StatsUploadError(uploadResult);
 
             Assert.That(actualParameters.Count, Is.EqualTo(2));
-            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
-            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
-            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[0].Value, Is.EqualTo(100));
-            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@ErrorMessage"));
-            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
-            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[1].Value, Is.EqualTo("ErrorMessage"));
+            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
+            Assert.That(actualParameters[1], Is.EqualTo(errorMessageParameterMock));
         }
 
         [Test]
@@ -722,7 +642,7 @@
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogVerbose("StatsUploadError Invoked");
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.StatsUploadError));
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadError]",
                     Arg.Any<List<DbParameter>>());
             });
@@ -745,10 +665,7 @@
             systemUnderTest.StatsUploadFinished(transaction, 100);
 
             Assert.That(actualParameters.Count, Is.EqualTo(1));
-            Assert.That(actualParameters[0].ParameterName, Is.EqualTo("@DownloadId"));
-            Assert.That(actualParameters[0].DbType, Is.EqualTo(DbType.Int32));
-            Assert.That(actualParameters[0].Direction, Is.EqualTo(ParameterDirection.Input));
-            Assert.That(actualParameters[0].Value, Is.EqualTo(100));
+            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
         }
 
         [Test]
@@ -760,8 +677,7 @@
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogVerbose("StatsUploadFinished Invoked");
-                loggingServiceMock.LogVerbose("Database connection was successful");
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.StatsUploadFinished));
                 databaseConnectionServiceMock.ExecuteStoredProcedure(transaction, "[FoldingCoin].[StatsUploadFinished]",
                     Arg.Any<List<DbParameter>>());
             });
@@ -773,12 +689,10 @@
         }
 
         private IStatsUploadDatabaseService NewStatsUploadDatabaseProvider(
-            IDatabaseConnectionSettingsService databaseConnectionSettingsService,
-            IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService,
+            IStatsDownloadDatabaseService statsDownloadDatabaseService, ILoggingService loggingService,
             IErrorMessageService errorMessageService)
         {
-            return new StatsUploadDatabaseProvider(databaseConnectionSettingsService,
-                databaseConnectionServiceFactory,
+            return new StatsUploadDatabaseProvider(statsDownloadDatabaseService,
                 loggingService, errorMessageService);
         }
 
