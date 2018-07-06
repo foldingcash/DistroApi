@@ -3,7 +3,6 @@
     using System;
     using System.Data;
     using System.Data.Common;
-    using System.Runtime.CompilerServices;
     using Core.Interfaces;
     using Core.Interfaces.DataTransfer;
     using Core.Interfaces.Enums;
@@ -67,7 +66,7 @@
             ParameterDirection direction)
         {
             DbParameter downloadIdParameter = CreateDownloadIdParameter(databaseConnection);
-            downloadIdParameter.Direction = ParameterDirection.Output;
+            downloadIdParameter.Direction = direction;
             return downloadIdParameter;
         }
 
@@ -96,7 +95,7 @@
 
         public DbTransaction CreateTransaction()
         {
-            LogMethodInvoked();
+            loggingService.LogMethodInvoked();
             DbTransaction transaction = null;
             CreateDatabaseConnectionAndExecuteAction(service => { transaction = CreateTransaction(service); });
             return transaction;
@@ -104,7 +103,7 @@
 
         public bool IsAvailable()
         {
-            LogMethodInvoked();
+            loggingService.LogMethodInvoked();
 
             try
             {
@@ -120,7 +119,7 @@
 
         public void Rollback(DbTransaction transaction)
         {
-            LogMethodInvoked();
+            loggingService.LogMethodInvoked();
             transaction?.Rollback();
         }
 
@@ -177,11 +176,6 @@
         private void LogException(Exception exception)
         {
             loggingService.LogException(exception);
-        }
-
-        private void LogMethodInvoked([CallerMemberName] string method = "")
-        {
-            LogVerbose($"{method} Invoked");
         }
 
         private void LogVerbose(string message)

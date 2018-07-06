@@ -190,6 +190,18 @@
         }
 
         [Test]
+        public void GetErrorMessage_WhenUnexpectedStatsDownloadServiceEnumValueProvided_UsesEmptyString()
+        {
+            string actual =
+                systemUnderTest.GetErrorMessage(FailedReason.UnexpectedException,
+                    (StatsDownloadService) Enum.Parse(typeof (StatsDownloadService), "-1"));
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was an unexpected exception. Check the log for more information."));
+        }
+
+        [Test]
         public void GetErrorMessage_WhenUnknownRejectionReason_ReturnsEmptyString()
         {
             string actual = systemUnderTest.GetErrorMessage(new FailedUserData(0, string.Empty,

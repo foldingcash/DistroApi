@@ -35,7 +35,7 @@
             if (failedReason == FailedReason.DataStoreUnavailable)
             {
                 return GetBodyStart(service) +
-                       " There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.";
+                       "There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.";
             }
 
             if (failedReason == FailedReason.RequiredSettingsInvalid)
@@ -71,7 +71,7 @@
             if (failedReason == FailedReason.UnexpectedException)
             {
                 return GetBodyStart(service) +
-                       " There was an unexpected exception. Check the log for more information.";
+                       "There was an unexpected exception. Check the log for more information.";
             }
 
             return string.Empty;
@@ -113,12 +113,12 @@
         {
             if (service == StatsDownloadService.FileDownload)
             {
-                return FileDownloadFailBodyStart;
+                return $"{FileDownloadFailBodyStart}";
             }
 
             if (service == StatsDownloadService.StatsUpload)
             {
-                return StatsUploadFailBodyStart;
+                return $"{StatsUploadFailBodyStart}";
             }
 
             return string.Empty;

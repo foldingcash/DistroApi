@@ -128,11 +128,6 @@
                 Constants.StatsDownloadDatabase.NewFileDownloadStartedProcedureName,
                 new List<DbParameter> { downloadId });
 
-            if (downloadId?.Value == null || downloadId.Value == DBNull.Value)
-            {
-                throw new ArgumentNullException();
-            }
-
             return (int) downloadId.Value;
         }
 
