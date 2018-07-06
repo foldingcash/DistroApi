@@ -1,8 +1,8 @@
 ﻿namespace StatsDownloadApi.Core
 {
+    using System;
     using System.Collections.Generic;
     using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class StatsDownloadApiProvider : IStatsDownloadApiService
     {
@@ -10,7 +10,9 @@
 
         public StatsDownloadApiProvider(IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService)
         {
-            this.statsDownloadApiDatabaseService = statsDownloadApiDatabaseService;
+            this.statsDownloadApiDatabaseService = statsDownloadApiDatabaseService ??
+                                                   throw new ArgumentNullException(
+                                                       nameof(statsDownloadApiDatabaseService));
         }
 
         public DistroResponse GetDistro()
@@ -23,9 +25,7 @@
                 return new DistroResponse(errors);
             }
 
-            IList<DistroUser> distro = new[] { new DistroUser("address1") };
-
-            return new DistroResponse(distro);
+            return new DistroResponse(statsDownloadApiDatabaseService.GetDistroUsers());
         }
 
         private void AddDatabaseUnavailableError(IList<DistroError> errors)
