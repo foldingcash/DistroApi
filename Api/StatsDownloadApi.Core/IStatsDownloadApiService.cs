@@ -1,6 +1,6 @@
 ﻿namespace StatsDownloadApi.Core
 {
-    public interface IStatsDownloadApi
+    public interface IStatsDownloadApiService
     {
         DistroResponse GetDistro();
     }

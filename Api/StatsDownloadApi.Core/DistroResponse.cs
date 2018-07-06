@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class DistroResponse
     {

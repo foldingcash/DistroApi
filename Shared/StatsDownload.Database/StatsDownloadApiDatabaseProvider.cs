@@ -12,5 +12,10 @@
             this.statsDownloadDatabaseService = statsDownloadDatabaseService ??
                                                 throw new ArgumentNullException(nameof(statsDownloadDatabaseService));
         }
+
+        public bool IsAvailable()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

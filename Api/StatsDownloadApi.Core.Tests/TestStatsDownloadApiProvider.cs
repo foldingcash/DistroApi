@@ -5,25 +5,25 @@
     using StatsDownload.Core.Interfaces;
 
     [TestFixture]
-    public class TestStatsDownloadApi
+    public class TestStatsDownloadApiProvider
     {
         [SetUp]
         public void SetUp()
         {
-            databaseServiceMock = Substitute.For<IStatsDownloadDatabaseService>();
-            databaseServiceMock.IsAvailable().Returns(true);
+            statsDownloadApiDatabaseServiceMock = Substitute.For<IStatsDownloadApiDatabaseService>();
+            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(true);
 
-            systemUnderTest = new StatsDownloadApi(databaseServiceMock);
+            systemUnderTest = new StatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock);
         }
 
-        private IStatsDownloadDatabaseService databaseServiceMock;
+        private IStatsDownloadApiDatabaseService statsDownloadApiDatabaseServiceMock;
 
-        private IStatsDownloadApi systemUnderTest;
+        private IStatsDownloadApiService systemUnderTest;
 
         [Test]
         public void GetDistro_WhenDatabaseIsUnavailable_ReturnsUnsuccessfulDistroResponse()
         {
-            databaseServiceMock.IsAvailable().Returns(false);
+            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
 
             DistroResponse actual = systemUnderTest.GetDistro();
 

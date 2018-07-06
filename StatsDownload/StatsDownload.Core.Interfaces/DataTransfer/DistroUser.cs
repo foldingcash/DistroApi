@@ -1,4 +1,4 @@
-﻿namespace StatsDownloadApi.Core
+﻿namespace StatsDownload.Core.Interfaces.DataTransfer
 {
     public class DistroUser
     {

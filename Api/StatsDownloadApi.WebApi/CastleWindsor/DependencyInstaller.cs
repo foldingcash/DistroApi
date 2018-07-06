@@ -33,7 +33,7 @@
                 Component
                     .For<IStatsDownloadDatabaseService>()
                     .ImplementedBy<StatsDownloadDatabaseProvider>(),
-                Component.For<IStatsDownloadApi>().ImplementedBy<StatsDownloadApi>());
+                Component.For<IStatsDownloadApiService>().ImplementedBy<StatsDownloadApiProvider>());
         }
     }
 }

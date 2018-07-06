@@ -11,16 +11,16 @@
         [HttpGet]
         public DistroResponse Get()
         {
-            IStatsDownloadApi api = null;
+            IStatsDownloadApiService apiService = null;
             try
             {
-                api = WindsorContainer.Instance.Resolve<IStatsDownloadApi>();
-                DistroResponse response = api.GetDistro();
+                apiService = WindsorContainer.Instance.Resolve<IStatsDownloadApiService>();
+                DistroResponse response = apiService.GetDistro();
                 return response;
             }
             finally
             {
-                WindsorContainer.Instance.Release(api);
+                WindsorContainer.Instance.Release(apiService);
             }
         }
     }

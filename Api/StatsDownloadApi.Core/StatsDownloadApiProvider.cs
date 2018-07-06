@@ -2,21 +2,22 @@
 {
     using System.Collections.Generic;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
-    public class StatsDownloadApi : IStatsDownloadApi
+    public class StatsDownloadApiProvider : IStatsDownloadApiService
     {
-        private readonly IStatsDownloadDatabaseService databaseService;
+        private readonly IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService;
 
-        public StatsDownloadApi(IStatsDownloadDatabaseService databaseService)
+        public StatsDownloadApiProvider(IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService)
         {
-            this.databaseService = databaseService;
+            this.statsDownloadApiDatabaseService = statsDownloadApiDatabaseService;
         }
 
         public DistroResponse GetDistro()
         {
             IList<DistroError> errors = new List<DistroError>();
 
-            if (!databaseService.IsAvailable())
+            if (!statsDownloadApiDatabaseService.IsAvailable())
             {
                 AddDatabaseUnavailableError(errors);
                 return new DistroResponse(errors);
