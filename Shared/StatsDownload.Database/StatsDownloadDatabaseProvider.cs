@@ -53,20 +53,6 @@
             this.errorMessageService = errorMessageService;
         }
 
-        public void Rollback(DbTransaction transaction)
-        {
-            LogMethodInvoked();
-            transaction?.Rollback();
-        }
-
-        public DbTransaction CreateTransaction()
-        {
-            LogMethodInvoked();
-            DbTransaction transaction = null;
-            CreateDatabaseConnectionAndExecuteAction(service => { transaction = CreateTransaction(service); });
-            return transaction;
-        }
-
         public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> users,
             IList<FailedUserData> failedUsers)
         {
@@ -75,6 +61,19 @@
             {
                 AddUsers(transaction, service, downloadId, users, failedUsers);
             });
+        }
+
+        public void Commit(DbTransaction transaction)
+        {
+            transaction?.Commit();
+        }
+
+        public DbTransaction CreateTransaction()
+        {
+            LogMethodInvoked();
+            DbTransaction transaction = null;
+            CreateDatabaseConnectionAndExecuteAction(service => { transaction = CreateTransaction(service); });
+            return transaction;
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
@@ -87,11 +86,6 @@
         {
             LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
-        }
-
-        public void Commit(DbTransaction transaction)
-        {
-            transaction?.Commit();
         }
 
         public IEnumerable<int> GetDownloadsReadyForUpload()
@@ -142,6 +136,12 @@
             int downloadId = default(int);
             CreateDatabaseConnectionAndExecuteAction(service => { downloadId = NewFileDownloadStarted(service); });
             filePayload.DownloadId = downloadId;
+        }
+
+        public void Rollback(DbTransaction transaction)
+        {
+            LogMethodInvoked();
+            transaction?.Rollback();
         }
 
         public void StartStatsUpload(DbTransaction transaction, int downloadId, DateTime downloadDateTime)

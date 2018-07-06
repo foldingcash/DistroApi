@@ -25,23 +25,18 @@
             this.commandTimeout = commandTimeout;
         }
 
-        public ConnectionState ConnectionState => sqlConnection.State;
-
         public void Close()
         {
             sqlConnection.Close();
         }
+
+        public ConnectionState ConnectionState => sqlConnection.State;
 
         public DbCommand CreateDbCommand()
         {
             DbCommand dbCommand = sqlConnection.CreateCommand();
             SetCommandTimeout(dbCommand);
             return dbCommand;
-        }
-
-        public DbTransaction CreateTransaction()
-        {
-            return sqlConnection.BeginTransaction();
         }
 
         public DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction)
@@ -67,6 +62,11 @@
                 parameter.Size = size;
                 return parameter;
             }
+        }
+
+        public DbTransaction CreateTransaction()
+        {
+            return sqlConnection.BeginTransaction();
         }
 
         public void Dispose()

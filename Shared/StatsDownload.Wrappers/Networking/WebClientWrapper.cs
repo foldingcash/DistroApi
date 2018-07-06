@@ -16,18 +16,6 @@
             innerWebClient = new CustomWebClient();
         }
 
-        public Func<X509Certificate, X509Chain, SslPolicyErrors, bool> SslPolicyOverride
-        {
-            get => innerWebClient.SslPolicyOverride;
-            set => innerWebClient.SslPolicyOverride = value;
-        }
-
-        public TimeSpan Timeout
-        {
-            get => innerWebClient.Timeout;
-            set => innerWebClient.Timeout = value;
-        }
-
         public void Dispose()
         {
             if (!disposed)
@@ -40,6 +28,18 @@
         public void DownloadFile(Uri sourceUri, string saveToFilename)
         {
             innerWebClient.DownloadFile(sourceUri, saveToFilename);
+        }
+
+        public Func<X509Certificate, X509Chain, SslPolicyErrors, bool> SslPolicyOverride
+        {
+            get => innerWebClient.SslPolicyOverride;
+            set => innerWebClient.SslPolicyOverride = value;
+        }
+
+        public TimeSpan Timeout
+        {
+            get => innerWebClient.Timeout;
+            set => innerWebClient.Timeout = value;
         }
     }
 }
