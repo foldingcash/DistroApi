@@ -113,12 +113,12 @@
         {
             if (service == StatsDownloadService.FileDownload)
             {
-                return $"{FileDownloadFailBodyStart}";
+                return $"{FileDownloadFailBodyStart} ";
             }
 
             if (service == StatsDownloadService.StatsUpload)
             {
-                return $"{StatsUploadFailBodyStart}";
+                return $"{StatsUploadFailBodyStart} ";
             }
 
             return string.Empty;
