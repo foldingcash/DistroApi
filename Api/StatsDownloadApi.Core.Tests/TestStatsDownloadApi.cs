@@ -43,7 +43,7 @@
 
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.Errors, Is.Null);
-            Assert.That(actual.ErrorCount, Is.Zero);
+            Assert.That(actual.ErrorCount, Is.Null);
             Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.None));
         }
     }
