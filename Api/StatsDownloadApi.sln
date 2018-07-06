@@ -13,17 +13,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Extensions", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Core.Interfaces", "..\StatsDownload\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj", "{3E692381-C42F-4938-86CE-4896C30AC8FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Database", "..\Shared\StatsDownload.Database\StatsDownload.Database.csproj", "{38C3DB41-1BBE-4DB6-9B6A-70A9DD4035AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Database", "..\Shared\StatsDownload.Database\StatsDownload.Database.csproj", "{38C3DB41-1BBE-4DB6-9B6A-70A9DD4035AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Database.CastleWindsor", "..\Shared\StatsDownload.Database.CastleWindsor\StatsDownload.Database.CastleWindsor.csproj", "{872408A3-9839-4295-A6AB-E79D54687F8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Database.CastleWindsor", "..\Shared\StatsDownload.Database.CastleWindsor\StatsDownload.Database.CastleWindsor.csproj", "{872408A3-9839-4295-A6AB-E79D54687F8A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Database.Tests", "..\StatsDownload\StatsDownload.Database.Tests\StatsDownload.Database.Tests.csproj", "{32CA6C6B-0C5E-4FE9-BF75-13B25C407164}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Logging", "..\StatsDownload\StatsDownload.Logging\StatsDownload.Logging.csproj", "{014CF02C-46D7-42E3-8749-3E5AD3122099}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Logging.Tests", "..\StatsDownload\StatsDownload.Logging.Tests\StatsDownload.Logging.Tests.csproj", "{AB832094-5E49-4719-BD70-C74685CE7EE4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Email", "..\StatsDownload\StatsDownload.Email\StatsDownload.Email.csproj", "{779E74DA-E020-4DF4-84C4-4372D954124B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Wrappers", "..\Shared\StatsDownload.Wrappers\StatsDownload.Wrappers.csproj", "{545BE106-EDA6-4F8D-A868-7175C53F9065}"
 EndProject
@@ -73,10 +71,6 @@ Global
 		{AB832094-5E49-4719-BD70-C74685CE7EE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB832094-5E49-4719-BD70-C74685CE7EE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB832094-5E49-4719-BD70-C74685CE7EE4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{779E74DA-E020-4DF4-84C4-4372D954124B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{779E74DA-E020-4DF4-84C4-4372D954124B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{779E74DA-E020-4DF4-84C4-4372D954124B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{779E74DA-E020-4DF4-84C4-4372D954124B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{545BE106-EDA6-4F8D-A868-7175C53F9065}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{545BE106-EDA6-4F8D-A868-7175C53F9065}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{545BE106-EDA6-4F8D-A868-7175C53F9065}.Release|Any CPU.ActiveCfg = Release|Any CPU
