@@ -36,47 +36,7 @@
             systemUnderTest = NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock,
                 loggingServiceMock);
 
-            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
-                Arg.Any<ParameterDirection>()).Returns(info =>
-            {
-                var parameterName = info.Arg<string>();
-                var dbType = info.Arg<DbType>();
-                var direction = info.Arg<ParameterDirection>();
-
-                var dbParameter = Substitute.For<DbParameter>();
-                dbParameter.ParameterName.Returns(parameterName);
-                dbParameter.DbType.Returns(dbType);
-                dbParameter.Direction.Returns(direction);
-
-                if (dbType.Equals(DbType.Int32))
-                {
-                    dbParameter.Value.Returns(default(int));
-                }
-
-                return dbParameter;
-            });
-
-            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
-                Arg.Any<ParameterDirection>(), Arg.Any<int>()).Returns(info =>
-            {
-                var parameterName = info.Arg<string>();
-                var dbType = info.Arg<DbType>();
-                var direction = info.Arg<ParameterDirection>();
-                var size = info.Arg<int>();
-
-                var dbParameter = Substitute.For<DbParameter>();
-                dbParameter.ParameterName.Returns(parameterName);
-                dbParameter.DbType.Returns(dbType);
-                dbParameter.Direction.Returns(direction);
-                dbParameter.Size.Returns(size);
-
-                if (dbType.Equals(DbType.Int32))
-                {
-                    dbParameter.Value.Returns(default(int));
-                }
-
-                return dbParameter;
-            });
+            TestDatabaseProviderHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
             filePayload = new FilePayload
             {
