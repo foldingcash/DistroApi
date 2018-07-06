@@ -26,12 +26,12 @@
             this.commandTimeout = commandTimeout;
         }
 
+        public ConnectionState ConnectionState => sqlConnection.State;
+
         public void Close()
         {
             sqlConnection.Close();
         }
-
-        public ConnectionState ConnectionState => sqlConnection.State;
 
         public DbCommand CreateDbCommand()
         {
