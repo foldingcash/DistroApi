@@ -30,6 +30,8 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.DatabaseUnavailable));
+            Assert.That(actual.DistroCount, Is.Null);
+            Assert.That(actual.Distro, Is.Null);
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.DatabaseUnavailable));
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
@@ -45,6 +47,8 @@
             Assert.That(actual.Errors, Is.Null);
             Assert.That(actual.ErrorCount, Is.Null);
             Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.None));
+            Assert.That(actual.DistroCount, Is.EqualTo(1));
+            Assert.That(actual.Distro[0].BitcoinAddress, Is.EqualTo("address1"));
         }
     }
 }

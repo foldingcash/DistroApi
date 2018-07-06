@@ -22,7 +22,9 @@
                 return new DistroResponse(errors);
             }
 
-            return new DistroResponse();
+            IList<DistroUser> distro = new[] { new DistroUser("address1") };
+
+            return new DistroResponse(distro);
         }
 
         private void AddDatabaseUnavailableError(IList<DistroError> errors)
