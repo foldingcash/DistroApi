@@ -47,28 +47,19 @@
                     "The database is unavailable. Try again in a short period of time. If the problem continues, then contact the technical team."));
         }
 
-        [Test] //TODO: May want to deprecate this as the functionality is completed
-        public void GetDistro_WhenInvoked_GetsDistroUsersFromDatabase()
+        [Test]
+        public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
         {
             var distro = new List<DistroUser>();
             statsDownloadApiDatabaseServiceMock.GetDistroUsers().Returns(distro);
 
             DistroResponse actual = systemUnderTest.GetDistro();
 
-            Assert.That(actual.Distro, Is.EqualTo(distro));
-        }
-
-        [Test]
-        public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
-        {
-            DistroResponse actual = systemUnderTest.GetDistro();
-
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.Errors, Is.Null);
             Assert.That(actual.ErrorCount, Is.Null);
             Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.None));
-            Assert.That(actual.DistroCount, Is.EqualTo(1));
-            Assert.That(actual.Distro[0].BitcoinAddress, Is.EqualTo("address1"));
+            Assert.That(actual.Distro, Is.EqualTo(distro));
         }
 
         private IStatsDownloadApiService NewStatsDownloadApiProvider(
