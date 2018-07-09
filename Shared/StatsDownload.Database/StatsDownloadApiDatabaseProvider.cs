@@ -22,7 +22,7 @@
 
         public bool IsAvailable()
         {
-            throw new NotImplementedException();
+            return statsDownloadDatabaseService.IsAvailable();
         }
     }
 }

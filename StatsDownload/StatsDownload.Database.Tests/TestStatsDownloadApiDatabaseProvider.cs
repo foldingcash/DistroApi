@@ -16,11 +16,6 @@
             systemUnderTest = NewStatsDownloadApiDatabaseProvider(statsDownloadDatabaseServiceMock);
         }
 
-        private IStatsDownloadApiDatabaseService NewStatsDownloadApiDatabaseProvider(IStatsDownloadDatabaseService statsDownloadDatabaseService)
-        {
-            return new StatsDownloadApiDatabaseProvider(statsDownloadDatabaseService);
-        }
-
         private IStatsDownloadDatabaseService statsDownloadDatabaseServiceMock;
 
         private IStatsDownloadApiDatabaseService systemUnderTest;
@@ -31,6 +26,23 @@
             Assert.Throws<ArgumentNullException>(
                 () =>
                     NewStatsDownloadApiDatabaseProvider(null));
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void IsAvailable_WhenInvoked_ReturnsIsAvailable(bool expected)
+        {
+            statsDownloadDatabaseServiceMock.IsAvailable().Returns(expected);
+
+            bool actual = systemUnderTest.IsAvailable();
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        private IStatsDownloadApiDatabaseService NewStatsDownloadApiDatabaseProvider(
+            IStatsDownloadDatabaseService statsDownloadDatabaseService)
+        {
+            return new StatsDownloadApiDatabaseProvider(statsDownloadDatabaseService);
         }
     }
 }
