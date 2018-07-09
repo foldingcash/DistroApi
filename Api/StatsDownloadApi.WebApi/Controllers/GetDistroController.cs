@@ -1,7 +1,7 @@
 ﻿namespace StatsDownloadApi.WebApi.Controllers
 {
     using CastleWindsor;
-    using Core;
+    using Interfaces;
     using Microsoft.AspNetCore.Mvc;
 
     [Produces("application/json")]
@@ -11,16 +11,16 @@
         [HttpGet]
         public DistroResponse Get()
         {
-            IStatsDownloadApi api = null;
+            IStatsDownloadApiService apiService = null;
             try
             {
-                api = WindsorContainer.Instance.Resolve<IStatsDownloadApi>();
-                var response = api.GetDistro();
+                apiService = WindsorContainer.Instance.Resolve<IStatsDownloadApiService>();
+                DistroResponse response = apiService.GetDistro();
                 return response;
             }
             finally
             {
-                WindsorContainer.Instance.Release(api);
+                WindsorContainer.Instance.Release(apiService);
             }
         }
     }

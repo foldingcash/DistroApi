@@ -34,14 +34,9 @@
 
         public DbCommand CreateDbCommand()
         {
-            DbCommand dbCommand = sqlConnection.CreateCommand();
-            SetCommandTimeout(dbCommand);
-            return dbCommand;
-        }
-
-        public DbTransaction CreateTransaction()
-        {
-            return sqlConnection.BeginTransaction();
+            DbCommand command = sqlConnection.CreateCommand();
+            SetCommandTimeout(command);
+            return command;
         }
 
         public DbParameter CreateParameter(string parameterName, DbType dbType, ParameterDirection direction)
@@ -67,6 +62,11 @@
                 parameter.Size = size;
                 return parameter;
             }
+        }
+
+        public DbTransaction CreateTransaction()
+        {
+            return sqlConnection.BeginTransaction();
         }
 
         public void Dispose()
@@ -99,10 +99,8 @@
 
         public int ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters)
         {
-            using (DbCommand command = CreateDbCommand())
+            using (DbCommand command = CreateStoredProcedureCommand(storedProcedure))
             {
-                command.CommandText = storedProcedure;
-                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddRange(parameters?.ToArray() ?? new DbParameter[0]);
                 return command.ExecuteNonQuery();
             }
@@ -111,10 +109,8 @@
         public int ExecuteStoredProcedure(DbTransaction transaction, string storedProcedure,
             IEnumerable<DbParameter> parameters)
         {
-            using (DbCommand command = CreateDbCommand())
+            using (DbCommand command = CreateStoredProcedureCommand(storedProcedure))
             {
-                command.CommandText = storedProcedure;
-                command.CommandType = CommandType.StoredProcedure;
                 command.Transaction = transaction;
                 command.Parameters.AddRange(parameters?.ToArray() ?? new DbParameter[0]);
                 return command.ExecuteNonQuery();
@@ -123,7 +119,16 @@
 
         public int ExecuteStoredProcedure(string storedProcedure)
         {
-            return ExecuteStoredProcedure(storedProcedure, null);
+            return ExecuteStoredProcedure(storedProcedure, (IEnumerable<DbParameter>) null);
+        }
+
+        public void ExecuteStoredProcedure(string storedProcedure, DataTable dataTable)
+        {
+            using (IDbCommand command = CreateStoredProcedureCommand(storedProcedure))
+            using (IDataReader reader = command.ExecuteReader())
+            {
+                dataTable.Load(reader);
+            }
         }
 
         public void Open()
@@ -131,10 +136,20 @@
             sqlConnection.Open();
         }
 
-        private void SetCommandTimeout(DbCommand dbCommand)
+        public DbCommand CreateStoredProcedureCommand(string storedProcedure)
+        {
+            DbCommand command = CreateDbCommand();
+            command.CommandText = storedProcedure;
+            command.CommandType = CommandType.StoredProcedure;
+            return command;
+        }
+
+        private void SetCommandTimeout(DbCommand command)
         {
             if (commandTimeout.HasValue)
-                dbCommand.CommandTimeout = commandTimeout.Value;
+            {
+                command.CommandTimeout = commandTimeout.Value;
+            }
         }
     }
 }

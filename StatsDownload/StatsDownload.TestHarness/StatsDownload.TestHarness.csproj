@@ -87,7 +87,7 @@
     <Compile Include="TestHarnessSettingsProvider.cs" />
     <Compile Include="TestHarnessLoggingProvider.cs" />
     <Compile Include="TestHarnessOneHundredUsersFilter.cs" />
-    <Compile Include="TestHarnessStatsDownloadDatabaseProvider.cs" />
+    <Compile Include="TestHarnessStatsUploadDatabaseProvider.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -116,6 +116,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Shared\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj">
+      <Project>{D829CE72-1B6E-421F-8ED9-C4D24DD3CCC7}</Project>
+      <Name>StatsDownload.Core.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Shared\StatsDownload.Database.CastleWindsor\StatsDownload.Database.CastleWindsor.csproj">
       <Project>{EA7CC5F6-ED7B-4483-9B90-1E06F9128D38}</Project>
       <Name>StatsDownload.Database.CastleWindsor</Name>
@@ -128,13 +132,13 @@
       <Project>{7E3039C8-E356-4C20-93CC-2F395F82F11F}</Project>
       <Name>StatsDownload.Extensions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Shared\StatsDownload.Logging\StatsDownload.Logging.csproj">
+      <Project>{B28ED1BF-ECA6-4334-998B-A7674D509DC6}</Project>
+      <Name>StatsDownload.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Shared\StatsDownload.Wrappers\StatsDownload.Wrappers.csproj">
       <Project>{E449C9B2-F60D-457D-B2F7-A31058513C88}</Project>
       <Name>StatsDownload.Wrappers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj">
-      <Project>{9385A349-8796-4473-A3E0-EDFE3AFEEDE9}</Project>
-      <Name>StatsDownload.Core.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj">
       <Project>{9C2C5AA3-9E2C-4A2F-97E3-081633B83F6D}</Project>
@@ -143,10 +147,6 @@
     <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">
       <Project>{8098BF8B-6DE5-4F35-8C5B-F0296FDE5CD0}</Project>
       <Name>StatsDownload.Email</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StatsDownload.Logging\StatsDownload.Logging.csproj">
-      <Project>{C1736684-1DED-4D9B-848E-CD857E9478F5}</Project>
-      <Name>StatsDownload.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj">
       <Project>{C37684C9-D044-4D42-B10F-3D670A95293E}</Project>

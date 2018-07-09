@@ -40,7 +40,8 @@
                 Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DatabaseFactoryComponentSelector>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(selector =>
                     selector.SelectedWith<DatabaseFactoryComponentSelector>()),
-                Component.For<IStatsUploadDatabaseService>().ImplementedBy<StatsDownloadDatabaseProvider>(),
+                Component.For<IStatsDownloadDatabaseService>().ImplementedBy<StatsDownloadDatabaseProvider>(),
+                Component.For<IStatsUploadDatabaseService>().ImplementedBy<StatsUploadDatabaseProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),

@@ -5,6 +5,8 @@
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
     using Core;
+    using Database;
+    using Interfaces;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Database;
@@ -33,7 +35,8 @@
                 Component
                     .For<IStatsDownloadDatabaseService>()
                     .ImplementedBy<StatsDownloadDatabaseProvider>(),
-                Component.For<IStatsDownloadApi>().ImplementedBy<StatsDownloadApi>());
+                Component.For<IStatsDownloadApiDatabaseService>().ImplementedBy<StatsDownloadApiDatabaseProvider>(),
+                Component.For<IStatsDownloadApiService>().ImplementedBy<StatsDownloadApiProvider>());
         }
     }
 }

@@ -74,6 +74,14 @@
                                         + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}");
         }
 
+        [Test]
+        public void LogMethodInvoked_WhenInvoked_LogsMethodInvoked()
+        {
+            systemUnderTest.LogMethodInvoked();
+
+            loggingServiceMock.Received().LogMethodInvoked(nameof(LogMethodInvoked_WhenInvoked_LogsMethodInvoked));
+        }
+
         [TestCase(150)]
         [TestCase(50)]
         [TestCase(0)]

@@ -1,13 +1,15 @@
-﻿namespace StatsDownloadApi.Core
+﻿namespace StatsDownloadApi.Interfaces
 {
     using System.Collections.Generic;
     using System.Linq;
+    using DataTransfer;
 
     public class DistroResponse
     {
-        public DistroResponse()
+        public DistroResponse(IList<DistroUser> distro)
         {
             Success = true;
+            Distro = distro;
         }
 
         public DistroResponse(IList<DistroError> errors)
@@ -15,6 +17,10 @@
             Success = false;
             Errors = errors;
         }
+
+        public IList<DistroUser> Distro { get; }
+
+        public int? DistroCount => Distro?.Count;
 
         public int? ErrorCount => Errors?.Count;
 

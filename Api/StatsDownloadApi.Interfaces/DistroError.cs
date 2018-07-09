@@ -1,4 +1,4 @@
-﻿namespace StatsDownloadApi.Core
+﻿namespace StatsDownloadApi.Interfaces
 {
     public class DistroError
     {
