@@ -1,10 +1,10 @@
-IF OBJECT_ID('FoldingCoin.GetDistro') IS NOT NULL
+IF OBJECT_ID('FoldingCoin.GetDistroUsers') IS NOT NULL
 	BEGIN
-		DROP PROCEDURE [FoldingCoin].[GetDistro];
+		DROP PROCEDURE [FoldingCoin].[GetDistroUsers];
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[GetDistro]
+CREATE PROCEDURE [FoldingCoin].[GetDistroUsers]
 AS
 
 BEGIN

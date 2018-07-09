@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
     using Interfaces;
     using Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces;
@@ -18,7 +19,18 @@
 
         public IList<DistroUser> GetDistroUsers()
         {
-            throw new NotImplementedException();
+            var users = new List<DistroUser>();
+            statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
+            {
+                var dataTable = new DataTable();
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetDistroUsers]", dataTable);
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    users.Add(new DistroUser(row["BitcoinAddress"] as string));
+                }
+            });
+            return users;
         }
 
         public bool IsAvailable()
