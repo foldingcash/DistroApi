@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Interfaces
+﻿namespace StatsDownloadApi.Interfaces
 {
     using System.Collections.Generic;
     using DataTransfer;

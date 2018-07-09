@@ -1,9 +1,10 @@
-﻿namespace StatsDownload.Database
+﻿namespace StatsDownloadApi.Database
 {
     using System;
     using System.Collections.Generic;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
+    using Interfaces;
+    using Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces;
 
     public class StatsDownloadApiDatabaseProvider : IStatsDownloadApiDatabaseService
     {

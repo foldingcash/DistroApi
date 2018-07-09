@@ -31,9 +31,12 @@
                     service.Invoke(databaseConnectionServiceMock);
                 });
 
+            statsDownloadDatabaseParameterServiceMock = Substitute.For<IStatsDownloadDatabaseParameterService>();
+
             loggingServiceMock = Substitute.For<ILoggingService>();
 
             systemUnderTest = NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock,
+                statsDownloadDatabaseParameterServiceMock,
                 loggingServiceMock);
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
@@ -58,11 +61,11 @@
 
             downloadIdParameterMock = Substitute.For<DbParameter>();
             downloadIdParameterMock.Value.Returns(100);
-            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 100)
-                                            .Returns(downloadIdParameterMock);
-            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock)
-                                            .Returns(downloadIdParameterMock);
-            statsDownloadDatabaseServiceMock
+            statsDownloadDatabaseParameterServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 100)
+                                                     .Returns(downloadIdParameterMock);
+            statsDownloadDatabaseParameterServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock)
+                                                     .Returns(downloadIdParameterMock);
+            statsDownloadDatabaseParameterServiceMock
                 .CreateDownloadIdParameter(databaseConnectionServiceMock, ParameterDirection.Output)
                 .Returns(downloadIdParameterMock);
 
@@ -85,6 +88,8 @@
 
         private ILoggingService loggingServiceMock;
 
+        private IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterServiceMock;
+
         private IStatsDownloadDatabaseService statsDownloadDatabaseServiceMock;
 
         private IFileDownloadDatabaseService systemUnderTest;
@@ -94,10 +99,15 @@
         {
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewFileDownloadDatabaseProvider(null, loggingServiceMock));
+                    NewFileDownloadDatabaseProvider(null, statsDownloadDatabaseParameterServiceMock,
+                        loggingServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock, null));
+                    NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock, null, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock,
+                        statsDownloadDatabaseParameterServiceMock, null));
         }
 
         [Test]
@@ -113,7 +123,7 @@
                                                      Arg.Any<List<DbParameter>>()))
                                          .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            statsDownloadDatabaseServiceMock.CreateErrorMessageParameter(databaseConnectionServiceMock,
+            statsDownloadDatabaseParameterServiceMock.CreateErrorMessageParameter(databaseConnectionServiceMock,
                 fileDownloadResult).Returns(errorMessageParameterMock);
 
             InvokeFileDownloadError();
@@ -250,7 +260,7 @@
 
             Assert.That(actualParameters.Count, Is.EqualTo(1));
             Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
-            statsDownloadDatabaseServiceMock
+            statsDownloadDatabaseParameterServiceMock
                 .Received().CreateDownloadIdParameter(databaseConnectionServiceMock, ParameterDirection.Output);
         }
 
@@ -261,8 +271,8 @@
             dbParameter.Value.Returns(100);
 
             databaseConnectionServiceMock.ClearSubstitute();
-            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock)
-                                            .Returns(dbParameter);
+            statsDownloadDatabaseParameterServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock)
+                                                     .Returns(dbParameter);
 
             InvokeNewFileDownloadStarted();
 
@@ -316,9 +326,11 @@
         }
 
         private IFileDownloadDatabaseService NewFileDownloadDatabaseProvider(
-            IStatsDownloadDatabaseService statsDownloadDatabaseService, ILoggingService loggingService)
+            IStatsDownloadDatabaseService statsDownloadDatabaseService,
+            IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterService,
+            ILoggingService loggingService)
         {
-            return new FileDownloadDatabaseProvider(statsDownloadDatabaseService,
+            return new FileDownloadDatabaseProvider(statsDownloadDatabaseService, statsDownloadDatabaseParameterService,
                 loggingService);
         }
     }

@@ -1,7 +1,7 @@
 ﻿namespace StatsDownloadApi.WebApi.Controllers
 {
     using CastleWindsor;
-    using Core;
+    using Interfaces;
     using Microsoft.AspNetCore.Mvc;
 
     [Produces("application/json")]

@@ -12,13 +12,19 @@
     {
         private readonly ILoggingService loggingService;
 
+        private readonly IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterService;
+
         private readonly IStatsDownloadDatabaseService statsDownloadDatabaseService;
 
         public FileDownloadDatabaseProvider(IStatsDownloadDatabaseService statsDownloadDatabaseService,
+            IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterService,
             ILoggingService loggingService)
         {
             this.statsDownloadDatabaseService = statsDownloadDatabaseService ??
                                                 throw new ArgumentNullException(nameof(statsDownloadDatabaseService));
+            this.statsDownloadDatabaseParameterService = statsDownloadDatabaseParameterService ??
+                                                         throw new ArgumentNullException(
+                                                             nameof(statsDownloadDatabaseParameterService));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
@@ -69,7 +75,7 @@
 
         private DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection, int downloadId)
         {
-            return statsDownloadDatabaseService.CreateDownloadIdParameter(databaseConnection, downloadId);
+            return statsDownloadDatabaseParameterService.CreateDownloadIdParameter(databaseConnection, downloadId);
         }
 
         private void FileDownloadError(IDatabaseConnectionService databaseConnection,
@@ -80,7 +86,8 @@
             DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, filePayload.DownloadId);
 
             DbParameter errorMessage =
-                statsDownloadDatabaseService.CreateErrorMessageParameter(databaseConnection, fileDownloadResult);
+                statsDownloadDatabaseParameterService.CreateErrorMessageParameter(databaseConnection,
+                    fileDownloadResult);
 
             databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.FileDownloadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });
@@ -122,7 +129,8 @@
         private int NewFileDownloadStarted(IDatabaseConnectionService databaseConnection)
         {
             DbParameter downloadId =
-                statsDownloadDatabaseService.CreateDownloadIdParameter(databaseConnection, ParameterDirection.Output);
+                statsDownloadDatabaseParameterService.CreateDownloadIdParameter(databaseConnection,
+                    ParameterDirection.Output);
 
             databaseConnection.ExecuteStoredProcedure(
                 Constants.StatsDownloadDatabase.NewFileDownloadStartedProcedureName,

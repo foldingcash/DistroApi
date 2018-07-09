@@ -2,10 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using NSubstitute;
     using NUnit.Framework;
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestStatsDownloadApiProvider

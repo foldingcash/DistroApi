@@ -32,11 +32,14 @@
                     service.Invoke(databaseConnectionServiceMock);
                 });
 
+            statsDownloadDatabaseParameterServiceMock = Substitute.For<IStatsDownloadDatabaseParameterService>();
+
             loggingServiceMock = Substitute.For<ILoggingService>();
 
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
-            systemUnderTest = NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock, loggingServiceMock,
+            systemUnderTest = NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock,
+                statsDownloadDatabaseParameterServiceMock, loggingServiceMock,
                 errorMessageServiceMock);
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
@@ -50,19 +53,19 @@
                 .Returns(dbDataReaderMock);
 
             downloadIdParameterMock = Substitute.For<DbParameter>();
-            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 100)
-                                            .Returns(downloadIdParameterMock);
-            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 200)
-                                            .Returns(downloadIdParameterMock);
-            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 300)
-                                            .Returns(downloadIdParameterMock);
-            statsDownloadDatabaseServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock)
-                                            .Returns(downloadIdParameterMock);
+            statsDownloadDatabaseParameterServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 100)
+                                                     .Returns(downloadIdParameterMock);
+            statsDownloadDatabaseParameterServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 200)
+                                                     .Returns(downloadIdParameterMock);
+            statsDownloadDatabaseParameterServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock, 300)
+                                                     .Returns(downloadIdParameterMock);
+            statsDownloadDatabaseParameterServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock)
+                                                     .Returns(downloadIdParameterMock);
 
             errorMessageParameterMock = Substitute.For<DbParameter>();
             rejectionReasonParameterMock = Substitute.For<DbParameter>();
-            statsDownloadDatabaseServiceMock.CreateRejectionReasonParameter(databaseConnectionServiceMock)
-                                            .Returns(rejectionReasonParameterMock);
+            statsDownloadDatabaseParameterServiceMock.CreateRejectionReasonParameter(databaseConnectionServiceMock)
+                                                     .Returns(rejectionReasonParameterMock);
         }
 
         private IDatabaseConnectionService databaseConnectionServiceMock;
@@ -78,6 +81,8 @@
         private ILoggingService loggingServiceMock;
 
         private DbParameter rejectionReasonParameterMock;
+
+        private IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterServiceMock;
 
         private IStatsDownloadDatabaseService statsDownloadDatabaseServiceMock;
 
@@ -392,12 +397,22 @@
         {
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewStatsUploadDatabaseProvider(null, loggingServiceMock,
+                    NewStatsUploadDatabaseProvider(null, statsDownloadDatabaseParameterServiceMock, loggingServiceMock,
                         errorMessageServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock, null,
+                    NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock, null, loggingServiceMock,
                         errorMessageServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock,
+                        statsDownloadDatabaseParameterServiceMock, null,
+                        errorMessageServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock,
+                        statsDownloadDatabaseParameterServiceMock, loggingServiceMock,
+                        null));
         }
 
         [Test]
@@ -585,8 +600,9 @@
 
             var uploadResult = new StatsUploadResult(100, FailedReason.UnexpectedException);
 
-            statsDownloadDatabaseServiceMock.CreateErrorMessageParameter(databaseConnectionServiceMock, uploadResult)
-                                            .Returns(errorMessageParameterMock);
+            statsDownloadDatabaseParameterServiceMock
+                .CreateErrorMessageParameter(databaseConnectionServiceMock, uploadResult)
+                .Returns(errorMessageParameterMock);
 
             systemUnderTest.StatsUploadError(uploadResult);
 
@@ -649,10 +665,12 @@
         }
 
         private IStatsUploadDatabaseService NewStatsUploadDatabaseProvider(
-            IStatsDownloadDatabaseService statsDownloadDatabaseService, ILoggingService loggingService,
+            IStatsDownloadDatabaseService statsDownloadDatabaseService,
+            IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterService,
+            ILoggingService loggingService,
             IErrorMessageService errorMessageService)
         {
-            return new StatsUploadDatabaseProvider(statsDownloadDatabaseService,
+            return new StatsUploadDatabaseProvider(statsDownloadDatabaseService, statsDownloadDatabaseParameterService,
                 loggingService, errorMessageService);
         }
 

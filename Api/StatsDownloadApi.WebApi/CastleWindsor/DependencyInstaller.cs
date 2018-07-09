@@ -5,6 +5,7 @@
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
     using Core;
+    using Interfaces;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Database;

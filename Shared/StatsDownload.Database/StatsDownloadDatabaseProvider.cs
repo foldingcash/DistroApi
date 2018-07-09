@@ -4,8 +4,6 @@
     using System.Data;
     using System.Data.Common;
     using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
-    using Core.Interfaces.Enums;
     using Core.Interfaces.Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
@@ -16,13 +14,11 @@
 
         private readonly IDatabaseConnectionSettingsService databaseConnectionSettingsService;
 
-        private readonly IErrorMessageService errorMessageService;
-
         private readonly ILoggingService loggingService;
 
         public StatsDownloadDatabaseProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
-            ILoggingService loggingService, IErrorMessageService errorMessageService)
+            ILoggingService loggingService)
         {
             this.databaseConnectionSettingsService = databaseConnectionSettingsService ??
                                                      throw new ArgumentNullException(
@@ -31,8 +27,6 @@
                                                     throw new ArgumentNullException(
                                                         nameof(databaseConnectionServiceFactory));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
-            this.errorMessageService =
-                errorMessageService ?? throw new ArgumentNullException(nameof(errorMessageService));
         }
 
         public void Commit(DbTransaction transaction)
@@ -48,49 +42,6 @@
             IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(connectionString, commandTimeout);
             EnsureDatabaseConnectionOpened(databaseConnection);
             action?.Invoke(databaseConnection);
-        }
-
-        public DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection, int downloadId)
-        {
-            DbParameter downloadIdParameter = CreateDownloadIdParameter(databaseConnection);
-            downloadIdParameter.Value = downloadId;
-            return downloadIdParameter;
-        }
-
-        public DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection)
-        {
-            return databaseConnection.CreateParameter("@DownloadId", DbType.Int32, ParameterDirection.Input);
-        }
-
-        public DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection,
-            ParameterDirection direction)
-        {
-            DbParameter downloadIdParameter = CreateDownloadIdParameter(databaseConnection);
-            downloadIdParameter.Direction = direction;
-            return downloadIdParameter;
-        }
-
-        public DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection,
-            FileDownloadResult fileDownloadResult)
-        {
-            FilePayload filePayload = fileDownloadResult.FilePayload;
-            string message = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason, filePayload,
-                StatsDownloadService.FileDownload);
-            return CreateErrorMessageParameter(databaseConnection, message);
-        }
-
-        public DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection,
-            StatsUploadResult statsUploadResult)
-        {
-            string message =
-                errorMessageService.GetErrorMessage(statsUploadResult.FailedReason, StatsDownloadService.StatsUpload);
-            return CreateErrorMessageParameter(databaseConnection, message);
-        }
-
-        public DbParameter CreateRejectionReasonParameter(IDatabaseConnectionService databaseConnection)
-        {
-            return databaseConnection.CreateParameter("@RejectionReason",
-                DbType.String, ParameterDirection.Input);
         }
 
         public DbTransaction CreateTransaction()
@@ -126,14 +77,6 @@
         private IDatabaseConnectionService CreateDatabaseConnection(string connectionString, int? commandTimeout)
         {
             return databaseConnectionServiceFactory.Create(connectionString, commandTimeout);
-        }
-
-        private DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection, string message)
-        {
-            DbParameter errorMessage = databaseConnection.CreateParameter("@ErrorMessage", DbType.String,
-                ParameterDirection.Input);
-            errorMessage.Value = message;
-            return errorMessage;
         }
 
         private DbTransaction CreateTransaction(IDatabaseConnectionService service)

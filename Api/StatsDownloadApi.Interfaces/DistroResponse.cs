@@ -1,8 +1,8 @@
-﻿namespace StatsDownloadApi.Core
+﻿namespace StatsDownloadApi.Interfaces
 {
     using System.Collections.Generic;
     using System.Linq;
-    using StatsDownload.Core.Interfaces.DataTransfer;
+    using DataTransfer;
 
     public class DistroResponse
     {

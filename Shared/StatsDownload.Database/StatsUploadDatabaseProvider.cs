@@ -16,13 +16,19 @@
 
         private readonly ILoggingService loggingService;
 
+        private readonly IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterService;
+
         private readonly IStatsDownloadDatabaseService statsDownloadDatabaseService;
 
         public StatsUploadDatabaseProvider(IStatsDownloadDatabaseService statsDownloadDatabaseService,
+            IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterService,
             ILoggingService loggingService, IErrorMessageService errorMessageService)
         {
             this.statsDownloadDatabaseService = statsDownloadDatabaseService ??
                                                 throw new ArgumentNullException(nameof(statsDownloadDatabaseService));
+            this.statsDownloadDatabaseParameterService = statsDownloadDatabaseParameterService ??
+                                                         throw new ArgumentNullException(
+                                                             nameof(statsDownloadDatabaseParameterService));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
             this.errorMessageService =
                 errorMessageService ?? throw new ArgumentNullException(nameof(errorMessageService));
@@ -211,7 +217,7 @@
                 DownloadId = CreateDownloadIdParameter(databaseConnection),
                 LineNumber = CreateLineNumberParameter(databaseConnection),
                 RejectionReason =
-                    statsDownloadDatabaseService.CreateRejectionReasonParameter(databaseConnection)
+                    statsDownloadDatabaseParameterService.CreateRejectionReasonParameter(databaseConnection)
             };
         }
 
@@ -222,12 +228,12 @@
 
         private DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection, int downloadId)
         {
-            return statsDownloadDatabaseService.CreateDownloadIdParameter(databaseConnection, downloadId);
+            return statsDownloadDatabaseParameterService.CreateDownloadIdParameter(databaseConnection, downloadId);
         }
 
         private DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection)
         {
-            return statsDownloadDatabaseService.CreateDownloadIdParameter(databaseConnection);
+            return statsDownloadDatabaseParameterService.CreateDownloadIdParameter(databaseConnection);
         }
 
         private DbParameter CreateLineNumberParameter(IDatabaseConnectionService databaseConnection)
@@ -318,7 +324,8 @@
         {
             DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, statsUploadResult.DownloadId);
             DbParameter errorMessage =
-                statsDownloadDatabaseService.CreateErrorMessageParameter(databaseConnection, statsUploadResult);
+                statsDownloadDatabaseParameterService.CreateErrorMessageParameter(databaseConnection,
+                    statsUploadResult);
 
             ExecuteStoredProcedure(databaseConnection, Constants.StatsDownloadDatabase.StatsUploadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });

@@ -1,9 +1,10 @@
-﻿namespace StatsDownload.Database.Tests
+﻿namespace StatsDownloadApi.Database.Tests
 {
     using System;
-    using Core.Interfaces;
+    using Interfaces;
     using NSubstitute;
     using NUnit.Framework;
+    using StatsDownload.Core.Interfaces;
 
     [TestFixture]
     public class TestStatsDownloadApiDatabaseProvider
