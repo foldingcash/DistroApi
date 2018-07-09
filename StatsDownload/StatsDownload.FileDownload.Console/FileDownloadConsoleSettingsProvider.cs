@@ -12,6 +12,11 @@
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
         IEmailSettingsService
     {
+        public string GetAcceptAnySslCert()
+        {
+            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
+        }
+
         public int? GetCommandTimeout()
         {
             string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
@@ -31,11 +36,6 @@
             return ConfigurationManager.AppSettings["DatabaseType"];
         }
 
-        public string GetAcceptAnySslCert()
-        {
-            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
-        }
-
         public string GetDownloadDirectory()
         {
             return ConfigurationManager.AppSettings["DownloadDirectory"]
@@ -52,11 +52,6 @@
             return ConfigurationManager.AppSettings["DownloadUri"];
         }
 
-        public string GetMinimumWaitTimeInHours()
-        {
-            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
-        }
-
         public string GetFromAddress()
         {
             return ConfigurationManager.AppSettings["FromAddress"];
@@ -65,6 +60,11 @@
         public string GetFromDisplayName()
         {
             return ConfigurationManager.AppSettings["DisplayName"];
+        }
+
+        public string GetMinimumWaitTimeInHours()
+        {
+            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
         }
 
         public string GetPassword()
