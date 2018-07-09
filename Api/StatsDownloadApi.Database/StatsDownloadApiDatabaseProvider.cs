@@ -23,7 +23,8 @@
             statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
                 var dataTable = new DataTable();
-                service.ExecuteStoredProcedure("[FoldingCoin].[GetDistroUsers]", dataTable);
+                service.ExecuteStoredProcedure(Constants.StatsDownloadApiDatabase.GetDistroUsersProcedureName,
+                    dataTable);
 
                 foreach (DataRow row in dataTable.Rows)
                 {

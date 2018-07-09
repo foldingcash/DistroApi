@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Database\StatsDownload.Database.csproj" />
     <ProjectReference Include="..\StatsDownloadApi.Interfaces\StatsDownloadApi.Interfaces.csproj" />
   </ItemGroup>
 

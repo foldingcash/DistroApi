@@ -4,9 +4,9 @@
     {
         public static class StatsDownloadDatabase
         {
-            private const string DatabaseSchema = "[FoldingCoin]";
+            public const string DatabaseSchema = "[FoldingCoin]";
 
-            private const string SchemaSeparator = ".";
+            public const string SchemaSeparator = ".";
 
             public static readonly string AddUserDataProcedureName = $"{DatabaseSchema}{SchemaSeparator}[AddUserData]";
 
