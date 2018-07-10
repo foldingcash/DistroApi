@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Data.Common;
     using Interfaces;
     using Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces;
@@ -17,13 +18,22 @@
                                                 throw new ArgumentNullException(nameof(statsDownloadDatabaseService));
         }
 
-        public IList<DistroUser> GetDistroUsers()
+        public IList<DistroUser> GetDistroUsers(DateTime startDate, DateTime endDate)
         {
             var users = new List<DistroUser>();
             statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
+                DbParameter startDateParameter =
+                    service.CreateParameter("@StartDate", DbType.Date, ParameterDirection.Input);
+                DbParameter endDateParameter =
+                    service.CreateParameter("@EndDate", DbType.Date, ParameterDirection.Input);
+
+                startDateParameter.Value = startDate;
+                endDateParameter.Value = endDate;
+
                 var dataTable = new DataTable();
                 service.ExecuteStoredProcedure(Constants.StatsDownloadApiDatabase.GetDistroUsersProcedureName,
+                    new[] { startDateParameter, endDateParameter },
                     dataTable);
 
                 foreach (DataRow row in dataTable.Rows)

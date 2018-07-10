@@ -3,11 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Data.Common;
+    using System.Linq;
     using Interfaces;
     using Interfaces.DataTransfer;
     using NSubstitute;
     using NUnit.Framework;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Database.Tests;
 
     [TestFixture]
     public class TestStatsDownloadApiDatabaseProvider
@@ -28,6 +31,8 @@
                     service.Invoke(databaseConnectionServiceMock);
                 });
 
+            DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
+
             systemUnderTest = NewStatsDownloadApiDatabaseProvider(statsDownloadDatabaseServiceMock);
         }
 
@@ -46,10 +51,37 @@
         }
 
         [Test]
+        public void GetDistroUsers_WhenInvoked_GetDistroUsersParametersAreProvided()
+        {
+            IEnumerable<DbParameter> actualParameters = null;
+
+            databaseConnectionServiceMock.When(service =>
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetDistroUsers]",
+                    Arg.Any<IEnumerable<DbParameter>>(),
+                    Arg.Any<DataTable>())).Do(callInfo =>
+            {
+                actualParameters = callInfo.Arg<IEnumerable<DbParameter>>();
+            });
+
+            systemUnderTest.GetDistroUsers(DateTime.MinValue, DateTime.MaxValue);
+
+            Assert.That(actualParameters.Count, Is.EqualTo(2));
+            Assert.That(actualParameters.ElementAt(0).ParameterName, Is.EqualTo("@StartDate"));
+            Assert.That(actualParameters.ElementAt(0).DbType, Is.EqualTo(DbType.Date));
+            Assert.That(actualParameters.ElementAt(0).Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters.ElementAt(0).Value, Is.EqualTo(DateTime.MinValue));
+            Assert.That(actualParameters.ElementAt(1).ParameterName, Is.EqualTo("@EndDate"));
+            Assert.That(actualParameters.ElementAt(1).DbType, Is.EqualTo(DbType.Date));
+            Assert.That(actualParameters.ElementAt(1).Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters.ElementAt(1).Value, Is.EqualTo(DateTime.MaxValue));
+        }
+
+        [Test]
         public void GetDistroUsers_WhenInvoked_GetsDistroUsers()
         {
             databaseConnectionServiceMock.When(service =>
                 service.ExecuteStoredProcedure("[FoldingCoin].[GetDistroUsers]",
+                    Arg.Any<IEnumerable<DbParameter>>(),
                     Arg.Any<DataTable>())).Do(callInfo =>
             {
                 var dataTable = callInfo.Arg<DataTable>();
@@ -63,7 +95,7 @@
                 dataTable.AcceptChanges();
             });
 
-            IList<DistroUser> actual = systemUnderTest.GetDistroUsers();
+            IList<DistroUser> actual = systemUnderTest.GetDistroUsers(DateTime.MinValue, DateTime.MaxValue);
 
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[0].BitcoinAddress, Is.EqualTo("BitcoinAddress1"));
