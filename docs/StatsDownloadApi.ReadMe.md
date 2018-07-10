@@ -40,6 +40,8 @@ The stats API is used to expose the stats data in the stats database.
 | Error Code | Resolution |
 |:----------:|------------|
 |    0000    | No errors were encountered. |
+|    1000    | The start date was not parsable to a DateTime object; includes not providing a value, a string value, invalid date, lower bound, and upper bound. The default format is MM-DD-YYYY. |
+|    1005    | The end date was not parsable to a DateTime object; includes not providing a value, a string value, invalid date, lower bound, and upper bound. The default format is MM-DD-YYYY. |
 |    8000    | Database is unavailable. Wait a short period of time before trying to connect again. If the problem continues, then contact the technical advisor. |
 	
 ## Running the tests
