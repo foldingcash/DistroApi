@@ -57,11 +57,11 @@
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.StartDateInvalid));
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
-                    "The start date is invalid, ensure the start date was provided as a query parameter in the format MM-DD-YYYY and greater than or equal to 01-01-0001."));
+                    "The start date is invalid, ensure the start date was provided as a query parameter in the format MM-DD-YYYY and greater than or equal to 01-01-0001 and less than or equal to 12-31-9999."));
             Assert.That(actual.Errors?[1].ErrorCode, Is.EqualTo(DistroErrorCode.EndDateInvalid));
             Assert.That(actual.Errors?[1].ErrorMessage,
                 Is.EqualTo(
-                    "The end date is invalid, ensure the end date was provided as a query parameter in the format MM-DD-YYYY and greater than or equal to 01-01-0001."));
+                    "The end date is invalid, ensure the end date was provided as a query parameter in the format MM-DD-YYYY and greater than or equal to 01-01-0001 and less than or equal to 12-31-9999."));
         }
 
         [Test]
