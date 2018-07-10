@@ -15,22 +15,31 @@
                                                        nameof(statsDownloadApiDatabaseService));
         }
 
-        public DistroResponse GetDistro()
+        public DistroResponse GetDistro(DateTime? startDate, DateTime? endDate)
         {
             IList<DistroError> errors = new List<DistroError>();
 
+            if (startDate == null)
+            {
+                errors.Add(Constants.DistroErrors.StartDateInvalid);
+            }
+
+            if (endDate == null)
+            {
+                errors.Add(Constants.DistroErrors.EndDateInvalid);
+            }
+
             if (!statsDownloadApiDatabaseService.IsAvailable())
             {
-                AddDatabaseUnavailableError(errors);
+                errors.Add(Constants.DistroErrors.DatabaseUnavailable);
+            }
+
+            if (errors.Count > 0)
+            {
                 return new DistroResponse(errors);
             }
 
             return new DistroResponse(statsDownloadApiDatabaseService.GetDistroUsers());
-        }
-
-        private void AddDatabaseUnavailableError(IList<DistroError> errors)
-        {
-            errors.Add(Constants.DistroErrors.DatabaseUnavailable);
         }
     }
 }

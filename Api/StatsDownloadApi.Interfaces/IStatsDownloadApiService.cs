@@ -1,7 +1,9 @@
 ﻿namespace StatsDownloadApi.Interfaces
 {
+    using System;
+
     public interface IStatsDownloadApiService
     {
-        DistroResponse GetDistro();
+        DistroResponse GetDistro(DateTime? startDate, DateTime? endDate);
     }
 }

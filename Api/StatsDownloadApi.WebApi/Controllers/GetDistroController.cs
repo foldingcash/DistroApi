@@ -1,5 +1,6 @@
 ﻿namespace StatsDownloadApi.WebApi.Controllers
 {
+    using System;
     using CastleWindsor;
     using Interfaces;
     using Microsoft.AspNetCore.Mvc;
@@ -9,13 +10,13 @@
     public class GetDistroController : Controller
     {
         [HttpGet]
-        public DistroResponse Get()
+        public DistroResponse Get(DateTime? startDate, DateTime? endDate)
         {
             IStatsDownloadApiService apiService = null;
             try
             {
                 apiService = WindsorContainer.Instance.Resolve<IStatsDownloadApiService>();
-                DistroResponse response = apiService.GetDistro();
+                DistroResponse response = apiService.GetDistro(startDate, endDate);
                 return response;
             }
             finally
