@@ -28,8 +28,8 @@ The stats API is used to expose the stats data in the stats database.
 
 ### Calling the API
 
-Replace {server} with the hosting server name
-Replace {api_path} with the application path, if any
+* Replace {server} with the hosting server name
+* Replace {api_path} with the application path, if any
 
 #### Calling GetDistro
 
@@ -47,10 +47,10 @@ the API will return a JSON response
 {
   "distro":
     [
-	  {
-	    "bitcoinAddress":"{bitcoinAddress}"
-	  }
-	],
+      {
+        "bitcoinAddress":"{bitcoinAddress}"
+      }
+    ],
   "distroCount":{distroCount},
   "firstErrorCode":0,
   "success":true
@@ -86,11 +86,11 @@ the API will return a JSON response
   "errorCount":{errorCount},
   "errors":
     [
-	  {
-	    "errorCode":{errorCode},
-		"errorMessage":"{errorMessage}"
-	  }
-	],
+      {
+        "errorCode":{errorCode},
+        "errorMessage":"{errorMessage}"
+      }
+    ],
   "firstErrorCode":{firstErrorCode},
   "success":false
 }
