@@ -44,7 +44,7 @@
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.DatabaseUnavailable));
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
-                    "The database is unavailable. Try again in a short period of time. If the problem continues, then contact the technical team."));
+                    Constants.ErrorMessages.DatabaseUnavailableMessage));
         }
 
         [Test]
@@ -57,11 +57,11 @@
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.StartDateInvalid));
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
-                    "The start date is invalid; ensure the start date was provided as a query parameter in the format MM-DD-YYYY, greater than or equal to 01-01-0001, less than or equal to 12-31-9999, and try again."));
+                    Constants.ErrorMessages.StartDateInvalidMessage));
             Assert.That(actual.Errors?[1].ErrorCode, Is.EqualTo(DistroErrorCode.EndDateInvalid));
             Assert.That(actual.Errors?[1].ErrorMessage,
                 Is.EqualTo(
-                    "The end date is invalid; ensure the end date was provided as a query parameter in the format MM-DD-YYYY, greater than or equal to 01-01-0001, less than or equal to 12-31-9999, and try again."));
+                    Constants.ErrorMessages.EndDateInvalidMessage));
         }
 
         [Test]
