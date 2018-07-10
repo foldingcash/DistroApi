@@ -34,7 +34,7 @@
         {
             statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
 
-            DistroResponse actual = systemUnderTest.GetDistro();
+            DistroResponse actual = InvokeGetDistro();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -48,18 +48,45 @@
         }
 
         [Test]
+        public void GetDistro_WhenInputIsInvalid_ReturnsUnsuccessfulDistroResponse()
+        {
+            DistroResponse actual = InvokeGetDistro(null, null);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(2));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.StartDateInvalid));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    "The start date is invalid; ensure the start date was provided as a query parameter in the format MM-DD-YYYY, greater than or equal to 01-01-0001, less than or equal to 12-31-9999, and try again."));
+            Assert.That(actual.Errors?[1].ErrorCode, Is.EqualTo(DistroErrorCode.EndDateInvalid));
+            Assert.That(actual.Errors?[1].ErrorMessage,
+                Is.EqualTo(
+                    "The end date is invalid; ensure the end date was provided as a query parameter in the format MM-DD-YYYY, greater than or equal to 01-01-0001, less than or equal to 12-31-9999, and try again."));
+        }
+
+        [Test]
         public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
         {
             var distro = new List<DistroUser>();
             statsDownloadApiDatabaseServiceMock.GetDistroUsers().Returns(distro);
 
-            DistroResponse actual = systemUnderTest.GetDistro();
+            DistroResponse actual = InvokeGetDistro();
 
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.Errors, Is.Null);
             Assert.That(actual.ErrorCount, Is.Null);
             Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.None));
             Assert.That(actual.Distro, Is.EqualTo(distro));
+        }
+
+        private DistroResponse InvokeGetDistro()
+        {
+            return InvokeGetDistro(DateTime.Today, DateTime.Today);
+        }
+
+        private DistroResponse InvokeGetDistro(DateTime? startDate, DateTime? endDate)
+        {
+            return systemUnderTest.GetDistro(startDate, endDate);
         }
 
         private IStatsDownloadApiService NewStatsDownloadApiProvider(
