@@ -26,7 +26,40 @@ The stats API is used to expose the stats data in the stats database.
 
 ## Using the API
 
-#### Error Codes
+### Calling the API
+
+Replace {server} with the hosting server name
+Replace {api_path} with the application path, if any
+
+#### Calling GetDistro
+
+Both parameters 'StartDate' and 'EndDate' are required
+
+```
+GET http://{server}/{api_path}/v1/GetDistro?StartDate=01-01-0001&EndDate=12-31-9999
+```
+
+the API will return a JSON response
+
+#### GetDistro Response Format
+
+```
+{
+  "distro":
+    [
+	  {
+	    "bitcoinAddress":"{bitcoinAddress}"
+	  }
+	],
+  "distroCount":{distroCount},
+  "firstErrorCode":0,
+  "success":true
+}
+```
+
+### Errors
+
+#### Error Ranges
 
 | Error Code Range | Error Reason            |
 |:----------------:|-------------------------|
@@ -37,12 +70,31 @@ The stats API is used to expose the stats data in the stats database.
 |     8000-8999    | Database error          |
 |     9000-9999    | Unexpected error        |
 
-| Error Code | Resolution |
-|:----------:|------------|
-|    0000    | No errors were encountered. |
-|    1000    | The start date was not parsable to a DateTime object; includes not providing a value, a string value, invalid date, lower bound, and upper bound. The default format is MM-DD-YYYY. |
-|    1010    | The end date was not parsable to a DateTime object; includes not providing a value, a string value, invalid date, lower bound, and upper bound. The default format is MM-DD-YYYY. |
-|    8000    | Database is unavailable. Wait a short period of time before trying to connect again. If the problem continues, then contact the technical advisor. |
+#### Error Codes
+
+| Error Code | Resolution                                                                                                                                                      |
+|:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|    0000    | No errors were encountered.                                                                                                                                     |
+|    1010    | The end date was not parsable to a DateTime object; includes not providing a value, a string value, and invalid date (lower/upper). The format is MM-DD-YYYY.   |
+|    1000    | The start date was not parsable to a DateTime object; includes not providing a value, a string value, and invalid date (lower/upper). The format is MM-DD-YYYY. |
+|    8000    | Database is unavailable. Wait a short period of time before trying to connect again. If the problem continues, then contact the technical advisor.              |
+
+#### Error Response Format
+
+```
+{
+  "errorCount":{errorCount},
+  "errors":
+    [
+	  {
+	    "errorCode":{errorCode},
+		"errorMessage":"{errorMessage}"
+	  }
+	],
+  "firstErrorCode":{firstErrorCode},
+  "success":false
+}
+```
 	
 ## Running the tests
 
