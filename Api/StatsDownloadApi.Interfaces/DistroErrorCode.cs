@@ -6,7 +6,7 @@
 
         StartDateInvalid = 1000,
 
-        EndDateInvalid = 1005,
+        EndDateInvalid = 1010,
 
         DatabaseUnavailable = 8000
     }
