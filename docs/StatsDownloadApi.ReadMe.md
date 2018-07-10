@@ -48,6 +48,7 @@ the API will return a JSON response
   "distro":
     [
       {
+        "bitcoinAddress":"{bitcoinAddress}",
         "bitcoinAddress":"{bitcoinAddress}"
       }
     ],
@@ -75,8 +76,8 @@ the API will return a JSON response
 | Error Code | Resolution                                                                                                                                                      |
 |:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |    0000    | No errors were encountered.                                                                                                                                     |
-|    1010    | The end date was not parsable to a DateTime object; includes not providing a value, a string value, and invalid date (lower/upper). The format is MM-DD-YYYY.   |
 |    1000    | The start date was not parsable to a DateTime object; includes not providing a value, a string value, and invalid date (lower/upper). The format is MM-DD-YYYY. |
+|    1010    | The end date was not parsable to a DateTime object; includes not providing a value, a string value, and invalid date (lower/upper). The format is MM-DD-YYYY.   |
 |    8000    | Database is unavailable. Wait a short period of time before trying to connect again. If the problem continues, then contact the technical advisor.              |
 
 #### Error Response Format
