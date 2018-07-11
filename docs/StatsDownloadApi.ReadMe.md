@@ -73,7 +73,7 @@ the API will return a JSON response
 
 #### Error Codes
 
-| Error Code | Resolution                                                                                                                                                      |
+| Error Code | Description                                                                                                                                                      |
 |:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |    0000    | No errors were encountered.                                                                                                                                     |
 |    1000    | The start date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                         |
