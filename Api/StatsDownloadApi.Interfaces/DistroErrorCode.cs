@@ -16,6 +16,10 @@
 
         NoAmount = 1050,
 
+        ZeroAmount = 1060,
+
+        NegativeAmount = 1070,
+
         DatabaseUnavailable = 8000
     }
 }

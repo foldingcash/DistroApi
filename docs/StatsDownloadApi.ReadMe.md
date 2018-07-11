@@ -81,7 +81,9 @@ the API will return a JSON response
 |    1020    | The start date must be a date prior to the current date; start with yesterday's date.                                                                                 |
 |    1030    | The end date must be a date prior to the current date; start with yesterday's date.                                                                                   |
 |    1040    | The start date must be earlier than or equal to the end date; ensure the end date is later than or equal to the start date.                                           |
-|    1050    | The distribution amount is required and is a whole number; includes not providing a value, an incorrectly formatted amount, and exceeding the Int32 upper/lower bound.|
+|    1050    | The amount is required and is a whole number; includes not providing a value, an incorrectly formatted amount, and exceeding the Int32 upper/lower bound.             |
+|    1060    | The amount was zero; the amount must be greater than zero.                                                                                                            |
+|    1070    | The amount was negative; the amount must be greater than zero.                                                                                                        |
 |    8000    | The database is unavailable. Wait a short period of time before trying again. If the problem continues, then the configuration is incorrect or access is blocked.     |
 
 #### Error Response Format

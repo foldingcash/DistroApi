@@ -49,6 +49,17 @@
             if (amount == null)
             {
                 errors.Add(Constants.DistroErrors.NoAmount);
+                return;
+            }
+
+            if (amount == 0)
+            {
+                errors.Add(Constants.DistroErrors.ZeroAmount);
+            }
+
+            if (amount < 0)
+            {
+                errors.Add(Constants.DistroErrors.NegativeAmount);
             }
         }
 
