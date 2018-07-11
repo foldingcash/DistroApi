@@ -36,6 +36,7 @@
         {
             ValidateStartDate(startDate, errors);
             ValidateEndDate(endDate, errors);
+            ValidateDateRange(startDate, endDate, errors);
             ValidateDatabaseIsAvailable(errors);
 
             return errors.Count > 0;
@@ -61,6 +62,14 @@
             if (date.Value.Date >= dateTimeService.DateTimeNow().Date)
             {
                 errors.Add(dateUnsearchable);
+            }
+        }
+
+        private void ValidateDateRange(DateTime? startDate, DateTime? endDate, IList<DistroError> errors)
+        {
+            if (startDate > endDate)
+            {
+                errors.Add(Constants.DistroErrors.InvalidDateRange);
             }
         }
 
