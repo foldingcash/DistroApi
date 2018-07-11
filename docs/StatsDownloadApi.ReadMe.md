@@ -36,7 +36,7 @@ The stats API is used to expose the stats data in the stats database.
 Both parameters 'StartDate' and 'EndDate' are required
 
 ```
-GET http://{server}/{api_path}/v1/GetDistro?StartDate=01-01-0001&EndDate=12-31-9999
+GET http://{server}/{api_path}/v1/GetDistro?StartDate=01-01-0001&EndDate=12-31-9999&Amount=7750000
 ```
 
 the API will return a JSON response
@@ -73,15 +73,16 @@ the API will return a JSON response
 
 #### Error Codes
 
-| Error Code | Description                                                                                                                                                        |
-|:----------:|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|    0000    | No errors were encountered.                                                                                                                                        |
-|    1000    | The start date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                            |
-|    1010    | The end date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                              |
-|    1020    | The start date must be a date prior to the current date; start with yesterday's date and try again.                                                                |
-|    1030    | The end date must be a date prior to the current date; start with yesterday's date and try again.                                                                  |
-|    1040    | The start date must be earlier than or equal to the end date; ensure the end date is later than or equal to the start date and try again.                          |
-|    8000    | The database is unavailable. Wait a short period of time before trying again. If the problem continues, then the configuration is incorrect or access is blocked.  |
+| Error Code | Description                                                                                                                                                           |
+|:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|    0000    | No errors were encountered.                                                                                                                                           |
+|    1000    | The start date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                               |
+|    1010    | The end date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                                 |
+|    1020    | The start date must be a date prior to the current date; start with yesterday's date.                                                                                 |
+|    1030    | The end date must be a date prior to the current date; start with yesterday's date.                                                                                   |
+|    1040    | The start date must be earlier than or equal to the end date; ensure the end date is later than or equal to the start date.                                           |
+|    1050    | The distribution amount is required and is a whole number; includes not providing a value, an incorrectly formatted amount, and exceeding the Int32 upper/lower bound.|
+|    8000    | The database is unavailable. Wait a short period of time before trying again. If the problem continues, then the configuration is incorrect or access is blocked.     |
 
 #### Error Response Format
 
