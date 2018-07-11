@@ -49,7 +49,7 @@ the API will return a JSON response
     [
       {
         "bitcoinAddress":"{bitcoinAddress}",
-        "bitcoinAddress":"{bitcoinAddress}"
+		"amount":{amount}
       }
     ],
   "distroCount":{distroCount},
@@ -73,11 +73,13 @@ the API will return a JSON response
 
 #### Error Codes
 
-| Error Code | Resolution                                                                                                                                                      |
+| Error Code | Description                                                                                                                                                     |
 |:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |    0000    | No errors were encountered.                                                                                                                                     |
-|    1000    | The start date was not parsable to a DateTime object; includes not providing a value, a string value, and invalid date (lower/upper). The format is MM-DD-YYYY. |
-|    1010    | The end date was not parsable to a DateTime object; includes not providing a value, a string value, and invalid date (lower/upper). The format is MM-DD-YYYY.   |
+|    1000    | The start date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                         |
+|    1010    | The end date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                           |
+|    1020    | The start date must be a date prior to the current date; start with yesterday's date.                                                                           |
+|    1030    | The end date must be a date prior to the current date; start with yesterday's date.                                                                             |
 |    8000    | Database is unavailable. Wait a short period of time before trying to connect again. If the problem continues, then contact the technical advisor.              |
 
 #### Error Response Format

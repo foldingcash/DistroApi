@@ -4,9 +4,13 @@
     {
         None = 0000,
 
-        StartDateInvalid = 1000,
+        NoStartDate = 1000,
 
-        EndDateInvalid = 1010,
+        NoEndDate = 1010,
+
+        StartDateUnsearchable = 1020,
+
+        EndDateUnsearchable = 1030,
 
         DatabaseUnavailable = 8000
     }
