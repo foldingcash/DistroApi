@@ -6,6 +6,7 @@
     using Interfaces.DataTransfer;
     using NSubstitute;
     using NUnit.Framework;
+    using StatsDownload.Core.Interfaces;
 
     [TestFixture]
     public class TestStatsDownloadApiProvider
@@ -16,12 +17,17 @@
             statsDownloadApiDatabaseServiceMock = Substitute.For<IStatsDownloadApiDatabaseService>();
             statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(true);
 
-            systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock);
+            dateTimeServiceMock = Substitute.For<IDateTimeService>();
+            dateTimeServiceMock.DateTimeNow().Returns(DateTime.UtcNow);
+
+            systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock, dateTimeServiceMock);
         }
 
-        private readonly DateTime endDate = DateTime.UtcNow;
+        private IDateTimeService dateTimeServiceMock;
 
-        private readonly DateTime startDate = DateTime.UtcNow.Date;
+        private readonly DateTime endDateMock = DateTime.UtcNow.Date.AddDays(-1);
+
+        private readonly DateTime startDateMock = DateTime.UtcNow.Date.AddDays(-1);
 
         private IStatsDownloadApiDatabaseService statsDownloadApiDatabaseServiceMock;
 
@@ -30,11 +36,13 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(null));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(null, dateTimeServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock, null));
         }
 
         [Test]
-        public void GetDistro_WhenDatabaseIsUnavailable_ReturnsUnsuccessfulDistroResponse()
+        public void GetDistro_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
             statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
 
@@ -42,9 +50,6 @@
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
-            Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.DatabaseUnavailable));
-            Assert.That(actual.DistroCount, Is.Null);
-            Assert.That(actual.Distro, Is.Null);
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.DatabaseUnavailable));
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
@@ -52,27 +57,37 @@
         }
 
         [Test]
-        public void GetDistro_WhenInputIsInvalid_ReturnsUnsuccessfulDistroResponse()
+        public void GetDistro_WhenEndDateInputIsTodayOrFutureDate_ReturnsEndDateUnsearchableResponse()
         {
+            DistroResponse actual = InvokeGetDistro(startDateMock, DateTime.UtcNow);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.EndDateUnsearchable));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.EndDateUnsearchableMessage));
+        }
+
+        [Test]
+        public void GetDistro_WhenErrorsOccurs_ReturnsErrorResponse()
+        {
+            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
+
             DistroResponse actual = InvokeGetDistro(null, null);
 
             Assert.That(actual.Success, Is.False);
-            Assert.That(actual.Errors?.Count, Is.EqualTo(2));
-            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.StartDateInvalid));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.StartDateInvalidMessage));
-            Assert.That(actual.Errors?[1].ErrorCode, Is.EqualTo(DistroErrorCode.EndDateInvalid));
-            Assert.That(actual.Errors?[1].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.EndDateInvalidMessage));
+            Assert.That(actual.Errors?.Count, Is.EqualTo(3));
+            Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.NoStartDate));
+            Assert.That(actual.DistroCount, Is.Null);
+            Assert.That(actual.Distro, Is.Null);
         }
 
         [Test]
         public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
         {
             var distro = new List<DistroUser>();
-            statsDownloadApiDatabaseServiceMock.GetDistroUsers(startDate, endDate).Returns(distro);
+            statsDownloadApiDatabaseServiceMock.GetDistroUsers(startDateMock, endDateMock).Returns(distro);
 
             DistroResponse actual = InvokeGetDistro();
 
@@ -83,9 +98,48 @@
             Assert.That(actual.Distro, Is.EqualTo(distro));
         }
 
+        [Test]
+        public void GetDistro_WhenNoEndDateIsProvided_ReturnsNoEndDateResponse()
+        {
+            DistroResponse actual = InvokeGetDistro(startDateMock, null);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.NoEndDate));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.NoEndDateMessage));
+        }
+
+        [Test]
+        public void GetDistro_WhenNoStartDateIsProvided_ReturnsNoStartDateResponse()
+        {
+            DistroResponse actual = InvokeGetDistro(null, endDateMock);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.NoStartDate));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.NoStartDateMessage));
+        }
+
+        [Test]
+        public void GetDistro_WhenStartDateInputIsTodayOrFutureDate_ReturnsStartDateUnsearchableResponse()
+        {
+            DistroResponse actual = InvokeGetDistro(DateTime.UtcNow, endDateMock);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.StartDateUnsearchable));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.StartDateUnsearchableMessage));
+        }
+
         private DistroResponse InvokeGetDistro()
         {
-            return InvokeGetDistro(startDate, endDate);
+            return InvokeGetDistro(startDateMock, endDateMock);
         }
 
         private DistroResponse InvokeGetDistro(DateTime? startDate, DateTime? endDate)
@@ -94,9 +148,10 @@
         }
 
         private IStatsDownloadApiService NewStatsDownloadApiProvider(
-            IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService)
+            IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
+            IDateTimeService dateTimeService)
         {
-            return new StatsDownloadApiProvider(statsDownloadApiDatabaseService);
+            return new StatsDownloadApiProvider(statsDownloadApiDatabaseService, dateTimeService);
         }
     }
 }

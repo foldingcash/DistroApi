@@ -8,8 +8,8 @@
             ErrorMessage = errorMessage;
         }
 
-        public DistroErrorCode ErrorCode { get; set; }
+        public DistroErrorCode ErrorCode { get; }
 
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; }
     }
 }

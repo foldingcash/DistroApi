@@ -1,7 +1,5 @@
 ﻿namespace StatsDownloadApi.Interfaces
 {
-    using System;
-
     public class Constants
     {
         public static class DistroErrors
@@ -9,11 +7,17 @@
             public static DistroError DatabaseUnavailable => new DistroError(DistroErrorCode.DatabaseUnavailable,
                 ErrorMessages.DatabaseUnavailableMessage);
 
-            public static DistroError EndDateInvalid => new DistroError(DistroErrorCode.EndDateInvalid,
-                ErrorMessages.EndDateInvalidMessage);
+            public static DistroError EndDateUnsearchable => new DistroError(DistroErrorCode.EndDateUnsearchable,
+                ErrorMessages.EndDateUnsearchableMessage);
 
-            public static DistroError StartDateInvalid => new DistroError(DistroErrorCode.StartDateInvalid,
-                ErrorMessages.StartDateInvalidMessage);
+            public static DistroError NoEndDate => new DistroError(DistroErrorCode.NoEndDate,
+                ErrorMessages.NoEndDateMessage);
+
+            public static DistroError NoStartDate => new DistroError(DistroErrorCode.NoStartDate,
+                ErrorMessages.NoStartDateMessage);
+
+            public static DistroError StartDateUnsearchable => new DistroError(DistroErrorCode.StartDateUnsearchable,
+                ErrorMessages.StartDateUnsearchableMessage);
         }
 
         public static class ErrorMessages
@@ -21,11 +25,17 @@
             public static string DatabaseUnavailableMessage =>
                 "The database is unavailable. Try again in a short period of time. If the problem continues, then contact the technical team.";
 
-            public static string EndDateInvalidMessage =>
-                $"The end date is invalid; ensure the end date was provided as a query parameter in the format MM-DD-YYYY, greater than or equal to {DateTime.MinValue:MM-dd-yyyy}, less than or equal to {DateTime.MaxValue:MM-dd-yyyy}, and try again.";
+            public static string EndDateUnsearchableMessage =>
+                "The end date provided is unsearchable. The end date must not be today or a future day's date. Provide a new end date and try again.";
 
-            public static string StartDateInvalidMessage =>
-                $"The start date is invalid; ensure the start date was provided as a query parameter in the format MM-DD-YYYY, greater than or equal to {DateTime.MinValue:MM-dd-yyyy}, less than or equal to {DateTime.MaxValue:MM-dd-yyyy}, and try again.";
+            public static string NoEndDateMessage =>
+                "No end date was provided; ensure the end date was provided as a query parameter in the format MM-DD-YYYY and try again.";
+
+            public static string NoStartDateMessage =>
+                "No start date was provided; ensure the start date was provided as a query parameter in the format MM-DD-YYYY and try again.";
+
+            public static string StartDateUnsearchableMessage =>
+                "The start date provided is unsearchable. The start date must not be today or a future day's date. Provide a new start date and try again.";
         }
     }
 }
