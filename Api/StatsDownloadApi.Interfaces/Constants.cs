@@ -13,6 +13,9 @@
             public static DistroError InvalidDateRange => new DistroError(DistroErrorCode.InvalidDateRange,
                 ErrorMessages.InvalidDateRangeMessage);
 
+            public static DistroError NegativeAmount =>
+                new DistroError(DistroErrorCode.NegativeAmount, ErrorMessages.NegativeAmountMessage);
+
             public static DistroError NoAmount =>
                 new DistroError(DistroErrorCode.NoAmount, ErrorMessages.NoAmountMessage);
 
@@ -40,6 +43,9 @@
             public static string InvalidDateRangeMessage =>
                 "The date range provided is invalid. The end date must not be a date prior to the start date. Provide a new date range and try again.";
 
+            public static string NegativeAmountMessage =>
+                "The amount provided was negative. Provide an amount greater than zero and try again.";
+
             public static string NoAmountMessage =>
                 "No amount was provided; ensure the distribution amount was provided as a query paramter and try again.";
 
@@ -53,7 +59,7 @@
                 "The start date provided is unsearchable. The start date must not be today or a future day's date. Provide a new start date and try again.";
 
             public static string ZeroAmountMessage =>
-                "The amount of zero is invalid. Provide an amount greater than zero and try again.";
+                "The amount provided was zero. Provide an amount greater than zero and try again.";
         }
     }
 }

@@ -56,6 +56,11 @@
             {
                 errors.Add(Constants.DistroErrors.ZeroAmount);
             }
+
+            if (amount < 0)
+            {
+                errors.Add(Constants.DistroErrors.NegativeAmount);
+            }
         }
 
         private void ValidateDatabaseIsAvailable(IList<DistroError> errors)
