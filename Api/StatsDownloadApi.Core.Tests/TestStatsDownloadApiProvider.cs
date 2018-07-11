@@ -114,6 +114,19 @@
         }
 
         [Test]
+        public void GetDistro_WhenZeroAmountIsProvided_ReturnsZeroAmountResponse()
+        {
+            DistroResponse actual = InvokeGetDistro(startDateMock, endDateMock, 0);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.ZeroAmount));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.ZeroAmountMessage));
+        }
+
+        [Test]
         public void GetDistro_WhenNoEndDateIsProvided_ReturnsNoEndDateResponse()
         {
             DistroResponse actual = InvokeGetDistro(startDateMock, null, amountMock);
