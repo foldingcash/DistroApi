@@ -24,6 +24,9 @@
 
             public static DistroError StartDateUnsearchable => new DistroError(DistroErrorCode.StartDateUnsearchable,
                 ErrorMessages.StartDateUnsearchableMessage);
+
+            public static DistroError ZeroAmount =>
+                new DistroError(DistroErrorCode.ZeroAmount, ErrorMessages.ZeroAmountMessage);
         }
 
         public static class ErrorMessages
@@ -48,6 +51,9 @@
 
             public static string StartDateUnsearchableMessage =>
                 "The start date provided is unsearchable. The start date must not be today or a future day's date. Provide a new start date and try again.";
+
+            public static string ZeroAmountMessage =>
+                "The amount of zero is invalid. Provide an amount greater than zero and try again.";
         }
     }
 }
