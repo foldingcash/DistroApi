@@ -12,6 +12,8 @@
 
         EndDateUnsearchable = 1030,
 
+        InvalidDateRange = 1040,
+
         DatabaseUnavailable = 8000
     }
 }

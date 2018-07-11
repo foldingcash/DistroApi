@@ -10,6 +10,9 @@
             public static DistroError EndDateUnsearchable => new DistroError(DistroErrorCode.EndDateUnsearchable,
                 ErrorMessages.EndDateUnsearchableMessage);
 
+            public static DistroError InvalidDateRange => new DistroError(DistroErrorCode.InvalidDateRange,
+                ErrorMessages.InvalidDateRangeMessage);
+
             public static DistroError NoEndDate => new DistroError(DistroErrorCode.NoEndDate,
                 ErrorMessages.NoEndDateMessage);
 
@@ -27,6 +30,9 @@
 
             public static string EndDateUnsearchableMessage =>
                 "The end date provided is unsearchable. The end date must not be today or a future day's date. Provide a new end date and try again.";
+
+            public static string InvalidDateRangeMessage =>
+                "The date range provided is invalid. The end date must not be a date prior to the start date. Provide a new date range and try again.";
 
             public static string NoEndDateMessage =>
                 "No end date was provided; ensure the end date was provided as a query parameter in the format MM-DD-YYYY and try again.";
