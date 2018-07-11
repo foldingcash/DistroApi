@@ -25,6 +25,8 @@
 
         void ExecuteStoredProcedure(string storedProcedure, DataTable dataTable);
 
+        void ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters, DataTable dataTable);
+
         int ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters);
 
         int ExecuteStoredProcedure(DbTransaction transaction, string storedProcedure,

@@ -6,9 +6,9 @@
     using NSubstitute;
     using NSubstitute.Core;
 
-    internal static class DatabaseProviderTestingHelper
+    public static class DatabaseProviderTestingHelper
     {
-        internal static void SetUpDatabaseConnectionServiceReturns(
+        public static void SetUpDatabaseConnectionServiceReturns(
             IDatabaseConnectionService databaseConnectionServiceMock)
         {
             databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),

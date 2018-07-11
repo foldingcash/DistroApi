@@ -39,7 +39,7 @@
                 return new DistroResponse(errors);
             }
 
-            return new DistroResponse(statsDownloadApiDatabaseService.GetDistroUsers());
+            return new DistroResponse(statsDownloadApiDatabaseService.GetDistroUsers(startDate.Value, endDate.Value));
         }
     }
 }

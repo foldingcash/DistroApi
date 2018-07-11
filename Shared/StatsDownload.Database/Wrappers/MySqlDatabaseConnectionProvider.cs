@@ -98,6 +98,19 @@
             }
         }
 
+        public void ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters,
+            DataTable dataTable)
+        {
+            using (DbCommand command = CreateStoredProcedureCommand(storedProcedure))
+            {
+                command.Parameters.AddRange(parameters?.ToArray() ?? new DbParameter[0]);
+                using (IDataReader reader = command.ExecuteReader())
+                {
+                    dataTable.Load(reader);
+                }
+            }
+        }
+
         public int ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters)
         {
             using (DbCommand command = CreateStoredProcedureCommand(storedProcedure))

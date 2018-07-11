@@ -19,6 +19,10 @@
             systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock);
         }
 
+        private readonly DateTime endDate = DateTime.UtcNow;
+
+        private readonly DateTime startDate = DateTime.UtcNow.Date;
+
         private IStatsDownloadApiDatabaseService statsDownloadApiDatabaseServiceMock;
 
         private IStatsDownloadApiService systemUnderTest;
@@ -68,7 +72,7 @@
         public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
         {
             var distro = new List<DistroUser>();
-            statsDownloadApiDatabaseServiceMock.GetDistroUsers().Returns(distro);
+            statsDownloadApiDatabaseServiceMock.GetDistroUsers(startDate, endDate).Returns(distro);
 
             DistroResponse actual = InvokeGetDistro();
 
@@ -81,7 +85,7 @@
 
         private DistroResponse InvokeGetDistro()
         {
-            return InvokeGetDistro(DateTime.Today, DateTime.Today);
+            return InvokeGetDistro(startDate, endDate);
         }
 
         private DistroResponse InvokeGetDistro(DateTime? startDate, DateTime? endDate)
