@@ -23,6 +23,8 @@
             systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock, dateTimeServiceMock);
         }
 
+        private readonly int amountMock = 7750000;
+
         private IDateTimeService dateTimeServiceMock;
 
         private readonly DateTime endDateMock = DateTime.UtcNow.Date.AddDays(-1);
@@ -59,7 +61,7 @@
         [Test]
         public void GetDistro_WhenEndDateInputIsTodayOrFutureDate_ReturnsEndDateUnsearchableResponse()
         {
-            DistroResponse actual = InvokeGetDistro(startDateMock, DateTime.UtcNow);
+            DistroResponse actual = InvokeGetDistro(startDateMock, DateTime.UtcNow, amountMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -74,7 +76,7 @@
         {
             statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
 
-            DistroResponse actual = InvokeGetDistro(null, null);
+            DistroResponse actual = InvokeGetDistro(null, null, amountMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(3));
@@ -99,9 +101,22 @@
         }
 
         [Test]
+        public void GetDistro_WhenNoAmountIsProvided_ReturnsNoAmountResponse()
+        {
+            DistroResponse actual = InvokeGetDistro(startDateMock, endDateMock, null);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.NoAmount));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.NoAmountMessage));
+        }
+
+        [Test]
         public void GetDistro_WhenNoEndDateIsProvided_ReturnsNoEndDateResponse()
         {
-            DistroResponse actual = InvokeGetDistro(startDateMock, null);
+            DistroResponse actual = InvokeGetDistro(startDateMock, null, amountMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -114,7 +129,7 @@
         [Test]
         public void GetDistro_WhenNoStartDateIsProvided_ReturnsNoStartDateResponse()
         {
-            DistroResponse actual = InvokeGetDistro(null, endDateMock);
+            DistroResponse actual = InvokeGetDistro(null, endDateMock, amountMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -127,7 +142,7 @@
         [Test]
         public void GetDistro_WhenStartDateInputIsTodayOrFutureDate_ReturnsStartDateUnsearchableResponse()
         {
-            DistroResponse actual = InvokeGetDistro(DateTime.UtcNow, endDateMock);
+            DistroResponse actual = InvokeGetDistro(DateTime.UtcNow, endDateMock, amountMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(2));
@@ -140,7 +155,7 @@
         [Test]
         public void GetDistro_WhenStartDateIsLaterThanEndDate_ReturnsInvalidDateRangeResponse()
         {
-            DistroResponse actual = InvokeGetDistro(startDateMock, endDateMock.AddDays(-1));
+            DistroResponse actual = InvokeGetDistro(startDateMock, endDateMock.AddDays(-1), amountMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -152,12 +167,12 @@
 
         private DistroResponse InvokeGetDistro()
         {
-            return InvokeGetDistro(startDateMock, endDateMock);
+            return InvokeGetDistro(startDateMock, endDateMock, amountMock);
         }
 
-        private DistroResponse InvokeGetDistro(DateTime? startDate, DateTime? endDate)
+        private DistroResponse InvokeGetDistro(DateTime? startDate, DateTime? endDate, int? amount)
         {
-            return systemUnderTest.GetDistro(startDate, endDate);
+            return systemUnderTest.GetDistro(startDate, endDate, amount);
         }
 
         private IStatsDownloadApiService NewStatsDownloadApiProvider(
