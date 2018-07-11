@@ -130,11 +130,24 @@
             DistroResponse actual = InvokeGetDistro(DateTime.UtcNow, endDateMock);
 
             Assert.That(actual.Success, Is.False);
-            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?.Count, Is.EqualTo(2));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.StartDateUnsearchable));
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
                     Constants.ErrorMessages.StartDateUnsearchableMessage));
+        }
+
+        [Test]
+        public void GetDistro_WhenStartDateIsLaterThanEndDate_ReturnsInvalidDateRangeResponse()
+        {
+            DistroResponse actual = InvokeGetDistro(startDateMock, endDateMock.AddDays(-1));
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(DistroErrorCode.InvalidDateRange));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.InvalidDateRangeMessage));
         }
 
         private DistroResponse InvokeGetDistro()

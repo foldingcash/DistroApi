@@ -49,7 +49,7 @@ the API will return a JSON response
     [
       {
         "bitcoinAddress":"{bitcoinAddress}",
-		"amount":{amount}
+        "amount":{amount}
       }
     ],
   "distroCount":{distroCount},
@@ -73,14 +73,15 @@ the API will return a JSON response
 
 #### Error Codes
 
-| Error Code | Description                                                                                                                                                     |
-|:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|    0000    | No errors were encountered.                                                                                                                                     |
-|    1000    | The start date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                         |
-|    1010    | The end date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                           |
-|    1020    | The start date must be a date prior to the current date; start with yesterday's date.                                                                           |
-|    1030    | The end date must be a date prior to the current date; start with yesterday's date.                                                                             |
-|    8000    | Database is unavailable. Wait a short period of time before trying to connect again. If the problem continues, then contact the technical advisor.              |
+| Error Code | Description                                                                                                                                                        |
+|:----------:|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|    0000    | No errors were encountered.                                                                                                                                        |
+|    1000    | The start date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                            |
+|    1010    | The end date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                              |
+|    1020    | The start date must be a date prior to the current date; start with yesterday's date and try again.                                                                |
+|    1030    | The end date must be a date prior to the current date; start with yesterday's date and try again.                                                                  |
+|    1040    | The start date must be earlier than or equal to the end date; ensure the end date is later than or equal to the start date and try again.                          |
+|    8000    | The database is unavailable. Wait a short period of time before trying again. If the problem continues, then the configuration is incorrect or access is blocked.  |
 
 #### Error Response Format
 
