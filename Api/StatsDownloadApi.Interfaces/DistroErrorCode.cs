@@ -14,6 +14,8 @@
 
         InvalidDateRange = 1040,
 
+        NoAmount = 1050,
+
         DatabaseUnavailable = 8000
     }
 }

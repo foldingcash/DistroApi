@@ -10,13 +10,13 @@
     public class GetDistroController : Controller
     {
         [HttpGet]
-        public DistroResponse Get(DateTime? startDate, DateTime? endDate)
+        public DistroResponse Get(DateTime? startDate, DateTime? endDate, int? amount)
         {
             IStatsDownloadApiService apiService = null;
             try
             {
                 apiService = WindsorContainer.Instance.Resolve<IStatsDownloadApiService>();
-                DistroResponse response = apiService.GetDistro(startDate, endDate);
+                DistroResponse response = apiService.GetDistro(startDate, endDate, amount);
                 return response;
             }
             finally

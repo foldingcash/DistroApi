@@ -20,11 +20,11 @@
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
         }
 
-        public DistroResponse GetDistro(DateTime? startDate, DateTime? endDate)
+        public DistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount)
         {
             IList<DistroError> errors = new List<DistroError>();
 
-            if (NotAbleToQueryForDistro(startDate, endDate, errors))
+            if (IsNotPreparedToRunDistro(startDate, endDate, amount, errors))
             {
                 return new DistroResponse(errors);
             }
@@ -32,14 +32,24 @@
             return new DistroResponse(statsDownloadApiDatabaseService.GetDistroUsers(startDate.Value, endDate.Value));
         }
 
-        private bool NotAbleToQueryForDistro(DateTime? startDate, DateTime? endDate, IList<DistroError> errors)
+        private bool IsNotPreparedToRunDistro(DateTime? startDate, DateTime? endDate, int? amount,
+            IList<DistroError> errors)
         {
             ValidateStartDate(startDate, errors);
             ValidateEndDate(endDate, errors);
             ValidateDateRange(startDate, endDate, errors);
+            ValidateAmount(amount, errors);
             ValidateDatabaseIsAvailable(errors);
 
             return errors.Count > 0;
+        }
+
+        private void ValidateAmount(int? amount, IList<DistroError> errors)
+        {
+            if (amount == null)
+            {
+                errors.Add(Constants.DistroErrors.NoAmount);
+            }
         }
 
         private void ValidateDatabaseIsAvailable(IList<DistroError> errors)
