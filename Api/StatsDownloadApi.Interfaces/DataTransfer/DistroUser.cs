@@ -2,7 +2,7 @@
 {
     public class DistroUser
     {
-        public DistroUser(string bitcoinAddress, long pointsGained, long workUnitsGained, int amount)
+        public DistroUser(string bitcoinAddress, long pointsGained, long workUnitsGained, decimal amount)
         {
             BitcoinAddress = bitcoinAddress;
             PointsGained = pointsGained;
