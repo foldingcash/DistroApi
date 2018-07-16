@@ -91,13 +91,20 @@
             Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.NoStartDate));
             Assert.That(actual.DistroCount, Is.Null);
             Assert.That(actual.Distro, Is.Null);
+            Assert.That(actual.TotalPoints, Is.Null);
+            Assert.That(actual.TotalWorkUnits, Is.Null);
+            Assert.That(actual.TotalDistro, Is.Null);
         }
 
         [Test]
         public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
         {
             var foldingUsers = new FoldingUser[0];
-            var distro = new DistroUser[0];
+            var distro = new[]
+            {
+                new DistroUser("", 1, 2, (decimal) 0.12345678),
+                new DistroUser("", 3, 4, 100)
+            };
             statsDownloadApiDatabaseServiceMock.GetFoldingUsers(startDateMock, endDateMock).Returns(foldingUsers);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);
 
@@ -108,6 +115,9 @@
             Assert.That(actual.ErrorCount, Is.Null);
             Assert.That(actual.FirstErrorCode, Is.EqualTo(DistroErrorCode.None));
             Assert.That(actual.Distro, Is.EqualTo(distro));
+            Assert.That(actual.TotalPoints, Is.EqualTo(4));
+            Assert.That(actual.TotalWorkUnits, Is.EqualTo(6));
+            Assert.That(actual.TotalDistro, Is.EqualTo(100.12345678));
         }
 
         [Test]
