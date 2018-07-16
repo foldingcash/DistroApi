@@ -82,6 +82,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CastleWindsor\WindsorContainer.cs" />
+    <Compile Include="TestHarnessFileCompressionProvider.cs" />
     <Compile Include="TestHarnessMinimumWaitTimeProvider.cs" />
     <Compile Include="TestHarnessSecureHttpFilePayloadProvider.cs" />
     <Compile Include="TestHarnessSettingsProvider.cs" />

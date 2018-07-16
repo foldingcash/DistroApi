@@ -6,7 +6,7 @@
 
     public interface IStatsDownloadApiDatabaseService
     {
-        IList<DistroUser> GetDistroUsers(DateTime startDate, DateTime endDate);
+        IList<DistroUser> GetFoldingUsers(DateTime startDate, DateTime endDate);
 
         bool IsAvailable();
     }

@@ -33,7 +33,8 @@
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessOneHundredUsersFilter>(),
                 Component.For<IStatsUploadDatabaseService>()
-                         .ImplementedBy<TestHarnessStatsUploadDatabaseProvider>());
+                         .ImplementedBy<TestHarnessStatsUploadDatabaseProvider>(),
+                Component.For<IFileCompressionService>().ImplementedBy<TestHarnessFileCompressionProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
@@ -45,6 +46,8 @@
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
+                Component.For<IStatsDownloadDatabaseParameterService>()
+                         .ImplementedBy<StatsDownloadDatabaseParameterProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<MySqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<MicrosoftSqlDatabaseConnectionProvider>()
                          .IsDefault(),

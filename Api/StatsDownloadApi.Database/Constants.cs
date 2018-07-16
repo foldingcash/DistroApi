@@ -6,8 +6,8 @@
     {
         public static class StatsDownloadApiDatabase
         {
-            public static readonly string GetDistroUsersProcedureName =
-                $"{StatsDownloadConstants.StatsDownloadDatabase.DatabaseSchema}{StatsDownloadConstants.StatsDownloadDatabase.SchemaSeparator}[GetDistroUsers]";
+            public static readonly string GetFoldingUsersProcedureName =
+                $"{StatsDownloadConstants.StatsDownloadDatabase.DatabaseSchema}{StatsDownloadConstants.StatsDownloadDatabase.SchemaSeparator}[GetFoldingUsers]";
         }
     }
 }
