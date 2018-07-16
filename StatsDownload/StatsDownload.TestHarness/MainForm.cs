@@ -100,6 +100,7 @@
                 }
 
                 ConfigurationManager.AppSettings["FileCompressionDisabled"] = "true";
+                ConfigurationManager.AppSettings["DisableMinimumWaitTime"] = "true";
 
                 foreach (string importFile in importFiles)
                 {
