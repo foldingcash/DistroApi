@@ -116,11 +116,14 @@
             {
                 EnableGui(false);
                 await Task.Run(action);
-                EnableGui(true);
             }
             catch (Exception exception)
             {
                 Log(exception.ToString());
+            }
+            finally
+            {
+                EnableGui(true);
             }
         }
 
