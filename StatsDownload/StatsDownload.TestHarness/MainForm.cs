@@ -1,6 +1,8 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System;
+    using System.Configuration;
+    using System.IO;
     using System.Threading.Tasks;
     using System.Windows.Forms;
     using Castle.MicroKernel.Registration;
@@ -58,10 +60,12 @@
             }
         }
 
-        private void EnableButtons(bool enable)
+        private void EnableGui(bool enable)
         {
             FileDownloadButton.Enabled = enable;
             UploadStatsButton.Enabled = enable;
+            ImportDirectoryTextBox.Enabled = enable;
+            ImportButton.Enabled = enable;
         }
 
         private async void FileDownloadButton_Click(object sender, EventArgs e)
@@ -71,13 +75,48 @@
                     () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
         }
 
+        private async void ImportButton_Click(object sender, EventArgs e)
+        {
+            await RunActionAsync(() =>
+            {
+                string importDirectory = ImportDirectoryTextBox.Text;
+
+                if (!Directory.Exists(importDirectory))
+                {
+                    Log(
+                        $"The directory does not exist, provide a new directory and try again. Directory: '{importDirectory}'");
+                    CreateSeparationInLog();
+                    return;
+                }
+
+                string[] importFiles = Directory.GetFiles(importDirectory);
+
+                if (importFiles.Length == 0)
+                {
+                    Log(
+                        $"There are no files in the directory, provide a directory with files to import and try again. Directory: '{importDirectory}'");
+                    CreateSeparationInLog();
+                    return;
+                }
+
+                foreach (string importFile in importFiles)
+                {
+                    ConfigurationManager.AppSettings["DownloadUri"] = importFile;
+
+                    CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); });
+                }
+
+                CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFiles(); });
+            });
+        }
+
         private async Task RunActionAsync(Action action)
         {
             try
             {
-                EnableButtons(false);
+                EnableGui(false);
                 await Task.Run(action);
-                EnableButtons(true);
+                EnableGui(true);
             }
             catch (Exception exception)
             {
