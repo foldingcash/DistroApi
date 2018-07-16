@@ -33,7 +33,7 @@
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(selector =>
                     selector.SelectedWith<DatabaseFactoryComponentSelector>()),
                 Component.For<IStatsDownloadApiTokenDistributionService>()
-                         .ImplementedBy<StandardTokenDistributionProvider>(),
+                         .ImplementedBy<StatsDownloadApiTokenDistributionProvider>(),
                 Component
                     .For<IStatsDownloadDatabaseService>()
                     .ImplementedBy<StatsDownloadDatabaseProvider>(),

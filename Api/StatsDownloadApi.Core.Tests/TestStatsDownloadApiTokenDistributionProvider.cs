@@ -6,12 +6,12 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class TestStandardTokenDistributionProvider
+    public class TestStatsDownloadApiTokenDistributionProvider
     {
         [SetUp]
         public void SetUp()
         {
-            systemUnderTest = new StandardTokenDistributionProvider();
+            systemUnderTest = new StatsDownloadApiTokenDistributionProvider();
         }
 
         private IStatsDownloadApiTokenDistributionService systemUnderTest;
