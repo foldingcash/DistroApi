@@ -6,7 +6,7 @@
     using Interfaces;
     using Interfaces.DataTransfer;
 
-    public class StatsDownloadApiTokenDistributionProvider : IStatsDownloadApiTokenDistributionService
+    public class StandardTokenDistributionProvider : IStatsDownloadApiTokenDistributionService
     {
         private const int MaxPrecision = 8;
 
