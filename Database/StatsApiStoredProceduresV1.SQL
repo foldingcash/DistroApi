@@ -1,41 +1,120 @@
-IF OBJECT_ID('FoldingCoin.GetDistroUsers') IS NOT NULL
+IF OBJECT_ID('FoldingCoin.GetFoldingUsers') IS NOT NULL
 	BEGIN
-		DROP PROCEDURE [FoldingCoin].[GetDistroUsers];
+		DROP PROCEDURE [FoldingCoin].[GetFoldingUsers];
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[GetDistroUsers] @StartDate DATE,
+CREATE PROCEDURE [FoldingCoin].[GetFoldingUsers] @StartDate DATE,
 	@EndDate DATE
 AS
 BEGIN
-	WITH WorkingDataSet AS
+	DECLARE @StartDateTime DATETIME;
+	DECLARE @EndDateTime DATETIME;
+
+	--This is converted to add 12 hours because of FLDC specific implementation needs
+	SET @StartDateTime = DATEADD(HOUR, 12, CONVERT(DATETIME, @StartDate));
+	SET @EndDateTime = DATEADD(HOUR, 12, CONVERT(DATETIME, @EndDate));
+
+	WITH StartStats AS 
 	(
-		SELECT 
-			[UserStatId], 
-			[Points], 
-			[WorkUnits], 
-			[TeamMembers].[TeamMemberId], 
-			[DownloadDateTime], 
-			[BitcoinAddress]
-		FROM [FoldingCoin].[UserStats]
-			INNER JOIN [FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId]
-			INNER JOIN [FoldingCoin].[Downloads] ON [FoldingCoin].[Downloads].[DownloadId] = [FoldingCoin].[FAHDataRuns].[DownloadId]
-			INNER JOIN [FoldingCoin].[TeamMembers] ON [FoldingCoin].[FAHDataRuns].[TeamMemberId] = [FoldingCoin].[TeamMembers].[TeamMemberId]
-			INNER JOIN [FoldingCoin].[Users] ON [FoldingCoin].[TeamMembers].[UserId] = [FoldingCoin].[Users].[UserId]
-		WHERE [FoldingCoin].[Downloads].[StatusId] = [FoldingCoin].GetStatsUploadFinishedStatusId() 
-			AND DownloadDateTime >= @StartDate AND DownloadDateTime < DATEADD(day, 1, @EndDate)
+		SELECT
+			UserStats.UserStatId,  
+			ISNULL(UserStats.Points, 0) AS Points,
+			ISNULL(UserStats.WorkUnits, 0) AS WorkUnits,  
+			TeamMembers.TeamMemberId,   
+			Users.BitcoinAddress,
+			Downloads.DownloadDateTime
+		FROM FoldingCoin.UserStats UserStats
+			INNER JOIN FoldingCoin.FAHDataRuns FAHDataRuns ON UserStats.FAHDataRunId = FAHDataRuns.FAHDataRunId 
+			INNER JOIN FoldingCoin.Downloads Downloads ON Downloads.DownloadId = FAHDataRuns.DownloadId 
+			INNER JOIN FoldingCoin.TeamMembers TeamMembers ON FAHDataRuns.TeamMemberId = TeamMembers.TeamMemberId 
+			INNER JOIN FoldingCoin.Users Users ON TeamMembers.UserId = Users.UserId 
+			INNER JOIN 
+			(
+				SELECT    
+					TeamMembers.TeamMemberId,   
+					Users.BitcoinAddress,
+					MAX(Downloads.DownloadDateTime) AS MaxDate
+				FROM FoldingCoin.UserStats UserStats
+					INNER JOIN FoldingCoin.FAHDataRuns FAHDataRuns ON UserStats.FAHDataRunId = FAHDataRuns.FAHDataRunId 
+					INNER JOIN FoldingCoin.Downloads Downloads ON Downloads.DownloadId = FAHDataRuns.DownloadId 
+					INNER JOIN FoldingCoin.TeamMembers TeamMembers ON FAHDataRuns.TeamMemberId = TeamMembers.TeamMemberId 
+					INNER JOIN FoldingCoin.Users Users ON TeamMembers.UserId = Users.UserId 
+				WHERE 
+					Downloads.StatusId = FoldingCoin.GetStatsUploadFinishedStatusId()  
+					AND DownloadDateTime < @StartDateTime
+				GROUP BY
+					TeamMembers.TeamMemberId,   
+					Users.BitcoinAddress
+			) StartingDate ON 
+				StartingDate.TeamMemberID = TeamMembers.TeamMemberID
+				AND StartingDate.BitcoinAddress = Users.BitcoinAddress
+				AND StartingDate.MaxDate = Downloads.DownloadDateTime
+	)
+	,EndStats AS 
+	(
+		SELECT
+			UserStats.UserStatId,  
+			ISNULL(UserStats.Points, 0) AS Points,  
+			ISNULL(UserStats.WorkUnits, 0) AS WorkUnits,  
+			TeamMembers.TeamMemberId,   
+			Users.BitcoinAddress,
+			Downloads.DownloadDateTime
+		FROM FoldingCoin.UserStats UserStats
+			INNER JOIN FoldingCoin.FAHDataRuns FAHDataRuns ON UserStats.FAHDataRunId = FAHDataRuns.FAHDataRunId 
+			INNER JOIN FoldingCoin.Downloads Downloads ON Downloads.DownloadId = FAHDataRuns.DownloadId 
+			INNER JOIN FoldingCoin.TeamMembers TeamMembers ON FAHDataRuns.TeamMemberId = TeamMembers.TeamMemberId 
+			INNER JOIN FoldingCoin.Users Users ON TeamMembers.UserId = Users.UserId 
+			INNER JOIN 
+			(
+				SELECT    
+					TeamMembers.TeamMemberId,   
+					Users.BitcoinAddress,
+					MAX(Downloads.DownloadDateTime) AS MaxDate
+				FROM FoldingCoin.UserStats UserStats
+					INNER JOIN FoldingCoin.FAHDataRuns FAHDataRuns ON UserStats.FAHDataRunId = FAHDataRuns.FAHDataRunId 
+					INNER JOIN FoldingCoin.Downloads Downloads ON Downloads.DownloadId = FAHDataRuns.DownloadId 
+					INNER JOIN FoldingCoin.TeamMembers TeamMembers ON FAHDataRuns.TeamMemberId = TeamMembers.TeamMemberId 
+					INNER JOIN FoldingCoin.Users Users ON TeamMembers.UserId = Users.UserId 
+				WHERE 
+					Downloads.StatusId = FoldingCoin.GetStatsUploadFinishedStatusId()  
+					AND DownloadDateTime >= @StartDateTime
+					AND DownloadDateTime < @EndDateTime
+				GROUP BY
+					TeamMembers.TeamMemberId,   
+					Users.BitcoinAddress
+			) EndDate ON 
+				EndDate.TeamMemberID = TeamMembers.TeamMemberID
+				AND EndDate.BitcoinAddress = Users.BitcoinAddress
+				AND EndDate.MaxDate = Downloads.DownloadDateTime
 	)
 	SELECT 
-		[BitcoinAddress] 
-	FROM
+		FoldingUsers.TeamMemberId,
+		FoldingUsers.BitcoinAddress,
+		FoldingUsers.PointsGained,
+		FoldingUsers.WorkUnitsGained,
+		FoldingUsers.StartPoints,
+		FoldingUsers.StartWorkUnits,
+		FoldingUsers.[EndPoints],
+		FoldingUsers.EndWorkUnits
+	FROM 
 	(
-		SELECT DISTINCT [TeamMemberId], [BitcoinAddress],
-			(MAX([Points]) OVER (PARTITION BY [TeamMemberId]) - MIN([Points]) OVER (PARTITION BY [TeamMemberId])) AS NewPoints,
-			(MAX([WorkUnits]) OVER (PARTITION BY [TeamMemberId]) - MIN([WorkUnits]) OVER (PARTITION BY [TeamMemberId])) AS NewWorkUnits
-		FROM WorkingDataSet
-	) AS DistroUsers
-	WHERE NewPoints <> 0 
-		AND NewWorkUnits <> 0 
-		AND BitcoinAddress IS NOT NULL
+		SELECT  
+			EndStats.TeamMemberID,
+			EndStats.BitcoinAddress,
+			ISNULL(EndStats.Points - StartStats.Points, EndStats.Points) AS PointsGained,
+			ISNULL(EndStats.WorkUnits - StartStats.WorkUnits, EndStats.WorkUnits) AS WorkUnitsGained,
+			ISNULL(StartStats.Points, 0) AS StartPoints,
+			ISNULL(StartStats.WorkUnits, 0) AS StartWorkUnits,
+			EndStats.Points AS [EndPoints],
+			EndStats.WorkUnits AS EndWorkUnits
+		FROM EndStats 
+			LEFT JOIN StartStats ON 
+				EndStats.TeamMemberID = StartStats.TeamMemberID
+				AND EndStats.BitcoinAddress = StartStats.BitcoinAddress
+	) AS FoldingUsers
+	WHERE FoldingUsers.PointsGained <> 0  
+		AND FoldingUsers.WorkUnitsGained <> 0  
+		AND FoldingUsers.BitcoinAddress IS NOT NULL
 END
 GO
