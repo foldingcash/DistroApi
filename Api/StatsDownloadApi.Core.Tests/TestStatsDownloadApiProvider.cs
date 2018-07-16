@@ -99,7 +99,7 @@
             var foldingUsers = new DistroUser[1];
             var distro = new DistroUser[0];
             statsDownloadApiDatabaseServiceMock.GetFoldingUsers(startDateMock, endDateMock).Returns(foldingUsers);
-            statsDownloadApiTokenDistributionServiceMock.GetDistro(foldingUsers).Returns(distro);
+            statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);
 
             DistroResponse actual = InvokeGetDistro();
 

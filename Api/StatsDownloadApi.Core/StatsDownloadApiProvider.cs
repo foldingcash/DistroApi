@@ -37,14 +37,14 @@
             }
 
             IList<DistroUser> foldingUsers = GetFoldingUsers(startDate, endDate);
-            IList<DistroUser> distro = GetDistro(foldingUsers);
+            IList<DistroUser> distro = GetDistro(amount, foldingUsers);
 
             return new DistroResponse(distro);
         }
 
-        private IList<DistroUser> GetDistro(IList<DistroUser> foldingUsers)
+        private IList<DistroUser> GetDistro(int? amount, IList<DistroUser> foldingUsers)
         {
-            return statsDownloadApiTokenDistributionService.GetDistro(foldingUsers);
+            return statsDownloadApiTokenDistributionService.GetDistro(amount.GetValueOrDefault(), foldingUsers);
         }
 
         private IList<DistroUser> GetFoldingUsers(DateTime? startDate, DateTime? endDate)

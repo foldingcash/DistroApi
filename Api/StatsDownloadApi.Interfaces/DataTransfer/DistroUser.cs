@@ -9,6 +9,8 @@
             WorkUnitsGained = workUnitsGained;
         }
 
+        public decimal Amount { get; set; }
+
         public string BitcoinAddress { get; }
 
         public long PointsGained { get; }
