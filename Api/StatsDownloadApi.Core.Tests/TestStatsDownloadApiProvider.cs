@@ -89,7 +89,7 @@
         public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
         {
             var distro = new List<DistroUser>();
-            statsDownloadApiDatabaseServiceMock.GetDistroUsers(startDateMock, endDateMock).Returns(distro);
+            statsDownloadApiDatabaseServiceMock.GetFoldingUsers(startDateMock, endDateMock).Returns(distro);
 
             DistroResponse actual = InvokeGetDistro();
 

@@ -29,7 +29,8 @@
                 return new DistroResponse(errors);
             }
 
-            return new DistroResponse(statsDownloadApiDatabaseService.GetDistroUsers(startDate.Value, endDate.Value));
+            return new DistroResponse(statsDownloadApiDatabaseService.GetFoldingUsers(startDate.GetValueOrDefault(),
+                endDate.GetValueOrDefault()));
         }
 
         private bool IsNotPreparedToRunDistro(DateTime? startDate, DateTime? endDate, int? amount,

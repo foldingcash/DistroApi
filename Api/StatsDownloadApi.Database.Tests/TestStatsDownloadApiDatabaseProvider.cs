@@ -51,19 +51,19 @@
         }
 
         [Test]
-        public void GetDistroUsers_WhenInvoked_GetDistroUsersParametersAreProvided()
+        public void GetDistroUsers_WhenInvoked_GetFoldingUsersParametersAreProvided()
         {
             IEnumerable<DbParameter> actualParameters = null;
 
             databaseConnectionServiceMock.When(service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[GetDistroUsers]",
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetFoldingUsers]",
                     Arg.Any<IEnumerable<DbParameter>>(),
                     Arg.Any<DataTable>())).Do(callInfo =>
             {
                 actualParameters = callInfo.Arg<IEnumerable<DbParameter>>();
             });
 
-            systemUnderTest.GetDistroUsers(DateTime.MinValue, DateTime.MaxValue);
+            systemUnderTest.GetFoldingUsers(DateTime.MinValue, DateTime.MaxValue);
 
             Assert.That(actualParameters.Count, Is.EqualTo(2));
             Assert.That(actualParameters.ElementAt(0).ParameterName, Is.EqualTo("@StartDate"));
@@ -77,10 +77,10 @@
         }
 
         [Test]
-        public void GetDistroUsers_WhenInvoked_GetsDistroUsers()
+        public void GetFoldingUsers_WhenInvoked_GetsFoldingUsers()
         {
             databaseConnectionServiceMock.When(service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[GetDistroUsers]",
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetFoldingUsers]",
                     Arg.Any<IEnumerable<DbParameter>>(),
                     Arg.Any<DataTable>())).Do(callInfo =>
             {
@@ -95,7 +95,7 @@
                 dataTable.AcceptChanges();
             });
 
-            IList<DistroUser> actual = systemUnderTest.GetDistroUsers(DateTime.MinValue, DateTime.MaxValue);
+            IList<DistroUser> actual = systemUnderTest.GetFoldingUsers(DateTime.MinValue, DateTime.MaxValue);
 
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[0].BitcoinAddress, Is.EqualTo("BitcoinAddress1"));

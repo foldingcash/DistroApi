@@ -18,7 +18,7 @@
                                                 throw new ArgumentNullException(nameof(statsDownloadDatabaseService));
         }
 
-        public IList<DistroUser> GetDistroUsers(DateTime startDate, DateTime endDate)
+        public IList<DistroUser> GetFoldingUsers(DateTime startDate, DateTime endDate)
         {
             var users = new List<DistroUser>();
             statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
@@ -32,7 +32,7 @@
                 endDateParameter.Value = endDate;
 
                 var dataTable = new DataTable();
-                service.ExecuteStoredProcedure(Constants.StatsDownloadApiDatabase.GetDistroUsersProcedureName,
+                service.ExecuteStoredProcedure(Constants.StatsDownloadApiDatabase.GetFoldingUsersProcedureName,
                     new[] { startDateParameter, endDateParameter },
                     dataTable);
 
