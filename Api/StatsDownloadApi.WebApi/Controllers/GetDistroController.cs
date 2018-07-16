@@ -19,6 +19,10 @@
                 DistroResponse response = apiService.GetDistro(startDate, endDate, amount);
                 return response;
             }
+            catch (Exception)
+            {
+                return new DistroResponse(new[] { Constants.DistroErrors.UnexpectedException });
+            }
             finally
             {
                 WindsorContainer.Instance.Release(apiService);

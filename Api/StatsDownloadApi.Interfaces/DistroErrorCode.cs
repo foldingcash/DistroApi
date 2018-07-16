@@ -20,6 +20,8 @@
 
         NegativeAmount = 1070,
 
-        DatabaseUnavailable = 8000
+        DatabaseUnavailable = 8000,
+
+        UnexpectedException = 9000
     }
 }
