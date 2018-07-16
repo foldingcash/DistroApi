@@ -86,12 +86,18 @@
             {
                 var dataTable = callInfo.Arg<DataTable>();
                 dataTable.Columns.Add(new DataColumn("BitcoinAddress", typeof (string)));
+                dataTable.Columns.Add(new DataColumn("PointsGained", typeof (long)));
+                dataTable.Columns.Add(new DataColumn("WorkUnitsGained", typeof (long)));
                 DataRow user1 = dataTable.NewRow();
                 dataTable.Rows.Add(user1);
                 user1["BitcoinAddress"] = "BitcoinAddress1";
+                user1["PointsGained"] = 100;
+                user1["WorkUnitsGained"] = 1000;
                 DataRow user2 = dataTable.NewRow();
                 dataTable.Rows.Add(user2);
                 user2["BitcoinAddress"] = "BitcoinAddress2";
+                user2["PointsGained"] = 200;
+                user2["WorkUnitsGained"] = 2000;
                 dataTable.AcceptChanges();
             });
 
@@ -99,7 +105,11 @@
 
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[0].BitcoinAddress, Is.EqualTo("BitcoinAddress1"));
+            Assert.That(actual[0].PointsGained, Is.EqualTo(100));
+            Assert.That(actual[0].WorkUnitsGained, Is.EqualTo(1000));
             Assert.That(actual[1].BitcoinAddress, Is.EqualTo("BitcoinAddress2"));
+            Assert.That(actual[1].PointsGained, Is.EqualTo(200));
+            Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(2000));
         }
 
         [TestCase(true)]
