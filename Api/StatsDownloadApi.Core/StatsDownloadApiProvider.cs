@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Interfaces;
+    using Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces;
 
     public class StatsDownloadApiProvider : IStatsDownloadApiService
@@ -11,12 +12,18 @@
 
         private readonly IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService;
 
+        private readonly IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService;
+
         public StatsDownloadApiProvider(IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
+            IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService,
             IDateTimeService dateTimeService)
         {
             this.statsDownloadApiDatabaseService = statsDownloadApiDatabaseService ??
                                                    throw new ArgumentNullException(
                                                        nameof(statsDownloadApiDatabaseService));
+            this.statsDownloadApiTokenDistributionService = statsDownloadApiTokenDistributionService ??
+                                                            throw new ArgumentNullException(
+                                                                nameof(statsDownloadApiTokenDistributionService));
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
         }
 
@@ -29,8 +36,21 @@
                 return new DistroResponse(errors);
             }
 
-            return new DistroResponse(statsDownloadApiDatabaseService.GetFoldingUsers(startDate.GetValueOrDefault(),
-                endDate.GetValueOrDefault()));
+            IList<DistroUser> foldingUsers = GetFoldingUsers(startDate, endDate);
+            IList<DistroUser> distro = GetDistro(foldingUsers);
+
+            return new DistroResponse(distro);
+        }
+
+        private IList<DistroUser> GetDistro(IList<DistroUser> foldingUsers)
+        {
+            return statsDownloadApiTokenDistributionService.GetDistro(foldingUsers);
+        }
+
+        private IList<DistroUser> GetFoldingUsers(DateTime? startDate, DateTime? endDate)
+        {
+            return statsDownloadApiDatabaseService.GetFoldingUsers(startDate.GetValueOrDefault(),
+                endDate.GetValueOrDefault());
         }
 
         private bool IsNotPreparedToRunDistro(DateTime? startDate, DateTime? endDate, int? amount,

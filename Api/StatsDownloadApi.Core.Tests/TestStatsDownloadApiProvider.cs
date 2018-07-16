@@ -1,7 +1,6 @@
 ﻿namespace StatsDownloadApi.Core.Tests
 {
     using System;
-    using System.Collections.Generic;
     using Interfaces;
     using Interfaces.DataTransfer;
     using NSubstitute;
@@ -17,10 +16,13 @@
             statsDownloadApiDatabaseServiceMock = Substitute.For<IStatsDownloadApiDatabaseService>();
             statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(true);
 
+            statsDownloadApiTokenDistributionServiceMock = Substitute.For<IStatsDownloadApiTokenDistributionService>();
+
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
             dateTimeServiceMock.DateTimeNow().Returns(DateTime.UtcNow);
 
-            systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock, dateTimeServiceMock);
+            systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock);
         }
 
         private readonly int amountMock = 7750000;
@@ -33,14 +35,20 @@
 
         private IStatsDownloadApiDatabaseService statsDownloadApiDatabaseServiceMock;
 
+        private IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionServiceMock;
+
         private IStatsDownloadApiService systemUnderTest;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(null, dateTimeServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock, null));
+                NewStatsDownloadApiProvider(null, statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock, null, dateTimeServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
+                    statsDownloadApiTokenDistributionServiceMock, null));
         }
 
         [Test]
@@ -88,8 +96,10 @@
         [Test]
         public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
         {
-            var distro = new List<DistroUser>();
-            statsDownloadApiDatabaseServiceMock.GetFoldingUsers(startDateMock, endDateMock).Returns(distro);
+            var foldingUsers = new DistroUser[1];
+            var distro = new DistroUser[0];
+            statsDownloadApiDatabaseServiceMock.GetFoldingUsers(startDateMock, endDateMock).Returns(foldingUsers);
+            statsDownloadApiTokenDistributionServiceMock.GetDistro(foldingUsers).Returns(distro);
 
             DistroResponse actual = InvokeGetDistro();
 
@@ -203,9 +213,11 @@
 
         private IStatsDownloadApiService NewStatsDownloadApiProvider(
             IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
+            IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService,
             IDateTimeService dateTimeService)
         {
-            return new StatsDownloadApiProvider(statsDownloadApiDatabaseService, dateTimeService);
+            return new StatsDownloadApiProvider(statsDownloadApiDatabaseService,
+                statsDownloadApiTokenDistributionService, dateTimeService);
         }
     }
 }
