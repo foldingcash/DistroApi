@@ -96,7 +96,7 @@
         [Test]
         public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
         {
-            var foldingUsers = new DistroUser[1];
+            var foldingUsers = new FoldingUser[0];
             var distro = new DistroUser[0];
             statsDownloadApiDatabaseServiceMock.GetFoldingUsers(startDateMock, endDateMock).Returns(foldingUsers);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);

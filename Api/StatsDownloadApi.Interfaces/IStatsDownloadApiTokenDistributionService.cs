@@ -5,6 +5,6 @@
 
     public interface IStatsDownloadApiTokenDistributionService
     {
-        IList<DistroUser> GetDistro(int amount, IList<DistroUser> distro);
+        IList<DistroUser> GetDistro(int amount, IList<FoldingUser> foldingUsers);
     }
 }

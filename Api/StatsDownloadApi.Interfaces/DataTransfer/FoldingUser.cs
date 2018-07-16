@@ -1,16 +1,13 @@
 ﻿namespace StatsDownloadApi.Interfaces.DataTransfer
 {
-    public class DistroUser
+    public class FoldingUser
     {
-        public DistroUser(string bitcoinAddress, long pointsGained, long workUnitsGained, int amount)
+        public FoldingUser(string bitcoinAddress, long pointsGained, long workUnitsGained)
         {
             BitcoinAddress = bitcoinAddress;
             PointsGained = pointsGained;
             WorkUnitsGained = workUnitsGained;
-            Amount = amount;
         }
-
-        public decimal Amount { get; set; }
 
         public string BitcoinAddress { get; }
 

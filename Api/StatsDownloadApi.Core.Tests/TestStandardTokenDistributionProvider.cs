@@ -20,7 +20,7 @@
         public void GetDistro_WhenInvoked_ReturnsDistro()
         {
             IList<DistroUser> actual = systemUnderTest.GetDistro(100,
-                new[] { new DistroUser("address1", 1, 1), new DistroUser("address2", 99, 99) });
+                new[] { new FoldingUser("address1", 1, 1), new FoldingUser("address2", 99, 99) });
 
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[0].BitcoinAddress, Is.EqualTo("address1"));

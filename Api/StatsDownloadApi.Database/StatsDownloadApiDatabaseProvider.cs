@@ -18,9 +18,9 @@
                                                 throw new ArgumentNullException(nameof(statsDownloadDatabaseService));
         }
 
-        public IList<DistroUser> GetFoldingUsers(DateTime startDate, DateTime endDate)
+        public IList<FoldingUser> GetFoldingUsers(DateTime startDate, DateTime endDate)
         {
-            var users = new List<DistroUser>();
+            var users = new List<FoldingUser>();
             statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
                 DbParameter startDateParameter =
@@ -38,7 +38,7 @@
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    users.Add(new DistroUser(row["BitcoinAddress"] as string,
+                    users.Add(new FoldingUser(row["BitcoinAddress"] as string,
                         (row["PointsGained"] as long?).GetValueOrDefault(),
                         (row["WorkUnitsGained"] as long?).GetValueOrDefault()));
                 }

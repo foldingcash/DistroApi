@@ -101,7 +101,7 @@
                 dataTable.AcceptChanges();
             });
 
-            IList<DistroUser> actual = systemUnderTest.GetFoldingUsers(DateTime.MinValue, DateTime.MaxValue);
+            IList<FoldingUser> actual = systemUnderTest.GetFoldingUsers(DateTime.MinValue, DateTime.MaxValue);
 
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[0].BitcoinAddress, Is.EqualTo("BitcoinAddress1"));
