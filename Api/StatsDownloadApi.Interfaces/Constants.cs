@@ -28,6 +28,9 @@
             public static DistroError StartDateUnsearchable => new DistroError(DistroErrorCode.StartDateUnsearchable,
                 ErrorMessages.StartDateUnsearchableMessage);
 
+            public static DistroError UnexpectedException => new DistroError(DistroErrorCode.UnexpectedException,
+                ErrorMessages.UnexpectedExceptionMessage);
+
             public static DistroError ZeroAmount =>
                 new DistroError(DistroErrorCode.ZeroAmount, ErrorMessages.ZeroAmountMessage);
         }
@@ -35,7 +38,7 @@
         public static class ErrorMessages
         {
             public static string DatabaseUnavailableMessage =>
-                "The database is unavailable. Try again in a short period of time. If the problem continues, then contact the technical team.";
+                "The database is unavailable. Try again in a short period of time. If the problem continues, then contact the technical team about the problem.";
 
             public static string EndDateUnsearchableMessage =>
                 "The end date provided is unsearchable. The end date must not be today or a future day's date. Provide a new end date and try again.";
@@ -57,6 +60,9 @@
 
             public static string StartDateUnsearchableMessage =>
                 "The start date provided is unsearchable. The start date must not be today or a future day's date. Provide a new start date and try again.";
+
+            public static string UnexpectedExceptionMessage =>
+                "There was an unexpected error. Try again and if the problem continues, then contact the technical team about the problem.";
 
             public static string ZeroAmountMessage =>
                 "The amount provided was zero. Provide an amount greater than zero and try again.";
