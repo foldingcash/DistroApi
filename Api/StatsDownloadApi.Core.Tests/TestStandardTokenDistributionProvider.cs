@@ -32,5 +32,16 @@
             Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(98));
             Assert.That(actual[1].Amount, Is.EqualTo(0.99));
         }
+
+        [Test]
+        public void GetDistro_WhenProportionExceedsMaxPrecision_FloorsToHighestPrecision()
+        {
+            IList<DistroUser> actual = systemUnderTest.GetDistro(7750000,
+                new[] { new FoldingUser("address1", 500, 0), new FoldingUser("address2", 560, 0) });
+
+            Assert.That(actual.Count, Is.EqualTo(2));
+            Assert.That(actual[0].Amount, Is.EqualTo(3655660.37735849));
+            Assert.That(actual[1].Amount, Is.EqualTo(4094339.62264150));
+        }
     }
 }

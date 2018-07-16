@@ -8,6 +8,8 @@
 
     public class StandardTokenDistributionProvider : IStatsDownloadApiTokenDistributionService
     {
+        private const int MaxPrecision = 8;
+
         public IList<DistroUser> GetDistro(int amount, IList<FoldingUser> foldingUsers)
         {
             var distro = new List<DistroUser>();
@@ -22,10 +24,18 @@
             return distro;
         }
 
+        public decimal RoundDown(decimal value, double precision)
+        {
+            decimal power = Convert.ToDecimal(Math.Pow(10, precision));
+            return Math.Floor(value * power) / power;
+        }
+
         private decimal GetAmount(int amount, long totalPoints, FoldingUser foldingUser)
         {
-            return (Convert.ToDecimal(foldingUser.PointsGained) / Convert.ToDecimal(totalPoints)) *
-                   Convert.ToDecimal(amount);
+            decimal rawAmount = Convert.ToDecimal(foldingUser.PointsGained) / Convert.ToDecimal(totalPoints) *
+                                Convert.ToDecimal(amount);
+
+            return RoundDown(rawAmount, MaxPrecision);
         }
 
         private DistroUser GetDistroUser(int amount, long totalPoints, FoldingUser foldingUser)
