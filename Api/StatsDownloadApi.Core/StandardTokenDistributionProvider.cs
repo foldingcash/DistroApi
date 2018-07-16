@@ -24,10 +24,9 @@
             return distro;
         }
 
-        public decimal RoundDown(decimal value, double precision)
+        public decimal Round(decimal value, int precision)
         {
-            decimal power = Convert.ToDecimal(Math.Pow(10, precision));
-            return Math.Floor(value * power) / power;
+            return Math.Round(value, precision, MidpointRounding.ToEven);
         }
 
         private decimal GetAmount(int amount, long totalPoints, FoldingUser foldingUser)
@@ -35,7 +34,7 @@
             decimal rawAmount = Convert.ToDecimal(foldingUser.PointsGained) / Convert.ToDecimal(totalPoints) *
                                 Convert.ToDecimal(amount);
 
-            return RoundDown(rawAmount, MaxPrecision);
+            return Round(rawAmount, MaxPrecision);
         }
 
         private DistroUser GetDistroUser(int amount, long totalPoints, FoldingUser foldingUser)

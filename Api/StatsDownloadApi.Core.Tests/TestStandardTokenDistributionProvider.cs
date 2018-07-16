@@ -41,7 +41,7 @@
 
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[0].Amount, Is.EqualTo(3655660.37735849));
-            Assert.That(actual[1].Amount, Is.EqualTo(4094339.62264150));
+            Assert.That(actual[1].Amount, Is.EqualTo(4094339.62264151));
         }
     }
 }
