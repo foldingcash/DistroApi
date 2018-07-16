@@ -89,15 +89,17 @@
                     return;
                 }
 
-                string[] importFiles = Directory.GetFiles(importDirectory);
+                string[] importFiles = Directory.GetFiles(importDirectory, "*.txt", SearchOption.TopDirectoryOnly);
 
                 if (importFiles.Length == 0)
                 {
                     Log(
-                        $"There are no files in the directory, provide a directory with files to import and try again. Directory: '{importDirectory}'");
+                        $"There are no text files in the top directory, provide a directory with files to import and try again. Directory: '{importDirectory}'");
                     CreateSeparationInLog();
                     return;
                 }
+
+                ConfigurationManager.AppSettings["FileCompressionDisabled"] = "true";
 
                 foreach (string importFile in importFiles)
                 {
@@ -107,6 +109,8 @@
                 }
 
                 CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFiles(); });
+
+                ConfigurationManager.RefreshSection("appSettings");
             });
         }
 

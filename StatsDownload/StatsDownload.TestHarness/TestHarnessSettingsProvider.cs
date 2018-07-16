@@ -31,8 +31,7 @@
         public int? GetCommandTimeout()
         {
             string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
-            int commandTimeoutValue;
-            if (int.TryParse(commandTimeoutString, out commandTimeoutValue))
+            if (int.TryParse(commandTimeoutString, out int commandTimeoutValue))
                 return commandTimeoutValue;
             return null;
         }
@@ -98,6 +97,11 @@
             return ConfigurationManager.AppSettings["SmtpHost"];
         }
 
+        public bool IsFileCompressionDisabled()
+        {
+            return GetBoolConfig("FileCompressionDisabled");
+        }
+
         public bool IsMinimumWaitTimeMetDisabled()
         {
             return GetBoolConfig("DisableMinimumWaitTime");
@@ -115,8 +119,7 @@
 
         private bool GetBoolConfig(string appSettingName)
         {
-            bool value;
-            bool.TryParse(ConfigurationManager.AppSettings[appSettingName], out value);
+            bool.TryParse(ConfigurationManager.AppSettings[appSettingName], out bool value);
             return value;
         }
     }

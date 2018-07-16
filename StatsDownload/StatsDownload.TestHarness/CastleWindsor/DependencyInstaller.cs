@@ -33,7 +33,8 @@
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessOneHundredUsersFilter>(),
                 Component.For<IStatsUploadDatabaseService>()
-                         .ImplementedBy<TestHarnessStatsUploadDatabaseProvider>());
+                         .ImplementedBy<TestHarnessStatsUploadDatabaseProvider>(),
+                Component.For<IFileCompressionService>().ImplementedBy<TestHarnessFileCompressionProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
