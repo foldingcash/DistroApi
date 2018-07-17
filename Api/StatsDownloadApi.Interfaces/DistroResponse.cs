@@ -29,5 +29,11 @@
         public DistroErrorCode FirstErrorCode => Errors?.First().ErrorCode ?? DistroErrorCode.None;
 
         public bool Success { get; }
+
+        public decimal? TotalDistro => Distro?.Sum(user => user.Amount);
+
+        public long? TotalPoints => Distro?.Sum(user => user.PointsGained);
+
+        public long? TotalWorkUnits => Distro?.Sum(user => user.WorkUnitsGained);
     }
 }

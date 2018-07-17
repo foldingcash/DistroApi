@@ -32,6 +32,8 @@
                 Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DatabaseFactoryComponentSelector>(),
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(selector =>
                     selector.SelectedWith<DatabaseFactoryComponentSelector>()),
+                Component.For<IStatsDownloadApiTokenDistributionService>()
+                         .ImplementedBy<StandardTokenDistributionProvider>(),
                 Component
                     .For<IStatsDownloadDatabaseService>()
                     .ImplementedBy<StatsDownloadDatabaseProvider>(),
