@@ -21,7 +21,7 @@ Default distribution behavior:
 * Rounded to eight decimal places
 * Rounding uses banker's rounding
 * Proportionally distributes the specified amount to the users for their points completed over the specified date-range
-* May not equal the specified amount (plus or minus by a small amount)
+* Total distribution amount may not equal the specified amount (plus or minus a small amount)
 
 ### GetDistro Response Format
 
