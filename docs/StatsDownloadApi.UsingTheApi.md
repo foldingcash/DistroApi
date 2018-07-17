@@ -31,7 +31,9 @@ Default distribution behavior:
     [
       {
         "bitcoinAddress":"{bitcoinAddress}",
-        "amount":{amount}
+        "amount":{amount},
+		"pointsGained":{pointsGained},
+		"workUnitsGained":{workUnitsGained}
       }
     ],
   "distroCount":{distroCount},
