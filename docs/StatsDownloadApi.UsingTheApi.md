@@ -30,8 +30,9 @@ Default distribution behavior:
   "distro":
     [
       {
-        "bitcoinAddress":"{bitcoinAddress}",
         "amount":{amount},
+        "bitcoinAddress":"{bitcoinAddress}",
+        "friendlyName":"{friendlyName}",
         "pointsGained":{pointsGained},
         "workUnitsGained":{workUnitsGained}
       }
