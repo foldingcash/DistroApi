@@ -102,8 +102,8 @@
             var foldingUsers = new FoldingUser[0];
             var distro = new[]
             {
-                new DistroUser("", 1, 2, (decimal) 0.12345678),
-                new DistroUser("", 3, 4, 100)
+                new DistroUser(null, null, 1, 2, 0.12345678m),
+                new DistroUser(null, null, 3, 4, 100m)
             };
             statsDownloadApiDatabaseServiceMock.GetFoldingUsers(startDateMock, endDateMock).Returns(foldingUsers);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);

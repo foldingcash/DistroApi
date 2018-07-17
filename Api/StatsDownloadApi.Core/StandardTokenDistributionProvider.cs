@@ -39,7 +39,7 @@
 
         private DistroUser GetDistroUser(int amount, long totalPoints, FoldingUser foldingUser)
         {
-            return new DistroUser(foldingUser.BitcoinAddress, foldingUser.PointsGained,
+            return new DistroUser(foldingUser.FriendlyName, foldingUser.BitcoinAddress, foldingUser.PointsGained,
                 foldingUser.WorkUnitsGained, GetAmount(amount, totalPoints, foldingUser));
         }
     }
