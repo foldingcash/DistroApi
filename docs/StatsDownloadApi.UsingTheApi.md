@@ -14,13 +14,14 @@ GET http://{server}/{api_path}/v1/GetDistro?StartDate=01-01-0001&EndDate=12-31-9
 HTTP 200
 ```
 
-Default behavior:
+Default distribution behavior:
 
 * JSON response
 * Decimal precision
 * Rounded to eight decimal places
 * Rounding uses banker's rounding
-* Proportionally distributes the specified amount to the users for their total points completed over the specified date-range
+* Proportionally distributes the specified amount to the users for their points completed over the specified date-range
+* May not equal the specified amount (plus or minus by a small amount)
 
 ### GetDistro Response Format
 
@@ -30,9 +31,7 @@ Default behavior:
     [
       {
         "bitcoinAddress":"{bitcoinAddress}",
-        "amount":{amount},
-        "pointsGained":{pointsGained},
-        "workUnitsGained":{workUnitsGained}
+        "amount":{amount}
       }
     ],
   "distroCount":{distroCount},
