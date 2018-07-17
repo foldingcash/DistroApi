@@ -1,9 +1,11 @@
-# Calling the API
+# Using the API
+
+## Calling the API
 
 * Replace {server} with the hosting server name
 * Replace {api_path} with the application path, if any
 
-## Calling GetDistro
+### Calling GetDistro
 
 Both parameters 'StartDate' and 'EndDate' are required
 
@@ -11,9 +13,9 @@ Both parameters 'StartDate' and 'EndDate' are required
 GET http://{server}/{api_path}/v1/GetDistro?StartDate=01-01-0001&EndDate=12-31-9999&Amount=7750000
 ```
 
-the API will return a JSON response
+the API will return a JSON response and HTTP 200
 
-## GetDistro Response Format
+### GetDistro Response Format
 
 ```
 {
@@ -35,9 +37,9 @@ the API will return a JSON response
 }
 ```
 
-# Errors
+## Errors
 
-## Error Ranges
+### Error Ranges
 
 | Error Code Range | Error Reason            |
 |:----------------:|-------------------------|
@@ -48,7 +50,7 @@ the API will return a JSON response
 |     8000-8999    | Database error          |
 |     9000-9999    | Unexpected error        |
 
-## Error Codes
+### Error Codes
 
 | Error Code | Description                                                                                                                                                           |
 |:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -64,7 +66,7 @@ the API will return a JSON response
 |    8000    | The database is unavailable. Wait a short period of time before trying again. If the problem continues, then the configuration is incorrect or access is blocked.     |
 |    9000    | There was an unexpected exception while processing. Try again and if the problem continues, then contact the person or organization hosting the API.                  |
 
-## Error Response Format
+### Error Response Format
 
 ```
 {
