@@ -50,6 +50,6 @@ nunit-console {path-to-assembly}
 
 ### Api Hardware Requirements
 
-* HDD 120GB+
+* SDD 120GB+
 * i5 Intel / Ryzen 5 AMD
 * 16 GB
