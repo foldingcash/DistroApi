@@ -7,13 +7,14 @@
 
 ### Calling GetDistro
 
-Both parameters 'StartDate' and 'EndDate' are required
+Both parameters 'StartDate' and 'EndDate' are required and will return a JSON response.
 
 ```
 GET http://{server}/{api_path}/v1/GetDistro?StartDate=01-01-0001&EndDate=12-31-9999&Amount=7750000
+HTTP 200
 ```
 
-the API will return a JSON response and HTTP 200
+By default, the distribution calculations are performed using decimal precision, rounded to eight decimal places using banker's rounding, and proportionally distributions the specified amount to the users for their work completed over the specified date-range.
 
 ### GetDistro Response Format
 
