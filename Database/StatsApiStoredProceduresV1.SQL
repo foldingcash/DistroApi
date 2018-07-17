@@ -23,6 +23,7 @@ BEGIN
 			ISNULL(UserStats.WorkUnits, 0) AS WorkUnits,  
 			TeamMembers.TeamMemberId,   
 			Users.BitcoinAddress,
+			Users.FriendlyName,
 			Downloads.DownloadDateTime
 		FROM FoldingCoin.UserStats UserStats
 			INNER JOIN FoldingCoin.FAHDataRuns FAHDataRuns ON UserStats.FAHDataRunId = FAHDataRuns.FAHDataRunId 
@@ -59,6 +60,7 @@ BEGIN
 			ISNULL(UserStats.WorkUnits, 0) AS WorkUnits,  
 			TeamMembers.TeamMemberId,   
 			Users.BitcoinAddress,
+			Users.FriendlyName,
 			Downloads.DownloadDateTime
 		FROM FoldingCoin.UserStats UserStats
 			INNER JOIN FoldingCoin.FAHDataRuns FAHDataRuns ON UserStats.FAHDataRunId = FAHDataRuns.FAHDataRunId 
@@ -90,6 +92,7 @@ BEGIN
 	)
 	SELECT 
 		FoldingUsers.TeamMemberId,
+		FoldingUsers.FriendlyName,
 		FoldingUsers.BitcoinAddress,
 		FoldingUsers.PointsGained,
 		FoldingUsers.WorkUnitsGained,
@@ -101,6 +104,7 @@ BEGIN
 	(
 		SELECT  
 			EndStats.TeamMemberID,
+			EndStats.FriendlyName,
 			EndStats.BitcoinAddress,
 			ISNULL(EndStats.Points - StartStats.Points, EndStats.Points) AS PointsGained,
 			ISNULL(EndStats.WorkUnits - StartStats.WorkUnits, EndStats.WorkUnits) AS WorkUnitsGained,

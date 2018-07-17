@@ -38,7 +38,8 @@
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    users.Add(new FoldingUser(row["BitcoinAddress"] as string,
+                    users.Add(new FoldingUser(row["FriendlyName"] as string,
+                        row["BitcoinAddress"] as string,
                         (row["PointsGained"] as long?).GetValueOrDefault(),
                         (row["WorkUnitsGained"] as long?).GetValueOrDefault()));
                 }
