@@ -16,7 +16,7 @@ The stats API is used to expose the stats, users, and team data from the stats d
 1. Load StatsDownloadApi in VS
 2. [Publish StatsDownloadApi.WebApi project](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/azure-apps/?view=aspnetcore-2.1)
 3. Ensure connection string 'FoldingCoin' for the API is pointing to a StatsDownload database
-4. [Configure additional application settings if needed](#Settings)
+4. [Configure additional application settings if needed](#settings)
 
 ### Settings
 
