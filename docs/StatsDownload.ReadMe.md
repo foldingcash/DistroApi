@@ -54,7 +54,7 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 	
 ## Errors
 
-### Stats Downloader Failed Reasons
+### Failed Reasons
 
 |           Failed Reason             | Failed Reason                                                                                                                                                                                        |
 |:-----------------------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -68,7 +68,7 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 |    UnexpectedDatabaseException      | There was an unhandled database exception. Try again and if the error occurs again, then check the logs for more details about the database exception. This is likely an unhandled scenario or bug.  |
 |       UnexpectedException           | There was an unhandled exception. Try again and if the error occurs again, then check the logs for more details about the exception. This is likely an unhandled scenario or bug.                    |
 
-### User Rejection Reasons
+### Rejection Reasons
 
 |     Rejection Reason      | Rejection Reason                                                                                                                              |
 |:-------------------------:|-----------------------------------------------------------------------------------------------------------------------------------------------|
