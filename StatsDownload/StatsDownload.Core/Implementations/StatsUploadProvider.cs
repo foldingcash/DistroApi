@@ -24,30 +24,13 @@
             IStatsFileParserService statsFileParserService,
             IStatsUploadEmailService statsUploadEmailService)
         {
-            if (statsUploadDatabaseService == null)
-            {
-                throw new ArgumentNullException(nameof(statsUploadDatabaseService));
-            }
-
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            if (statsFileParserService == null)
-            {
-                throw new ArgumentNullException(nameof(statsFileParserService));
-            }
-
-            if (statsUploadEmailService == null)
-            {
-                throw new ArgumentNullException(nameof(statsUploadEmailService));
-            }
-
-            this.statsUploadDatabaseService = statsUploadDatabaseService;
-            this.loggingService = loggingService;
-            this.statsFileParserService = statsFileParserService;
-            this.statsUploadEmailService = statsUploadEmailService;
+            this.statsUploadDatabaseService = statsUploadDatabaseService ??
+                                              throw new ArgumentNullException(nameof(statsUploadDatabaseService));
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            this.statsFileParserService = statsFileParserService ??
+                                          throw new ArgumentNullException(nameof(statsFileParserService));
+            this.statsUploadEmailService = statsUploadEmailService ??
+                                           throw new ArgumentNullException(nameof(statsUploadEmailService));
         }
 
         public StatsUploadResults UploadStatsFiles()
@@ -55,9 +38,9 @@
             try
             {
                 LogVerbose($"{nameof(UploadStatsFiles)} Invoked");
-                if (DataStoreUnavailable())
+                if (DatabaseUnavailable())
                 {
-                    var results = new StatsUploadResults(FailedReason.DataStoreUnavailable);
+                    var results = new StatsUploadResults(FailedReason.DatabaseUnavailable);
                     loggingService.LogResults(results);
                     statsUploadEmailService.SendEmail(results);
                     return results;
@@ -82,7 +65,7 @@
             }
         }
 
-        private bool DataStoreUnavailable()
+        private bool DatabaseUnavailable()
         {
             return !statsUploadDatabaseService.IsAvailable();
         }

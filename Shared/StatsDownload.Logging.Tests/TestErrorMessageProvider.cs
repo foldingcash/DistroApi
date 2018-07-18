@@ -20,26 +20,26 @@
 
         [Test]
         public void
-            GetErrorMessage_WhenDataStoreUnavailableDuringFileDownload_ReturnsFileDownloadDataStoreUnavailableMessage()
+            GetErrorMessage_WhenDatabaseUnavailableDuringFileDownload_ReturnsFileDownloadDatabaseUnavailableMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.DataStoreUnavailable, new FilePayload(),
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.DatabaseUnavailable, new FilePayload(),
                 StatsDownloadService.FileDownload);
 
             Assert.That(actual,
                 Is.EqualTo(
-                    "There was a problem downloading the file payload. There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again."));
+                    "There was a problem downloading the file payload. There was a problem connecting to the database. The database is unavailable, ensure the database is available and configured correctly and try again."));
         }
 
         [Test]
         public void
-            GetErrorMessage_WhenDataStoreUnavailableDuringStatsUpload_ReturnsStatsUploadDataStoreUnavailableMessage()
+            GetErrorMessage_WhenDatabaseUnavailableDuringStatsUpload_ReturnsStatsUploadDatabaseUnavailableMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.DataStoreUnavailable, new FilePayload(),
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.DatabaseUnavailable, new FilePayload(),
                 StatsDownloadService.StatsUpload);
 
             Assert.That(actual,
                 Is.EqualTo(
-                    "There was a problem uploading the file payload. There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again."));
+                    "There was a problem uploading the file payload. There was a problem connecting to the database. The database is unavailable, ensure the database is available and configured correctly and try again."));
         }
 
         [Test]
