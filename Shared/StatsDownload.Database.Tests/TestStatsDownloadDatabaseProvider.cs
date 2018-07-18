@@ -26,7 +26,7 @@
 
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
-            systemUnderTest = NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
+            systemUnderTest = NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock,
                 databaseConnectionServiceFactoryMock, loggingServiceMock);
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
@@ -69,13 +69,13 @@
         {
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewFileDownloadDataStoreProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock));
+                    NewFileDownloadDatabaseProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock));
+                    NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock));
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewFileDownloadDataStoreProvider(databaseConnectionSettingsServiceMock,
+                    NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock,
                         databaseConnectionServiceFactoryMock, null));
         }
 
@@ -188,7 +188,7 @@
             return systemUnderTest.IsAvailable();
         }
 
-        private IStatsDownloadDatabaseService NewFileDownloadDataStoreProvider(
+        private IStatsDownloadDatabaseService NewFileDownloadDatabaseProvider(
             IDatabaseConnectionSettingsService databaseConnectionSettingsService,
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService)
         {

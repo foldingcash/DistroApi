@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-The stats API is used to expose the stats data in the stats database.
+The stats API is used to expose the stats, users, and team data from the stats database.
 
 ## Prerequisites
 
@@ -11,9 +11,12 @@ The stats API is used to expose the stats data in the stats database.
 
 ## Installation
 
-### Installing on Windows
+### Publishing to Azure
 
-1. Step 1
+1. Load StatsDownloadApi in VS
+2. [Publish StatsDownloadApi.WebApi project](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/azure-apps/?view=aspnetcore-2.1)
+3. Ensure connection string 'FoldingCoin' for the API is pointing to a StatsDownload database
+4. [Configure additional application settings if needed](#settings)
 
 ### Settings
 
@@ -39,12 +42,14 @@ nunit-console {path-to-assembly}
 	
 ### Integration Tests
 
-1. Integration tests
+1. Load the database with a test dataset
+2. Run API pointing to previous database
+3. Run tests
 	
 ## Deployment
 
 ### Api Hardware Requirements
 
-* HDD 120GB+
+* SDD 120GB+
 * i5 Intel / Ryzen 5 AMD
 * 16 GB

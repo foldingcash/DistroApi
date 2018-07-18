@@ -126,21 +126,21 @@
         }
 
         [Test]
-        public void DownloadFile_WhenDataStoreIsNotAvailable_ReturnsDataStoreUnavailableResult()
+        public void DownloadFile_WhenDatabaseIsNotAvailable_ReturnsDatabaseUnavailableResult()
         {
-            SetUpWhenDataStoreIsNotAvailable();
+            SetUpWhenDatabaseIsNotAvailable();
 
             FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
-            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DatabaseUnavailable));
             Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
-        public void DownloadFile_WhenDataStoreIsNotAvailable_SendsEmail()
+        public void DownloadFile_WhenDatabaseIsNotAvailable_SendsEmail()
         {
-            SetUpWhenDataStoreIsNotAvailable();
+            SetUpWhenDatabaseIsNotAvailable();
 
             FileDownloadResult actual = InvokeDownloadFile();
 
@@ -442,7 +442,7 @@
             return exception;
         }
 
-        private void SetUpWhenDataStoreIsNotAvailable()
+        private void SetUpWhenDatabaseIsNotAvailable()
         {
             fileDownloadDatabaseServiceMock.IsAvailable().Returns(false);
         }

@@ -133,7 +133,7 @@
         [Test]
         public void LogResult_WhenStatsUploadResult_LogsResult()
         {
-            var statsUploadResult = new StatsUploadResult(1, FailedReason.DataStoreUnavailable);
+            var statsUploadResult = new StatsUploadResult(1, FailedReason.DatabaseUnavailable);
 
             systemUnderTest.LogResult(statsUploadResult);
 
@@ -145,7 +145,7 @@
         [Test]
         public void LogResults_WhenInvoked_LogsResults()
         {
-            var statsUploadResult = new StatsUploadResult(1, FailedReason.DataStoreUnavailable);
+            var statsUploadResult = new StatsUploadResult(1, FailedReason.DatabaseUnavailable);
             var statsUploadResults =
                 new StatsUploadResults(new List<StatsUploadResult> { statsUploadResult, statsUploadResult });
 

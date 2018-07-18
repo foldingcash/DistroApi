@@ -52,6 +52,30 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 4. StatsDownload.StatsUpload.Console
 	* This is a console application meant to be executed via command line or task scheduler and will execute only the stats upload portion of the stats download process
 	
+## Errors
+
+### Failed Reasons
+
+|           Failed Reason             | Failed Reason                                                                                                                                                                                        |
+|:-----------------------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|               None                  | No failures were encountered.                                                                                                                                                                        |
+|        DatabaseUnavailable          | The database is unavailable. Ensure the database is available, reachable, and the connection string is correct.                                                                                      |
+|       MinimumWaitTimeNotMet         | The minimum wait time was not satisified. Wait more time before trying to download the stats file again. The minimum wait time is by default one hour or overriden in the application configuration. |
+|      RequiredSettingsInvalid        | Required settings are not configured or invalid. [Ensure all required settings are configured and valid.](#settings)                                                                                 |
+|        FileDownloadTimeout          | There was a timeout download the stats file. Try to download file again and if the error occurs again, then try increasing the download timeout.                                                     |
+|   FileDownloadFailedDecompression   | There was a problem decompressing the stats file. The file was left on disk for analysis. Ensure the stats file is compressed using BZip compression.                                                |
+|      InvalidStatsFileUpload         | The stats file failed header validation. Ensure the DateTime and header are available and correctly formatted.                                                                                       |
+|    UnexpectedDatabaseException      | There was an unhandled database exception. Try again and if the error occurs again, then check the logs for more details about the database exception. This is likely an unhandled scenario or bug.  |
+|       UnexpectedException           | There was an unhandled exception. Try again and if the error occurs again, then check the logs for more details about the exception. This is likely an unhandled scenario or bug.                    |
+
+### Rejection Reasons
+
+|     Rejection Reason      | Rejection Reason                                                                                                                              |
+|:-------------------------:|-----------------------------------------------------------------------------------------------------------------------------------------------|
+|     UnexpectedFormat      | There was an unexpected number of values in the user record. Ensure the user record is correctly formatted.                                   |
+|      Failed Parsing       | One of the user's values failed conversion. Ensure user's fields are correctly typed and within upper/lower bound limits for it's type.       |
+|    FailedAddToDatabase    | There was an error while adding the user record to the database. Check the database and logs for more details about the reason for rejection. |
+
 ## Running the tests
 
 ### Unit Tests

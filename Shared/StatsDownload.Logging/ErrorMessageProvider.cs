@@ -32,7 +32,7 @@
 
         public string GetErrorMessage(FailedReason failedReason, StatsDownloadService service)
         {
-            if (failedReason == FailedReason.DataStoreUnavailable)
+            if (failedReason == FailedReason.DatabaseUnavailable)
             {
                 return GetBodyStart(service) +
                        "There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.";

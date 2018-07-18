@@ -4,7 +4,7 @@
     {
         None,
 
-        DataStoreUnavailable,
+        DatabaseUnavailable,
 
         MinimumWaitTimeNotMet,
 
