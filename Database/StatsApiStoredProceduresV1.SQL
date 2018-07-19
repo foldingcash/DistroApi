@@ -13,7 +13,7 @@ BEGIN
 
 	--This is converted to add 12 hours because of FLDC specific implementation needs
 	SET @StartDateTime = DATEADD(HOUR, 12, CONVERT(DATETIME, @StartDate));
-	SET @EndDateTime = DATEADD(HOUR, 12, CONVERT(DATETIME, @EndDate));
+	SET @EndDateTime = DATEADD(DAY, 1, DATEADD(HOUR, 12, CONVERT(DATETIME, @EndDate)));
 
 	WITH StartStats AS 
 	(
@@ -43,7 +43,7 @@ BEGIN
 					INNER JOIN FoldingCoin.Users Users ON TeamMembers.UserId = Users.UserId 
 				WHERE 
 					Downloads.StatusId = FoldingCoin.GetStatsUploadFinishedStatusId()  
-					AND DownloadDateTime < @StartDateTime
+					AND Downloads.DownloadDateTime < @StartDateTime
 				GROUP BY
 					TeamMembers.TeamMemberId,   
 					Users.BitcoinAddress
@@ -80,8 +80,8 @@ BEGIN
 					INNER JOIN FoldingCoin.Users Users ON TeamMembers.UserId = Users.UserId 
 				WHERE 
 					Downloads.StatusId = FoldingCoin.GetStatsUploadFinishedStatusId()  
-					AND DownloadDateTime >= @StartDateTime
-					AND DownloadDateTime < @EndDateTime
+					AND Downloads.DownloadDateTime >= @StartDateTime
+					AND Downloads.DownloadDateTime < @EndDateTime
 				GROUP BY
 					TeamMembers.TeamMemberId,   
 					Users.BitcoinAddress
