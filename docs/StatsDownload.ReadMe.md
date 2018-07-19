@@ -73,7 +73,7 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 |     Rejection Reason      | Rejection Reason                                                                                                                              |
 |:-------------------------:|-----------------------------------------------------------------------------------------------------------------------------------------------|
 |     UnexpectedFormat      | There was an unexpected number of values in the user record. Ensure the user record is correctly formatted.                                   |
-|      Failed Parsing       | One of the user's values failed conversion. Ensure user's fields are correctly typed and within upper/lower bound limits for it's type.       |
+|       FailedParsing       | One of the user's values failed conversion. Ensure user's fields are correctly typed and within upper/lower bound limits for it's type.       |
 |    FailedAddToDatabase    | There was an error while adding the user record to the database. Check the database and logs for more details about the reason for rejection. |
 
 ## Running the tests
