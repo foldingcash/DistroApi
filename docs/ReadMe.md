@@ -27,7 +27,7 @@ Feel free to submit issues and enhancement requests.
 
 ## Coding Style
 
-In general, we follow the [MSDN coding guidelines.](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions)
+In general, we follow the [MSDN coding guidelines](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions) and use ReSharper for code formatting.
 
 ## Contributing
 
