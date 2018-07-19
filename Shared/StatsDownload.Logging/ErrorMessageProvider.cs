@@ -35,7 +35,7 @@
             if (failedReason == FailedReason.DatabaseUnavailable)
             {
                 return GetBodyStart(service) +
-                       "There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.";
+                       "There was a problem connecting to the database. The database is unavailable, ensure the database is available and configured correctly and try again.";
             }
 
             if (failedReason == FailedReason.RequiredSettingsInvalid)
