@@ -9,22 +9,13 @@
 
     public class ErrorMessageProvider : IErrorMessageService
     {
-        // TODO: Move these strings into a localizable resource
-        private const string FileDownloadFailBodyStart = "There was a problem downloading the file payload.";
-
-        private const string FileDownloadFailDecompressionBodyStart =
-            "There was a problem decompressing the file payload.";
-
-        private const string StatsUploadFailBodyStart = "There was a problem uploading the file payload.";
-
         public string GetErrorMessage(FailedReason failedReason, FilePayload filePayload, StatsDownloadService service)
         {
             if (failedReason == FailedReason.MinimumWaitTimeNotMet)
             {
                 TimeSpan minimumWaitTimeSpan = MinimumWait.TimeSpan;
                 TimeSpan configuredWaitTime = filePayload.MinimumWaitTimeSpan;
-                return FileDownloadFailBodyStart
-                       + $" The file download service was run before the minimum wait time {minimumWaitTimeSpan} or the configured wait time {configuredWaitTime}. Configure to run the service less often or decrease your configured wait time and try again.";
+                return String.Format(ErrorMessages.MinimumWaitTimeNotMet, minimumWaitTimeSpan, configuredWaitTime);
             }
 
             return GetErrorMessage(failedReason, service);
@@ -34,44 +25,39 @@
         {
             if (failedReason == FailedReason.DatabaseUnavailable)
             {
-                return GetBodyStart(service) +
-                       "There was a problem connecting to the database. The database is unavailable, ensure the database is available and configured correctly and try again.";
+                return GetErrorMessageByServiceType(service, ErrorMessages.FileDownloadDatabaseUnavailable,
+                    ErrorMessages.StatsUploadDatabaseUnavailable, ErrorMessages.DefaultDatabaseUnavailable);
             }
 
             if (failedReason == FailedReason.RequiredSettingsInvalid)
             {
-                return FileDownloadFailBodyStart
-                       + " The required settings are invalid; check the logs for more information. Ensure the settings are complete and accurate, then try again.";
+                return ErrorMessages.RequiredSettingsAreInvalid;
             }
 
             if (failedReason == FailedReason.FileDownloadTimeout)
             {
-                return FileDownloadFailBodyStart
-                       + " There was a timeout when downloading the file payload. If a timeout occurs again, then you can try increasing the configurable download timeout.";
+                return ErrorMessages.FileDownloadTimedOut;
             }
 
             if (failedReason == FailedReason.FileDownloadFailedDecompression)
             {
-                return FileDownloadFailDecompressionBodyStart
-                       + " The file has been moved to a failed directory for review. If this problem occurs again, then you should contact your technical advisor to review the logs and failed files.";
+                return ErrorMessages.FileDownloadFailedDecompression;
             }
 
             if (failedReason == FailedReason.InvalidStatsFileUpload)
             {
-                return StatsUploadFailBodyStart
-                       + " The file failed validation; check the logs for more information. If this problem occurs again, then you should contact your technical advisor to review the logs and failed uploads.";
+                return ErrorMessages.InvalidStatsFile;
             }
 
             if (failedReason == FailedReason.UnexpectedDatabaseException)
             {
-                return StatsUploadFailBodyStart +
-                       " There was an unexpected database exception and the file has been marked rejected. If this problem occurs again, then you should contact your technical advisor to review the rejections and logs.";
+                return ErrorMessages.StatsUploadTimeout;
             }
 
             if (failedReason == FailedReason.UnexpectedException)
             {
-                return GetBodyStart(service) +
-                       "There was an unexpected exception. Check the log for more information.";
+                return GetErrorMessageByServiceType(service, ErrorMessages.FileDownloadUnexpectedException,
+                    ErrorMessages.StatsUploadUnexpectedException, ErrorMessages.DefaultUnexpectedException) ;
             }
 
             return string.Empty;
@@ -79,8 +65,7 @@
 
         public string GetErrorMessage(IEnumerable<FailedUserData> failedUsersData)
         {
-            return
-                $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count()} lines failed; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed users.";
+            return string.Format(ErrorMessages.FailedUserDataCount, failedUsersData.Count());
         }
 
         public string GetErrorMessage(FailedUserData failedUserData)
@@ -90,38 +75,35 @@
 
             if (rejectionReason == RejectionReason.FailedParsing)
             {
-                return
-                    $"There was a problem parsing a user from the stats file. The user '{data}' failed data parsing. You should contact your technical advisor to review the logs and rejected users.";
+                return ErrorMessages.FailedParsingUserData;
             }
 
             if (rejectionReason == RejectionReason.FailedAddToDatabase)
             {
-                return
-                    "There was a problem adding a user to the database. Contact your technical advisor to review the logs and rejected users.";
+                return ErrorMessages.FailedAddUserToDatabase;
             }
 
             if (rejectionReason == RejectionReason.UnexpectedFormat)
             {
-                return
-                    $"There was a problem parsing a user from the stats file. The user '{data}' was in an unexpected format. You should contact your technical advisor to review the logs and rejected users.";
+                return ErrorMessages.UserDataUnexpectedFormat;
             }
 
             return string.Empty;
         }
 
-        private string GetBodyStart(StatsDownloadService service)
+        private string GetErrorMessageByServiceType(StatsDownloadService service, string fileDownloadMessage, string statsUploadMessage, string defaultMessage)
         {
             if (service == StatsDownloadService.FileDownload)
             {
-                return $"{FileDownloadFailBodyStart} ";
+                return fileDownloadMessage;
             }
 
             if (service == StatsDownloadService.StatsUpload)
             {
-                return $"{StatsUploadFailBodyStart} ";
+                return statsUploadMessage;
             }
 
-            return string.Empty;
+            return defaultMessage;
         }
     }
 }

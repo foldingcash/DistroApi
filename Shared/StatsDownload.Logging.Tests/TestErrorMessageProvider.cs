@@ -190,7 +190,7 @@
         }
 
         [Test]
-        public void GetErrorMessage_WhenUnexpectedStatsDownloadServiceEnumValueProvided_UsesEmptyString()
+        public void GetErrorMessage_WhenUnexpectedStatsDownloadServiceEnumValueProvided_UsesDefaultMessage()
         {
             string actual =
                 systemUnderTest.GetErrorMessage(FailedReason.UnexpectedException,
