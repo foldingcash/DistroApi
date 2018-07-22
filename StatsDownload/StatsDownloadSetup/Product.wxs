@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="FoldingCoin Stats Downloader" Language="1033" Version="1.0.0.0" Manufacturer="FoldingCoin, Inc." UpgradeCode="61d25c2a-d1e3-4661-9c2a-cbb65bb7be5c">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes" />
+
+		<Feature Id="ProductFeature" Title="FoldingCoin Stats Downloader" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+
+	  <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+	  <UIRef Id="WixUI_InstallDir" />
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="FoldingCoin Stats Downloader" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+		  <ComponentRef Id="Binaries" />
+		</ComponentGroup>
+	</Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="Binaries" Guid="{FD18C2E7-038C-438D-BC83-9D90AFC9C9B7}">
+        <File Id="StatsDownload.FileDownload.Console.exe" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.FileDownload.Console.exe" KeyPath="yes" Checksum="yes"/>
+        <File Id="StatsDownload.FileDownload.Console.exe.config" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.FileDownload.Console.exe.config" Checksum="yes"/>
+        <File Id="StatsDownload.Logging.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.Logging.dll" Checksum="yes"/>
+        <File Id="StatsDownload.SharpZipLib.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.SharpZipLib.dll" Checksum="yes"/>
+        <File Id="StatsDownload.Email.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.Email.dll" Checksum="yes"/>
+        <File Id="StatsDownload.Core.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.Core.dll" Checksum="yes"/>
+        <File Id="StatsDownload.Core.Interfaces.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.Core.Interfaces.dll" Checksum="yes"/>
+        <File Id="ICSharpCode.SharpZipLib.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\ICSharpCode.SharpZipLib.dll" Checksum="yes"/>
+        <File Id="Castle.Windsor.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\Castle.Windsor.dll" Checksum="yes"/>
+        <File Id="Castle.Core.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\Castle.Core.dll" Checksum="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
