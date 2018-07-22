@@ -107,6 +107,37 @@
         }
 
         [Test]
+        public void UploadStatsFiles_WhenDatabaseIsNotAvailable_LogsResult()
+        {
+            SetUpWhenDatabaseIsNotAvailable();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            loggingServiceMock.Received().LogResults(actual);
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenDatabaseIsNotAvailable_ReturnsDatabaseUnavailableResult()
+        {
+            SetUpWhenDatabaseIsNotAvailable();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DatabaseUnavailable));
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenDatabaseIsNotAvailable_SendsEmail()
+        {
+            SetUpWhenDatabaseIsNotAvailable();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            statsUploadEmailServiceMock.Received().SendEmail(actual);
+        }
+
+        [Test]
         public void UploadStatsFiles_WhenDatabaseTimeoutExceptionThrown_ReturnsDatabaseTimeoutResult()
         {
             SetUpWhenDatabaseTimeoutExceptionThrown();
@@ -116,37 +147,6 @@
             Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
             Assert.That(actual.UploadResults.ElementAt(0).FailedReason,
                 Is.EqualTo(FailedReason.UnexpectedDatabaseException));
-        }
-
-        [Test]
-        public void UploadStatsFiles_WhenDataStoreIsNotAvailable_LogsResult()
-        {
-            SetUpWhenDataStoreIsNotAvailable();
-
-            StatsUploadResults actual = InvokeUploadStatsFiles();
-
-            loggingServiceMock.Received().LogResults(actual);
-        }
-
-        [Test]
-        public void UploadStatsFiles_WhenDataStoreIsNotAvailable_ReturnsDataStoreUnavailableResult()
-        {
-            SetUpWhenDataStoreIsNotAvailable();
-
-            StatsUploadResults actual = InvokeUploadStatsFiles();
-
-            Assert.That(actual.Success, Is.False);
-            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
-        }
-
-        [Test]
-        public void UploadStatsFiles_WhenDataStoreIsNotAvailable_SendsEmail()
-        {
-            SetUpWhenDataStoreIsNotAvailable();
-
-            StatsUploadResults actual = InvokeUploadStatsFiles();
-
-            statsUploadEmailServiceMock.Received().SendEmail(actual);
         }
 
         [Test]
@@ -372,15 +372,15 @@
                 statsUploadEmailService);
         }
 
+        private void SetUpWhenDatabaseIsNotAvailable()
+        {
+            statsUploadDatabaseServiceMock.IsAvailable().Returns(false);
+        }
+
         private void SetUpWhenDatabaseTimeoutExceptionThrown()
         {
             var exception = new TestDbTimeoutException();
             statsUploadDatabaseServiceMock.GetFileData(1).Throws(exception);
-        }
-
-        private void SetUpWhenDataStoreIsNotAvailable()
-        {
-            statsUploadDatabaseServiceMock.IsAvailable().Returns(false);
         }
 
         private Exception SetUpWhenExceptionBeforeAnUploadStarts()
