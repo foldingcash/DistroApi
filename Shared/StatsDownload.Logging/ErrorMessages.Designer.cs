@@ -124,6 +124,15 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was a problem downloading the file payload. The file payload could not be found. Check the download URI configuration and try again. If this problem occurs again, then you should contact your technical advisor to review the logs..
+        /// </summary>
+        internal static string FileDownloadNotFound {
+            get {
+                return ResourceManager.GetString("FileDownloadNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was a problem downloading the file payload. There was a timeout when downloading the file payload. If a timeout occurs again, then you can try increasing the configurable download timeout..
         /// </summary>
         internal static string FileDownloadTimedOut {

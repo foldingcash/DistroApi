@@ -88,6 +88,17 @@
         }
 
         [Test]
+        public void GetErrorMessage_WhenFileDownloadNotFound_ReturnsFileDownloadNotFoundMessage()
+        {
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.FileDownloadNotFound, new FilePayload(),
+                StatsDownloadService.FileDownload);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem downloading the file payload. The file payload could not be found. Check the download URI configuration and try again. If this problem occurs again, then you should contact your technical advisor to review the logs."));
+        }
+
+        [Test]
         public void GetErrorMessage_WhenFileDownloadTimeout_ReturnsFileDownloadTimeoutMessage()
         {
             string actual = systemUnderTest.GetErrorMessage(FailedReason.FileDownloadTimeout, new FilePayload(),

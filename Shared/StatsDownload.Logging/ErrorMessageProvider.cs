@@ -39,6 +39,11 @@
                 return ErrorMessages.FileDownloadTimedOut;
             }
 
+            if (failedReason == FailedReason.FileDownloadNotFound)
+            {
+                return ErrorMessages.FileDownloadNotFound;
+            }
+
             if (failedReason == FailedReason.FileDownloadFailedDecompression)
             {
                 return ErrorMessages.FileDownloadFailedDecompression;

@@ -196,6 +196,11 @@
                 return NewFailedFileDownloadResult(FailedReason.FileDownloadTimeout, filePayload);
             }
 
+            if (webException?.Status == WebExceptionStatus.ConnectFailure || webException?.Status == WebExceptionStatus.ProtocolError)
+            {
+                return NewFailedFileDownloadResult(FailedReason.FileDownloadNotFound, filePayload);
+            }
+
             if (exception is FileDownloadFailedDecompressionException)
             {
                 return NewFailedFileDownloadResult(FailedReason.FileDownloadFailedDecompression, filePayload);
