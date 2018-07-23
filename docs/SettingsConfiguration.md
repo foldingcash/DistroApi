@@ -1,3 +1,5 @@
+# Stats Settings
+
 #### Stats Download Database Connection Settings
 
 1. FoldingCoin

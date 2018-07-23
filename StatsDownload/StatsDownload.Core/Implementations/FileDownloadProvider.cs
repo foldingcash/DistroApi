@@ -58,17 +58,16 @@
             {
                 LogMethodInvoked(nameof(DownloadStatsFile));
 
-                if (DataStoreUnavailable())
+                if (DatabaseUnavailable())
                 {
-                    return HandleDataStoreUnavailable(filePayload);
+                    return HandleDatabaseUnavailable(filePayload);
                 }
 
                 UpdateToLatest();
                 LogVerbose($"Stats file download started: {DateTimeNow()}");
                 NewFileDownloadStarted(filePayload);
 
-                FailedReason failedReason;
-                if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
+                if (IsFileDownloadNotReadyToRun(filePayload, out FailedReason failedReason))
                 {
                     return HandleDownloadNotReadyToRun(failedReason, filePayload);
                 }
@@ -88,7 +87,7 @@
             resourceCleanupService.Cleanup(fileDownloadResult);
         }
 
-        private bool DataStoreUnavailable()
+        private bool DatabaseUnavailable()
         {
             return !fileDownloadDatabaseService.IsAvailable();
         }
@@ -108,10 +107,10 @@
             fileDownloadDatabaseService.FileDownloadError(fileDownloadResult);
         }
 
-        private FileDownloadResult HandleDataStoreUnavailable(FilePayload filePayload)
+        private FileDownloadResult HandleDatabaseUnavailable(FilePayload filePayload)
         {
             FileDownloadResult failedResult =
-                NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable, filePayload);
+                NewFailedFileDownloadResult(FailedReason.DatabaseUnavailable, filePayload);
             LogResult(failedResult);
             SendEmail(failedResult);
             return failedResult;
