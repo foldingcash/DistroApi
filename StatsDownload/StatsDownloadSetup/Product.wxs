@@ -1,46 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="FoldingCoin Stats Downloader" Language="1033" Version="1.0.0.0" Manufacturer="FoldingCoin, Inc." UpgradeCode="61d25c2a-d1e3-4661-9c2a-cbb65bb7be5c">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-		<MediaTemplate EmbedCab="yes" />
+  <?if $(var.Platform) = x64 ?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+    <?define DownloadConsolePath = "$(var.ProjectDir)..\StatsDownload.FileDownload.Console\bin\Release\netcoreapp2.0\win-x64" ?>
+    <?define UploadConsolePath = "$(var.ProjectDir)..\StatsDownload.StatsUpload.Console\bin\Release\netcoreapp2.0\win-x64" ?>
+  <?else ?>
+    <?define Win64 = "no" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+    <?define DownloadConsolePath = "$(var.ProjectDir)..\StatsDownload.FileDownload.Console\bin\Release\netcoreapp2.0\win-x86" ?>
+    <?define UploadConsolePath = "$(var.ProjectDir)..\StatsDownload.StatsUpload.Console\bin\Release\netcoreapp2.0\win-x86" ?>    
+  <?endif ?>
 
-		<Feature Id="ProductFeature" Title="FoldingCoin Stats Downloader" Level="1">
-			<ComponentGroupRef Id="ProductComponents" />
-		</Feature>
+  <Product Id="*" Name="FoldingCoin Stats Downloader $(var.Platform)" Language="1033" Version="1.0.0.0"
+           Manufacturer="FoldingCoin, Inc." UpgradeCode="61d25c2a-d1e3-4661-9c2a-cbb65bb7be5c">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
-	  <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
-	  <UIRef Id="WixUI_InstallDir" />
-	</Product>
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
 
-	<Fragment>
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFilesFolder">
-				<Directory Id="INSTALLFOLDER" Name="FoldingCoin Stats Downloader" />
-			</Directory>
-		</Directory>
-	</Fragment>
+    <Feature Id="ProductFeature" Title="FoldingCoin Stats Downloader" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
 
-	<Fragment>
-		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-		  <ComponentRef Id="Binaries" />
-		</ComponentGroup>
-	</Fragment>
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <UIRef Id="WixUI_InstallDir" />
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="$(var.PlatformProgramFilesFolder)">
+        <Directory Id="INSTALLFOLDER" Name="FoldingCoin Stats Downloader" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <ComponentRef Id="FileDownloader" />
+      <ComponentRef Id="StatsUploader" />
+      <ComponentRef Id="SharedBinaries" />
+    </ComponentGroup>
+  </Fragment>
 
   <Fragment>
     <DirectoryRef Id="INSTALLFOLDER">
-      <Component Id="Binaries" Guid="{FD18C2E7-038C-438D-BC83-9D90AFC9C9B7}">
-        <File Id="StatsDownload.FileDownload.Console.exe" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.FileDownload.Console.exe" KeyPath="yes" Checksum="yes"/>
-        <File Id="StatsDownload.FileDownload.Console.exe.config" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.FileDownload.Console.exe.config" Checksum="yes"/>
-        <File Id="StatsDownload.Logging.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.Logging.dll" Checksum="yes"/>
-        <File Id="StatsDownload.SharpZipLib.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.SharpZipLib.dll" Checksum="yes"/>
-        <File Id="StatsDownload.Email.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.Email.dll" Checksum="yes"/>
-        <File Id="StatsDownload.Core.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.Core.dll" Checksum="yes"/>
-        <File Id="StatsDownload.Core.Interfaces.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\StatsDownload.Core.Interfaces.dll" Checksum="yes"/>
-        <File Id="ICSharpCode.SharpZipLib.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\ICSharpCode.SharpZipLib.dll" Checksum="yes"/>
-        <File Id="Castle.Windsor.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\Castle.Windsor.dll" Checksum="yes"/>
-        <File Id="Castle.Core.dll" Source="..\StatsDownload.FileDownload.Console\bin\Release\Castle.Core.dll" Checksum="yes"/>
+      <Component Id="FileDownloader" Guid="{FD18C2E7-038C-438D-BC83-9D90AFC9C9B7}">
+        <File Id="StatsDownload.FileDownload.Console.dll"
+              Source="$(var.DownloadConsolePath)\StatsDownload.FileDownload.Console.dll"
+              KeyPath="yes" Checksum="yes" />
+        <File Id="StatsDownload.FileDownload.Console.dll.config"
+              Source="$(var.DownloadConsolePath)\StatsDownload.FileDownload.Console.dll.config"
+              Checksum="yes" />
+        <File Id="StatsDownload.FileDownload.Console.exe"
+              Source="$(var.DownloadConsolePath)\StatsDownload.FileDownload.Console.exe"
+              Checksum="yes" />
+        <File Id="StatsDownload.FileDownload.Console.deps.json"
+              Source="$(var.DownloadConsolePath)\StatsDownload.FileDownload.Console.deps.json"
+              Checksum="yes" />
+        <File Id="StatsDownload.FileDownload.Console.runtimeconfig.json"
+              Source="$(var.DownloadConsolePath)\StatsDownload.FileDownload.Console.runtimeconfig.json"
+              Checksum="yes" />       
+      </Component>
+
+      <Component Id="StatsUploader" Guid="{BF23447B-B505-4FF2-B022-3838D73B364C}">
+        <File Id="StatsDownload.StatsUpload.Console.dll"
+              Source="$(var.UploadConsolePath)\StatsDownload.StatsUpload.Console.dll"
+              KeyPath="yes" Checksum="yes" />
+        <File Id="StatsDownload.StatsUpload.Console.dll.config"
+              Source="$(var.UploadConsolePath)\StatsDownload.StatsUpload.Console.dll.config"
+              Checksum="yes" />
+        <File Id="StatsDownload.StatsUpload.Console.exe"
+              Source="$(var.UploadConsolePath)\StatsDownload.StatsUpload.Console.exe"
+              Checksum="yes" />
+        <File Id="StatsDownload.StatsUpload.Console.deps.json"
+              Source="$(var.UploadConsolePath)\StatsDownload.StatsUpload.Console.deps.json"
+              Checksum="yes" />
+        <File Id="StatsDownload.StatsUpload.Console.runtimeconfig.json"
+              Source="$(var.UploadConsolePath)\StatsDownload.StatsUpload.Console.runtimeconfig.json"
+              Checksum="yes" />
+      </Component>
+
+      <Component Id="SharedBinaries" Guid="{089831DA-C31C-493A-940E-6C98E6A16859}">
+        <File Id="StatsDownload.Logging.dll"
+              Source="$(var.DownloadConsolePath)\StatsDownload.Logging.dll"
+              Checksum="yes" />
+        <File Id="StatsDownload.SharpZipLib.dll"
+              Source="$(var.DownloadConsolePath)\StatsDownload.SharpZipLib.dll"
+              Checksum="yes" />
+        <File Id="StatsDownload.Email.dll"
+              Source="$(var.DownloadConsolePath)\StatsDownload.Email.dll"
+              Checksum="yes" />
+        <File Id="StatsDownload.Core.dll"
+              Source="$(var.DownloadConsolePath)\StatsDownload.Core.dll"
+              Checksum="yes" />
+        <File Id="StatsDownload.Core.Interfaces.dll"
+              Source="$(var.DownloadConsolePath)\StatsDownload.Core.Interfaces.dll"
+              Checksum="yes" />
+        <File Id="StatsDownload.Wrappers.dll"
+              Source="$(var.DownloadConsolePath)\StatsDownload.Wrappers.dll"
+              Checksum="yes" />
+        <File Id="StatsDownload.Extensions.dll"
+              Source="$(var.DownloadConsolePath)\StatsDownload.Extensions.dll"
+              Checksum="yes" />
+        <File Id="StatsDownload.Database.dll"
+              Source="$(var.DownloadConsolePath)\StatsDownload.Database.dll"
+              Checksum="yes" />
+        <File Id="StatsDownload.Database.CastleWindsor.dll"
+              Source="$(var.DownloadConsolePath)\StatsDownload.Database.CastleWindsor.dll"
+              Checksum="yes" />
+        <File Id="hostpolicy.dll"
+              Source="$(var.DownloadConsolePath)\hostpolicy.dll"
+              Checksum="yes" />
+        <File Id="hostfxr.dll"
+              Source="$(var.DownloadConsolePath)\hostfxr.dll"
+              Checksum="yes" />
       </Component>
     </DirectoryRef>
   </Fragment>
