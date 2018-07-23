@@ -18,6 +18,8 @@
 
         UnexpectedDatabaseException,
 
-        UnexpectedException
+        UnexpectedException,
+
+        FileDownloadNotFound
     }
 }

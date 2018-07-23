@@ -138,6 +138,9 @@
   <data name="FileDownloadFailedDecompression" xml:space="preserve">
     <value>There was a problem decompressing the file payload. The file has been moved to a failed directory for review. If this problem occurs again, then you should contact your technical advisor to review the logs and failed files.</value>
   </data>
+  <data name="FileDownloadNotFound" xml:space="preserve">
+    <value>There was a problem downloading the file payload. The file payload could not be found. Check the download URI configuration and try again. If this problem occurs again, then you should contact your technical advisor to review the logs.</value>
+  </data>
   <data name="FileDownloadTimedOut" xml:space="preserve">
     <value>There was a problem downloading the file payload. There was a timeout when downloading the file payload. If a timeout occurs again, then you can try increasing the configurable download timeout.</value>
   </data>
