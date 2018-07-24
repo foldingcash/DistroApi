@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "StatsDownloadSetup", "StatsDownloadSetup\StatsDownloadSetup.wixproj", "{5410EDFF-E8EE-40F6-8282-AEFFAA007979}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5410EDFF-E8EE-40F6-8282-AEFFAA007979}.Debug|x64.ActiveCfg = Debug|x64
+		{5410EDFF-E8EE-40F6-8282-AEFFAA007979}.Debug|x64.Build.0 = Debug|x64
+		{5410EDFF-E8EE-40F6-8282-AEFFAA007979}.Debug|x86.ActiveCfg = Debug|x86
+		{5410EDFF-E8EE-40F6-8282-AEFFAA007979}.Debug|x86.Build.0 = Debug|x86
+		{5410EDFF-E8EE-40F6-8282-AEFFAA007979}.Release|x64.ActiveCfg = Release|x64
+		{5410EDFF-E8EE-40F6-8282-AEFFAA007979}.Release|x64.Build.0 = Release|x64
+		{5410EDFF-E8EE-40F6-8282-AEFFAA007979}.Release|x86.ActiveCfg = Release|x86
+		{5410EDFF-E8EE-40F6-8282-AEFFAA007979}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {355F04AB-1785-42EF-8124-124A03C5DEB0}
+	EndGlobalSection
+EndGlobal

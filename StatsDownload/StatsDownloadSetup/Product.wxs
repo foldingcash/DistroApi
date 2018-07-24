@@ -18,6 +18,19 @@
            Manufacturer="FoldingCoin, Inc." UpgradeCode="61d25c2a-d1e3-4661-9c2a-cbb65bb7be5c">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <!-- UI customization -->
+    <!--
+    <WixVariable Id="WixUIBannerBmp" Value="images\BannerTop.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="images\Dialog.bmp" />
+    -->
+
+    <!-- Define icons (ID should not be longer than 18 chars and must end with ".exe") -->
+    <Icon Id="Icon.exe" SourceFile="images\fldc.ico" />
+    <!-- Set properties for add/remove programs -->
+    <Property Id="ARPPRODUCTICON" Value="Icon.exe" />
+
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
