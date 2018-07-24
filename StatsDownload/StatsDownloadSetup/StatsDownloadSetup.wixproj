@@ -44,6 +44,7 @@
     <Folder Include="images" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="HeatSources.bat" />
     <Content Include="images\fldc.ico" />
     <Content Include="License.rtf" />
   </ItemGroup>
