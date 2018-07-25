@@ -244,3 +244,5 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 *.pubxml
+/StatsDownload/StatsDownloadSetup/Files-x64.wxs
+/StatsDownload/StatsDownloadSetup/Files-x86.wxs
