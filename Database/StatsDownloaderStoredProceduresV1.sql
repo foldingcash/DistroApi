@@ -483,7 +483,7 @@ BEGIN
 								[FoldingCoin].[Downloads] ON [FoldingCoin].[FAHDataRuns].[DownloadId] = [FoldingCoin].[Downloads].[DownloadId]
 								WHERE TeamMemberId = @TeamMemberId AND DownloadDateTime < @DownloadDateTime AND (Points > @TotalPoints OR WorkUnits > @WorkUnits)) >= 1
 							BEGIN
-								SET @RejectionMessage = 'The newer stats file contains a user with less points or work units than a previous file. If this problem continues, then contact your technical advisor and have them review the logs and database.';
+								SET @RejectionMessage = 'The newer stats file contains a user with less points or work units than a previous file. If this problem continues, then contact your technical advisor and have them review the logs and database. User: ''' + @FAHUserName + '''; NewTotalPoints: ' + CAST(@TotalPoints AS nvarchar) + '; NewWorkUnits: ' + CAST(@WorkUnits AS nvarchar);
 								EXEC [FoldingCoin].[AddUserRejection] @DownloadId, @LineNumber, @RejectionMessage;
 								RETURN(1);
 							END
