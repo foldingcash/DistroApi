@@ -214,15 +214,6 @@
         [Test]
         public void GetTeams_WhenInvoked_ReturnsSuccessDistroResponse()
         {
-            var foldingUsers = new FoldingUser[0];
-            var distro = new[]
-            {
-                new DistroUser(null, null, 1, 2, 0.12345678m),
-                new DistroUser(null, null, 3, 4, 100m)
-            };
-            statsDownloadApiDatabaseServiceMock.GetFoldingUsers(startDateMock, endDateMock).Returns(foldingUsers);
-            statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);
-
             GetTeamsResponse actual = InvokeGetTeams();
 
             Assert.That(actual.Success, Is.True);
@@ -230,6 +221,11 @@
             Assert.That(actual.ErrorCount, Is.Null);
             Assert.That(actual.FirstErrorCode, Is.EqualTo(ApiErrorCode.None));
             Assert.That(actual.TeamCount, Is.EqualTo(2));
+
+            Assert.That(actual.Teams[0].TeamNumber, Is.EqualTo(1234));
+            Assert.That(actual.Teams[0].TeamName, Is.EqualTo("1234"));
+            Assert.That(actual.Teams[1].TeamNumber, Is.EqualTo(2345));
+            Assert.That(actual.Teams[1].TeamName, Is.EqualTo("2345"));
         }
 
         private GetDistroResponse InvokeGetDistro()

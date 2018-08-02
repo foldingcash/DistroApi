@@ -44,7 +44,11 @@
 
         public GetTeamsResponse GetTeams()
         {
-            return new GetTeamsResponse(new Team[2]);
+            return new GetTeamsResponse(new[]
+            {
+                new Team(1234, "1234"),
+                new Team(2345, "2345")
+            });
         }
 
         private IList<DistroUser> GetDistro(int? amount, IList<FoldingUser> foldingUsers)
