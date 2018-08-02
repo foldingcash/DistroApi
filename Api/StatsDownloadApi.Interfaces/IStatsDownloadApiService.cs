@@ -4,6 +4,8 @@
 
     public interface IStatsDownloadApiService
     {
-        DistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount);
+        GetDistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount);
+
+        GetTeamsResponse GetTeams();
     }
 }

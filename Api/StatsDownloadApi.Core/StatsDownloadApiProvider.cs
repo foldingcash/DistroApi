@@ -27,19 +27,24 @@
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
         }
 
-        public DistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount)
+        public GetDistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount)
         {
-            IList<DistroError> errors = new List<DistroError>();
+            IList<ApiError> errors = new List<ApiError>();
 
             if (IsNotPreparedToRunDistro(startDate, endDate, amount, errors))
             {
-                return new DistroResponse(errors);
+                return new GetDistroResponse(errors);
             }
 
             IList<FoldingUser> foldingUsers = GetFoldingUsers(startDate, endDate);
             IList<DistroUser> distro = GetDistro(amount, foldingUsers);
 
-            return new DistroResponse(distro);
+            return new GetDistroResponse(distro);
+        }
+
+        public GetTeamsResponse GetTeams()
+        {
+            return new GetTeamsResponse(new Team[2]);
         }
 
         private IList<DistroUser> GetDistro(int? amount, IList<FoldingUser> foldingUsers)
@@ -54,7 +59,7 @@
         }
 
         private bool IsNotPreparedToRunDistro(DateTime? startDate, DateTime? endDate, int? amount,
-            IList<DistroError> errors)
+            IList<ApiError> errors)
         {
             ValidateStartDate(startDate, errors);
             ValidateEndDate(endDate, errors);
@@ -65,35 +70,35 @@
             return errors.Count > 0;
         }
 
-        private void ValidateAmount(int? amount, IList<DistroError> errors)
+        private void ValidateAmount(int? amount, IList<ApiError> errors)
         {
             if (amount == null)
             {
-                errors.Add(Constants.DistroErrors.NoAmount);
+                errors.Add(Constants.ApiErrors.NoAmount);
                 return;
             }
 
             if (amount == 0)
             {
-                errors.Add(Constants.DistroErrors.ZeroAmount);
+                errors.Add(Constants.ApiErrors.ZeroAmount);
             }
 
             if (amount < 0)
             {
-                errors.Add(Constants.DistroErrors.NegativeAmount);
+                errors.Add(Constants.ApiErrors.NegativeAmount);
             }
         }
 
-        private void ValidateDatabaseIsAvailable(IList<DistroError> errors)
+        private void ValidateDatabaseIsAvailable(IList<ApiError> errors)
         {
             if (!statsDownloadApiDatabaseService.IsAvailable())
             {
-                errors.Add(Constants.DistroErrors.DatabaseUnavailable);
+                errors.Add(Constants.ApiErrors.DatabaseUnavailable);
             }
         }
 
-        private void ValidateDate(DateTime? date, IList<DistroError> errors, DistroError noDate,
-            DistroError dateUnsearchable)
+        private void ValidateDate(DateTime? date, IList<ApiError> errors, ApiError noDate,
+            ApiError dateUnsearchable)
         {
             if (date == null)
             {
@@ -107,23 +112,23 @@
             }
         }
 
-        private void ValidateDateRange(DateTime? startDate, DateTime? endDate, IList<DistroError> errors)
+        private void ValidateDateRange(DateTime? startDate, DateTime? endDate, IList<ApiError> errors)
         {
             if (startDate > endDate)
             {
-                errors.Add(Constants.DistroErrors.InvalidDateRange);
+                errors.Add(Constants.ApiErrors.InvalidDateRange);
             }
         }
 
-        private void ValidateEndDate(DateTime? endDate, IList<DistroError> errors)
+        private void ValidateEndDate(DateTime? endDate, IList<ApiError> errors)
         {
-            ValidateDate(endDate, errors, Constants.DistroErrors.NoEndDate, Constants.DistroErrors.EndDateUnsearchable);
+            ValidateDate(endDate, errors, Constants.ApiErrors.NoEndDate, Constants.ApiErrors.EndDateUnsearchable);
         }
 
-        private void ValidateStartDate(DateTime? startDate, IList<DistroError> errors)
+        private void ValidateStartDate(DateTime? startDate, IList<ApiError> errors)
         {
-            ValidateDate(startDate, errors, Constants.DistroErrors.NoStartDate,
-                Constants.DistroErrors.StartDateUnsearchable);
+            ValidateDate(startDate, errors, Constants.ApiErrors.NoStartDate,
+                Constants.ApiErrors.StartDateUnsearchable);
         }
     }
 }

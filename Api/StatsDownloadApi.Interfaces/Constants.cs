@@ -2,37 +2,37 @@
 {
     public class Constants
     {
-        public static class DistroErrors
+        public static class ApiErrors
         {
-            public static DistroError DatabaseUnavailable => new DistroError(DistroErrorCode.DatabaseUnavailable,
+            public static ApiError DatabaseUnavailable => new ApiError(ApiErrorCode.DatabaseUnavailable,
                 ErrorMessages.DatabaseUnavailableMessage);
 
-            public static DistroError EndDateUnsearchable => new DistroError(DistroErrorCode.EndDateUnsearchable,
+            public static ApiError EndDateUnsearchable => new ApiError(ApiErrorCode.EndDateUnsearchable,
                 ErrorMessages.EndDateUnsearchableMessage);
 
-            public static DistroError InvalidDateRange => new DistroError(DistroErrorCode.InvalidDateRange,
+            public static ApiError InvalidDateRange => new ApiError(ApiErrorCode.InvalidDateRange,
                 ErrorMessages.InvalidDateRangeMessage);
 
-            public static DistroError NegativeAmount =>
-                new DistroError(DistroErrorCode.NegativeAmount, ErrorMessages.NegativeAmountMessage);
+            public static ApiError NegativeAmount =>
+                new ApiError(ApiErrorCode.NegativeAmount, ErrorMessages.NegativeAmountMessage);
 
-            public static DistroError NoAmount =>
-                new DistroError(DistroErrorCode.NoAmount, ErrorMessages.NoAmountMessage);
+            public static ApiError NoAmount =>
+                new ApiError(ApiErrorCode.NoAmount, ErrorMessages.NoAmountMessage);
 
-            public static DistroError NoEndDate => new DistroError(DistroErrorCode.NoEndDate,
+            public static ApiError NoEndDate => new ApiError(ApiErrorCode.NoEndDate,
                 ErrorMessages.NoEndDateMessage);
 
-            public static DistroError NoStartDate => new DistroError(DistroErrorCode.NoStartDate,
+            public static ApiError NoStartDate => new ApiError(ApiErrorCode.NoStartDate,
                 ErrorMessages.NoStartDateMessage);
 
-            public static DistroError StartDateUnsearchable => new DistroError(DistroErrorCode.StartDateUnsearchable,
+            public static ApiError StartDateUnsearchable => new ApiError(ApiErrorCode.StartDateUnsearchable,
                 ErrorMessages.StartDateUnsearchableMessage);
 
-            public static DistroError UnexpectedException => new DistroError(DistroErrorCode.UnexpectedException,
+            public static ApiError UnexpectedException => new ApiError(ApiErrorCode.UnexpectedException,
                 ErrorMessages.UnexpectedExceptionMessage);
 
-            public static DistroError ZeroAmount =>
-                new DistroError(DistroErrorCode.ZeroAmount, ErrorMessages.ZeroAmountMessage);
+            public static ApiError ZeroAmount =>
+                new ApiError(ApiErrorCode.ZeroAmount, ErrorMessages.ZeroAmountMessage);
         }
 
         public static class ErrorMessages

@@ -1,6 +1,6 @@
 ﻿namespace StatsDownloadApi.Interfaces
 {
-    public enum DistroErrorCode
+    public enum ApiErrorCode
     {
         None = 0000,
 
