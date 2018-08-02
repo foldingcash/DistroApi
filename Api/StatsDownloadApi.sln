@@ -25,11 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Logging", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Logging.Tests", "..\Shared\StatsDownload.Logging.Tests\StatsDownload.Logging.Tests.csproj", "{6C46D4D2-B9DE-4A26-8A39-D094EDE16C1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownloadApi.Interfaces", "StatsDownloadApi.Interfaces\StatsDownloadApi.Interfaces.csproj", "{3B1D764D-B9E6-464C-8460-DF4CEA07E67B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownloadApi.Interfaces", "StatsDownloadApi.Interfaces\StatsDownloadApi.Interfaces.csproj", "{3B1D764D-B9E6-464C-8460-DF4CEA07E67B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownloadApi.Database", "StatsDownloadApi.Database\StatsDownloadApi.Database.csproj", "{1A43A16D-465E-4F64-94E1-03C4933E767A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownloadApi.Database", "StatsDownloadApi.Database\StatsDownloadApi.Database.csproj", "{1A43A16D-465E-4F64-94E1-03C4933E767A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownloadApi.Database.Tests", "StatsDownloadApi.Database.Tests\StatsDownloadApi.Database.Tests.csproj", "{9A451861-9E61-4312-A61D-7E4F08FD9FDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownloadApi.Database.Tests", "StatsDownloadApi.Database.Tests\StatsDownloadApi.Database.Tests.csproj", "{9A451861-9E61-4312-A61D-7E4F08FD9FDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

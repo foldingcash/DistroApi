@@ -7,6 +7,7 @@
 
     [Produces("application/json")]
     [Route("v1/[controller]")]
+    [ApiExplorerSettings(IgnoreApi = false, GroupName = nameof(GetTeamsController))]
     public class GetTeamsController : Controller
     {
         [HttpGet]
