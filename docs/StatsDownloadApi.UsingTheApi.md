@@ -80,8 +80,8 @@ Default behavior:
         "friendlyName":"{friendlyName}",
         "bitcoinAddress":"{bitcoinAddress}",
         "teamNumber":{teamNumber},
-		"pointsGained":{pointsGained},
-		"workUnitsGained":{workUnitsGained}
+        "pointsGained":{pointsGained},
+        "workUnitsGained":{workUnitsGained}
       }
     ],
   "memberCount":{distroCount},
