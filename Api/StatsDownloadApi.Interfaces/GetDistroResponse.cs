@@ -4,31 +4,20 @@
     using System.Linq;
     using DataTransfer;
 
-    public class GetDistroResponse
+    public class GetDistroResponse : ApiResponse
     {
         public GetDistroResponse(IList<DistroUser> distro)
         {
-            Success = true;
             Distro = distro;
         }
 
-        public GetDistroResponse(IList<ApiError> errors)
+        public GetDistroResponse(IList<ApiError> errors) : base(errors)
         {
-            Success = false;
-            Errors = errors;
         }
 
         public IList<DistroUser> Distro { get; }
 
         public int? DistroCount => Distro?.Count;
-
-        public int? ErrorCount => Errors?.Count;
-
-        public IList<ApiError> Errors { get; }
-
-        public ApiErrorCode FirstErrorCode => Errors?.First().ErrorCode ?? ApiErrorCode.None;
-
-        public bool Success { get; }
 
         public decimal? TotalDistro => Distro?.Sum(user => user.Amount);
 
