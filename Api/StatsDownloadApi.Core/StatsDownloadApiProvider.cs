@@ -42,6 +42,15 @@
             return new GetDistroResponse(distro);
         }
 
+        public GetMemberStatsResponse GetMemberStats()
+        {
+            return new GetMemberStatsResponse(new[]
+            {
+                new MemberStats("user1_btc1", "user1", "btc1", 1234, 2345, 3456),
+                new MemberStats("user2_btc2", "user2", "btc2", 4567, 5678, 6789)
+            });
+        }
+
         public GetTeamsResponse GetTeams()
         {
             return new GetTeamsResponse(new[]

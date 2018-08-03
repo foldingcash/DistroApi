@@ -212,7 +212,34 @@
         }
 
         [Test]
-        public void GetTeams_WhenInvoked_ReturnsSuccessDistroResponse()
+        public void GetMemberStats_WhenInvoked_ReturnsSuccessMemberStatsResponse()
+        {
+            GetMemberStatsResponse actual = InvokeGetMemberStats();
+
+            Assert.That(actual.Success, Is.True);
+            Assert.That(actual.Errors, Is.Null);
+            Assert.That(actual.ErrorCount, Is.Null);
+            Assert.That(actual.FirstErrorCode, Is.EqualTo(ApiErrorCode.None));
+
+            Assert.That(actual.MemberCount, Is.EqualTo(2));
+
+            Assert.That(actual.Members[0].UserName, Is.EqualTo("user1_btc1"));
+            Assert.That(actual.Members[0].BitcoinAddress, Is.EqualTo("btc1"));
+            Assert.That(actual.Members[0].FriendlyName, Is.EqualTo("user1"));
+            Assert.That(actual.Members[0].TeamNumber, Is.EqualTo(1234));
+            Assert.That(actual.Members[0].PointsGained, Is.EqualTo(2345));
+            Assert.That(actual.Members[0].WorkUnitsGained, Is.EqualTo(3456));
+
+            Assert.That(actual.Members[1].UserName, Is.EqualTo("user2_btc2"));
+            Assert.That(actual.Members[1].BitcoinAddress, Is.EqualTo("btc2"));
+            Assert.That(actual.Members[1].FriendlyName, Is.EqualTo("user2"));
+            Assert.That(actual.Members[1].TeamNumber, Is.EqualTo(4567));
+            Assert.That(actual.Members[1].PointsGained, Is.EqualTo(5678));
+            Assert.That(actual.Members[1].WorkUnitsGained, Is.EqualTo(6789));
+        }
+
+        [Test]
+        public void GetTeams_WhenInvoked_ReturnsSuccessTeamsResponse()
         {
             GetTeamsResponse actual = InvokeGetTeams();
 
@@ -236,6 +263,11 @@
         private GetDistroResponse InvokeGetDistro(DateTime? startDate, DateTime? endDate, int? amount)
         {
             return systemUnderTest.GetDistro(startDate, endDate, amount);
+        }
+
+        private GetMemberStatsResponse InvokeGetMemberStats()
+        {
+            return systemUnderTest.GetMemberStats();
         }
 
         private GetTeamsResponse InvokeGetTeams()
