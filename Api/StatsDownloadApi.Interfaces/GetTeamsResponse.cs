@@ -16,6 +16,6 @@
 
         public int? TeamCount => Teams?.Count;
 
-        public IList<Team> Teams { get; set; }
+        public IList<Team> Teams { get; }
     }
 }
