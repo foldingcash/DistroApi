@@ -20,7 +20,7 @@ GET http://{server}/{api_path}/v1/GetDistro?StartDate=01-01-0001&EndDate=12-31-9
 HTTP 200
 ```
 
-Default distribution behavior:
+Default behavior:
 
 * JSON response
 * Decimal precision
@@ -53,18 +53,18 @@ Default distribution behavior:
 ```
 ### GetTeams
 
-Call to get all teams calculate a distribution to merged folders for the configured amount and timespan.
+Call to get all merged folding teams.
 
 #### Calling GetTeams
 
-Parameters 'StartDate' and 'EndDate' are required.
+No Parameters.
 
 ```
 GET http://{server}/{api_path}/v1/GetTeams
 HTTP 200
 ```
 
-Default distribution behavior:
+Default behavior:
 
 * JSON response
 
