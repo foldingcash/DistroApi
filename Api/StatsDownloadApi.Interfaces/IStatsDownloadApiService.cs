@@ -6,6 +6,8 @@
     {
         GetDistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount);
 
+        GetMemberStatsResponse GetMemberStats();
+
         GetTeamsResponse GetTeams();
     }
 }
