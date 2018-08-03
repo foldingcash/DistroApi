@@ -18,7 +18,9 @@
                 @foreach (ApiDescription api in group.Items)
                 {
                     <li>
-                        <h5>@api.HttpMethod @api.RelativePath</h5>
+                        <h5>
+                            @api.HttpMethod <a href="@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/{api.RelativePath}")">@api.RelativePath</a>
+                        </h5>
                         <blockquote>
                             @if (api.ParameterDescriptions.Count > 0)
                             {
