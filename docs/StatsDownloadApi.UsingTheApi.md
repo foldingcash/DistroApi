@@ -51,6 +51,45 @@ Default behavior:
   "totalWorkUnits":{totalWorkUnits}
 }
 ```
+
+### GetMemberStats
+
+Call to get all merged foling members.
+
+#### Calling GetMemberStats
+
+No Parameters.
+
+```
+GET http://{server}/{api_path}/v1/GetMemberStats
+HTTP 200
+```
+
+Default behavior:
+
+* JSON response
+
+#### GetMemberStats Response Format
+
+```
+{
+  "members":
+    [
+      {
+        "userName":"{userName}",
+        "friendlyName":"{friendlyName}",
+        "bitcoinAddress":"{bitcoinAddress}",
+        "teamNumber":{teamNumber},
+		"pointsGained":{pointsGained},
+		"workUnitsGained":{workUnitsGained}
+      }
+    ],
+  "memberCount":{distroCount},
+  "firstErrorCode":0,
+  "success":true
+}
+```
+
 ### GetTeams
 
 Call to get all merged folding teams.

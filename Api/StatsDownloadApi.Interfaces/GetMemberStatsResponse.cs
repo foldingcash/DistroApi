@@ -13,8 +13,8 @@
         {
         }
 
-        public IList<MemberStats> Members { get; }
+        public int? MemberCount => Members?.Count;
 
-        public int? MemberStatsCount => Members?.Count;
+        public IList<MemberStats> Members { get; }
     }
 }

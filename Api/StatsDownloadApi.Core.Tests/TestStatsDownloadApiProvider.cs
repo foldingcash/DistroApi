@@ -221,7 +221,7 @@
             Assert.That(actual.ErrorCount, Is.Null);
             Assert.That(actual.FirstErrorCode, Is.EqualTo(ApiErrorCode.None));
 
-            Assert.That(actual.MemberStatsCount, Is.EqualTo(2));
+            Assert.That(actual.MemberCount, Is.EqualTo(2));
 
             Assert.That(actual.Members[0].UserName, Is.EqualTo("user1_btc1"));
             Assert.That(actual.Members[0].BitcoinAddress, Is.EqualTo("btc1"));
