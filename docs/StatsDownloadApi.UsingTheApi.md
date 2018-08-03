@@ -1,11 +1,17 @@
 # Using the API
 
+The FoldingCoin (FLDC) StatsDownload API exposes merged folding data through a standard API.
+
 ## Calling the API
 
 * Replace {server} with the hosting server name
 * Replace {api_path} with the application path, if any
 
-### Calling GetDistro
+### GetDistro
+
+Call to calculate a distribution to merged folders for the configured amount and timespan.
+
+#### Calling GetDistro
 
 Parameters 'StartDate', 'EndDate', and 'Amount' are required.
 
@@ -14,7 +20,7 @@ GET http://{server}/{api_path}/v1/GetDistro?StartDate=01-01-0001&EndDate=12-31-9
 HTTP 200
 ```
 
-Default distribution behavior:
+Default behavior:
 
 * JSON response
 * Decimal precision
@@ -23,7 +29,7 @@ Default distribution behavior:
 * Proportionally distributes the specified amount to the users for their points completed over the specified date-range
 * Total distribution amount may not equal the specified amount (plus or minus by a small amount)
 
-### GetDistro Response Format
+#### GetDistro Response Format
 
 ```
 {
@@ -43,6 +49,39 @@ Default distribution behavior:
   "totalDistro":{totalDistro},
   "totalPoints":{totalPoints},
   "totalWorkUnits":{totalWorkUnits}
+}
+```
+### GetTeams
+
+Call to get all merged folding teams.
+
+#### Calling GetTeams
+
+No Parameters.
+
+```
+GET http://{server}/{api_path}/v1/GetTeams
+HTTP 200
+```
+
+Default behavior:
+
+* JSON response
+
+#### GetTeams Response Format
+
+```
+{
+  "teams":
+    [
+      {
+        "teamNumber":{teamNumber},
+        "teamName":"{teamName}"
+      }
+    ],
+  "teamCount":{distroCount},
+  "firstErrorCode":0,
+  "success":true
 }
 ```
 

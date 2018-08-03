@@ -4,15 +4,15 @@
     using System.Linq;
     using DataTransfer;
 
-    public class DistroResponse
+    public class GetDistroResponse
     {
-        public DistroResponse(IList<DistroUser> distro)
+        public GetDistroResponse(IList<DistroUser> distro)
         {
             Success = true;
             Distro = distro;
         }
 
-        public DistroResponse(IList<DistroError> errors)
+        public GetDistroResponse(IList<ApiError> errors)
         {
             Success = false;
             Errors = errors;
@@ -24,9 +24,9 @@
 
         public int? ErrorCount => Errors?.Count;
 
-        public IList<DistroError> Errors { get; }
+        public IList<ApiError> Errors { get; }
 
-        public DistroErrorCode FirstErrorCode => Errors?.First().ErrorCode ?? DistroErrorCode.None;
+        public ApiErrorCode FirstErrorCode => Errors?.First().ErrorCode ?? ApiErrorCode.None;
 
         public bool Success { get; }
 

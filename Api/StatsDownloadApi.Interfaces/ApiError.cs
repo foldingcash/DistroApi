@@ -1,14 +1,14 @@
 ﻿namespace StatsDownloadApi.Interfaces
 {
-    public class DistroError
+    public class ApiError
     {
-        public DistroError(DistroErrorCode errorCode, string errorMessage)
+        public ApiError(ApiErrorCode errorCode, string errorMessage)
         {
             ErrorCode = errorCode;
             ErrorMessage = errorMessage;
         }
 
-        public DistroErrorCode ErrorCode { get; }
+        public ApiErrorCode ErrorCode { get; }
 
         public string ErrorMessage { get; }
     }

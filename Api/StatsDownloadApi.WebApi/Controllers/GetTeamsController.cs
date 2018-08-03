@@ -7,22 +7,22 @@
 
     [Produces("application/json")]
     [Route("v1/[controller]")]
-    [ApiExplorerSettings(IgnoreApi = false, GroupName = nameof(GetDistroController))]
-    public class GetDistroController : Controller
+    [ApiExplorerSettings(IgnoreApi = false, GroupName = nameof(GetTeamsController))]
+    public class GetTeamsController : Controller
     {
         [HttpGet]
-        public GetDistroResponse Get(DateTime? startDate, DateTime? endDate, int? amount)
+        public GetTeamsResponse Get()
         {
             IStatsDownloadApiService apiService = null;
             try
             {
                 apiService = WindsorContainer.Instance.Resolve<IStatsDownloadApiService>();
-                GetDistroResponse response = apiService.GetDistro(startDate, endDate, amount);
+                GetTeamsResponse response = apiService.GetTeams();
                 return response;
             }
             catch (Exception)
             {
-                return new GetDistroResponse(new[] { Constants.ApiErrors.UnexpectedException });
+                return new GetTeamsResponse(new[] { Constants.ApiErrors.UnexpectedException });
             }
             finally
             {
