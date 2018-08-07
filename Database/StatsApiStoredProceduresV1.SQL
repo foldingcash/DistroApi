@@ -122,3 +122,18 @@ BEGIN
 		AND FoldingUsers.BitcoinAddress IS NOT NULL
 END
 GO
+
+-----------------------------------------------------------------
+
+IF OBJECT_ID('FoldingCoin.GetTeams') IS NOT NULL
+	BEGIN
+		DROP PROCEDURE [FoldingCoin].[GetTeams];
+	END
+GO
+
+CREATE PROCEDURE [FoldingCoin].[GetTeams]
+AS
+BEGIN
+	SELECT TeamNumber, TeamNumber AS TeamName FROM [FoldingCoin].[Teams];
+END
+GO

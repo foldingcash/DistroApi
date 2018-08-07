@@ -8,6 +8,9 @@
         {
             public static readonly string GetFoldingUsersProcedureName =
                 $"{StatsDownloadConstants.StatsDownloadDatabase.DatabaseSchema}{StatsDownloadConstants.StatsDownloadDatabase.SchemaSeparator}[GetFoldingUsers]";
+
+            public static readonly string GetTeamsProcedureName =
+                $"{StatsDownloadConstants.StatsDownloadDatabase.DatabaseSchema}{StatsDownloadConstants.StatsDownloadDatabase.SchemaSeparator}[GetTeams]";
         }
     }
 }

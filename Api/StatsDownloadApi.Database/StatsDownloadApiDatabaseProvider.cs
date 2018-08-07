@@ -49,7 +49,19 @@
 
         public IList<Team> GetTeams()
         {
-            throw new NotImplementedException();
+            var users = new List<Team>();
+            statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
+            {
+                var dataTable = new DataTable();
+                service.ExecuteStoredProcedure(Constants.StatsDownloadApiDatabase.GetTeamsProcedureName,
+                    dataTable);
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    users.Add(new Team((row["TeamNumber"] as long?).GetValueOrDefault(), row["TeamName"] as string));
+                }
+            });
+            return users;
         }
 
         public bool IsAvailable()
