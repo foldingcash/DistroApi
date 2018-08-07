@@ -47,6 +47,11 @@
             return users;
         }
 
+        public IList<Team> GetTeams()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsAvailable()
         {
             return statsDownloadDatabaseService.IsAvailable();

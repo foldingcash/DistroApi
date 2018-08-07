@@ -97,7 +97,7 @@
         }
 
         [Test]
-        public void GetDistro_WhenInvoked_ReturnsSuccessDistroResponse()
+        public void GetDistro_WhenInvoked_ReturnsSuccessGetDistroResponse()
         {
             var foldingUsers = new FoldingUser[0];
             var distro = new[]
@@ -239,20 +239,34 @@
         }
 
         [Test]
-        public void GetTeams_WhenInvoked_ReturnsSuccessTeamsResponse()
+        public void GetTeams_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
+            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
+
+            GetTeamsResponse actual = InvokeGetTeams();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseUnavailable));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.DatabaseUnavailableMessage));
+        }
+
+        [Test]
+        public void GetTeams_WhenInvoked_ReturnsSuccessGetTeamsResponse()
+        {
+            var teams = new[] { new Team(0, ""), new Team(0, "") };
+            statsDownloadApiDatabaseServiceMock.GetTeams().Returns(teams);
+
             GetTeamsResponse actual = InvokeGetTeams();
 
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.Errors, Is.Null);
             Assert.That(actual.ErrorCount, Is.Null);
             Assert.That(actual.FirstErrorCode, Is.EqualTo(ApiErrorCode.None));
+            Assert.That(actual.Teams, Is.EqualTo(teams));
             Assert.That(actual.TeamCount, Is.EqualTo(2));
-
-            Assert.That(actual.Teams[0].TeamNumber, Is.EqualTo(1234));
-            Assert.That(actual.Teams[0].TeamName, Is.EqualTo("1234"));
-            Assert.That(actual.Teams[1].TeamNumber, Is.EqualTo(2345));
-            Assert.That(actual.Teams[1].TeamName, Is.EqualTo("2345"));
         }
 
         private GetDistroResponse InvokeGetDistro()
