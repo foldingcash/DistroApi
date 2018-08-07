@@ -8,6 +8,8 @@
     {
         IList<FoldingUser> GetFoldingUsers(DateTime startDate, DateTime endDate);
 
+        IList<Team> GetTeams();
+
         bool IsAvailable();
     }
 }

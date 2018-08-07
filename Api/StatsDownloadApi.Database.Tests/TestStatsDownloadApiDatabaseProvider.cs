@@ -117,6 +117,36 @@
             Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(2000));
         }
 
+        [Test]
+        public void GetTeams_WhenInvoked_GetsTeams()
+        {
+            databaseConnectionServiceMock.When(service =>
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetTeams]",
+                    Arg.Any<DataTable>())).Do(callInfo =>
+            {
+                var dataTable = callInfo.Arg<DataTable>();
+                dataTable.Columns.Add(new DataColumn("TeamNumber", typeof (long)));
+                dataTable.Columns.Add(new DataColumn("TeamName", typeof (string)));
+                DataRow user1 = dataTable.NewRow();
+                dataTable.Rows.Add(user1);
+                user1["TeamNumber"] = 100;
+                user1["TeamName"] = "TeamName1";
+                DataRow user2 = dataTable.NewRow();
+                dataTable.Rows.Add(user2);
+                user2["TeamNumber"] = 200;
+                user2["TeamName"] = "TeamName2";
+                dataTable.AcceptChanges();
+            });
+
+            IList<Team> actual = systemUnderTest.GetTeams();
+
+            Assert.That(actual.Count, Is.EqualTo(2));
+            Assert.That(actual[0].TeamNumber, Is.EqualTo(100));
+            Assert.That(actual[0].TeamName, Is.EqualTo("TeamName1"));
+            Assert.That(actual[1].TeamNumber, Is.EqualTo(200));
+            Assert.That(actual[1].TeamName, Is.EqualTo("TeamName2"));
+        }
+
         [TestCase(true)]
         [TestCase(false)]
         public void IsAvailable_WhenInvoked_ReturnsIsAvailable(bool expected)

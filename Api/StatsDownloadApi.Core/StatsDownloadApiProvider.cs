@@ -53,11 +53,16 @@
 
         public GetTeamsResponse GetTeams()
         {
-            return new GetTeamsResponse(new[]
+            var errors = new List<ApiError>();
+
+            if (IsNotPreparedToGetTeams(errors))
             {
-                new Team(1234, "1234"),
-                new Team(2345, "2345")
-            });
+                return new GetTeamsResponse(errors);
+            }
+
+            IList<Team> teams = statsDownloadApiDatabaseService.GetTeams();
+
+            return new GetTeamsResponse(teams);
         }
 
         private IList<DistroUser> GetDistro(int? amount, IList<FoldingUser> foldingUsers)
@@ -69,6 +74,13 @@
         {
             return statsDownloadApiDatabaseService.GetFoldingUsers(startDate.GetValueOrDefault(),
                 endDate.GetValueOrDefault());
+        }
+
+        private bool IsNotPreparedToGetTeams(IList<ApiError> errors)
+        {
+            ValidateDatabaseIsAvailable(errors);
+
+            return errors.Count > 0;
         }
 
         private bool IsNotPreparedToRunDistro(DateTime? startDate, DateTime? endDate, int? amount,
