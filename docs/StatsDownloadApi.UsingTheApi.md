@@ -54,7 +54,7 @@ Default behavior:
 
 ### GetMemberStats
 
-Call to get all merged foling members.
+Call to get all folding members.
 
 #### Calling GetMemberStats
 
@@ -92,7 +92,7 @@ Default behavior:
 
 ### GetTeams
 
-Call to get all merged folding teams.
+Call to get all folding teams.
 
 #### Calling GetTeams
 
