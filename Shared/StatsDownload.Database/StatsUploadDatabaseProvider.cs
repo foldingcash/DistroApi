@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
-    using System.Linq;
     using Core.Interfaces;
     using Core.Interfaces.DataTransfer;
     using Core.Interfaces.Enums;
@@ -159,9 +158,10 @@
                     rebuildIndicesCommand.CommandType = CommandType.StoredProcedure;
                     rebuildIndicesCommand.Transaction = transaction;
 
-                    for (var index = 0; index < (usersData?.Count() ?? 0); index++)
+                    var index = 0;
+
+                    foreach (UserData userData in usersData ?? new UserData[0])
                     {
-                        UserData userData = usersData.ElementAt(index);
                         SetAddUserDataParameterValues(downloadId, userData, addUserParameters);
                         addUserDataCommand.ExecuteNonQuery();
 
@@ -175,6 +175,8 @@
                         {
                             rebuildIndicesCommand.ExecuteNonQuery();
                         }
+
+                        index++;
                     }
                 }
             }
