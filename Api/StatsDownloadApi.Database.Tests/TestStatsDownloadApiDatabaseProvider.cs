@@ -51,19 +51,19 @@
         }
 
         [Test]
-        public void GetFoldingUsers_WhenInvoked_GetFoldingUsersParametersAreProvided()
+        public void GetFoldingMembers_WhenInvoked_GetFoldingMembersParametersAreProvided()
         {
             IEnumerable<DbParameter> actualParameters = null;
 
             databaseConnectionServiceMock.When(service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[GetFoldingUsers]",
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetFoldingMembers]",
                     Arg.Any<IEnumerable<DbParameter>>(),
                     Arg.Any<DataTable>())).Do(callInfo =>
             {
                 actualParameters = callInfo.Arg<IEnumerable<DbParameter>>();
             });
 
-            systemUnderTest.GetFoldingUsers(DateTime.MinValue, DateTime.MaxValue);
+            systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
 
             Assert.That(actualParameters.Count, Is.EqualTo(2));
             Assert.That(actualParameters.ElementAt(0).ParameterName, Is.EqualTo("@StartDate"));
@@ -77,10 +77,10 @@
         }
 
         [Test]
-        public void GetFoldingUsers_WhenInvoked_GetsFoldingUsers()
+        public void GetFoldingMembers_WhenInvoked_GetsFoldingUsers()
         {
             databaseConnectionServiceMock.When(service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[GetFoldingUsers]",
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetFoldingMembers]",
                     Arg.Any<IEnumerable<DbParameter>>(),
                     Arg.Any<DataTable>())).Do(callInfo =>
             {
@@ -104,7 +104,7 @@
                 dataTable.AcceptChanges();
             });
 
-            IList<FoldingUser> actual = systemUnderTest.GetFoldingUsers(DateTime.MinValue, DateTime.MaxValue);
+            IList<FoldingUser> actual = systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
 
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[0].FriendlyName, Is.EqualTo("FriendlyName1"));

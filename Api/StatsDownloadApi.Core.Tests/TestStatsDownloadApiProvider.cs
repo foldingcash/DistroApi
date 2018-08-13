@@ -104,7 +104,7 @@
                 new DistroUser(null, null, 1, 2, 0.12345678m),
                 new DistroUser(null, null, 3, 4, 100m)
             };
-            statsDownloadApiDatabaseServiceMock.GetFoldingUsers(startDateMock, endDateMock).Returns(foldingUsers);
+            statsDownloadApiDatabaseServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);
 
             GetDistroResponse actual = InvokeGetDistro();

@@ -1,10 +1,10 @@
-IF OBJECT_ID('FoldingCoin.GetFoldingUsers') IS NOT NULL
+IF OBJECT_ID('FoldingCoin.GetFoldingMembers') IS NOT NULL
 	BEGIN
-		DROP PROCEDURE [FoldingCoin].[GetFoldingUsers];
+		DROP PROCEDURE [FoldingCoin].[GetFoldingMembers];
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[GetFoldingUsers] @StartDate DATE,
+CREATE PROCEDURE [FoldingCoin].[GetFoldingMembers] @StartDate DATE,
 	@EndDate DATE
 AS
 BEGIN
@@ -169,8 +169,7 @@ BEGIN
 				FROM FoldingCoin.UserStats UserStats
 					INNER JOIN FoldingCoin.FAHDataRuns FAHDataRuns ON UserStats.FAHDataRunId = FAHDataRuns.FAHDataRunId 
 					INNER JOIN FoldingCoin.Downloads Downloads ON Downloads.DownloadId = FAHDataRuns.DownloadId 
-					INNER JOIN FoldingCoin.TeamMembers TeamMembers ON FAHDataRuns.TeamMemberId = TeamMembers.TeamMemberId 
-					INNER JOIN FoldingCoin.Teams Teams ON TeamMembers.TeamId = Teams.TeamId
+					INNER JOIN FoldingCoin.TeamMembers TeamMembers ON FAHDataRuns.TeamMemberId = TeamMembers.TeamMemberId
 					INNER JOIN FoldingCoin.Users Users ON TeamMembers.UserId = Users.UserId 
 				WHERE 
 					Downloads.StatusId = FoldingCoin.GetStatsUploadFinishedStatusId()  

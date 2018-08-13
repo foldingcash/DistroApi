@@ -36,8 +36,8 @@
                 return new GetDistroResponse(errors);
             }
 
-            IList<FoldingUser> foldingUsers = GetFoldingUsers(startDate, endDate);
-            IList<DistroUser> distro = GetDistro(amount, foldingUsers);
+            IList<FoldingUser> foldingMembers = GetFoldingMembers(startDate, endDate);
+            IList<DistroUser> distro = GetDistro(amount, foldingMembers);
 
             return new GetDistroResponse(distro);
         }
@@ -77,9 +77,9 @@
             return statsDownloadApiTokenDistributionService.GetDistro(amount.GetValueOrDefault(), foldingUsers);
         }
 
-        private IList<FoldingUser> GetFoldingUsers(DateTime? startDate, DateTime? endDate)
+        private IList<FoldingUser> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
         {
-            return statsDownloadApiDatabaseService.GetFoldingUsers(startDate.GetValueOrDefault(),
+            return statsDownloadApiDatabaseService.GetFoldingMembers(startDate.GetValueOrDefault(),
                 endDate.GetValueOrDefault());
         }
 
