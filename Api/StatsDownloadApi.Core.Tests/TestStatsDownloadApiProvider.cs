@@ -212,6 +212,34 @@
         }
 
         [Test]
+        public void GetMemberStats_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
+        {
+            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
+
+            GetMemberStatsResponse actual = InvokeGetMemberStats();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseUnavailable));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.DatabaseUnavailableMessage));
+        }
+
+        [Test]
+        public void GetMemberStats_WhenErrorsOccurs_ReturnsErrorsResponse()
+        {
+            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
+
+            GetMemberStatsResponse actual = InvokeGetMemberStats(null, null);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Members, Is.Null);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(3));
+            Assert.That(actual.FirstErrorCode, Is.EqualTo(ApiErrorCode.NoStartDate));
+        }
+
+        [Test]
         public void GetMemberStats_WhenInvoked_ReturnsSuccessMemberStatsResponse()
         {
             GetMemberStatsResponse actual = InvokeGetMemberStats();
@@ -236,6 +264,45 @@
             Assert.That(actual.Members[1].TeamNumber, Is.EqualTo(4567));
             Assert.That(actual.Members[1].PointsGained, Is.EqualTo(5678));
             Assert.That(actual.Members[1].WorkUnitsGained, Is.EqualTo(6789));
+        }
+
+        [Test]
+        public void GetMemberStats_WhenNoEndDateIsProvided_ReturnsNoEndDateResponse()
+        {
+            GetMemberStatsResponse actual = InvokeGetMemberStats(startDateMock, null);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.NoEndDate));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.NoEndDateMessage));
+        }
+
+        [Test]
+        public void GetMemberStats_WhenNoStartDateIsProvided_ReturnsNoStartDateResponse()
+        {
+            GetMemberStatsResponse actual = InvokeGetMemberStats(null, endDateMock);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.NoStartDate));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.NoStartDateMessage));
+        }
+
+        [Test]
+        public void GetMemberStats_WhenStartDateIsLaterThanEndDate_ReturnsInvalidDateRangeResponse()
+        {
+            GetMemberStatsResponse actual = InvokeGetMemberStats(startDateMock, endDateMock.AddDays(-1));
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.InvalidDateRange));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.InvalidDateRangeMessage));
         }
 
         [Test]
@@ -279,9 +346,14 @@
             return systemUnderTest.GetDistro(startDate, endDate, amount);
         }
 
+        private GetMemberStatsResponse InvokeGetMemberStats(DateTime? startDate, DateTime? endDate)
+        {
+            return systemUnderTest.GetMemberStats(startDate, endDate);
+        }
+
         private GetMemberStatsResponse InvokeGetMemberStats()
         {
-            return systemUnderTest.GetMemberStats();
+            return InvokeGetMemberStats(startDateMock, endDateMock);
         }
 
         private GetTeamsResponse InvokeGetTeams()
