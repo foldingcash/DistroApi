@@ -56,7 +56,6 @@ Default behavior:
       {
         "amount":{amount},
         "bitcoinAddress":"{bitcoinAddress}",
-        "friendlyName":"{friendlyName}",
         "pointsGained":{pointsGained},
         "workUnitsGained":{workUnitsGained}
       }

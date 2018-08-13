@@ -37,10 +37,10 @@
             return Round(rawAmount, MaxPrecision);
         }
 
-        private DistroUser GetDistroUser(int amount, long totalPoints, FoldingUser foldingUser)
+        private DistroUser GetDistroUser(int amount, long totalPoints, FoldingUser foldingMember)
         {
-            return new DistroUser(foldingUser.FriendlyName, foldingUser.BitcoinAddress, foldingUser.PointsGained,
-                foldingUser.WorkUnitsGained, GetAmount(amount, totalPoints, foldingUser));
+            return new DistroUser(foldingMember.BitcoinAddress, foldingMember.PointsGained,
+                foldingMember.WorkUnitsGained, GetAmount(amount, totalPoints, foldingMember));
         }
     }
 }
