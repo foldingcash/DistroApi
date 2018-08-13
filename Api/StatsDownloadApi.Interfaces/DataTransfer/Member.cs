@@ -1,8 +1,8 @@
-﻿namespace StatsDownloadApi.Interfaces
+﻿namespace StatsDownloadApi.Interfaces.DataTransfer
 {
-    public class MemberStats
+    public class Member
     {
-        public MemberStats(string userName, string friendlyName, string bitcoinAddress, long teamNumber,
+        public Member(string userName, string friendlyName, string bitcoinAddress, long teamNumber,
             long pointsGained, long workUnitsGained)
         {
             UserName = userName;

@@ -6,7 +6,9 @@
 
     public interface IStatsDownloadApiDatabaseService
     {
-        IList<FoldingUser> GetFoldingUsers(DateTime startDate, DateTime endDate);
+        IList<FoldingUser> GetFoldingMembers(DateTime startDate, DateTime endDate);
+
+        IList<Member> GetMembers(DateTime startDate, DateTime endDate);
 
         IList<Team> GetTeams();
 

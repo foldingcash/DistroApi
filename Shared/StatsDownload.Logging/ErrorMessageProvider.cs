@@ -15,7 +15,7 @@
             {
                 TimeSpan minimumWaitTimeSpan = MinimumWait.TimeSpan;
                 TimeSpan configuredWaitTime = filePayload.MinimumWaitTimeSpan;
-                return String.Format(ErrorMessages.MinimumWaitTimeNotMet, minimumWaitTimeSpan, configuredWaitTime);
+                return string.Format(ErrorMessages.MinimumWaitTimeNotMet, minimumWaitTimeSpan, configuredWaitTime);
             }
 
             return GetErrorMessage(failedReason, service);
@@ -62,7 +62,7 @@
             if (failedReason == FailedReason.UnexpectedException)
             {
                 return GetErrorMessageByServiceType(service, ErrorMessages.FileDownloadUnexpectedException,
-                    ErrorMessages.StatsUploadUnexpectedException, ErrorMessages.DefaultUnexpectedException) ;
+                    ErrorMessages.StatsUploadUnexpectedException, ErrorMessages.DefaultUnexpectedException);
             }
 
             return string.Empty;
@@ -96,7 +96,8 @@
             return string.Empty;
         }
 
-        private string GetErrorMessageByServiceType(StatsDownloadService service, string fileDownloadMessage, string statsUploadMessage, string defaultMessage)
+        private string GetErrorMessageByServiceType(StatsDownloadService service, string fileDownloadMessage,
+            string statsUploadMessage, string defaultMessage)
         {
             if (service == StatsDownloadService.FileDownload)
             {
