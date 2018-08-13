@@ -85,10 +85,8 @@
 
         private bool IsNotPreparedToGetMemberStats(DateTime? startDate, DateTime? endDate, IList<ApiError> errors)
         {
-            ValidateDate(startDate, errors, Constants.ApiErrors.NoStartDate,
-                null);
-            ValidateDate(endDate, errors, Constants.ApiErrors.NoEndDate, null);
-
+            ValidateStartDate(startDate, errors);
+            ValidateEndDate(endDate, errors);
             ValidateDateRange(startDate, endDate, errors);
             ValidateDatabaseIsAvailable(errors);
 

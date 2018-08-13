@@ -67,19 +67,6 @@
         }
 
         [Test]
-        public void GetDistro_WhenEndDateInputIsTodayOrFutureDate_ReturnsEndDateUnsearchableResponse()
-        {
-            GetDistroResponse actual = InvokeGetDistro(startDateMock, DateTime.UtcNow, amountMock);
-
-            Assert.That(actual.Success, Is.False);
-            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
-            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.EndDateUnsearchable));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.EndDateUnsearchableMessage));
-        }
-
-        [Test]
         public void GetDistro_WhenErrorsOccurs_ReturnsErrorResponse()
         {
             statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
@@ -227,6 +214,19 @@
         }
 
         [Test]
+        public void GetMemberStats_WhenEndDateInputIsTodayOrFutureDate_ReturnsEndDateUnsearchableResponse()
+        {
+            GetMemberStatsResponse actual = InvokeGetMemberStats(startDateMock, DateTime.UtcNow);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.EndDateUnsearchable));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.EndDateUnsearchableMessage));
+        }
+
+        [Test]
         public void GetMemberStats_WhenErrorsOccurs_ReturnsErrorsResponse()
         {
             statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
@@ -290,6 +290,19 @@
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
                     Constants.ErrorMessages.NoStartDateMessage));
+        }
+
+        [Test]
+        public void GetMemberStats_WhenStartDateInputIsTodayOrFutureDate_ReturnsStartDateUnsearchableResponse()
+        {
+            GetMemberStatsResponse actual = InvokeGetMemberStats(DateTime.UtcNow, endDateMock);
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(2));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.StartDateUnsearchable));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.StartDateUnsearchableMessage));
         }
 
         [Test]
