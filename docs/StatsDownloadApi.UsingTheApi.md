@@ -7,6 +7,24 @@ The FoldingCoin (FLDC) StatsDownload API exposes merged folding data through a s
 * Replace {server} with the hosting server name
 * Replace {api_path} with the application path, if any
 
+### ApiExplorer
+
+The API explorer is automatically generated HTML documentation on the functionality available from the API
+
+#### Calling ApiExplorer
+
+```
+GET http://{server}/{api_path}/
+HTTP 200
+```
+
+or
+
+```
+GET http://{server}/{api_path}/v1/
+HTTP 200
+```
+
 ### GetDistro
 
 Call to calculate a distribution to merged folders for the configured amount and timespan.
@@ -61,7 +79,7 @@ Call to get all folding members.
 No Parameters.
 
 ```
-GET http://{server}/{api_path}/v1/GetMemberStats
+GET http://{server}/{api_path}/v1/GetMemberStats?StartDate=01-01-0001T00:00:00&EndDate=12-31-9999T23:59:59
 HTTP 200
 ```
 
@@ -142,8 +160,8 @@ Default behavior:
 | Error Code | Description                                                                                                                                                           |
 |:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |    0000    | No errors were encountered.                                                                                                                                           |
-|    1000    | The start date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                               |
-|    1010    | The end date is required, the format is MM-DD-YYYY; includes not providing a value, an incorrectly formatted date, and invalid dates.                                 |
+|    1000    | The start date is required, the format is MM-DD-YYYY or MM-DD-YYYYTHH:mm:ss; includes not providing a value, an incorrectly formatted date, and invalid dates.        |
+|    1010    | The end date is required, the format is MM-DD-YYYY or MM-DD-YYYYTHH:mm:ss; includes not providing a value, an incorrectly formatted date, and invalid dates.          |
 |    1020    | The start date must be a date prior to the current date; start with yesterday's date.                                                                                 |
 |    1030    | The end date must be a date prior to the current date; start with yesterday's date.                                                                                   |
 |    1040    | The start date must be earlier than or equal to the end date; ensure the end date is later than or equal to the start date.                                           |

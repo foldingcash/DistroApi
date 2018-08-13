@@ -53,10 +53,10 @@
                 "No amount was provided; ensure the distribution amount was provided as a query paramter and try again.";
 
             public static string NoEndDateMessage =>
-                "No end date was provided; ensure the end date was provided as a query parameter in the format MM-DD-YYYY and try again.";
+                "No end date was provided; ensure 'endDate' was provided as a query parameter in the format MM-DD-YYYY or MM-DD-YYYYTHH:mm:ss and try again.";
 
             public static string NoStartDateMessage =>
-                "No start date was provided; ensure the start date was provided as a query parameter in the format MM-DD-YYYY and try again.";
+                "No start date was provided; ensure 'startDate' was provided as a query parameter in the format MM-DD-YYYY or MM-DD-YYYYTHH:mm:ss and try again.";
 
             public static string StartDateUnsearchableMessage =>
                 "The start date provided is unsearchable. The start date must not be today or a future day's date. Provide a new start date and try again.";

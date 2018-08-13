@@ -42,8 +42,15 @@
             return new GetDistroResponse(distro);
         }
 
-        public GetMemberStatsResponse GetMemberStats()
+        public GetMemberStatsResponse GetMemberStats(DateTime? startDate, DateTime? endDate)
         {
+            IList<ApiError> errors = new List<ApiError>();
+
+            if (IsNotPreparedToGetMemberStats(startDate, endDate, errors))
+            {
+                return new GetMemberStatsResponse(errors);
+            }
+
             return new GetMemberStatsResponse(new[]
             {
                 new MemberStats("user1_btc1", "user1", "btc1", 1234, 2345, 3456),
@@ -74,6 +81,16 @@
         {
             return statsDownloadApiDatabaseService.GetFoldingUsers(startDate.GetValueOrDefault(),
                 endDate.GetValueOrDefault());
+        }
+
+        private bool IsNotPreparedToGetMemberStats(DateTime? startDate, DateTime? endDate, IList<ApiError> errors)
+        {
+            ValidateStartDate(startDate, errors);
+            ValidateEndDate(endDate, errors);
+            ValidateDateRange(startDate, endDate, errors);
+            ValidateDatabaseIsAvailable(errors);
+
+            return errors.Count > 0;
         }
 
         private bool IsNotPreparedToGetTeams(IList<ApiError> errors)
