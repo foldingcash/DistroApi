@@ -67,6 +67,18 @@
         }
 
         [Test]
+        public void GetDistro_WhenEndDateInputIsTodayOrFutureDate_ReturnsEndDateUnsearchableResponse()
+        {
+            GetDistroResponse actual = InvokeGetDistro(startDateMock, DateTime.UtcNow, amountMock);
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.EndDateUnsearchable));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.EndDateUnsearchableMessage));
+        }
+
+        [Test]
         public void GetDistro_WhenErrorsOccurs_ReturnsErrorResponse()
         {
             statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
