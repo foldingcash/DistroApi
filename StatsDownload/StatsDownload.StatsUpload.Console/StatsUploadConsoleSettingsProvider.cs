@@ -12,6 +12,19 @@
         IEmailSettingsService, IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
         IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings
     {
+        bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
+
+        bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolConfig("EnableNoPaymentAddressUsersFilter");
+
+        bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
+
+        bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
+
+        public string GetAcceptAnySslCert()
+        {
+            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
+        }
+
         public int? GetCommandTimeout()
         {
             string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
@@ -31,11 +44,6 @@
             return ConfigurationManager.AppSettings["DatabaseType"];
         }
 
-        public string GetAcceptAnySslCert()
-        {
-            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
-        }
-
         public string GetDownloadDirectory()
         {
             return ConfigurationManager.AppSettings["DownloadDirectory"]
@@ -53,11 +61,6 @@
             return ConfigurationManager.AppSettings["DownloadUri"];
         }
 
-        public string GetMinimumWaitTimeInHours()
-        {
-            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
-        }
-
         public string GetFromAddress()
         {
             return ConfigurationManager.AppSettings["FromAddress"];
@@ -66,6 +69,11 @@
         public string GetFromDisplayName()
         {
             return ConfigurationManager.AppSettings["DisplayName"];
+        }
+
+        public string GetMinimumWaitTimeInHours()
+        {
+            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
         }
 
         public string GetPassword()
@@ -87,14 +95,6 @@
         {
             return ConfigurationManager.AppSettings["SmtpHost"];
         }
-
-        bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
-
-        bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolConfig("EnableNoPaymentAddressUsersFilter");
-
-        bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
-
-        bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
 
         private bool GetBoolConfig(string appSettingName)
         {

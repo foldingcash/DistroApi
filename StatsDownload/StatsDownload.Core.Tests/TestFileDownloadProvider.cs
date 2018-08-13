@@ -126,21 +126,21 @@
         }
 
         [Test]
-        public void DownloadFile_WhenDataStoreIsNotAvailable_ReturnsDataStoreUnavailableResult()
+        public void DownloadFile_WhenDatabaseIsNotAvailable_ReturnsDatabaseUnavailableResult()
         {
-            SetUpWhenDataStoreIsNotAvailable();
+            SetUpWhenDatabaseIsNotAvailable();
 
             FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
-            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DatabaseUnavailable));
             Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
-        public void DownloadFile_WhenDataStoreIsNotAvailable_SendsEmail()
+        public void DownloadFile_WhenDatabaseIsNotAvailable_SendsEmail()
         {
-            SetUpWhenDataStoreIsNotAvailable();
+            SetUpWhenDatabaseIsNotAvailable();
 
             FileDownloadResult actual = InvokeDownloadFile();
 
@@ -256,6 +256,30 @@
             FileDownloadResult actual = InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadConnectFailure_ReturnsFailedResultFileDownloadNotFound()
+        {
+            SetUpFileDownloadConnectFailure();
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadNotFound));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadProtocolError_ReturnsFailedResultFileDownloadNotFound()
+        {
+            SetUpFileDownloadProtocolError();
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadNotFound));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
@@ -429,6 +453,16 @@
             return exception;
         }
 
+        private void SetUpFileDownloadConnectFailure()
+        {
+            SetUpFileDownloadWebException(WebExceptionStatus.ConnectFailure);
+        }
+
+        private void SetUpFileDownloadProtocolError()
+        {
+            SetUpFileDownloadWebException(WebExceptionStatus.ProtocolError);
+        }
+
         private void SetUpFileDownloadSettingsInvalid()
         {
             filePayloadSettingsServiceMock.When(mock => mock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>()))
@@ -437,12 +471,17 @@
 
         private WebException SetUpFileDownloadTimeout()
         {
-            var exception = new WebException("timeout", WebExceptionStatus.Timeout);
+            return SetUpFileDownloadWebException(WebExceptionStatus.Timeout);
+        }
+
+        private WebException SetUpFileDownloadWebException(WebExceptionStatus webExceptionStatus)
+        {
+            var exception = new WebException("sampleWebException", webExceptionStatus);
             fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
             return exception;
         }
 
-        private void SetUpWhenDataStoreIsNotAvailable()
+        private void SetUpWhenDatabaseIsNotAvailable()
         {
             fileDownloadDatabaseServiceMock.IsAvailable().Returns(false);
         }

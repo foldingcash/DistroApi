@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Version>1.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="CastleWindsor\" />
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.3.1" />
+    <PackageReference Include="Castle.Windsor" Version="4.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ApiExplorer" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+    <PackageReference Include="MySql.Data" Version="8.0.12" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Database.CastleWindsor\StatsDownload.Database.CastleWindsor.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Database\StatsDownload.Database.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Extensions\StatsDownload.Extensions.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Logging\StatsDownload.Logging.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Wrappers\StatsDownload.Wrappers.csproj" />
+    <ProjectReference Include="..\StatsDownloadApi.Core\StatsDownloadApi.Core.csproj" />
+    <ProjectReference Include="..\StatsDownloadApi.Database\StatsDownloadApi.Database.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Configuration.ConfigurationManager">
+      <HintPath>..\..\..\..\..\.nuget\packages\system.configuration.configurationmanager\4.4.0\ref\netstandard2.0\System.Configuration.ConfigurationManager.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
