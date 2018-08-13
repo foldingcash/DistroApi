@@ -1,10 +1,11 @@
 ﻿namespace StatsDownloadApi.Interfaces
 {
     using System.Collections.Generic;
+    using DataTransfer;
 
     public class GetMemberStatsResponse : ApiResponse
     {
-        public GetMemberStatsResponse(IList<MemberStats> members)
+        public GetMemberStatsResponse(IList<Member> members)
         {
             Members = members;
         }
@@ -15,6 +16,6 @@
 
         public int? MemberCount => Members?.Count;
 
-        public IList<MemberStats> Members { get; }
+        public IList<Member> Members { get; }
     }
 }

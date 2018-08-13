@@ -47,6 +47,36 @@
             return users;
         }
 
+        public IList<Member> GetMembers(DateTime startDate, DateTime endDate)
+        {
+            var users = new List<Member>();
+            statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
+            {
+                DbParameter startDateParameter =
+                    service.CreateParameter("@StartDate", DbType.Date, ParameterDirection.Input);
+                DbParameter endDateParameter =
+                    service.CreateParameter("@EndDate", DbType.Date, ParameterDirection.Input);
+
+                startDateParameter.Value = startDate;
+                endDateParameter.Value = endDate;
+
+                var dataTable = new DataTable();
+                service.ExecuteStoredProcedure(Constants.StatsDownloadApiDatabase.GetMembersProcedureName,
+                    new[] { startDateParameter, endDateParameter },
+                    dataTable);
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    users.Add(new Member(row["UserName"] as string,
+                        row["FriendlyName"] as string,
+                        row["BitcoinAddress"] as string, (row["TeamNumber"] as long?).GetValueOrDefault(),
+                        (row["PointsGained"] as long?).GetValueOrDefault(),
+                        (row["WorkUnitsGained"] as long?).GetValueOrDefault()));
+                }
+            });
+            return users;
+        }
+
         public IList<Team> GetTeams()
         {
             var users = new List<Team>();
