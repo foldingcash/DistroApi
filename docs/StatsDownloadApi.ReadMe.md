@@ -20,7 +20,8 @@ The stats API is used to expose the stats, users, and team data from the stats d
 
 ### Settings
 
-1. [Database Settings](SettingsConfiguration.md#stats-download-database-connection-settings)	
+1. [Database Settings](SettingsConfiguration.md#stats-download-database-connection-settings)
+2. [Email Settings](SettingsConfiguration.md#stats-download-email-settings)
 
 ### Applications
 

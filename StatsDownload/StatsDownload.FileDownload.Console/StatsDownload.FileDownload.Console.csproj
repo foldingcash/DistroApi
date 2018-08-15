@@ -20,7 +20,6 @@
     <ProjectReference Include="..\..\Shared\StatsDownload.Logging\StatsDownload.Logging.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Wrappers\StatsDownload.Wrappers.csproj" />
     <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj" />
-    <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj" />
     <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj" />
   </ItemGroup>
 

@@ -9,7 +9,7 @@
     public class GetTeamsController : ApiControllerBase
     {
         [HttpGet]
-        public GetTeamsResponse Get()
+        public ApiResponse Get()
         {
             return InvokeApiService(apiService => apiService.GetTeams());
         }

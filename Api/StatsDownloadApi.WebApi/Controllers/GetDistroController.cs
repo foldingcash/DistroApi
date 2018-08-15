@@ -10,7 +10,7 @@
     public class GetDistroController : ApiControllerBase
     {
         [HttpGet]
-        public GetDistroResponse Get(DateTime? startDate, DateTime? endDate, int? amount)
+        public ApiResponse Get(DateTime? startDate, DateTime? endDate, int? amount)
         {
             return InvokeApiService(apiService => apiService.GetDistro(startDate, endDate, amount));
         }

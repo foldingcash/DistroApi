@@ -7,7 +7,23 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Email\StatsDownload.Email.csproj" />
     <ProjectReference Include="..\StatsDownloadApi.Interfaces\StatsDownloadApi.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="EmailMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EmailMessages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="EmailMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>EmailMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
