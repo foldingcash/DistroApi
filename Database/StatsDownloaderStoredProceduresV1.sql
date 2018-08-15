@@ -9,15 +9,40 @@ AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRANSACTION
-			IF (SELECT COUNT(*) FROM [FoldingCoin].[Statuses]) <> 6
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD STARTED') = 0
 				BEGIN
 					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
-					VALUES ('FILE DOWNLOAD STARTED', 'The stats file download service has started.')
-						  ,('FILE DOWNLOAD FINISHED', 'The stats file download has finished.')
-						  ,('FILE DOWNLOAD ERROR', 'There was an error during the file download process.')
-						  ,('STATS UPLOAD STARTED', 'The stats upload has started.')
-						  ,('STATS UPLOAD FINISHED', 'The stats upload has finished.')
-						  ,('STATS UPLOAD ERROR', 'There was an error during the file download process.');
+					VALUES ('FILE DOWNLOAD STARTED', 'The stats file download service has started.');
+				END
+
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD FINISHED') = 0
+				BEGIN
+					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					VALUES ('FILE DOWNLOAD FINISHED', 'The stats file download has finished.');
+				END
+
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD ERROR') = 0
+				BEGIN
+					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					VALUES ('FILE DOWNLOAD ERROR', 'There was an error during the file download process.');
+				END
+
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD STARTED') = 0
+				BEGIN
+					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					VALUES ('STATS UPLOAD STARTED', 'The stats upload has started.');
+				END
+
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD FINISHED')  = 0
+				BEGIN
+					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					VALUES ('STATS UPLOAD FINISHED', 'The stats upload has finished.');
+				END
+
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD ERROR') = 0
+				BEGIN
+					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					VALUES ('STATS UPLOAD ERROR', 'There was an error during the file download process.');
 				END
 		COMMIT
 	END TRY
@@ -475,27 +500,29 @@ BEGIN
 					END
 				ELSE
 					BEGIN
+						DECLARE @PastDownloadDateTime DATETIME;
+
 						SELECT @TeamMemberId = TeamMemberId FROM [FoldingCoin].[TeamMembers] WHERE TeamId = @TeamId AND UserId = @UserId;
 						SELECT @DownloadDateTime = DownloadDateTime FROM [FoldingCoin].[Downloads] WHERE DownloadId = @DownloadId;
 
-						IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
-								[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] INNER JOIN
-								[FoldingCoin].[Downloads] ON [FoldingCoin].[FAHDataRuns].[DownloadId] = [FoldingCoin].[Downloads].[DownloadId]
-								WHERE TeamMemberId = @TeamMemberId AND DownloadDateTime < @DownloadDateTime AND (Points > @TotalPoints OR WorkUnits > @WorkUnits)) >= 1
-							BEGIN
-								SET @RejectionMessage = 'The newer stats file contains a user with less points or work units than a previous file. If this problem continues, then contact your technical advisor and have them review the logs and database. User: ''' + @FAHUserName + '''; NewTotalPoints: ' + CAST(@TotalPoints AS nvarchar) + '; NewWorkUnits: ' + CAST(@WorkUnits AS nvarchar);
-								EXEC [FoldingCoin].[AddUserRejection] @DownloadId, @LineNumber, @RejectionMessage;
-								RETURN(1);
-							END
-
-						IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
-								[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] 
-								WHERE TeamMemberId = @TeamMemberId AND Points >= @TotalPoints AND WorkUnits >= @WorkUnits) = 0
+						SELECT TOP(1) @PastDownloadDateTime = DownloadDateTime FROM [FoldingCoin].[Downloads] WHERE DownloadDateTime < @DownloadDateTime ORDER BY DownloadDateTime DESC;
+						
+						IF(SELECT COUNT(1) From [FoldingCoin].[Downloads] WHERE DownloadDateTime > @DownloadDateTime) = 0
 							BEGIN
 								UPDATE [FoldingCoin].[FAHData] 
 								SET TotalPoints = @TotalPoints, WorkUnits = @WorkUnits
 								WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
-		
+							END
+
+						IF (
+							SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
+								[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] INNER JOIN
+								[FoldingCoin].[Downloads] ON [FoldingCoin].[FAHDataRuns].[DownloadId] = [FoldingCoin].[Downloads].[DownloadId]
+								WHERE TeamMemberId = @TeamMemberId
+								AND Points = @TotalPoints AND WorkUnits = @WorkUnits 
+								AND DownloadDateTime = @PastDownloadDateTime
+						) = 0
+							BEGIN
 								SELECT @FAHDataId = FAHDataId FROM [FoldingCoin].[FAHData] WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
 
 								INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
