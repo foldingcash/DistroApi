@@ -196,6 +196,18 @@
         }
 
         [Test]
+        public void DownloadFile_WhenFileDownloadConnectFailure_ReturnsFailedResultFileDownloadNotFound()
+        {
+            SetUpFileDownloadConnectFailure();
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadNotFound));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
+        }
+
+        [Test]
         public void DownloadFile_WhenFileDownloadFailedDecompressions_ReturnsFileDownloadFailedDecompression()
         {
             fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable())
@@ -256,18 +268,6 @@
             FileDownloadResult actual = InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
-        }
-
-        [Test]
-        public void DownloadFile_WhenFileDownloadConnectFailure_ReturnsFailedResultFileDownloadNotFound()
-        {
-            SetUpFileDownloadConnectFailure();
-
-            FileDownloadResult actual = InvokeDownloadFile();
-
-            Assert.That(actual.Success, Is.False);
-            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadNotFound));
-            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
@@ -446,16 +446,16 @@
                 filePayloadUploadService, fileDownloadEmailService);
         }
 
+        private void SetUpFileDownloadConnectFailure()
+        {
+            SetUpFileDownloadWebException(WebExceptionStatus.ConnectFailure);
+        }
+
         private WebException SetUpFileDownloadFails()
         {
             var exception = new WebException();
             fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
             return exception;
-        }
-
-        private void SetUpFileDownloadConnectFailure()
-        {
-            SetUpFileDownloadWebException(WebExceptionStatus.ConnectFailure);
         }
 
         private void SetUpFileDownloadProtocolError()
