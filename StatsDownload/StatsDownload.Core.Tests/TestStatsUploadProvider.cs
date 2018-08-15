@@ -35,7 +35,7 @@
             user3 = new UserData();
             user4 = new UserData();
 
-            failedUser1 = new FailedUserData();
+            failedUser1 = new FailedUserData(3, RejectionReason.UnexpectedFormat, new UserData());
             failedUser2 = new FailedUserData();
             failedUser3 = new FailedUserData();
             failedUser4 = new FailedUserData();
@@ -354,7 +354,21 @@
         {
             InvokeUploadStatsFiles();
 
-            statsUploadEmailServiceMock.Received(2).SendEmail(Arg.Any<List<FailedUserData>>());
+            statsUploadEmailServiceMock
+                .Received(1).SendEmail(Arg.Is<IList<FailedUserData>>(data => data.Contains(failedUser2)));
+            statsUploadEmailServiceMock
+                .Received(1)
+                .SendEmail(Arg.Is<IList<FailedUserData>>(data =>
+                    data.Contains(failedUser3) && data.Contains(failedUser4)));
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenUnexpectedFormat_DoesNotSendEmail()
+        {
+            InvokeUploadStatsFiles();
+
+            statsUploadEmailServiceMock
+                .DidNotReceive().SendEmail(Arg.Is<IList<FailedUserData>>(data => data.Contains(failedUser1)));
         }
 
         private StatsUploadResults InvokeUploadStatsFiles()
@@ -386,7 +400,7 @@
         private Exception SetUpWhenExceptionBeforeAnUploadStarts()
         {
             var exception = new Exception();
-            statsUploadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
+            statsUploadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => throw exception);
             return exception;
         }
 
