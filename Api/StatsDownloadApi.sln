@@ -31,6 +31,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownloadApi.Database",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownloadApi.Database.Tests", "StatsDownloadApi.Database.Tests\StatsDownloadApi.Database.Tests.csproj", "{9A451861-9E61-4312-A61D-7E4F08FD9FDC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Email", "..\Shared\StatsDownload.Email\StatsDownload.Email.csproj", "{390FD1BE-5ABB-48F9-8543-762B6B915011}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Email.Tests", "..\Shared\StatsDownload.Email.Tests\StatsDownload.Email.Tests.csproj", "{0DF513BF-45CB-43E0-998D-511C36B396AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +97,14 @@ Global
 		{9A451861-9E61-4312-A61D-7E4F08FD9FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A451861-9E61-4312-A61D-7E4F08FD9FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A451861-9E61-4312-A61D-7E4F08FD9FDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{390FD1BE-5ABB-48F9-8543-762B6B915011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{390FD1BE-5ABB-48F9-8543-762B6B915011}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{390FD1BE-5ABB-48F9-8543-762B6B915011}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{390FD1BE-5ABB-48F9-8543-762B6B915011}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DF513BF-45CB-43E0-998D-511C36B396AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DF513BF-45CB-43E0-998D-511C36B396AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DF513BF-45CB-43E0-998D-511C36B396AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DF513BF-45CB-43E0-998D-511C36B396AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
