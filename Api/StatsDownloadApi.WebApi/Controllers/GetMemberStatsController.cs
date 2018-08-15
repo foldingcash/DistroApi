@@ -10,7 +10,7 @@
     public class GetMemberStatsController : ApiControllerBase
     {
         [HttpGet]
-        public GetMemberStatsResponse Get(DateTime? startDate, DateTime? endDate)
+        public ApiResponse Get(DateTime? startDate, DateTime? endDate)
         {
             return InvokeApiService(apiService => apiService.GetMemberStats(startDate, endDate));
         }

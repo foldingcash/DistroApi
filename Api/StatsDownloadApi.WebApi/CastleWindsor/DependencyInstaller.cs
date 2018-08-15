@@ -12,6 +12,7 @@
     using StatsDownload.Database;
     using StatsDownload.Database.CastleWindsor;
     using StatsDownload.Database.Wrappers;
+    using StatsDownload.Email;
     using StatsDownload.Logging;
     using StatsDownload.Wrappers;
 
@@ -20,12 +21,16 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
-                Component.For<IDatabaseConnectionSettingsService>().ImplementedBy<StatsDownloadApiSettingsProvider>(),
-                Component.For<IApplicationLoggingService>().ImplementedBy<StatsDownloadApiLoggingProvider>());
+                Component.For<IDatabaseConnectionSettingsService, IEmailSettingsService>()
+                         .ImplementedBy<StatsDownloadApiSettingsProvider>(),
+                Component.For<IApplicationLoggingService>().ImplementedBy<StatsDownloadApiLoggingProvider>(),
+                Component.For<IStatsDownloadApiEmailService>().ImplementedBy<StatsDownloadApiEmailProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IErrorMessageService>().ImplementedBy<ErrorMessageProvider>(),
                 Component.For<ILoggingService>().ImplementedBy<LoggingProvider>(),
+                Component.For<IEmailService>().ImplementedBy<EmailProvider>(),
+                Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<MySqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<MicrosoftSqlDatabaseConnectionProvider>()
                          .IsDefault(),
@@ -37,8 +42,9 @@
                 Component
                     .For<IStatsDownloadDatabaseService>()
                     .ImplementedBy<StatsDownloadDatabaseProvider>(),
-                Component.For<IStatsDownloadApiDatabaseService>().ImplementedBy<StatsDownloadApiDatabaseProvider>(),
-                Component.For<IStatsDownloadApiService>().ImplementedBy<StatsDownloadApiProvider>());
+                Component.For<IStatsDownloadApiDatabaseService>().ImplementedBy<StatsDownloadApiDatabaseProvider>()
+                , Component.For<IStatsDownloadApiService>().ImplementedBy<StatsDownloadApiProvider>()
+            );
         }
     }
 }

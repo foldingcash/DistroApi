@@ -2,8 +2,9 @@
 {
     using Microsoft.Extensions.Configuration;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Email;
 
-    public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService
+    public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IEmailSettingsService
     {
         private readonly IConfiguration configuration;
 
@@ -28,6 +29,36 @@
         public string GetDatabaseType()
         {
             return GetAppSetting("DatabaseType");
+        }
+
+        public string GetFromAddress()
+        {
+            return GetAppSetting("FromAddress");
+        }
+
+        public string GetFromDisplayName()
+        {
+            return GetAppSetting("DisplayName");
+        }
+
+        public string GetPassword()
+        {
+            return GetAppSetting("Password");
+        }
+
+        public string GetPort()
+        {
+            return GetAppSetting("Port");
+        }
+
+        public string GetReceivers()
+        {
+            return GetAppSetting("Receivers");
+        }
+
+        public string GetSmtpHost()
+        {
+            return GetAppSetting("SmtpHost");
         }
 
         private string GetAppSetting(string name)
