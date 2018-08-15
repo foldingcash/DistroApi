@@ -36,7 +36,7 @@
             systemUnderTest.SendUnhandledExceptionEmail(exception);
 
             emailServiceMock.Received().SendEmail("API Unhandled Exception Caught",
-                "The StatsDownload API experienced an unhandled exception. Contact your technical advisor with the exception message. Exception Message: test message.");
+                "The StatsDownload API experienced an unhandled exception. Contact your technical advisor with the exception message. Exception Message: test message");
         }
 
         private IStatsDownloadApiEmailService NewStatsDownloadApiEmailProvider(IEmailService emailService)

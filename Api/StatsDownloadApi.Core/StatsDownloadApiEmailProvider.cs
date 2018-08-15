@@ -15,8 +15,8 @@
 
         public void SendUnhandledExceptionEmail(Exception exception)
         {
-            emailService.SendEmail("API Unhandled Exception Caught",
-                $"The StatsDownload API experienced an unhandled exception. Contact your technical advisor with the exception message. Exception Message: {exception.Message}.");
+            emailService.SendEmail(EmailMessages.UnhandledExceptionHeader,
+                string.Format(EmailMessages.UnhandledExceptionBody, exception.Message));
         }
     }
 }
