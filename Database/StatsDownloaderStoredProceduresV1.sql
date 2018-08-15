@@ -475,27 +475,31 @@ BEGIN
 					END
 				ELSE
 					BEGIN
+						DECLARE @FutureDownloadDateTime DATETIME;
+						DECLARE @PastDownloadDateTime DATETIME;
+
 						SELECT @TeamMemberId = TeamMemberId FROM [FoldingCoin].[TeamMembers] WHERE TeamId = @TeamId AND UserId = @UserId;
 						SELECT @DownloadDateTime = DownloadDateTime FROM [FoldingCoin].[Downloads] WHERE DownloadId = @DownloadId;
 
-						IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
-								[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] INNER JOIN
-								[FoldingCoin].[Downloads] ON [FoldingCoin].[FAHDataRuns].[DownloadId] = [FoldingCoin].[Downloads].[DownloadId]
-								WHERE TeamMemberId = @TeamMemberId AND DownloadDateTime < @DownloadDateTime AND (Points > @TotalPoints OR WorkUnits > @WorkUnits)) >= 1
-							BEGIN
-								SET @RejectionMessage = 'The newer stats file contains a user with less points or work units than a previous file. If this problem continues, then contact your technical advisor and have them review the logs and database. User: ''' + @FAHUserName + '''; NewTotalPoints: ' + CAST(@TotalPoints AS nvarchar) + '; NewWorkUnits: ' + CAST(@WorkUnits AS nvarchar);
-								EXEC [FoldingCoin].[AddUserRejection] @DownloadId, @LineNumber, @RejectionMessage;
-								RETURN(1);
-							END
-
-						IF (SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
-								[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] 
-								WHERE TeamMemberId = @TeamMemberId AND Points >= @TotalPoints AND WorkUnits >= @WorkUnits) = 0
+						SELECT TOP(1) @PastDownloadDateTime = DownloadDateTime FROM [FoldingCoin].[Downloads] WHERE DownloadDateTime < @DownloadDateTime ORDER BY DownloadDateTime DESC;
+						SELECT TOP(1) @FutureDownloadDateTime = DownloadDateTime FROM [FoldingCoin].[Downloads] WHERE DownloadDateTime > @DownloadDateTime ORDER BY DownloadDateTime ASC;
+						
+						IF(SELECT COUNT(1) From [FoldingCoin].[Downloads] WHERE DownloadDateTime > @DownloadDateTime) = 0
 							BEGIN
 								UPDATE [FoldingCoin].[FAHData] 
 								SET TotalPoints = @TotalPoints, WorkUnits = @WorkUnits
 								WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
-		
+							END
+
+						IF (
+							SELECT COUNT(1) FROM [FoldingCoin].[UserStats] INNER JOIN 
+								[FoldingCoin].[FAHDataRuns] ON [FoldingCoin].[UserStats].[FAHDataRunId] = [FoldingCoin].[FAHDataRuns].[FAHDataRunId] INNER JOIN
+								[FoldingCoin].[Downloads] ON [FoldingCoin].[FAHDataRuns].[DownloadId] = [FoldingCoin].[Downloads].[DownloadId]
+								WHERE TeamMemberId = @TeamMemberId
+								AND Points = @TotalPoints AND WorkUnits = @WorkUnits 
+								AND (DownloadDateTime = @PastDownloadDateTime OR DownloadDateTime = @FutureDownloadDateTime)
+						) = 0
+							BEGIN
 								SELECT @FAHDataId = FAHDataId FROM [FoldingCoin].[FAHData] WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
 
 								INSERT INTO [FoldingCoin].[FAHDataRuns] (FAHDataId, DownloadId, TeamMemberId)
