@@ -475,14 +475,12 @@ BEGIN
 					END
 				ELSE
 					BEGIN
-						DECLARE @FutureDownloadDateTime DATETIME;
 						DECLARE @PastDownloadDateTime DATETIME;
 
 						SELECT @TeamMemberId = TeamMemberId FROM [FoldingCoin].[TeamMembers] WHERE TeamId = @TeamId AND UserId = @UserId;
 						SELECT @DownloadDateTime = DownloadDateTime FROM [FoldingCoin].[Downloads] WHERE DownloadId = @DownloadId;
 
 						SELECT TOP(1) @PastDownloadDateTime = DownloadDateTime FROM [FoldingCoin].[Downloads] WHERE DownloadDateTime < @DownloadDateTime ORDER BY DownloadDateTime DESC;
-						SELECT TOP(1) @FutureDownloadDateTime = DownloadDateTime FROM [FoldingCoin].[Downloads] WHERE DownloadDateTime > @DownloadDateTime ORDER BY DownloadDateTime ASC;
 						
 						IF(SELECT COUNT(1) From [FoldingCoin].[Downloads] WHERE DownloadDateTime > @DownloadDateTime) = 0
 							BEGIN
@@ -497,7 +495,7 @@ BEGIN
 								[FoldingCoin].[Downloads] ON [FoldingCoin].[FAHDataRuns].[DownloadId] = [FoldingCoin].[Downloads].[DownloadId]
 								WHERE TeamMemberId = @TeamMemberId
 								AND Points = @TotalPoints AND WorkUnits = @WorkUnits 
-								AND (DownloadDateTime = @PastDownloadDateTime OR DownloadDateTime = @FutureDownloadDateTime)
+								AND DownloadDateTime = @PastDownloadDateTime
 						) = 0
 							BEGIN
 								SELECT @FAHDataId = FAHDataId FROM [FoldingCoin].[FAHData] WHERE UserName = @FAHUserName AND TeamNumber = @TeamNumber;
