@@ -144,6 +144,10 @@
       <Project>{ECE601B0-D016-4F2F-B511-EC353B4C9E6C}</Project>
       <Name>StatsDownload.Database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Shared\StatsDownload.Email\StatsDownload.Email.csproj">
+      <Project>{EE8E9FF2-9826-41C2-9219-04B446EBBEA2}</Project>
+      <Name>StatsDownload.Email</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Shared\StatsDownload.Extensions\StatsDownload.Extensions.csproj">
       <Project>{7E3039C8-E356-4C20-93CC-2F395F82F11F}</Project>
       <Name>StatsDownload.Extensions</Name>
@@ -159,10 +163,6 @@
     <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj">
       <Project>{9C2C5AA3-9E2C-4A2F-97E3-081633B83F6D}</Project>
       <Name>StatsDownload.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj">
-      <Project>{8098BF8B-6DE5-4F35-8C5B-F0296FDE5CD0}</Project>
-      <Name>StatsDownload.Email</Name>
     </ProjectReference>
     <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj">
       <Project>{C37684C9-D044-4D42-B10F-3D670A95293E}</Project>

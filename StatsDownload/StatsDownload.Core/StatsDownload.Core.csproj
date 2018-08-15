@@ -11,8 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Shared\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Email\StatsDownload.Email.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Extensions\StatsDownload.Extensions.csproj" />
-    <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj" />
   </ItemGroup>
 
 </Project>
