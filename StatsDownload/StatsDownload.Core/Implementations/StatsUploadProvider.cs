@@ -65,9 +65,23 @@
             }
         }
 
+        private void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
+            IList<FailedUserData> failedUsersData)
+        {
+            statsUploadDatabaseService.AddUsers(transaction, downloadId, usersData, failedUsersData);
+        }
+
         private bool DatabaseUnavailable()
         {
             return !statsUploadDatabaseService.IsAvailable();
+        }
+
+        private IList<FailedUserData> GetEmailFailedUsers(IList<FailedUserData> failedUsersData)
+        {
+            //This is filtering out users that failed because of an unexpected format because this is a common occurance
+            //Could consider removing if the file parsing engine is able to handle the common failing users
+            //Or if these users are removed from the file
+            return failedUsersData.Where(user => user.RejectionReason != RejectionReason.UnexpectedFormat).ToList();
         }
 
         private FailedReason GetFailedReason(Exception exception)
@@ -88,13 +102,14 @@
         private void HandleUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
             IList<FailedUserData> failedUsersData)
         {
-            statsUploadDatabaseService.AddUsers(transaction, downloadId, usersData, failedUsersData);
+            AddUsers(transaction, downloadId, usersData, failedUsersData);
+            IList<FailedUserData> emailFailedUsers = GetEmailFailedUsers(failedUsersData);
+            SendFailedUsers(emailFailedUsers);
+            LogFailedUserData(downloadId, failedUsersData);
+        }
 
-            if (failedUsersData.Any())
-            {
-                statsUploadEmailService.SendEmail(failedUsersData);
-            }
-
+        private void LogFailedUserData(int downloadId, IList<FailedUserData> failedUsersData)
+        {
             foreach (FailedUserData failedUserData in failedUsersData)
             {
                 loggingService.LogFailedUserData(downloadId, failedUserData);
@@ -109,6 +124,14 @@
         private StatsUploadResult NewFailedStatsUploadResult(int downloadId, FailedReason failedReason)
         {
             return new StatsUploadResult(downloadId, failedReason);
+        }
+
+        private void SendFailedUsers(IList<FailedUserData> emailFailedUsers)
+        {
+            if (emailFailedUsers.Any())
+            {
+                statsUploadEmailService.SendEmail(emailFailedUsers);
+            }
         }
 
         private void UploadStatsFile(List<StatsUploadResult> statsUploadResults, int downloadId)
