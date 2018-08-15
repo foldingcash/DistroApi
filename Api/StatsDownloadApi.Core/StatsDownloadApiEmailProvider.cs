@@ -1,4 +1,4 @@
-﻿namespace StatsDownloadApi.WebApi
+﻿namespace StatsDownloadApi.Core
 {
     using System;
     using Interfaces;
