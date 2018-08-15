@@ -9,15 +9,40 @@ AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRANSACTION
-			IF (SELECT COUNT(*) FROM [FoldingCoin].[Statuses]) <> 6
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD STARTED') = 0
 				BEGIN
 					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
-					VALUES ('FILE DOWNLOAD STARTED', 'The stats file download service has started.')
-						  ,('FILE DOWNLOAD FINISHED', 'The stats file download has finished.')
-						  ,('FILE DOWNLOAD ERROR', 'There was an error during the file download process.')
-						  ,('STATS UPLOAD STARTED', 'The stats upload has started.')
-						  ,('STATS UPLOAD FINISHED', 'The stats upload has finished.')
-						  ,('STATS UPLOAD ERROR', 'There was an error during the file download process.');
+					VALUES ('FILE DOWNLOAD STARTED', 'The stats file download service has started.');
+				END
+
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD FINISHED') = 0
+				BEGIN
+					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					VALUES ('FILE DOWNLOAD FINISHED', 'The stats file download has finished.');
+				END
+
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD ERROR') = 0
+				BEGIN
+					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					VALUES ('FILE DOWNLOAD ERROR', 'There was an error during the file download process.');
+				END
+
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD STARTED') = 0
+				BEGIN
+					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					VALUES ('STATS UPLOAD STARTED', 'The stats upload has started.');
+				END
+
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD FINISHED')  = 0
+				BEGIN
+					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					VALUES ('STATS UPLOAD FINISHED', 'The stats upload has finished.');
+				END
+
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD ERROR') = 0
+				BEGIN
+					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					VALUES ('STATS UPLOAD ERROR', 'There was an error during the file download process.');
 				END
 		COMMIT
 	END TRY
