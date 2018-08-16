@@ -415,11 +415,11 @@ GO
 CREATE PROCEDURE [FoldingCoin].[AddUserData]
 	 @DownloadId INT
 	,@LineNumber INT
-	,@FAHUserName NVARCHAR(50)
+	,@FAHUserName NVARCHAR(150)
 	,@TotalPoints BIGINT
 	,@WorkUnits BIGINT
 	,@TeamNumber BIGINT
-	,@FriendlyName NVARCHAR(50)
+	,@FriendlyName NVARCHAR(125)
 	,@BitcoinAddress NVARCHAR(50)
 AS
 BEGIN

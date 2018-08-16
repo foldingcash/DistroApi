@@ -126,7 +126,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [FoldingCoin].[FAHData](
 	[FAHDataId] [int] IDENTITY(1,1) NOT NULL,
-	[UserName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
+	[UserName] [nvarchar](150) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
 	[TotalPoints] [bigint] NOT NULL,
 	[WorkUnits] [bigint] NOT NULL,
 	[TeamNumber] [bigint] NOT NULL,
@@ -222,7 +222,7 @@ GO
 CREATE TABLE [FoldingCoin].[Teams](
 	[TeamId] [int] IDENTITY(1,1) NOT NULL,
 	[TeamNumber] [bigint] NOT NULL,
-	[TeamName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
+	[TeamName] [nvarchar](150) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
  CONSTRAINT [PK_Teams] PRIMARY KEY CLUSTERED 
 (
 	[TeamId] ASC
@@ -236,8 +236,8 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [FoldingCoin].[Users](
 	[UserId] [int] IDENTITY(1,1) NOT NULL,
-	[UserName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
-	[FriendlyName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
+	[UserName] [nvarchar](150) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
+	[FriendlyName] [nvarchar](125) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
 	[BitcoinAddress] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
  CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
 (
