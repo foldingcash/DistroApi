@@ -75,7 +75,7 @@ Call to get all folding members.
 
 #### Calling GetMemberStats
 
-No Parameters.
+Parameters 'StartDate' and 'EndDate' are required.
 
 ```
 GET http://{server}/{api_path}/v1/GetMemberStats?StartDate=01-01-0001T00:00:00&EndDate=12-31-9999T23:59:59
