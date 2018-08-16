@@ -14,12 +14,7 @@
         {
             var distro = new List<DistroUser>();
 
-            long totalPoints = foldingUsers.Sum(user => user.PointsGained);
-
-            foreach (FoldingUser foldingUser in foldingUsers)
-            {
-                distro.Add(GetDistroUser(amount, totalPoints, foldingUser));
-            }
+            AddDistroUsers(amount, distro, foldingUsers);
 
             return distro;
         }
@@ -29,18 +24,53 @@
             return Math.Round(value, precision, MidpointRounding.ToEven);
         }
 
-        private decimal GetAmount(int amount, long totalPoints, FoldingUser foldingUser)
+        private void AddDistroUsers(int amount, List<DistroUser> distro, IList<FoldingUser> foldingUsers)
         {
-            decimal rawAmount = Convert.ToDecimal(foldingUser.PointsGained) / Convert.ToDecimal(totalPoints) *
+            long totalPoints = GetTotalPoints(foldingUsers);
+
+            foreach (FoldingUser foldingUser in foldingUsers)
+            {
+                AddingUserToDistro(amount, distro, totalPoints, foldingUser);
+            }
+        }
+
+        private void AddingUserToDistro(int amount, List<DistroUser> distro, long totalPoints, FoldingUser foldingUser)
+        {
+            if (distro.Exists(user => user.BitcoinAddress == foldingUser.BitcoinAddress))
+            {
+                DistroUser previousUser = distro.Find(user => user.BitcoinAddress == foldingUser.BitcoinAddress);
+                DistroUser combinedUser = NewDistroUser(amount, totalPoints, foldingUser.BitcoinAddress,
+                    previousUser.PointsGained + foldingUser.PointsGained,
+                    previousUser.WorkUnitsGained + foldingUser.WorkUnitsGained);
+                distro.Remove(previousUser);
+                distro.Add(combinedUser);
+            }
+            else
+            {
+                DistroUser distroUser = NewDistroUser(amount, totalPoints, foldingUser.BitcoinAddress,
+                    foldingUser.PointsGained, foldingUser.WorkUnitsGained);
+                distro.Add(distroUser);
+            }
+        }
+
+        private decimal GetRewardAmount(int amount, long totalPoints, long pointsGained)
+        {
+            decimal rawAmount = Convert.ToDecimal(pointsGained) / Convert.ToDecimal(totalPoints) *
                                 Convert.ToDecimal(amount);
 
             return Round(rawAmount, MaxPrecision);
         }
 
-        private DistroUser GetDistroUser(int amount, long totalPoints, FoldingUser foldingMember)
+        private long GetTotalPoints(IList<FoldingUser> foldingUsers)
         {
-            return new DistroUser(foldingMember.BitcoinAddress, foldingMember.PointsGained,
-                foldingMember.WorkUnitsGained, GetAmount(amount, totalPoints, foldingMember));
+            return foldingUsers.Sum(user => user.PointsGained);
+        }
+
+        private DistroUser NewDistroUser(int amount, long totalPoints, string bitcoinAddress, long pointsGained,
+            long workUnitsGained)
+        {
+            return new DistroUser(bitcoinAddress, pointsGained,
+                workUnitsGained, GetRewardAmount(amount, totalPoints, pointsGained));
         }
     }
 }
