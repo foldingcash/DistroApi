@@ -78,22 +78,48 @@
             RejectionReason rejectionReason = failedUserData.RejectionReason;
             string data = failedUserData.Data;
 
+            if (rejectionReason == RejectionReason.UnexpectedFormat)
+            {
+                return string.Format(ErrorMessages.UserDataUnexpectedFormat, data);
+            }
+
             if (rejectionReason == RejectionReason.FailedParsing)
             {
-                return ErrorMessages.FailedParsingUserData;
+                return string.Format(ErrorMessages.FailedParsingUserData, data);
+            }
+
+            string name = failedUserData.UserData?.Name?.Length > 175 ? failedUserData.UserData?.Name?.Substring(0, 175)
+                : failedUserData.UserData?.Name;
+
+            if (rejectionReason == RejectionReason.FahNameExceedsMaxSize)
+            {
+                return FormatExceedsMaxSizeRejection(ErrorMessages.FahNameExceedsMaxSize, name,
+                    failedUserData.UserData?.Name?.Length ?? 0);
+            }
+
+            if (rejectionReason == RejectionReason.FriendlyNameExceedsMaxSize)
+            {
+                return FormatExceedsMaxSizeRejection(ErrorMessages.FriendlyNameExceedsMaxSize, name,
+                    failedUserData.UserData?.FriendlyName?.Length ?? 0);
+            }
+
+            if (rejectionReason == RejectionReason.BitcoinAddressExceedsMaxSize)
+            {
+                return FormatExceedsMaxSizeRejection(ErrorMessages.BitcoinAddressExceedsMaxSize, name,
+                    failedUserData.UserData?.BitcoinAddress?.Length ?? 0);
             }
 
             if (rejectionReason == RejectionReason.FailedAddToDatabase)
             {
-                return ErrorMessages.FailedAddUserToDatabase;
-            }
-
-            if (rejectionReason == RejectionReason.UnexpectedFormat)
-            {
-                return ErrorMessages.UserDataUnexpectedFormat;
+                return string.Format(ErrorMessages.FailedAddUserToDatabase, name);
             }
 
             return string.Empty;
+        }
+
+        private string FormatExceedsMaxSizeRejection(string format, string data, int actualSize)
+        {
+            return string.Format(format, data, actualSize);
         }
 
         private string GetErrorMessageByServiceType(StatsDownloadService service, string fileDownloadMessage,

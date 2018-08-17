@@ -19,6 +19,18 @@
                                          .Returns(CreateParameterMockWithSize);
         }
 
+        public static void SetUpDatabaseConnectionServiceReturns(
+            IDatabaseConnectionService databaseConnectionServiceMock,
+            ParameterDirection parameterDirection)
+        {
+            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
+                parameterDirection).Returns(CreateParameterMock);
+
+            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
+                                             parameterDirection, Arg.Any<int>())
+                                         .Returns(CreateParameterMockWithSize);
+        }
+
         private static DbParameter CreateParameterMock(CallInfo info)
         {
             var parameterName = info.Arg<string>();

@@ -37,6 +37,12 @@
             IList<FailedUserData> failedUsers)
         {
             loggingService.LogMethodInvoked();
+
+            if (failedUsers == null)
+            {
+                throw new ArgumentNullException(nameof(failedUsers));
+            }
+
             CreateDatabaseConnectionAndExecuteAction(service =>
             {
                 AddUsers(transaction, service, downloadId, users, failedUsers);
@@ -134,8 +140,8 @@
         private void AddUsers(DbTransaction transaction, IDatabaseConnectionService databaseConnection, int downloadId,
             IEnumerable<UserData> users, IList<FailedUserData> failedUsers)
         {
-            AddUserRejections(databaseConnection, transaction, downloadId, failedUsers);
             AddUsersData(databaseConnection, transaction, downloadId, users, failedUsers);
+            AddUserRejections(databaseConnection, transaction, downloadId, failedUsers);
         }
 
         private void AddUsersData(IDatabaseConnectionService databaseConnection, DbTransaction transaction,
@@ -162,6 +168,13 @@
 
                     foreach (UserData userData in usersData ?? new UserData[0])
                     {
+                        if (!IsUserDataValid(addUserParameters, userData, out RejectionReason rejectionReason))
+                        {
+                            failedUsers.Add(new FailedUserData(userData.LineNumber, rejectionReason,
+                                userData));
+                            continue;
+                        }
+
                         SetAddUserDataParameterValues(downloadId, userData, addUserParameters);
                         addUserDataCommand.ExecuteNonQuery();
 
@@ -190,7 +203,7 @@
                 LineNumber = CreateLineNumberParameter(databaseConnection),
                 FahUserName =
                     databaseConnection.CreateParameter("@FAHUserName", DbType.String,
-                        ParameterDirection.Input),
+                        ParameterDirection.Input, 150),
                 TotalPoints =
                     databaseConnection.CreateParameter("@TotalPoints", DbType.Int64,
                         ParameterDirection.Input),
@@ -202,10 +215,10 @@
                         ParameterDirection.Input),
                 FriendlyName =
                     databaseConnection.CreateParameter("@FriendlyName", DbType.String,
-                        ParameterDirection.Input),
+                        ParameterDirection.Input, 125),
                 BitcoinAddress =
                     databaseConnection.CreateParameter("@BitcoinAddress", DbType.String,
-                        ParameterDirection.Input),
+                        ParameterDirection.Input, 50),
                 ReturnValue =
                     databaseConnection.CreateParameter("@ReturnValue", DbType.Int32, ParameterDirection.ReturnValue)
             };
@@ -284,6 +297,31 @@
                 new List<DbParameter> { download, fileName, fileExtension, fileData });
 
             return (string) fileData.Value;
+        }
+
+        private bool IsUserDataValid(AddUserDataParameters addUserParameters, UserData userData,
+            out RejectionReason rejectionReason)
+        {
+            if (userData.Name?.Length > addUserParameters.FahUserName.Size)
+            {
+                rejectionReason = RejectionReason.FahNameExceedsMaxSize;
+                return false;
+            }
+
+            if (userData.FriendlyName?.Length > addUserParameters.FriendlyName.Size)
+            {
+                rejectionReason = RejectionReason.FriendlyNameExceedsMaxSize;
+                return false;
+            }
+
+            if (userData.BitcoinAddress?.Length > addUserParameters.BitcoinAddress.Size)
+            {
+                rejectionReason = RejectionReason.BitcoinAddressExceedsMaxSize;
+                return false;
+            }
+
+            rejectionReason = RejectionReason.None;
+            return true;
         }
 
         private void SetAddUserDataParameterValues(int downloadId, UserData userData, AddUserDataParameters parameters)
