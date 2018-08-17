@@ -12,7 +12,7 @@
 
         DbTransaction CreateTransaction();
 
-        (bool isAvailable, FailedReason reason) IsAvailable();
+        (bool isAvailable, FailedReason reason) IsAvailable(string[] requiredObjects);
 
         void Rollback(DbTransaction transaction);
     }

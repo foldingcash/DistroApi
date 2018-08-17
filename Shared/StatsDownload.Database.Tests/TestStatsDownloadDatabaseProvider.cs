@@ -189,7 +189,7 @@
 
         private (bool isAvailable, FailedReason reason) InvokeIsAvailable()
         {
-            return systemUnderTest.IsAvailable();
+            return systemUnderTest.IsAvailable(null);
         }
 
         private IStatsDownloadDatabaseService NewFileDownloadDatabaseProvider(

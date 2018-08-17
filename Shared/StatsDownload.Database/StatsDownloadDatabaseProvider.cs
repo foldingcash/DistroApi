@@ -53,7 +53,7 @@
             return transaction;
         }
 
-        public (bool isAvailable, FailedReason reason) IsAvailable()
+        public (bool isAvailable, FailedReason reason) IsAvailable(string[] requiredObjects)
         {
             loggingService.LogMethodInvoked();
 

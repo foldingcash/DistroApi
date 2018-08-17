@@ -52,7 +52,7 @@
 
         public (bool isAvailable, FailedReason reason) IsAvailable()
         {
-            return statsDownloadDatabaseService.IsAvailable();
+            return statsDownloadDatabaseService.IsAvailable(Constants.FileDownloadDatabase.FileDownloadObjects);
         }
 
         public void NewFileDownloadStarted(FilePayload filePayload)
@@ -90,7 +90,7 @@
                 statsDownloadDatabaseParameterService.CreateErrorMessageParameter(databaseConnection,
                     fileDownloadResult);
 
-            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.FileDownloadErrorProcedureName,
+            databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase.FileDownloadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });
         }
 
@@ -111,14 +111,14 @@
             fileData.Value = filePayload.DecompressedDownloadFileData;
 
             databaseConnection.ExecuteStoredProcedure(
-                Constants.StatsDownloadDatabase.FileDownloadFinishedProcedureName,
+                Constants.FileDownloadDatabase.FileDownloadFinishedProcedureName,
                 new List<DbParameter> { downloadId, fileName, fileExtension, fileData });
         }
 
         private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
         {
             return
-                databaseConnection.ExecuteScalar(Constants.StatsDownloadDatabase.GetLastFileDownloadDateTimeSql) as
+                databaseConnection.ExecuteScalar(Constants.FileDownloadDatabase.GetLastFileDownloadDateTimeSql) as
                     DateTime? ?? default(DateTime);
         }
 
@@ -134,7 +134,7 @@
                     ParameterDirection.Output);
 
             databaseConnection.ExecuteStoredProcedure(
-                Constants.StatsDownloadDatabase.NewFileDownloadStartedProcedureName,
+                Constants.FileDownloadDatabase.NewFileDownloadStartedProcedureName,
                 new List<DbParameter> { downloadId });
 
             return (int) downloadId.Value;
@@ -144,7 +144,7 @@
         {
             int numberOfRowsEffected =
                 databaseConnection.ExecuteStoredProcedure(
-                    Constants.StatsDownloadDatabase.UpdateToLatestStoredProcedureName);
+                    Constants.FileDownloadDatabase.UpdateToLatestStoredProcedureName);
 
             LogVerbose($"'{numberOfRowsEffected}' rows were effected");
         }

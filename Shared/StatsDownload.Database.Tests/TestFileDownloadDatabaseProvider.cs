@@ -225,7 +225,8 @@
         public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expectedIsAvailable,
             FailedReason expectedReason)
         {
-            statsDownloadDatabaseServiceMock.IsAvailable().Returns((expectedIsAvailable, expectedReason));
+            statsDownloadDatabaseServiceMock.IsAvailable(Constants.FileDownloadDatabase.FileDownloadObjects)
+                                            .Returns((expectedIsAvailable, expectedReason));
 
             (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
 

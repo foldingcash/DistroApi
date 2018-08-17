@@ -630,12 +630,13 @@
         public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expectedIsAvailable,
             FailedReason expectedReason)
         {
-            statsDownloadDatabaseServiceMock.IsAvailable().Returns((expectedIsAvailable, expectedReason));
+            statsDownloadDatabaseServiceMock.IsAvailable(Constants.StatsUploadDatabase.StatsUploadObjects)
+                                            .Returns((expectedIsAvailable, expectedReason));
 
-            (bool actualIsAvailable, FailedReason actualReason) = InvokeIsAvailable();
+            (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
 
-            Assert.That(actualIsAvailable, Is.EqualTo(expectedIsAvailable));
-            Assert.That(actualReason, Is.EqualTo(expectedReason));
+            Assert.That(actual.isAvailable, Is.EqualTo(expectedIsAvailable));
+            Assert.That(actual.reason, Is.EqualTo(expectedReason));
         }
 
         [Test]
