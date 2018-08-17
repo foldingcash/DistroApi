@@ -76,7 +76,7 @@
             return fileData;
         }
 
-        public bool IsAvailable()
+        public (bool isAvailable, FailedReason reason) IsAvailable()
         {
             return statsDownloadDatabaseService.IsAvailable();
         }

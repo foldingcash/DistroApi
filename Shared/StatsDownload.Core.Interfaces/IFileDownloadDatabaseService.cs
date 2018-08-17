@@ -2,6 +2,7 @@
 {
     using System;
     using DataTransfer;
+    using Enums;
 
     public interface IFileDownloadDatabaseService
     {
@@ -16,7 +17,7 @@
         /// <returns></returns>
         DateTime GetLastFileDownloadDateTime();
 
-        bool IsAvailable();
+        (bool isAvailable, FailedReason reason) IsAvailable();
 
         void NewFileDownloadStarted(FilePayload filePayload);
 

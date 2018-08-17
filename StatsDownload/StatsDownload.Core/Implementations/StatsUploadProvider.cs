@@ -38,9 +38,9 @@
             try
             {
                 LogVerbose($"{nameof(UploadStatsFiles)} Invoked");
-                if (DatabaseUnavailable())
+                if (DatabaseUnavailable(out FailedReason failedReason))
                 {
-                    var results = new StatsUploadResults(FailedReason.DatabaseUnavailable);
+                    var results = new StatsUploadResults(failedReason);
                     loggingService.LogResults(results);
                     statsUploadEmailService.SendEmail(results);
                     return results;
@@ -71,9 +71,11 @@
             statsUploadDatabaseService.AddUsers(transaction, downloadId, usersData, failedUsersData);
         }
 
-        private bool DatabaseUnavailable()
+        private bool DatabaseUnavailable(out FailedReason failedReason)
         {
-            return !statsUploadDatabaseService.IsAvailable();
+            (bool isAvailable, FailedReason reason) = statsUploadDatabaseService.IsAvailable();
+            failedReason = reason;
+            return !isAvailable;
         }
 
         private IList<FailedUserData> GetEmailFailedUsers(IList<FailedUserData> failedUsersData)

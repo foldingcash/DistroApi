@@ -220,15 +220,17 @@
             Assert.That(actual, Is.EqualTo(default(DateTime)));
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expected)
+        [TestCase(true, FailedReason.None)]
+        [TestCase(false, FailedReason.DatabaseUnavailable)]
+        public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expectedIsAvailable,
+            FailedReason expectedReason)
         {
-            statsDownloadDatabaseServiceMock.IsAvailable().Returns(expected);
+            statsDownloadDatabaseServiceMock.IsAvailable().Returns((expectedIsAvailable, expectedReason));
 
-            bool actual = InvokeIsAvailable();
+            (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
 
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.That(actual.isAvailable, Is.EqualTo(expectedIsAvailable));
+            Assert.That(actual.reason, Is.EqualTo(expectedReason));
         }
 
         [Test]
@@ -310,7 +312,7 @@
             return systemUnderTest.GetLastFileDownloadDateTime();
         }
 
-        private bool InvokeIsAvailable()
+        private (bool isAvailable, FailedReason reason) InvokeIsAvailable()
         {
             return systemUnderTest.IsAvailable();
         }

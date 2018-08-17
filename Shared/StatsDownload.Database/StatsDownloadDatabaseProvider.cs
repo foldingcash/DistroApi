@@ -4,6 +4,7 @@
     using System.Data;
     using System.Data.Common;
     using Core.Interfaces;
+    using Core.Interfaces.Enums;
     using Core.Interfaces.Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
@@ -52,19 +53,19 @@
             return transaction;
         }
 
-        public bool IsAvailable()
+        public (bool isAvailable, FailedReason reason) IsAvailable()
         {
             loggingService.LogMethodInvoked();
 
             try
             {
                 CreateDatabaseConnectionAndExecuteAction(null);
-                return true;
+                return (true, FailedReason.None);
             }
             catch (Exception exception)
             {
                 LogException(exception);
-                return false;
+                return (false, FailedReason.DatabaseUnavailable);
             }
         }
 

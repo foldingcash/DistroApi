@@ -6,6 +6,7 @@
     using System.Data.Common;
     using Core.Interfaces;
     using Core.Interfaces.DataTransfer;
+    using Core.Interfaces.Enums;
     using Core.Interfaces.Logging;
 
     public class FileDownloadDatabaseProvider : IFileDownloadDatabaseService
@@ -49,7 +50,7 @@
             return lastFileDownloadDateTime;
         }
 
-        public bool IsAvailable()
+        public (bool isAvailable, FailedReason reason) IsAvailable()
         {
             return statsDownloadDatabaseService.IsAvailable();
         }

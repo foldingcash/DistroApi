@@ -19,7 +19,7 @@
             dateTime = DateTime.Today;
 
             fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
-            fileDownloadDatabaseServiceMock.IsAvailable().Returns(true);
+            fileDownloadDatabaseServiceMock.IsAvailable().Returns((true, FailedReason.None));
 
             loggingServiceMock = Substitute.For<IFileDownloadLoggingService>();
 
@@ -477,19 +477,19 @@
         private WebException SetUpFileDownloadWebException(WebExceptionStatus webExceptionStatus)
         {
             var exception = new WebException("sampleWebException", webExceptionStatus);
-            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
+            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => throw exception);
             return exception;
         }
 
         private void SetUpWhenDatabaseIsNotAvailable()
         {
-            fileDownloadDatabaseServiceMock.IsAvailable().Returns(false);
+            fileDownloadDatabaseServiceMock.IsAvailable().Returns((false, FailedReason.DatabaseUnavailable));
         }
 
         private Exception SetUpWhenExceptionThrown()
         {
             var expected = new Exception();
-            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw expected; });
+            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => throw expected);
             return expected;
         }
 

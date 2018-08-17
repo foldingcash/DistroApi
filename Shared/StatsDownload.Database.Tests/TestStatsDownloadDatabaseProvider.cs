@@ -4,6 +4,7 @@
     using System.Data;
     using System.Data.Common;
     using Core.Interfaces;
+    using Core.Interfaces.Enums;
     using Core.Interfaces.Logging;
     using NSubstitute;
     using NUnit.Framework;
@@ -149,9 +150,10 @@
         {
             databaseConnectionServiceMock.When(mock => mock.Open()).Throw<Exception>();
 
-            bool actual = InvokeIsAvailable();
+            (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
 
-            Assert.That(actual, Is.False);
+            Assert.That(actual.isAvailable, Is.False);
+            Assert.That(actual.reason, Is.EqualTo(FailedReason.DatabaseUnavailable));
         }
 
         [TestCase(null)]
@@ -160,17 +162,19 @@
         {
             databaseConnectionSettingsServiceMock.GetConnectionString().Returns(connectionString);
 
-            bool actual = InvokeIsAvailable();
+            (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
 
-            Assert.That(actual, Is.False);
+            Assert.That(actual.isAvailable, Is.False);
+            Assert.That(actual.reason, Is.EqualTo(FailedReason.DatabaseUnavailable));
         }
 
         [Test]
         public void IsAvailable_WhenInvoked_ReturnsTrue()
         {
-            bool actual = InvokeIsAvailable();
+            (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
 
-            Assert.That(actual, Is.True);
+            Assert.That(actual.isAvailable, Is.True);
+            Assert.That(actual.reason, Is.EqualTo(FailedReason.None));
         }
 
         [Test]
@@ -183,7 +187,7 @@
             transaction.Received(1).Rollback();
         }
 
-        private bool InvokeIsAvailable()
+        private (bool isAvailable, FailedReason reason) InvokeIsAvailable()
         {
             return systemUnderTest.IsAvailable();
         }

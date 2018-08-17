@@ -20,7 +20,7 @@
         public void SetUp()
         {
             statsUploadDatabaseServiceMock = Substitute.For<IStatsUploadDatabaseService>();
-            statsUploadDatabaseServiceMock.IsAvailable().Returns(true);
+            statsUploadDatabaseServiceMock.IsAvailable().Returns((true, FailedReason.None));
             statsUploadDatabaseServiceMock.GetDownloadsReadyForUpload().Returns(new List<int> { 1, 2 });
             statsUploadDatabaseServiceMock.GetFileData(1).Returns("File1");
             statsUploadDatabaseServiceMock.GetFileData(2).Returns("File2");
@@ -388,7 +388,7 @@
 
         private void SetUpWhenDatabaseIsNotAvailable()
         {
-            statsUploadDatabaseServiceMock.IsAvailable().Returns(false);
+            statsUploadDatabaseServiceMock.IsAvailable().Returns((false, FailedReason.DatabaseUnavailable));
         }
 
         private void SetUpWhenDatabaseTimeoutExceptionThrown()
