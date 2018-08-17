@@ -76,7 +76,7 @@
         public string GetErrorMessage(FailedUserData failedUserData)
         {
             RejectionReason rejectionReason = failedUserData.RejectionReason;
-            string data = failedUserData.Data;
+            string data = failedUserData.Data.Length > 175 ? failedUserData.Data.Substring(0, 175) : failedUserData.Data;
 
             if (rejectionReason == RejectionReason.FailedParsing)
             {
@@ -85,17 +85,20 @@
 
             if (rejectionReason == RejectionReason.FahNameExceedsMaxSize)
             {
-                return string.Format(ErrorMessages.FahNameExceedsMaxSize, data);
+                return FormatExceedsMaxSizeRejection(ErrorMessages.FahNameExceedsMaxSize, data,
+                    failedUserData.UserData.Name.Length);
             }
 
             if (rejectionReason == RejectionReason.FriendlyNameExceedsMaxSize)
             {
-                return string.Format(ErrorMessages.FriendlyNameExceedsMaxSize, data);
+                return FormatExceedsMaxSizeRejection(ErrorMessages.FriendlyNameExceedsMaxSize, data,
+                    failedUserData.UserData.FriendlyName.Length);
             }
 
             if (rejectionReason == RejectionReason.BitcoinAddressExceedsMaxSize)
             {
-                return string.Format(ErrorMessages.BitcoinAddressExceedsMaxSize, data);
+                return FormatExceedsMaxSizeRejection(ErrorMessages.BitcoinAddressExceedsMaxSize, data,
+                    failedUserData.UserData.BitcoinAddress.Length);
             }
 
             if (rejectionReason == RejectionReason.FailedAddToDatabase)
@@ -109,6 +112,11 @@
             }
 
             return string.Empty;
+        }
+
+        private string FormatExceedsMaxSizeRejection(string format, string data, int actualSize)
+        {
+            return string.Format(format, data, actualSize);
         }
 
         private string GetErrorMessageByServiceType(StatsDownloadService service, string fileDownloadMessage,
