@@ -76,39 +76,42 @@
         public string GetErrorMessage(FailedUserData failedUserData)
         {
             RejectionReason rejectionReason = failedUserData.RejectionReason;
-            string data = failedUserData.Data.Length > 175 ? failedUserData.Data.Substring(0, 175) : failedUserData.Data;
+            string data = failedUserData.Data;
+
+            if (rejectionReason == RejectionReason.UnexpectedFormat)
+            {
+                return string.Format(ErrorMessages.UserDataUnexpectedFormat, data);
+            }
 
             if (rejectionReason == RejectionReason.FailedParsing)
             {
                 return string.Format(ErrorMessages.FailedParsingUserData, data);
             }
 
+            string name = failedUserData.UserData?.Name?.Length > 175 ? failedUserData.UserData?.Name?.Substring(0, 175)
+                : failedUserData.UserData?.Name;
+
             if (rejectionReason == RejectionReason.FahNameExceedsMaxSize)
             {
-                return FormatExceedsMaxSizeRejection(ErrorMessages.FahNameExceedsMaxSize, data,
-                    failedUserData.UserData.Name.Length);
+                return FormatExceedsMaxSizeRejection(ErrorMessages.FahNameExceedsMaxSize, name,
+                    failedUserData.UserData?.Name?.Length ?? 0);
             }
 
             if (rejectionReason == RejectionReason.FriendlyNameExceedsMaxSize)
             {
-                return FormatExceedsMaxSizeRejection(ErrorMessages.FriendlyNameExceedsMaxSize, data,
-                    failedUserData.UserData.FriendlyName.Length);
+                return FormatExceedsMaxSizeRejection(ErrorMessages.FriendlyNameExceedsMaxSize, name,
+                    failedUserData.UserData?.FriendlyName?.Length ?? 0);
             }
 
             if (rejectionReason == RejectionReason.BitcoinAddressExceedsMaxSize)
             {
-                return FormatExceedsMaxSizeRejection(ErrorMessages.BitcoinAddressExceedsMaxSize, data,
-                    failedUserData.UserData.BitcoinAddress.Length);
+                return FormatExceedsMaxSizeRejection(ErrorMessages.BitcoinAddressExceedsMaxSize, name,
+                    failedUserData.UserData?.BitcoinAddress?.Length ?? 0);
             }
 
             if (rejectionReason == RejectionReason.FailedAddToDatabase)
             {
-                return string.Format(ErrorMessages.FailedAddUserToDatabase, data);
-            }
-
-            if (rejectionReason == RejectionReason.UnexpectedFormat)
-            {
-                return string.Format(ErrorMessages.UserDataUnexpectedFormat, data);
+                return string.Format(ErrorMessages.FailedAddUserToDatabase, name);
             }
 
             return string.Empty;
