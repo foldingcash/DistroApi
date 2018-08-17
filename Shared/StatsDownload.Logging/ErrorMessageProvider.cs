@@ -80,17 +80,32 @@
 
             if (rejectionReason == RejectionReason.FailedParsing)
             {
-                return ErrorMessages.FailedParsingUserData;
+                return string.Format(ErrorMessages.FailedParsingUserData, data);
+            }
+
+            if (rejectionReason == RejectionReason.FahNameExceedsMaxSize)
+            {
+                return string.Format(ErrorMessages.FahNameExceedsMaxSize, data);
+            }
+
+            if (rejectionReason == RejectionReason.FriendlyNameExceedsMaxSize)
+            {
+                return string.Format(ErrorMessages.FriendlyNameExceedsMaxSize, data);
+            }
+
+            if (rejectionReason == RejectionReason.BitcoinAddressExceedsMaxSize)
+            {
+                return string.Format(ErrorMessages.BitcoinAddressExceedsMaxSize, data);
             }
 
             if (rejectionReason == RejectionReason.FailedAddToDatabase)
             {
-                return ErrorMessages.FailedAddUserToDatabase;
+                return string.Format(ErrorMessages.FailedAddUserToDatabase, data);
             }
 
             if (rejectionReason == RejectionReason.UnexpectedFormat)
             {
-                return ErrorMessages.UserDataUnexpectedFormat;
+                return string.Format(ErrorMessages.UserDataUnexpectedFormat, data);
             }
 
             return string.Empty;

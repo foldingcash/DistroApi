@@ -61,6 +61,15 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was a problem with the user size. The user &apos;{0}&apos; has exceeded the max bitcoin address length. The user should change their bitcoin address and the column size should be increased. You should contact your technical advisor to review the logs and rejected users..
+        /// </summary>
+        internal static string BitcoinAddressExceedsMaxSize {
+            get {
+                return ResourceManager.GetString("BitcoinAddressExceedsMaxSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was a problem connecting to the database. The database is unavailable, ensure the database is available and configured correctly and try again..
         /// </summary>
         internal static string DefaultDatabaseUnavailable {
@@ -79,7 +88,16 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was a problem adding a user to the database. Contact your technical advisor to review the logs and rejected users..
+        ///   Looks up a localized string similar to There was a problem with the user size. The user &apos;{0}&apos; has exceeded the FAH name length. The user should change their FAH name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users..
+        /// </summary>
+        internal static string FahNameExceedsMaxSize {
+            get {
+                return ResourceManager.GetString("FahNameExceedsMaxSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was a problem adding the user &apos;{0}&apos; to the database. Contact your technical advisor to review the logs and rejected users..
         /// </summary>
         internal static string FailedAddUserToDatabase {
             get {
@@ -88,7 +106,7 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was a problem parsing a user from the stats file. The user &apos;userdata&apos; failed data parsing. You should contact your technical advisor to review the logs and rejected users..
+        ///   Looks up a localized string similar to There was a problem parsing a user from the stats file. The user &apos;{0}&apos; failed data parsing. You should contact your technical advisor to review the logs and rejected users..
         /// </summary>
         internal static string FailedParsingUserData {
             get {
@@ -151,6 +169,15 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was a problem with the user size. The user &apos;{0}&apos; has exceeded the max friendly name length. The user should change their friendly name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users..
+        /// </summary>
+        internal static string FriendlyNameExceedsMaxSize {
+            get {
+                return ResourceManager.GetString("FriendlyNameExceedsMaxSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was a problem uploading the file payload. The file failed validation; check the logs for more information. If this problem occurs again, then you should contact your technical advisor to review the logs and failed uploads..
         /// </summary>
         internal static string InvalidStatsFile {
@@ -205,7 +232,7 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was a problem parsing a user from the stats file. The user &apos;userdata&apos; was in an unexpected format. You should contact your technical advisor to review the logs and rejected users..
+        ///   Looks up a localized string similar to There was a problem parsing a user from the stats file. The user &apos;{0}&apos; was in an unexpected format. You should contact your technical advisor to review the logs and rejected users..
         /// </summary>
         internal static string UserDataUnexpectedFormat {
             get {

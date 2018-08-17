@@ -45,13 +45,13 @@
         [Test]
         public void GetErrorMessage_WhenFailedAddToDatabase_ReturnsFailedAddToDatabaseMessage()
         {
-            var failedUserData = new FailedUserData(0, RejectionReason.FailedAddToDatabase, new UserData());
+            var failedUserData = new FailedUserData(0, "userdata", RejectionReason.FailedAddToDatabase, new UserData());
 
             string actual = systemUnderTest.GetErrorMessage(failedUserData);
 
             Assert.That(actual,
                 Is.EqualTo(
-                    "There was a problem adding a user to the database. Contact your technical advisor to review the logs and rejected users."));
+                    "There was a problem adding the user 'userdata' to the database. Contact your technical advisor to review the logs and rejected users."));
         }
 
         [Test]
@@ -198,6 +198,39 @@
             Assert.That(actual,
                 Is.EqualTo(
                     "There was a problem parsing a user from the stats file. The user 'userdata' was in an unexpected format. You should contact your technical advisor to review the logs and rejected users."));
+        }
+
+        [Test]
+        public void GetErrorMessage_WhenBitcoinAddressExceedsMaxSize_ReturnsBitcoinAddressExceedsMaxSizeMessage()
+        {
+            var failedUserData = new FailedUserData(0, "userdata", RejectionReason.BitcoinAddressExceedsMaxSize);
+            string actual = systemUnderTest.GetErrorMessage(failedUserData);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem with the user size. The user 'userdata' has exceeded the max bitcoin address length. The user should change their bitcoin address and the column size should be increased. You should contact your technical advisor to review the logs and rejected users."));
+        }
+
+        [Test]
+        public void GetErrorMessage_WhenFahNameExceedsMaxSize_ReturnsFahNameExceedsMaxSizeMessage()
+        {
+            var failedUserData = new FailedUserData(0, "userdata", RejectionReason.FahNameExceedsMaxSize);
+            string actual = systemUnderTest.GetErrorMessage(failedUserData);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem with the user size. The user 'userdata' has exceeded the FAH name length. The user should change their FAH name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users."));
+        }
+
+        [Test]
+        public void GetErrorMessage_WhenFriendlyNameExceedsMaxSize_ReturnsFriendlyNameExceedsMaxSizeMessage()
+        {
+            var failedUserData = new FailedUserData(0, "userdata", RejectionReason.FriendlyNameExceedsMaxSize);
+            string actual = systemUnderTest.GetErrorMessage(failedUserData);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem with the user size. The user 'userdata' has exceeded the max friendly name length. The user should change their friendly name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users."));
         }
 
         [Test]
