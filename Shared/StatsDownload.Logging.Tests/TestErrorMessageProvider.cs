@@ -27,7 +27,7 @@
 
             Assert.That(actual,
                 Is.EqualTo(
-                    "There was a problem with the user's data. The user 'name' has a bitcoin address length of '7' and exceeded the max bitcoin address length. The user should change their bitcoin address and the column size should be increased. You should contact your technical advisor to review the logs and rejected users."));
+                    "There was a problem with the user's data. The user 'name' has a bitcoin address length of '7' and exceeded the max bitcoin address length. The user should shorten their bitcoin address. You should contact your technical advisor to review the logs and rejected users."));
         }
 
         [Test]
@@ -63,7 +63,7 @@
 
             Assert.That(actual,
                 Is.EqualTo(
-                    "There was a problem with the user's data. The user 'user' has a FAH name length of '4' and exceeded the max FAH name length. The user should change their FAH name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users."));
+                    "There was a problem with the user's data. The user 'user' has a FAH name length of '4' and exceeded the max FAH name length. The user should shorten their FAH name. You should contact your technical advisor to review the logs and rejected users."));
         }
 
         [Test]
@@ -75,7 +75,7 @@
 
             Assert.That(actual,
                 Is.EqualTo(
-                    $"There was a problem with the user's data. The user '{new string(' ', 175)}' has a FAH name length of '200' and exceeded the max FAH name length. The user should change their FAH name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users."));
+                    $"There was a problem with the user's data. The user '{new string(' ', 175)}' has a FAH name length of '200' and exceeded the max FAH name length. The user should shorten their FAH name. You should contact your technical advisor to review the logs and rejected users."));
         }
 
         [Test]
@@ -155,7 +155,7 @@
 
             Assert.That(actual,
                 Is.EqualTo(
-                    "There was a problem with the user's data. The user 'name' has a friendly name length of '8' and exceeded the max friendly name length. The user should change their friendly name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users."));
+                    "There was a problem with the user's data. The user 'name' has a friendly name length of '8' and exceeded the max friendly name length. The user should shorten their friendly name. You should contact your technical advisor to review the logs and rejected users."));
         }
 
         [Test]

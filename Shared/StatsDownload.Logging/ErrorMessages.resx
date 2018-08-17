@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BitcoinAddressExceedsMaxSize" xml:space="preserve">
-    <value>There was a problem with the user's data. The user '{0}' has a bitcoin address length of '{1}' and exceeded the max bitcoin address length. The user should change their bitcoin address and the column size should be increased. You should contact your technical advisor to review the logs and rejected users.</value>
+    <value>There was a problem with the user's data. The user '{0}' has a bitcoin address length of '{1}' and exceeded the max bitcoin address length. The user should shorten their bitcoin address. You should contact your technical advisor to review the logs and rejected users.</value>
   </data>
   <data name="DefaultDatabaseUnavailable" xml:space="preserve">
     <value>There was a problem connecting to the database. The database is unavailable, ensure the database is available and configured correctly and try again.</value>
@@ -127,7 +127,7 @@
     <value>There was an unexpected exception. Check the log for more information.</value>
   </data>
   <data name="FahNameExceedsMaxSize" xml:space="preserve">
-    <value>There was a problem with the user's data. The user '{0}' has a FAH name length of '{1}' and exceeded the max FAH name length. The user should change their FAH name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users.</value>
+    <value>There was a problem with the user's data. The user '{0}' has a FAH name length of '{1}' and exceeded the max FAH name length. The user should shorten their FAH name. You should contact your technical advisor to review the logs and rejected users.</value>
   </data>
   <data name="FailedAddUserToDatabase" xml:space="preserve">
     <value>There was a problem adding the user '{0}' to the database. Contact your technical advisor to review the logs and rejected users.</value>
@@ -154,7 +154,7 @@
     <value>There was a problem downloading the file payload. There was an unexpected exception. Check the log for more information.</value>
   </data>
   <data name="FriendlyNameExceedsMaxSize" xml:space="preserve">
-    <value>There was a problem with the user's data. The user '{0}' has a friendly name length of '{1}' and exceeded the max friendly name length. The user should change their friendly name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users.</value>
+    <value>There was a problem with the user's data. The user '{0}' has a friendly name length of '{1}' and exceeded the max friendly name length. The user should shorten their friendly name. You should contact your technical advisor to review the logs and rejected users.</value>
   </data>
   <data name="InvalidStatsFile" xml:space="preserve">
     <value>There was a problem uploading the file payload. The file failed validation; check the logs for more information. If this problem occurs again, then you should contact your technical advisor to review the logs and failed uploads.</value>

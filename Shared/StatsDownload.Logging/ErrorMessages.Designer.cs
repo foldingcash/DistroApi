@@ -61,7 +61,7 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was a problem with the user&apos;s data. The user &apos;{0}&apos; has a bitcoin address length of &apos;{1}&apos; and exceeded the max bitcoin address length. The user should change their bitcoin address and the column size should be increased. You should contact your technical advisor to review the logs and rejected users..
+        ///   Looks up a localized string similar to There was a problem with the user&apos;s data. The user &apos;{0}&apos; has a bitcoin address length of &apos;{1}&apos; and exceeded the max bitcoin address length. The user should shorten their bitcoin address. You should contact your technical advisor to review the logs and rejected users..
         /// </summary>
         internal static string BitcoinAddressExceedsMaxSize {
             get {
@@ -88,7 +88,7 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was a problem with the user&apos;s data. The user &apos;{0}&apos; has a FAH name length of &apos;{1}&apos; and exceeded the max FAH name length. The user should change their FAH name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users..
+        ///   Looks up a localized string similar to There was a problem with the user&apos;s data. The user &apos;{0}&apos; has a FAH name length of &apos;{1}&apos; and exceeded the max FAH name length. The user should shorten their FAH name. You should contact your technical advisor to review the logs and rejected users..
         /// </summary>
         internal static string FahNameExceedsMaxSize {
             get {
@@ -169,7 +169,7 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was a problem with the user&apos;s data. The user &apos;{0}&apos; has a friendly name length of &apos;{1}&apos; and exceeded the max friendly name length. The user should change their friendly name and the column size should be increased. You should contact your technical advisor to review the logs and rejected users..
+        ///   Looks up a localized string similar to There was a problem with the user&apos;s data. The user &apos;{0}&apos; has a friendly name length of &apos;{1}&apos; and exceeded the max friendly name length. The user should shorten their friendly name. You should contact your technical advisor to review the logs and rejected users..
         /// </summary>
         internal static string FriendlyNameExceedsMaxSize {
             get {
