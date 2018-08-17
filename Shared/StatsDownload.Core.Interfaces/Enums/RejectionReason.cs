@@ -2,9 +2,17 @@
 {
     public enum RejectionReason
     {
-        FailedParsing,
+        None,
+
+        BitcoinAddressExceedsMaxSize,
+
+        FahNameExceedsMaxSize,
 
         FailedAddToDatabase,
+
+        FailedParsing,
+
+        FriendlyNameExceedsMaxSize,
 
         UnexpectedFormat
     }
