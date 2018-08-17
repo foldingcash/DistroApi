@@ -70,11 +70,15 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 
 ### Rejection Reasons
 
-|     Rejection Reason      | Rejection Reason                                                                                                                              |
-|:-------------------------:|-----------------------------------------------------------------------------------------------------------------------------------------------|
-|     UnexpectedFormat      | There was an unexpected number of values in the user record. Ensure the user record is correctly formatted.                                   |
-|       FailedParsing       | One of the user's values failed conversion. Ensure user's fields are correctly typed and within upper/lower bound limits for it's type.       |
-|    FailedAddToDatabase    | There was an error while adding the user record to the database. Check the database and logs for more details about the reason for rejection. |
+|     Rejection Reason         | Rejection Reason                                                                                                                                        |
+|:----------------------------:|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+|           None               | No rejections were encountered.                                                                                                                         |
+|     UnexpectedFormat         | There was an unexpected number of values in the user record. Ensure the user record is correctly formatted.                                             |
+|       FailedParsing          | One of the user's values failed conversion. Ensure user's fields are correctly typed and within upper/lower bound limits for it's type.                 |
+|    FahNameExceedsMaxSize     | The user's FAH name exceeded the max FAH name size. Have the user shorten their FAH name and/or increase the database column size.                      |
+|  FriendlyNameExceedsMaxSize  | The user's friendly name exceeded the max friendly name size. Have the user shorten their friendly name and/or increase the database column size.       |
+| BitcoinAddressExceedsMaxSize | The user's bitcoin address exceeded the max bitcoin address size. Have the user shorten their bitcoin address and/or increase the database column size. |
+|    FailedAddToDatabase       | There was an error while adding the user record to the database. Check the database and logs for more details about the reason for rejection.           |
 
 ## Running the tests
 
