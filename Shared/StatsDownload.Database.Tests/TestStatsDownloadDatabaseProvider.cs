@@ -169,12 +169,32 @@
         }
 
         [Test]
+        public void IsAvailable_WhenInvoked_ChecksForRequiredObjects()
+        {
+            InvokeIsAvailable(new[] { "object1", "object2" });
+
+            databaseConnectionServiceMock.Received().ExecuteScalar("OBJECT_ID('object1')");
+            databaseConnectionServiceMock.Received().ExecuteScalar("OBJECT_ID('object2')");
+        }
+
+        [Test]
         public void IsAvailable_WhenInvoked_ReturnsTrue()
         {
             (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
 
             Assert.That(actual.isAvailable, Is.True);
             Assert.That(actual.reason, Is.EqualTo(FailedReason.None));
+        }
+
+        [Test]
+        public void IsAvailable_WhenRequiredObjectsMissing_ReturnsFailedReason()
+        {
+            databaseConnectionServiceMock.ExecuteScalar("OBJECT_ID('object1')").Returns(DBNull.Value);
+
+            (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable(new[] { "object1" });
+
+            Assert.That(actual.isAvailable, Is.False);
+            Assert.That(actual.reason, Is.EqualTo(FailedReason.MissingRequiredObjects));
         }
 
         [Test]
@@ -187,9 +207,9 @@
             transaction.Received(1).Rollback();
         }
 
-        private (bool isAvailable, FailedReason reason) InvokeIsAvailable()
+        private (bool isAvailable, FailedReason reason) InvokeIsAvailable(string[] requiredObjects = null)
         {
-            return systemUnderTest.IsAvailable(null);
+            return systemUnderTest.IsAvailable(requiredObjects);
         }
 
         private IStatsDownloadDatabaseService NewFileDownloadDatabaseProvider(

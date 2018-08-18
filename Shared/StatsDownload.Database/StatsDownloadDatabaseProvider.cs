@@ -59,8 +59,23 @@
 
             try
             {
-                CreateDatabaseConnectionAndExecuteAction(null);
-                return (true, FailedReason.None);
+                var failedReason = FailedReason.None;
+
+                CreateDatabaseConnectionAndExecuteAction(service =>
+                {
+                    foreach (string requiredObject in requiredObjects ?? new string[0])
+                    {
+                        object objectId = service.ExecuteScalar($"OBJECT_ID('{requiredObject}')");
+
+                        if (objectId == DBNull.Value)
+                        {
+                            failedReason = FailedReason.MissingRequiredObjects;
+                            break;
+                        }
+                    }
+                });
+
+                return (failedReason == FailedReason.None, failedReason);
             }
             catch (Exception exception)
             {

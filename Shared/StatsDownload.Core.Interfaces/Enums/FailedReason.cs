@@ -6,6 +6,8 @@
 
         DatabaseUnavailable,
 
+        MissingRequiredObjects,
+
         MinimumWaitTimeNotMet,
 
         RequiredSettingsInvalid,
