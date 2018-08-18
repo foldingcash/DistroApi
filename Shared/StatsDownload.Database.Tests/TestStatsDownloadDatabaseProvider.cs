@@ -187,6 +187,19 @@
         }
 
         [Test]
+        public void IsAvailable_WhenRequiredObjectsMissing_LogsMissingObjects()
+        {
+            databaseConnectionServiceMock.ExecuteScalar("OBJECT_ID('object1')").Returns(DBNull.Value);
+            databaseConnectionServiceMock.ExecuteScalar("OBJECT_ID('object2')").Returns(1);
+            databaseConnectionServiceMock.ExecuteScalar("OBJECT_ID('object3')").Returns(DBNull.Value);
+
+            InvokeIsAvailable(new[] { "object1", "object2", "object3" });
+
+            loggingServiceMock
+                .Received().LogError("The required objects {'object1', 'object3'} are missing from the database.");
+        }
+
+        [Test]
         public void IsAvailable_WhenRequiredObjectsMissing_ReturnsFailedReason()
         {
             databaseConnectionServiceMock.ExecuteScalar("OBJECT_ID('object1')").Returns(DBNull.Value);

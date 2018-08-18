@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.Database
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
     using Core.Interfaces;
@@ -63,15 +64,26 @@
 
                 CreateDatabaseConnectionAndExecuteAction(service =>
                 {
+                    var missingObjects = new List<string>();
+
                     foreach (string requiredObject in requiredObjects ?? new string[0])
                     {
                         object objectId = service.ExecuteScalar($"OBJECT_ID('{requiredObject}')");
 
                         if (objectId == DBNull.Value)
                         {
-                            failedReason = FailedReason.MissingRequiredObjects;
-                            break;
+                            missingObjects.Add(requiredObject);
                         }
+                    }
+
+                    if (missingObjects.Count > 0)
+                    {
+                        string missingObjectsCombined = "{'" + string.Join("', '", missingObjects) + "'}";
+
+                        loggingService.LogError(
+                            $"The required objects {missingObjectsCombined} are missing from the database.");
+
+                        failedReason = FailedReason.MissingRequiredObjects;
                     }
                 });
 
