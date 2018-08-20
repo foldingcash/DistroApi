@@ -29,7 +29,7 @@
                     ErrorMessages.StatsUploadDatabaseUnavailable, ErrorMessages.DefaultDatabaseUnavailable);
             }
 
-            if (failedReason == FailedReason.MissingRequiredObjects)
+            if (failedReason == FailedReason.DatabaseMissingRequiredObjects)
             {
                 return GetErrorMessageByServiceType(service, ErrorMessages.FileDownloadMissingRequiredObjects,
                     ErrorMessages.StatsUploadMissingRequiredObjects, ErrorMessages.DefaultMissingRequiredObjects);

@@ -83,7 +83,7 @@
                         loggingService.LogError(
                             $"The required objects {missingObjectsCombined} are missing from the database.");
 
-                        failedReason = FailedReason.MissingRequiredObjects;
+                        failedReason = FailedReason.DatabaseMissingRequiredObjects;
                     }
                 });
 

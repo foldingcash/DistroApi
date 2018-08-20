@@ -207,7 +207,7 @@
             (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable(new[] { "object1" });
 
             Assert.That(actual.isAvailable, Is.False);
-            Assert.That(actual.reason, Is.EqualTo(FailedReason.MissingRequiredObjects));
+            Assert.That(actual.reason, Is.EqualTo(FailedReason.DatabaseMissingRequiredObjects));
         }
 
         [Test]

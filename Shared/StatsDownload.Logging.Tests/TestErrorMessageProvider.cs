@@ -186,7 +186,7 @@
         public void
             GetErrorMessage_WhenMissingRequiredObjectsDuringFileDownload_ReturnsFileDownloadMissingRequiredObjectsMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.MissingRequiredObjects,
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.DatabaseMissingRequiredObjects,
                 StatsDownloadService.FileDownload);
 
             Assert.That(actual,
@@ -198,7 +198,7 @@
         public void
             GetErrorMessage_WhenMissingRequiredObjectsDuringStatsUpload_ReturnsStatsUploadMissingRequiredObjectsMessage()
         {
-            string actual = systemUnderTest.GetErrorMessage(FailedReason.MissingRequiredObjects,
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.DatabaseMissingRequiredObjects,
                 StatsDownloadService.StatsUpload);
 
             Assert.That(actual,
