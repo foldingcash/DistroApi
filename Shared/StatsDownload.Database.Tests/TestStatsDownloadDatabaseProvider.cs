@@ -173,8 +173,8 @@
         {
             InvokeIsAvailable(new[] { "object1", "object2" });
 
-            databaseConnectionServiceMock.Received().ExecuteScalar("OBJECT_ID('object1')");
-            databaseConnectionServiceMock.Received().ExecuteScalar("OBJECT_ID('object2')");
+            databaseConnectionServiceMock.Received().ExecuteScalar("SELECT OBJECT_ID('object1')");
+            databaseConnectionServiceMock.Received().ExecuteScalar("SELECT OBJECT_ID('object2')");
         }
 
         [Test]
@@ -189,9 +189,9 @@
         [Test]
         public void IsAvailable_WhenRequiredObjectsMissing_LogsMissingObjects()
         {
-            databaseConnectionServiceMock.ExecuteScalar("OBJECT_ID('object1')").Returns(DBNull.Value);
-            databaseConnectionServiceMock.ExecuteScalar("OBJECT_ID('object2')").Returns(1);
-            databaseConnectionServiceMock.ExecuteScalar("OBJECT_ID('object3')").Returns(DBNull.Value);
+            databaseConnectionServiceMock.ExecuteScalar("SELECT OBJECT_ID('object1')").Returns(DBNull.Value);
+            databaseConnectionServiceMock.ExecuteScalar("SELECT OBJECT_ID('object2')").Returns(1);
+            databaseConnectionServiceMock.ExecuteScalar("SELECT OBJECT_ID('object3')").Returns(DBNull.Value);
 
             InvokeIsAvailable(new[] { "object1", "object2", "object3" });
 
@@ -202,7 +202,7 @@
         [Test]
         public void IsAvailable_WhenRequiredObjectsMissing_ReturnsFailedReason()
         {
-            databaseConnectionServiceMock.ExecuteScalar("OBJECT_ID('object1')").Returns(DBNull.Value);
+            databaseConnectionServiceMock.ExecuteScalar("SELECT OBJECT_ID('object1')").Returns(DBNull.Value);
 
             (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable(new[] { "object1" });
 

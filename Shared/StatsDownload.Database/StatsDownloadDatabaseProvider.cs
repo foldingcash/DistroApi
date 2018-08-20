@@ -68,7 +68,7 @@
 
                     foreach (string requiredObject in requiredObjects ?? new string[0])
                     {
-                        object objectId = service.ExecuteScalar($"OBJECT_ID('{requiredObject}')");
+                        object objectId = service.ExecuteScalar($"SELECT OBJECT_ID('{requiredObject}')");
 
                         if (objectId == DBNull.Value)
                         {
