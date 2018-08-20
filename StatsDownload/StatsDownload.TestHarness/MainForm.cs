@@ -1,7 +1,9 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System;
+    using System.Collections.Generic;
     using System.Configuration;
+    using System.Data.Common;
     using System.IO;
     using System.Threading.Tasks;
     using System.Windows.Forms;
@@ -72,7 +74,29 @@
         {
             await
                 RunActionAsync(
-                    () => { });
+                    () =>
+                    {
+                        string exportDirectory = ExportDirectoryTextBox.Text;
+
+                        if (!Directory.Exists(exportDirectory))
+                        {
+                            Log(
+                                $"The directory does not exist, provide a new directory and try again. Directory: '{exportDirectory}'");
+                            CreateSeparationInLog();
+                            return;
+                        }
+
+                        (int downloadId, string fileName)[] downloads = GetDownloads();
+                        var service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
+
+                        foreach ((int downloadId, string fileName) in downloads)
+                        {
+                            string path = Path.Combine(exportDirectory, fileName);
+                            string fileData = service.GetFileData(downloadId);
+
+                            File.WriteAllText(path, fileData);
+                        }
+                    });
         }
 
         private async void FileDownloadButton_Click(object sender, EventArgs e)
@@ -80,6 +104,20 @@
             await
                 RunActionAsync(
                     () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
+        }
+
+        private (int downloadId, string fileName)[] GetDownloads()
+        {
+            var downloads = new List<(int downloadId, string fileName)>();
+            var databaseService = WindsorContainer.Instance.Resolve<IStatsDownloadDatabaseService>();
+            databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
+            {
+                DbDataReader reader =
+                    service.ExecuteReader("SELECT FileName, FileExtension, FileData FROM FoldingCoin.Files");
+
+                downloads.Add((reader.GetInt32(0), $"{reader.GetString(1)}.{reader.GetString(2)}"));
+            });
+            return downloads.ToArray();
         }
 
         private async void ImportButton_Click(object sender, EventArgs e)
