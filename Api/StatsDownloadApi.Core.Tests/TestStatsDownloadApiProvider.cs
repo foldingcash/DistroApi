@@ -69,6 +69,22 @@
         }
 
         [Test]
+        public void GetDistro_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
+        {
+            statsDownloadApiDatabaseServiceMock
+                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+
+            GetDistroResponse actual = InvokeGetDistro();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseMissingRequiredObjects));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
+        }
+
+        [Test]
         public void GetDistro_WhenEndDateInputIsTodayOrFutureDate_ReturnsEndDateUnsearchableResponse()
         {
             GetDistroResponse actual = InvokeGetDistro(startDateMock, DateTime.UtcNow, amountMock);
@@ -227,6 +243,22 @@
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
                     Constants.ErrorMessages.DatabaseUnavailableMessage));
+        }
+
+        [Test]
+        public void GetMemberStats_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
+        {
+            statsDownloadApiDatabaseServiceMock
+                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+
+            GetMemberStatsResponse actual = InvokeGetMemberStats();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseMissingRequiredObjects));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
         }
 
         [Test]
