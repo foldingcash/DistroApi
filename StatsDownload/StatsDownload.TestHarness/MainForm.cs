@@ -86,13 +86,13 @@
                             return;
                         }
 
-                        (int downloadId, string fileName)[] downloads = GetFiles();
+                        (int fileId, string fileName)[] files = GetFiles();
                         var service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
 
-                        foreach ((int downloadId, string fileName) in downloads)
+                        foreach ((int fileId, string fileName) in files)
                         {
                             string path = Path.Combine(exportDirectory, fileName);
-                            string fileData = service.GetFileData(downloadId);
+                            string fileData = service.GetFileData(fileId);
 
                             File.WriteAllText(path, fileData);
                         }
@@ -106,24 +106,16 @@
                     () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
         }
 
-        private (int downloadId, string fileName)[] GetFiles()
+        private (int fileId, string fileName)[] GetFiles()
         {
             var downloads = new List<(int downloadId, string fileName)>();
             var databaseService = WindsorContainer.Instance.Resolve<IStatsDownloadDatabaseService>();
             databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
-                DbDataReader reader =
-                    service.ExecuteReader("SELECT FileId FROM FoldingCoin.Files");
-
-                while (reader.HasRows)
-                {
-                    int fileId = reader.GetInt32(0);
-                    DbDataReader fileReader =
-                        service.ExecuteReader(
-                            $"SELECT FileName, FileExtension, FileData FROM FoldingCoin.Files WHERE FileId = {fileId}");
-                    downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}.{fileReader.GetString(2)}"));
-                    reader.Read();
-                }
+                DbDataReader fileReader =
+                    service.ExecuteReader(
+                        "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files");
+                downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}.{fileReader.GetString(2)}"));
             });
             return downloads.ToArray();
         }
