@@ -192,16 +192,16 @@
             Assert.That(actual[0].FriendlyName, Is.EqualTo("FriendlyName1"));
             Assert.That(actual[0].BitcoinAddress, Is.EqualTo("BitcoinAddress1"));
             Assert.That(actual[0].TeamNumber, Is.EqualTo(10));
-            Assert.That(actual[0].StartingPoints, Is.EqualTo(10000));
-            Assert.That(actual[0].StartingWorkUnits, Is.EqualTo(100000));
+            Assert.That(actual[0].StartPoints, Is.EqualTo(10000));
+            Assert.That(actual[0].StartWorkUnits, Is.EqualTo(100000));
             Assert.That(actual[0].PointsGained, Is.EqualTo(100));
             Assert.That(actual[0].WorkUnitsGained, Is.EqualTo(1000));
             Assert.That(actual[1].UserName, Is.EqualTo("Name2"));
             Assert.That(actual[1].FriendlyName, Is.EqualTo("FriendlyName2"));
             Assert.That(actual[1].BitcoinAddress, Is.EqualTo("BitcoinAddress2"));
             Assert.That(actual[1].TeamNumber, Is.EqualTo(20));
-            Assert.That(actual[1].StartingPoints, Is.EqualTo(20000));
-            Assert.That(actual[1].StartingWorkUnits, Is.EqualTo(200000));
+            Assert.That(actual[1].StartPoints, Is.EqualTo(20000));
+            Assert.That(actual[1].StartWorkUnits, Is.EqualTo(200000));
             Assert.That(actual[1].PointsGained, Is.EqualTo(200));
             Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(2000));
         }

@@ -2,16 +2,16 @@
 {
     public class Member
     {
-        public Member(string userName, string friendlyName, string bitcoinAddress, long teamNumber, long startingPoints,
-            long startingWorkUnits,
+        public Member(string userName, string friendlyName, string bitcoinAddress, long teamNumber, long startPoints,
+            long startWorkUnits,
             long pointsGained, long workUnitsGained)
         {
             UserName = userName;
             FriendlyName = friendlyName;
             BitcoinAddress = bitcoinAddress;
             TeamNumber = teamNumber;
-            StartingPoints = startingPoints;
-            StartingWorkUnits = startingWorkUnits;
+            StartPoints = startPoints;
+            StartWorkUnits = startWorkUnits;
             PointsGained = pointsGained;
             WorkUnitsGained = workUnitsGained;
         }
@@ -22,9 +22,9 @@
 
         public long PointsGained { get; }
 
-        public long StartingPoints { get; }
+        public long StartPoints { get; }
 
-        public long StartingWorkUnits { get; }
+        public long StartWorkUnits { get; }
 
         public long TeamNumber { get; }
 
