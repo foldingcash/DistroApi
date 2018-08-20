@@ -86,7 +86,7 @@
                             return;
                         }
 
-                        (int downloadId, string fileName)[] downloads = GetDownloads();
+                        (int downloadId, string fileName)[] downloads = GetFiles();
                         var service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
 
                         foreach ((int downloadId, string fileName) in downloads)
@@ -106,16 +106,24 @@
                     () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
         }
 
-        private (int downloadId, string fileName)[] GetDownloads()
+        private (int downloadId, string fileName)[] GetFiles()
         {
             var downloads = new List<(int downloadId, string fileName)>();
             var databaseService = WindsorContainer.Instance.Resolve<IStatsDownloadDatabaseService>();
             databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
                 DbDataReader reader =
-                    service.ExecuteReader("SELECT FileName, FileExtension, FileData FROM FoldingCoin.Files");
+                    service.ExecuteReader("SELECT FileId FROM FoldingCoin.Files");
 
-                downloads.Add((reader.GetInt32(0), $"{reader.GetString(1)}.{reader.GetString(2)}"));
+                while (reader.HasRows)
+                {
+                    int fileId = reader.GetInt32(0);
+                    DbDataReader fileReader =
+                        service.ExecuteReader(
+                            $"SELECT FileName, FileExtension, FileData FROM FoldingCoin.Files WHERE FileId = {fileId}");
+                    downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}.{fileReader.GetString(2)}"));
+                    reader.Read();
+                }
             });
             return downloads.ToArray();
         }
