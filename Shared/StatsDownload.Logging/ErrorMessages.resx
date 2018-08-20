@@ -123,6 +123,9 @@
   <data name="DefaultDatabaseUnavailable" xml:space="preserve">
     <value>There was a problem connecting to the database. The database is unavailable, ensure the database is available and configured correctly and try again.</value>
   </data>
+  <data name="DefaultMissingRequiredObjects" xml:space="preserve">
+    <value>The database is missing required objects. Add the missing database objects and try again. You should contact your technical advisor to review the logs.</value>
+  </data>
   <data name="DefaultUnexpectedException" xml:space="preserve">
     <value>There was an unexpected exception. Check the log for more information.</value>
   </data>
@@ -143,6 +146,9 @@
   </data>
   <data name="FileDownloadFailedDecompression" xml:space="preserve">
     <value>There was a problem decompressing the file payload. The file has been moved to a failed directory for review. If this problem occurs again, then you should contact your technical advisor to review the logs and failed files.</value>
+  </data>
+  <data name="FileDownloadMissingRequiredObjects" xml:space="preserve">
+    <value>There was a problem downloading the file payload. The database is missing required objects. Add the missing database objects and try again. You should contact your technical advisor to review the logs.</value>
   </data>
   <data name="FileDownloadNotFound" xml:space="preserve">
     <value>There was a problem downloading the file payload. The file payload could not be found. Check the download URI configuration and try again. If this problem occurs again, then you should contact your technical advisor to review the logs.</value>
@@ -167,6 +173,9 @@
   </data>
   <data name="StatsUploadDatabaseUnavailable" xml:space="preserve">
     <value>There was a problem uploading the file payload. There was a problem connecting to the database. The database is unavailable, ensure the database is available and configured correctly and try again.</value>
+  </data>
+  <data name="StatsUploadMissingRequiredObjects" xml:space="preserve">
+    <value>There was a problem uploading the file payload. The database is missing required objects. Add the missing database objects and try again. You should contact your technical advisor to review the logs.</value>
   </data>
   <data name="StatsUploadTimeout" xml:space="preserve">
     <value>There was a problem uploading the file payload. There was an unexpected database exception and the file has been marked rejected. If this problem occurs again, then you should contact your technical advisor to review the rejections and logs.</value>

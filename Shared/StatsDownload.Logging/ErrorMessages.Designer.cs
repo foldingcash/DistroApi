@@ -79,6 +79,15 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The database is missing required objects. Add the missing database objects and try again. You should contact your technical advisor to review the logs..
+        /// </summary>
+        internal static string DefaultMissingRequiredObjects {
+            get {
+                return ResourceManager.GetString("DefaultMissingRequiredObjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an unexpected exception. Check the log for more information..
         /// </summary>
         internal static string DefaultUnexpectedException {
@@ -138,6 +147,15 @@ namespace StatsDownload.Logging {
         internal static string FileDownloadFailedDecompression {
             get {
                 return ResourceManager.GetString("FileDownloadFailedDecompression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was a problem downloading the file payload. The database is missing required objects. Add the missing database objects and try again. You should contact your technical advisor to review the logs..
+        /// </summary>
+        internal static string FileDownloadMissingRequiredObjects {
+            get {
+                return ResourceManager.GetString("FileDownloadMissingRequiredObjects", resourceCulture);
             }
         }
         
@@ -210,6 +228,15 @@ namespace StatsDownload.Logging {
         internal static string StatsUploadDatabaseUnavailable {
             get {
                 return ResourceManager.GetString("StatsUploadDatabaseUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was a problem uploading the file payload. The database is missing required objects. Add the missing database objects and try again. You should contact your technical advisor to review the logs..
+        /// </summary>
+        internal static string StatsUploadMissingRequiredObjects {
+            get {
+                return ResourceManager.GetString("StatsUploadMissingRequiredObjects", resourceCulture);
             }
         }
         
