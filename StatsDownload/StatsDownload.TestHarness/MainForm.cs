@@ -68,8 +68,11 @@
             ImportButton.Enabled = enable;
         }
 
-        private void ExportButton_Click(object sender, EventArgs e)
+        private async void ExportButton_Click(object sender, EventArgs e)
         {
+            await
+                RunActionAsync(
+                    () => { });
         }
 
         private async void FileDownloadButton_Click(object sender, EventArgs e)
