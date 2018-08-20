@@ -6,6 +6,7 @@
     using NSubstitute;
     using NUnit.Framework;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestStatsDownloadApiProvider
@@ -14,7 +15,7 @@
         public void SetUp()
         {
             statsDownloadApiDatabaseServiceMock = Substitute.For<IStatsDownloadApiDatabaseService>();
-            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(true);
+            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns((true, DatabaseFailedReason.None));
 
             statsDownloadApiTokenDistributionServiceMock = Substitute.For<IStatsDownloadApiTokenDistributionService>();
 
@@ -54,7 +55,8 @@
         [Test]
         public void GetDistro_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
-            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
+            statsDownloadApiDatabaseServiceMock
+                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetDistroResponse actual = InvokeGetDistro();
 
@@ -64,6 +66,22 @@
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
                     Constants.ErrorMessages.DatabaseUnavailableMessage));
+        }
+
+        [Test]
+        public void GetDistro_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
+        {
+            statsDownloadApiDatabaseServiceMock
+                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+
+            GetDistroResponse actual = InvokeGetDistro();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseMissingRequiredObjects));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
         }
 
         [Test]
@@ -81,7 +99,8 @@
         [Test]
         public void GetDistro_WhenErrorsOccurs_ReturnsErrorResponse()
         {
-            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
+            statsDownloadApiDatabaseServiceMock
+                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetDistroResponse actual = InvokeGetDistro(null, null, amountMock);
 
@@ -213,7 +232,8 @@
         [Test]
         public void GetMemberStats_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
-            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
+            statsDownloadApiDatabaseServiceMock
+                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetMemberStatsResponse actual = InvokeGetMemberStats();
 
@@ -223,6 +243,22 @@
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
                     Constants.ErrorMessages.DatabaseUnavailableMessage));
+        }
+
+        [Test]
+        public void GetMemberStats_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
+        {
+            statsDownloadApiDatabaseServiceMock
+                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+
+            GetMemberStatsResponse actual = InvokeGetMemberStats();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseMissingRequiredObjects));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
         }
 
         [Test]
@@ -241,7 +277,8 @@
         [Test]
         public void GetMemberStats_WhenErrorsOccurs_ReturnsErrorsResponse()
         {
-            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
+            statsDownloadApiDatabaseServiceMock
+                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetMemberStatsResponse actual = InvokeGetMemberStats(null, null);
 
@@ -323,7 +360,8 @@
         [Test]
         public void GetTeams_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
-            statsDownloadApiDatabaseServiceMock.IsAvailable().Returns(false);
+            statsDownloadApiDatabaseServiceMock
+                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetTeamsResponse actual = InvokeGetTeams();
 
@@ -333,6 +371,22 @@
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
                     Constants.ErrorMessages.DatabaseUnavailableMessage));
+        }
+
+        [Test]
+        public void GetTeams_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
+        {
+            statsDownloadApiDatabaseServiceMock
+                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+
+            GetTeamsResponse actual = InvokeGetTeams();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseMissingRequiredObjects));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(
+                    Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
         }
 
         [Test]

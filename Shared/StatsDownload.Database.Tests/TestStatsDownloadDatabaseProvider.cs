@@ -4,6 +4,7 @@
     using System.Data;
     using System.Data.Common;
     using Core.Interfaces;
+    using Core.Interfaces.Enums;
     using Core.Interfaces.Logging;
     using NSubstitute;
     using NUnit.Framework;
@@ -149,9 +150,10 @@
         {
             databaseConnectionServiceMock.When(mock => mock.Open()).Throw<Exception>();
 
-            bool actual = InvokeIsAvailable();
+            (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable();
 
-            Assert.That(actual, Is.False);
+            Assert.That(actual.isAvailable, Is.False);
+            Assert.That(actual.reason, Is.EqualTo(DatabaseFailedReason.DatabaseUnavailable));
         }
 
         [TestCase(null)]
@@ -160,17 +162,52 @@
         {
             databaseConnectionSettingsServiceMock.GetConnectionString().Returns(connectionString);
 
-            bool actual = InvokeIsAvailable();
+            (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable();
 
-            Assert.That(actual, Is.False);
+            Assert.That(actual.isAvailable, Is.False);
+            Assert.That(actual.reason, Is.EqualTo(DatabaseFailedReason.DatabaseUnavailable));
+        }
+
+        [Test]
+        public void IsAvailable_WhenInvoked_ChecksForRequiredObjects()
+        {
+            InvokeIsAvailable(new[] { "object1", "object2" });
+
+            databaseConnectionServiceMock.Received().ExecuteScalar("SELECT OBJECT_ID('object1')");
+            databaseConnectionServiceMock.Received().ExecuteScalar("SELECT OBJECT_ID('object2')");
         }
 
         [Test]
         public void IsAvailable_WhenInvoked_ReturnsTrue()
         {
-            bool actual = InvokeIsAvailable();
+            (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable();
 
-            Assert.That(actual, Is.True);
+            Assert.That(actual.isAvailable, Is.True);
+            Assert.That(actual.reason, Is.EqualTo(DatabaseFailedReason.None));
+        }
+
+        [Test]
+        public void IsAvailable_WhenRequiredObjectsMissing_LogsMissingObjects()
+        {
+            databaseConnectionServiceMock.ExecuteScalar("SELECT OBJECT_ID('object1')").Returns(DBNull.Value);
+            databaseConnectionServiceMock.ExecuteScalar("SELECT OBJECT_ID('object2')").Returns(1);
+            databaseConnectionServiceMock.ExecuteScalar("SELECT OBJECT_ID('object3')").Returns(DBNull.Value);
+
+            InvokeIsAvailable(new[] { "object1", "object2", "object3" });
+
+            loggingServiceMock
+                .Received().LogError("The required objects {'object1', 'object3'} are missing from the database.");
+        }
+
+        [Test]
+        public void IsAvailable_WhenRequiredObjectsMissing_ReturnsFailedReason()
+        {
+            databaseConnectionServiceMock.ExecuteScalar("SELECT OBJECT_ID('object1')").Returns(DBNull.Value);
+
+            (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable(new[] { "object1" });
+
+            Assert.That(actual.isAvailable, Is.False);
+            Assert.That(actual.reason, Is.EqualTo(DatabaseFailedReason.DatabaseMissingRequiredObjects));
         }
 
         [Test]
@@ -183,9 +220,9 @@
             transaction.Received(1).Rollback();
         }
 
-        private bool InvokeIsAvailable()
+        private (bool isAvailable, DatabaseFailedReason reason) InvokeIsAvailable(string[] requiredObjects = null)
         {
-            return systemUnderTest.IsAvailable();
+            return systemUnderTest.IsAvailable(requiredObjects);
         }
 
         private IStatsDownloadDatabaseService NewFileDownloadDatabaseProvider(

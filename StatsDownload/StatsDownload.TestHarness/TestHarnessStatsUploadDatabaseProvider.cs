@@ -7,6 +7,7 @@
     using System.Linq;
     using Core.Interfaces;
     using Core.Interfaces.DataTransfer;
+    using Core.Interfaces.Enums;
 
     public class TestHarnessStatsUploadDatabaseProvider : IStatsUploadDatabaseService
     {
@@ -47,7 +48,7 @@
             return innerService.GetFileData(downloadId);
         }
 
-        public bool IsAvailable()
+        public (bool isAvailable, FailedReason reason) IsAvailable()
         {
             return innerService.IsAvailable();
         }

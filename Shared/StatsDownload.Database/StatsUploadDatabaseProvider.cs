@@ -76,9 +76,31 @@
             return fileData;
         }
 
-        public bool IsAvailable()
+        public (bool isAvailable, FailedReason reason) IsAvailable()
         {
-            return statsDownloadDatabaseService.IsAvailable();
+            (bool isAvailable, DatabaseFailedReason reason) =
+                statsDownloadDatabaseService.IsAvailable(Constants.StatsUploadDatabase.StatsUploadObjects);
+
+            FailedReason failedReason;
+
+            if (reason == DatabaseFailedReason.None)
+            {
+                failedReason = FailedReason.None;
+            }
+            else if (reason == DatabaseFailedReason.DatabaseUnavailable)
+            {
+                failedReason = FailedReason.DatabaseUnavailable;
+            }
+            else if (reason == DatabaseFailedReason.DatabaseMissingRequiredObjects)
+            {
+                failedReason = FailedReason.DatabaseMissingRequiredObjects;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return (isAvailable, failedReason);
         }
 
         public void Rollback(DbTransaction transaction)
@@ -124,7 +146,7 @@
 
             using (DbCommand command = databaseConnection.CreateDbCommand())
             {
-                command.CommandText = Constants.StatsDownloadDatabase.AddUserRejectionProcedureName;
+                command.CommandText = Constants.StatsUploadDatabase.AddUserRejectionProcedureName;
                 command.CommandType = CommandType.StoredProcedure;
                 command.Transaction = transaction;
                 command.Parameters.AddRange(parameters.AllParameters);
@@ -155,12 +177,12 @@
             {
                 using (DbCommand rebuildIndicesCommand = databaseConnection.CreateDbCommand())
                 {
-                    addUserDataCommand.CommandText = Constants.StatsDownloadDatabase.AddUserDataProcedureName;
+                    addUserDataCommand.CommandText = Constants.StatsUploadDatabase.AddUserDataProcedureName;
                     addUserDataCommand.CommandType = CommandType.StoredProcedure;
                     addUserDataCommand.Transaction = transaction;
                     addUserDataCommand.Parameters.AddRange(addUserParameters.AllParameters);
 
-                    rebuildIndicesCommand.CommandText = Constants.StatsDownloadDatabase.RebuildIndicesProcedureName;
+                    rebuildIndicesCommand.CommandText = Constants.StatsUploadDatabase.RebuildIndicesProcedureName;
                     rebuildIndicesCommand.CommandType = CommandType.StoredProcedure;
                     rebuildIndicesCommand.Transaction = transaction;
 
@@ -267,7 +289,7 @@
         {
             using (
                 DbDataReader reader =
-                    databaseConnection.ExecuteReader(Constants.StatsDownloadDatabase.GetDownloadsReadyForUploadSql))
+                    databaseConnection.ExecuteReader(Constants.StatsUploadDatabase.GetDownloadsReadyForUploadSql))
             {
                 var downloadsReadyForUpload = new List<int>();
 
@@ -293,7 +315,7 @@
             DbParameter fileData = databaseConnection.CreateParameter("@FileData", DbType.String,
                 ParameterDirection.Output, -1);
 
-            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.GetFileDataProcedureName,
+            databaseConnection.ExecuteStoredProcedure(Constants.StatsUploadDatabase.GetFileDataProcedureName,
                 new List<DbParameter> { download, fileName, fileExtension, fileData });
 
             return (string) fileData.Value;
@@ -355,7 +377,7 @@
             downloadDateTimeParameter.Value = downloadDateTime;
 
             databaseConnection.ExecuteStoredProcedure(transaction,
-                Constants.StatsDownloadDatabase.StartStatsUploadProcedureName,
+                Constants.StatsUploadDatabase.StartStatsUploadProcedureName,
                 new List<DbParameter> { download, downloadDateTimeParameter });
         }
 
@@ -367,7 +389,7 @@
                 statsDownloadDatabaseParameterService.CreateErrorMessageParameter(databaseConnection,
                     statsUploadResult);
 
-            ExecuteStoredProcedure(databaseConnection, Constants.StatsDownloadDatabase.StatsUploadErrorProcedureName,
+            ExecuteStoredProcedure(databaseConnection, Constants.StatsUploadDatabase.StatsUploadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });
         }
 
@@ -377,7 +399,7 @@
             DbParameter download = CreateDownloadIdParameter(databaseConnection, downloadId);
 
             databaseConnection.ExecuteStoredProcedure(transaction,
-                Constants.StatsDownloadDatabase.StatsUploadFinishedProcedureName,
+                Constants.StatsUploadDatabase.StatsUploadFinishedProcedureName,
                 new List<DbParameter> { download });
         }
 

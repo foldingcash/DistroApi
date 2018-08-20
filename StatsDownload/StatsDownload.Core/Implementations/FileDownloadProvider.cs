@@ -58,16 +58,20 @@
             {
                 LogMethodInvoked(nameof(DownloadStatsFile));
 
-                if (DatabaseUnavailable())
+                if (DatabaseUnavailable(out FailedReason failedReason))
                 {
-                    return HandleDatabaseUnavailable(filePayload);
+                    FileDownloadResult failedResult =
+                        NewFailedFileDownloadResult(failedReason, filePayload);
+                    LogResult(failedResult);
+                    SendEmail(failedResult);
+                    return failedResult;
                 }
 
                 UpdateToLatest();
                 LogVerbose($"Stats file download started: {DateTimeNow()}");
                 NewFileDownloadStarted(filePayload);
 
-                if (IsFileDownloadNotReadyToRun(filePayload, out FailedReason failedReason))
+                if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
                 {
                     return HandleDownloadNotReadyToRun(failedReason, filePayload);
                 }
@@ -87,9 +91,11 @@
             resourceCleanupService.Cleanup(fileDownloadResult);
         }
 
-        private bool DatabaseUnavailable()
+        private bool DatabaseUnavailable(out FailedReason failedReason)
         {
-            return !fileDownloadDatabaseService.IsAvailable();
+            (bool isAvailable, FailedReason reason) = fileDownloadDatabaseService.IsAvailable();
+            failedReason = reason;
+            return !isAvailable;
         }
 
         private DateTime DateTimeNow()
@@ -105,15 +111,6 @@
         private void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
             fileDownloadDatabaseService.FileDownloadError(fileDownloadResult);
-        }
-
-        private FileDownloadResult HandleDatabaseUnavailable(FilePayload filePayload)
-        {
-            FileDownloadResult failedResult =
-                NewFailedFileDownloadResult(FailedReason.DatabaseUnavailable, filePayload);
-            LogResult(failedResult);
-            SendEmail(failedResult);
-            return failedResult;
         }
 
         private FileDownloadResult HandleDownloadNotReadyToRun(FailedReason failedReason, FilePayload filePayload)

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public interface IStatsDownloadApiDatabaseService
     {
@@ -12,6 +13,6 @@
 
         IList<Team> GetTeams();
 
-        bool IsAvailable();
+        (bool isAvailable, DatabaseFailedReason reason) IsAvailable();
     }
 }

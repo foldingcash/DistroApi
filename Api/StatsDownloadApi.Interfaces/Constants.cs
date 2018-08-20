@@ -4,6 +4,10 @@
     {
         public static class ApiErrors
         {
+            public static ApiError DatabaseMissingRequiredObjects => new ApiError(
+                ApiErrorCode.DatabaseMissingRequiredObjects,
+                ErrorMessages.DatabaseMissingRequiredObjectsMessage);
+
             public static ApiError DatabaseUnavailable => new ApiError(ApiErrorCode.DatabaseUnavailable,
                 ErrorMessages.DatabaseUnavailableMessage);
 
@@ -37,6 +41,9 @@
 
         public static class ErrorMessages
         {
+            public static string DatabaseMissingRequiredObjectsMessage =>
+                "The database is available but missing required objects. Try again in a short period of time. If the problem continues, then contact the technical team about the problem.";
+
             public static string DatabaseUnavailableMessage =>
                 "The database is unavailable. Try again in a short period of time. If the problem continues, then contact the technical team about the problem.";
 

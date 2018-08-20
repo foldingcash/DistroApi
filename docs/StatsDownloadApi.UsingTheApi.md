@@ -168,6 +168,7 @@ Default behavior:
 |    1060    | The amount was zero; the amount must be greater than zero.                                                                                                            |
 |    1070    | The amount was negative; the amount must be greater than zero.                                                                                                        |
 |    8000    | The database is unavailable. Wait a short period of time before trying again. If the problem continues, then the configuration is incorrect or access is blocked.     |
+|    8005    | The database is missing required objects. Contact the person or oganization hosting the API.                                                                          |
 |    9000    | There was an unexpected exception while processing. Try again and if the problem continues, then contact the person or organization hosting the API.                  |
 
 ### Error Response Format

@@ -183,6 +183,30 @@
         }
 
         [Test]
+        public void
+            GetErrorMessage_WhenMissingRequiredObjectsDuringFileDownload_ReturnsFileDownloadMissingRequiredObjectsMessage()
+        {
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.DatabaseMissingRequiredObjects,
+                StatsDownloadService.FileDownload);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem downloading the file payload. The database is missing required objects. Add the missing database objects and try again. You should contact your technical advisor to review the logs."));
+        }
+
+        [Test]
+        public void
+            GetErrorMessage_WhenMissingRequiredObjectsDuringStatsUpload_ReturnsStatsUploadMissingRequiredObjectsMessage()
+        {
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.DatabaseMissingRequiredObjects,
+                StatsDownloadService.StatsUpload);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem uploading the file payload. The database is missing required objects. Add the missing database objects and try again. You should contact your technical advisor to review the logs."));
+        }
+
+        [Test]
         public void GetErrorMessage_WhenNoFailedReason_ReturnsEmptyMessage()
         {
             string actual = systemUnderTest.GetErrorMessage(FailedReason.None, new FilePayload(),

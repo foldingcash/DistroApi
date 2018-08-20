@@ -6,6 +6,7 @@
     using System.Data.Common;
     using Core.Interfaces;
     using Core.Interfaces.DataTransfer;
+    using Core.Interfaces.Enums;
     using Core.Interfaces.Logging;
 
     public class FileDownloadDatabaseProvider : IFileDownloadDatabaseService
@@ -49,9 +50,31 @@
             return lastFileDownloadDateTime;
         }
 
-        public bool IsAvailable()
+        public (bool isAvailable, FailedReason reason) IsAvailable()
         {
-            return statsDownloadDatabaseService.IsAvailable();
+            (bool isAvailable, DatabaseFailedReason reason) =
+                statsDownloadDatabaseService.IsAvailable(Constants.FileDownloadDatabase.FileDownloadObjects);
+
+            FailedReason failedReason;
+
+            if (reason == DatabaseFailedReason.None)
+            {
+                failedReason = FailedReason.None;
+            }
+            else if (reason == DatabaseFailedReason.DatabaseUnavailable)
+            {
+                failedReason = FailedReason.DatabaseUnavailable;
+            }
+            else if (reason == DatabaseFailedReason.DatabaseMissingRequiredObjects)
+            {
+                failedReason = FailedReason.DatabaseMissingRequiredObjects;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return (isAvailable, failedReason);
         }
 
         public void NewFileDownloadStarted(FilePayload filePayload)
@@ -89,7 +112,7 @@
                 statsDownloadDatabaseParameterService.CreateErrorMessageParameter(databaseConnection,
                     fileDownloadResult);
 
-            databaseConnection.ExecuteStoredProcedure(Constants.StatsDownloadDatabase.FileDownloadErrorProcedureName,
+            databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase.FileDownloadErrorProcedureName,
                 new List<DbParameter> { downloadId, errorMessage });
         }
 
@@ -110,14 +133,14 @@
             fileData.Value = filePayload.DecompressedDownloadFileData;
 
             databaseConnection.ExecuteStoredProcedure(
-                Constants.StatsDownloadDatabase.FileDownloadFinishedProcedureName,
+                Constants.FileDownloadDatabase.FileDownloadFinishedProcedureName,
                 new List<DbParameter> { downloadId, fileName, fileExtension, fileData });
         }
 
         private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
         {
             return
-                databaseConnection.ExecuteScalar(Constants.StatsDownloadDatabase.GetLastFileDownloadDateTimeSql) as
+                databaseConnection.ExecuteScalar(Constants.FileDownloadDatabase.GetLastFileDownloadDateTimeSql) as
                     DateTime? ?? default(DateTime);
         }
 
@@ -133,7 +156,7 @@
                     ParameterDirection.Output);
 
             databaseConnection.ExecuteStoredProcedure(
-                Constants.StatsDownloadDatabase.NewFileDownloadStartedProcedureName,
+                Constants.FileDownloadDatabase.NewFileDownloadStartedProcedureName,
                 new List<DbParameter> { downloadId });
 
             return (int) downloadId.Value;
@@ -143,7 +166,7 @@
         {
             int numberOfRowsEffected =
                 databaseConnection.ExecuteStoredProcedure(
-                    Constants.StatsDownloadDatabase.UpdateToLatestStoredProcedureName);
+                    Constants.FileDownloadDatabase.UpdateToLatestStoredProcedureName);
 
             LogVerbose($"'{numberOfRowsEffected}' rows were effected");
         }

@@ -10,7 +10,9 @@
     using NSubstitute;
     using NUnit.Framework;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Database.Tests;
+    using Constants = Database.Constants;
 
     [TestFixture]
     public class TestStatsDownloadApiDatabaseProvider
@@ -224,15 +226,18 @@
             Assert.That(actual[1].TeamName, Is.EqualTo("TeamName2"));
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void IsAvailable_WhenInvoked_ReturnsIsAvailable(bool expected)
+        [TestCase(true, DatabaseFailedReason.None)]
+        [TestCase(false, DatabaseFailedReason.DatabaseMissingRequiredObjects)]
+        public void IsAvailable_WhenInvoked_ReturnsIsAvailable(bool expectedIsAvailable,
+            DatabaseFailedReason expectedReason)
         {
-            statsDownloadDatabaseServiceMock.IsAvailable().Returns(expected);
+            statsDownloadDatabaseServiceMock.IsAvailable(Constants.StatsDownloadApiDatabase.ApiObjects)
+                                            .Returns((expectedIsAvailable, expectedReason));
 
-            bool actual = systemUnderTest.IsAvailable();
+            (bool isAvailable, DatabaseFailedReason reason) actual = systemUnderTest.IsAvailable();
 
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.That(actual.isAvailable, Is.EqualTo(expectedIsAvailable));
+            Assert.That(actual.reason, Is.EqualTo(expectedReason));
         }
 
         private IStatsDownloadApiDatabaseService NewStatsDownloadApiDatabaseProvider(

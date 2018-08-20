@@ -22,6 +22,8 @@
 
         DatabaseUnavailable = 8000,
 
+        DatabaseMissingRequiredObjects = 8005,
+
         UnexpectedException = 9000
     }
 }

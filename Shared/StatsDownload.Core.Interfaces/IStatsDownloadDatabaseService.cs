@@ -2,6 +2,7 @@
 {
     using System;
     using System.Data.Common;
+    using Enums;
 
     public interface IStatsDownloadDatabaseService
     {
@@ -11,7 +12,7 @@
 
         DbTransaction CreateTransaction();
 
-        bool IsAvailable();
+        (bool isAvailable, DatabaseFailedReason reason) IsAvailable(string[] requiredObjects);
 
         void Rollback(DbTransaction transaction);
     }

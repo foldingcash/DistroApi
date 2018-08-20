@@ -6,11 +6,15 @@
 
         DatabaseUnavailable,
 
+        DatabaseMissingRequiredObjects,
+
         MinimumWaitTimeNotMet,
 
         RequiredSettingsInvalid,
 
         FileDownloadTimeout,
+
+        FileDownloadNotFound,
 
         FileDownloadFailedDecompression,
 
@@ -18,8 +22,6 @@
 
         UnexpectedDatabaseException,
 
-        UnexpectedException,
-
-        FileDownloadNotFound
+        UnexpectedException
     }
 }

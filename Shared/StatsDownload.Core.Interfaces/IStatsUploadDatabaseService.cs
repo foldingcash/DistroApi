@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using DataTransfer;
+    using Enums;
 
     public interface IStatsUploadDatabaseService
     {
@@ -18,7 +19,7 @@
 
         string GetFileData(int downloadId);
 
-        bool IsAvailable();
+        (bool isAvailable, FailedReason reason) IsAvailable();
 
         void Rollback(DbTransaction transaction);
 

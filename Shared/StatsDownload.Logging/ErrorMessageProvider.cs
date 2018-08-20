@@ -29,6 +29,12 @@
                     ErrorMessages.StatsUploadDatabaseUnavailable, ErrorMessages.DefaultDatabaseUnavailable);
             }
 
+            if (failedReason == FailedReason.DatabaseMissingRequiredObjects)
+            {
+                return GetErrorMessageByServiceType(service, ErrorMessages.FileDownloadMissingRequiredObjects,
+                    ErrorMessages.StatsUploadMissingRequiredObjects, ErrorMessages.DefaultMissingRequiredObjects);
+            }
+
             if (failedReason == FailedReason.RequiredSettingsInvalid)
             {
                 return ErrorMessages.RequiredSettingsAreInvalid;

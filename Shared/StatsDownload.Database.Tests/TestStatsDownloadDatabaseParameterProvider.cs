@@ -10,14 +10,14 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class TestStatsDownloadParameterProvider
+    public class TestStatsDownloadDatabaseParameterProvider
     {
         [SetUp]
         public void SetUp()
         {
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
-            systemUnderTest = NewStatsDownloadParameterProvider(errorMessageServiceMock);
+            systemUnderTest = NewStatsDownloadDatabaseParameterProvider(errorMessageServiceMock);
 
             databaseConnectionServiceMock = Substitute.For<IDatabaseConnectionService>();
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
@@ -34,7 +34,7 @@
         {
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewStatsDownloadParameterProvider(null));
+                    NewStatsDownloadDatabaseParameterProvider(null));
         }
 
         [TestCase(ParameterDirection.Input)]
@@ -117,7 +117,7 @@
             Assert.That(actual.Direction, Is.EqualTo(ParameterDirection.Input));
         }
 
-        private IStatsDownloadDatabaseParameterService NewStatsDownloadParameterProvider(
+        private IStatsDownloadDatabaseParameterService NewStatsDownloadDatabaseParameterProvider(
             IErrorMessageService errorMessageService)
         {
             return new StatsDownloadDatabaseParameterProvider(errorMessageService);

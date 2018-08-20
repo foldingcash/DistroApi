@@ -1,9 +1,11 @@
 ﻿namespace StatsDownload.Database
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
     using Core.Interfaces;
+    using Core.Interfaces.Enums;
     using Core.Interfaces.Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
@@ -52,19 +54,45 @@
             return transaction;
         }
 
-        public bool IsAvailable()
+        public (bool isAvailable, DatabaseFailedReason reason) IsAvailable(string[] requiredObjects)
         {
             loggingService.LogMethodInvoked();
 
             try
             {
-                CreateDatabaseConnectionAndExecuteAction(null);
-                return true;
+                var failedReason = DatabaseFailedReason.None;
+
+                CreateDatabaseConnectionAndExecuteAction(service =>
+                {
+                    var missingObjects = new List<string>();
+
+                    foreach (string requiredObject in requiredObjects ?? new string[0])
+                    {
+                        object objectId = service.ExecuteScalar($"SELECT OBJECT_ID('{requiredObject}')");
+
+                        if (objectId == DBNull.Value)
+                        {
+                            missingObjects.Add(requiredObject);
+                        }
+                    }
+
+                    if (missingObjects.Count > 0)
+                    {
+                        string missingObjectsCombined = "{'" + string.Join("', '", missingObjects) + "'}";
+
+                        loggingService.LogError(
+                            $"The required objects {missingObjectsCombined} are missing from the database.");
+
+                        failedReason = DatabaseFailedReason.DatabaseMissingRequiredObjects;
+                    }
+                });
+
+                return (failedReason == DatabaseFailedReason.None, failedReason);
             }
             catch (Exception exception)
             {
                 LogException(exception);
-                return false;
+                return (false, DatabaseFailedReason.DatabaseUnavailable);
             }
         }
 
