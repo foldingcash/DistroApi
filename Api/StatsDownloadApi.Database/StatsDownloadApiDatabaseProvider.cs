@@ -71,6 +71,8 @@
                     users.Add(new Member(row["UserName"] as string,
                         row["FriendlyName"] as string,
                         row["BitcoinAddress"] as string, (row["TeamNumber"] as long?).GetValueOrDefault(),
+                        (row["StartPoints"] as long?).GetValueOrDefault(),
+                        (row["StartWorkUnits"] as long?).GetValueOrDefault(),
                         (row["PointsGained"] as long?).GetValueOrDefault(),
                         (row["WorkUnitsGained"] as long?).GetValueOrDefault()));
                 }
