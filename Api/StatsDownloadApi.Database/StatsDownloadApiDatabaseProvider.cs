@@ -7,6 +7,7 @@
     using Interfaces;
     using Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class StatsDownloadApiDatabaseProvider : IStatsDownloadApiDatabaseService
     {
@@ -94,9 +95,9 @@
             return users;
         }
 
-        public bool IsAvailable()
+        public (bool isAvailable, DatabaseFailedReason reason) IsAvailable()
         {
-            return statsDownloadDatabaseService.IsAvailable();
+            return statsDownloadDatabaseService.IsAvailable(Constants.StatsDownloadApiDatabase.ApiObjects);
         }
     }
 }

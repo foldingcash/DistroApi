@@ -14,6 +14,13 @@
 
             public static readonly string GetTeamsProcedureName =
                 $"{StatsDownloadConstants.StatsDownloadDatabase.DatabaseSchema}{StatsDownloadConstants.StatsDownloadDatabase.SchemaSeparator}[GetTeams]";
+
+            public static readonly string[] ApiObjects =
+            {
+                GetFoldingMembersProcedureName,
+                GetMembersProcedureName,
+                GetTeamsProcedureName
+            };
         }
     }
 }

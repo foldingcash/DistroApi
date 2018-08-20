@@ -54,13 +54,13 @@
             return transaction;
         }
 
-        public (bool isAvailable, FailedReason reason) IsAvailable(string[] requiredObjects)
+        public (bool isAvailable, DatabaseFailedReason reason) IsAvailable(string[] requiredObjects)
         {
             loggingService.LogMethodInvoked();
 
             try
             {
-                var failedReason = FailedReason.None;
+                var failedReason = DatabaseFailedReason.None;
 
                 CreateDatabaseConnectionAndExecuteAction(service =>
                 {
@@ -83,16 +83,16 @@
                         loggingService.LogError(
                             $"The required objects {missingObjectsCombined} are missing from the database.");
 
-                        failedReason = FailedReason.DatabaseMissingRequiredObjects;
+                        failedReason = DatabaseFailedReason.DatabaseMissingRequiredObjects;
                     }
                 });
 
-                return (failedReason == FailedReason.None, failedReason);
+                return (failedReason == DatabaseFailedReason.None, failedReason);
             }
             catch (Exception exception)
             {
                 LogException(exception);
-                return (false, FailedReason.DatabaseUnavailable);
+                return (false, DatabaseFailedReason.DatabaseUnavailable);
             }
         }
 

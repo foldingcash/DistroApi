@@ -52,7 +52,29 @@
 
         public (bool isAvailable, FailedReason reason) IsAvailable()
         {
-            return statsDownloadDatabaseService.IsAvailable(Constants.FileDownloadDatabase.FileDownloadObjects);
+            (bool isAvailable, DatabaseFailedReason reason) =
+                statsDownloadDatabaseService.IsAvailable(Constants.FileDownloadDatabase.FileDownloadObjects);
+
+            FailedReason failedReason;
+
+            if (reason == DatabaseFailedReason.None)
+            {
+                failedReason = FailedReason.None;
+            }
+            else if (reason == DatabaseFailedReason.DatabaseUnavailable)
+            {
+                failedReason = FailedReason.DatabaseUnavailable;
+            }
+            else if (reason == DatabaseFailedReason.DatabaseMissingRequiredObjects)
+            {
+                failedReason = FailedReason.DatabaseMissingRequiredObjects;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return (isAvailable, failedReason);
         }
 
         public void NewFileDownloadStarted(FilePayload filePayload)

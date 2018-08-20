@@ -150,10 +150,10 @@
         {
             databaseConnectionServiceMock.When(mock => mock.Open()).Throw<Exception>();
 
-            (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
+            (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable();
 
             Assert.That(actual.isAvailable, Is.False);
-            Assert.That(actual.reason, Is.EqualTo(FailedReason.DatabaseUnavailable));
+            Assert.That(actual.reason, Is.EqualTo(DatabaseFailedReason.DatabaseUnavailable));
         }
 
         [TestCase(null)]
@@ -162,10 +162,10 @@
         {
             databaseConnectionSettingsServiceMock.GetConnectionString().Returns(connectionString);
 
-            (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
+            (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable();
 
             Assert.That(actual.isAvailable, Is.False);
-            Assert.That(actual.reason, Is.EqualTo(FailedReason.DatabaseUnavailable));
+            Assert.That(actual.reason, Is.EqualTo(DatabaseFailedReason.DatabaseUnavailable));
         }
 
         [Test]
@@ -180,10 +180,10 @@
         [Test]
         public void IsAvailable_WhenInvoked_ReturnsTrue()
         {
-            (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
+            (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable();
 
             Assert.That(actual.isAvailable, Is.True);
-            Assert.That(actual.reason, Is.EqualTo(FailedReason.None));
+            Assert.That(actual.reason, Is.EqualTo(DatabaseFailedReason.None));
         }
 
         [Test]
@@ -204,10 +204,10 @@
         {
             databaseConnectionServiceMock.ExecuteScalar("OBJECT_ID('object1')").Returns(DBNull.Value);
 
-            (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable(new[] { "object1" });
+            (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable(new[] { "object1" });
 
             Assert.That(actual.isAvailable, Is.False);
-            Assert.That(actual.reason, Is.EqualTo(FailedReason.DatabaseMissingRequiredObjects));
+            Assert.That(actual.reason, Is.EqualTo(DatabaseFailedReason.DatabaseMissingRequiredObjects));
         }
 
         [Test]
@@ -220,7 +220,7 @@
             transaction.Received(1).Rollback();
         }
 
-        private (bool isAvailable, FailedReason reason) InvokeIsAvailable(string[] requiredObjects = null)
+        private (bool isAvailable, DatabaseFailedReason reason) InvokeIsAvailable(string[] requiredObjects = null)
         {
             return systemUnderTest.IsAvailable(requiredObjects);
         }

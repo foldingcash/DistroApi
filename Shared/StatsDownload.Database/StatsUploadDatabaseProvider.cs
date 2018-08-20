@@ -78,7 +78,29 @@
 
         public (bool isAvailable, FailedReason reason) IsAvailable()
         {
-            return statsDownloadDatabaseService.IsAvailable(Constants.StatsUploadDatabase.StatsUploadObjects);
+            (bool isAvailable, DatabaseFailedReason reason) =
+                statsDownloadDatabaseService.IsAvailable(Constants.StatsUploadDatabase.StatsUploadObjects);
+
+            FailedReason failedReason;
+
+            if (reason == DatabaseFailedReason.None)
+            {
+                failedReason = FailedReason.None;
+            }
+            else if (reason == DatabaseFailedReason.DatabaseUnavailable)
+            {
+                failedReason = FailedReason.DatabaseUnavailable;
+            }
+            else if (reason == DatabaseFailedReason.DatabaseMissingRequiredObjects)
+            {
+                failedReason = FailedReason.DatabaseMissingRequiredObjects;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return (isAvailable, failedReason);
         }
 
         public void Rollback(DbTransaction transaction)

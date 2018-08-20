@@ -5,6 +5,7 @@
     using Interfaces;
     using Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class StatsDownloadApiProvider : IStatsDownloadApiService
     {
@@ -133,9 +134,18 @@
 
         private void ValidateDatabaseIsAvailable(IList<ApiError> errors)
         {
-            if (!statsDownloadApiDatabaseService.IsAvailable())
+            (bool isAvailable, DatabaseFailedReason reason) = statsDownloadApiDatabaseService.IsAvailable();
+
+            if (!isAvailable)
             {
-                errors.Add(Constants.ApiErrors.DatabaseUnavailable);
+                if (reason == DatabaseFailedReason.DatabaseUnavailable)
+                {
+                    errors.Add(Constants.ApiErrors.DatabaseUnavailable);
+                }
+                else if (reason == DatabaseFailedReason.DatabaseMissingRequiredObjects)
+                {
+                    errors.Add(Constants.ApiErrors.DatabaseMissingRequiredObjects);
+                }
             }
         }
 

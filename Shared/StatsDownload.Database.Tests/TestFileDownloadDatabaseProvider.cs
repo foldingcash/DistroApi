@@ -220,13 +220,14 @@
             Assert.That(actual, Is.EqualTo(default(DateTime)));
         }
 
-        [TestCase(true, FailedReason.None)]
-        [TestCase(false, FailedReason.DatabaseUnavailable)]
+        [TestCase(true, DatabaseFailedReason.None, FailedReason.None)]
+        [TestCase(false, DatabaseFailedReason.DatabaseUnavailable, FailedReason.DatabaseUnavailable)]
         public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expectedIsAvailable,
+            DatabaseFailedReason failedReason,
             FailedReason expectedReason)
         {
             statsDownloadDatabaseServiceMock.IsAvailable(Constants.FileDownloadDatabase.FileDownloadObjects)
-                                            .Returns((expectedIsAvailable, expectedReason));
+                                            .Returns((expectedIsAvailable, failedReason));
 
             (bool isAvailable, FailedReason reason) actual = InvokeIsAvailable();
 
