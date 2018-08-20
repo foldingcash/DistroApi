@@ -158,8 +158,8 @@
                 dataTable.Columns.Add(new DataColumn("FriendlyName", typeof (string)));
                 dataTable.Columns.Add(new DataColumn("BitcoinAddress", typeof (string)));
                 dataTable.Columns.Add(new DataColumn("TeamNumber", typeof (long)));
-                dataTable.Columns.Add(new DataColumn("StartingPoints", typeof (long)));
-                dataTable.Columns.Add(new DataColumn("StartingWorkUnits", typeof (long)));
+                dataTable.Columns.Add(new DataColumn("StartPoints", typeof (long)));
+                dataTable.Columns.Add(new DataColumn("StartWorkUnits", typeof (long)));
                 dataTable.Columns.Add(new DataColumn("PointsGained", typeof (long)));
                 dataTable.Columns.Add(new DataColumn("WorkUnitsGained", typeof (long)));
                 DataRow user1 = dataTable.NewRow();
@@ -168,8 +168,8 @@
                 user1["FriendlyName"] = "FriendlyName1";
                 user1["BitcoinAddress"] = "BitcoinAddress1";
                 user1["TeamNumber"] = 10;
-                user1["StartingPoints"] = 10000;
-                user1["StartingWorkUnits"] = 100000;
+                user1["StartPoints"] = 10000;
+                user1["StartWorkUnits"] = 100000;
                 user1["PointsGained"] = 100;
                 user1["WorkUnitsGained"] = 1000;
                 DataRow user2 = dataTable.NewRow();
@@ -178,8 +178,8 @@
                 user2["FriendlyName"] = "FriendlyName2";
                 user2["BitcoinAddress"] = "BitcoinAddress2";
                 user2["TeamNumber"] = 20;
-                user2["StartingPoints"] = 20000;
-                user2["StartingWorkUnits"] = 200000;
+                user2["StartPoints"] = 20000;
+                user2["StartWorkUnits"] = 200000;
                 user2["PointsGained"] = 200;
                 user2["WorkUnitsGained"] = 2000;
                 dataTable.AcceptChanges();
