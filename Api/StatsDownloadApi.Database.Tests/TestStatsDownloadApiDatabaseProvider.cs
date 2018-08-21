@@ -135,12 +135,12 @@
             systemUnderTest.GetMembers(DateTime.MinValue, DateTime.MaxValue);
 
             Assert.That(actualParameters.Count, Is.EqualTo(2));
-            Assert.That(actualParameters.ElementAt(0).ParameterName, Is.EqualTo("@StartDate"));
-            Assert.That(actualParameters.ElementAt(0).DbType, Is.EqualTo(DbType.Date));
+            Assert.That(actualParameters.ElementAt(0).ParameterName, Is.EqualTo("@StartDateTime"));
+            Assert.That(actualParameters.ElementAt(0).DbType, Is.EqualTo(DbType.DateTime));
             Assert.That(actualParameters.ElementAt(0).Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters.ElementAt(0).Value, Is.EqualTo(DateTime.MinValue));
-            Assert.That(actualParameters.ElementAt(1).ParameterName, Is.EqualTo("@EndDate"));
-            Assert.That(actualParameters.ElementAt(1).DbType, Is.EqualTo(DbType.Date));
+            Assert.That(actualParameters.ElementAt(1).ParameterName, Is.EqualTo("@EndDateTime"));
+            Assert.That(actualParameters.ElementAt(1).DbType, Is.EqualTo(DbType.DateTime));
             Assert.That(actualParameters.ElementAt(1).Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters.ElementAt(1).Value, Is.EqualTo(DateTime.MaxValue));
         }

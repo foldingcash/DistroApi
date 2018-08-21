@@ -54,9 +54,9 @@
             statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
                 DbParameter startDateParameter =
-                    service.CreateParameter("@StartDate", DbType.Date, ParameterDirection.Input);
+                    service.CreateParameter("@StartDateTime", DbType.DateTime, ParameterDirection.Input);
                 DbParameter endDateParameter =
-                    service.CreateParameter("@EndDate", DbType.Date, ParameterDirection.Input);
+                    service.CreateParameter("@EndDateTime", DbType.DateTime, ParameterDirection.Input);
 
                 startDateParameter.Value = startDate;
                 endDateParameter.Value = endDate;

@@ -131,17 +131,10 @@ IF OBJECT_ID('FoldingCoin.GetMembers') IS NOT NULL
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[GetMembers] @StartDate DATETIME,
-	@EndDate DATETIME
+CREATE PROCEDURE [FoldingCoin].[GetMembers] @StartDateTime DATETIME,
+	@EndDateTime DATETIME
 AS
 BEGIN
-	DECLARE @StartDateTime DATETIME;
-	DECLARE @EndDateTime DATETIME;
-
-	--This is converted to add 12 hours because of FLDC specific implementation needs
-	SET @StartDateTime = DATEADD(HOUR, 12, CONVERT(DATETIME, @StartDate));
-	SET @EndDateTime = DATEADD(DAY, 1, DATEADD(HOUR, 12, CONVERT(DATETIME, @EndDate)));
-
 	WITH StartStats AS 
 	(
 		SELECT
