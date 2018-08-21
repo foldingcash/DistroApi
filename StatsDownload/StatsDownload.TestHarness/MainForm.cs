@@ -1,7 +1,9 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System;
+    using System.Collections.Generic;
     using System.Configuration;
+    using System.Data.Common;
     using System.IO;
     using System.Threading.Tasks;
     using System.Windows.Forms;
@@ -68,11 +70,74 @@
             ImportButton.Enabled = enable;
         }
 
+        private async void ExportButton_Click(object sender, EventArgs e)
+        {
+            await
+                RunActionAsync(
+                    () =>
+                    {
+                        string exportDirectory = ExportDirectoryTextBox.Text;
+
+                        if (!Directory.Exists(exportDirectory))
+                        {
+                            Log(
+                                $"The directory does not exist, provide a new directory and try again. Directory: '{exportDirectory}'");
+                            CreateSeparationInLog();
+                            return;
+                        }
+
+                        (int fileId, string fileName)[] files = GetFiles();
+                        var service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
+
+                        int filesRemaining = files.Length;
+
+                        foreach ((int fileId, string fileName) in files)
+                        {
+                            string path = Path.Combine(exportDirectory, fileName);
+                            string fileData = service.GetFileData(fileId);
+
+                            File.WriteAllText(path, fileData);
+
+                            filesRemaining--;
+
+                            Log($"File exported. '{filesRemaining}' remaining files to be exported");
+                        }
+
+                        CreateSeparationInLog();
+                    });
+        }
+
         private async void FileDownloadButton_Click(object sender, EventArgs e)
         {
             await
                 RunActionAsync(
                     () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
+        }
+
+        private (int fileId, string fileName)[] GetFiles()
+        {
+            var downloads = new List<(int downloadId, string fileName)>();
+            var databaseService = WindsorContainer.Instance.Resolve<IStatsDownloadDatabaseService>();
+            databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
+            {
+                using (DbDataReader fileReader =
+                    service.ExecuteReader(
+                        "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
+                {
+                    if (!fileReader.HasRows)
+                    {
+                        return;
+                    }
+
+                    fileReader.Read();
+
+                    downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                }
+            });
+
+            Log($"'{downloads.Count}' files are to be exported");
+
+            return downloads.ToArray();
         }
 
         private async void ImportButton_Click(object sender, EventArgs e)
