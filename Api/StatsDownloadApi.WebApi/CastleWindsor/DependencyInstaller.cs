@@ -7,6 +7,8 @@
     using Core;
     using Database;
     using Interfaces;
+    using NLog;
+    using NLog.Web;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Database;
@@ -20,6 +22,9 @@
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
+            container.Register(Component.For<ILogger>()
+                                        .Instance(NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger()));
+
             container.Register(
                 Component.For<IDatabaseConnectionSettingsService, IEmailSettingsService>()
                          .ImplementedBy<StatsDownloadApiSettingsProvider>(),
