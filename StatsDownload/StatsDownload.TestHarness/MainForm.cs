@@ -89,12 +89,18 @@
                         (int fileId, string fileName)[] files = GetFiles();
                         var service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
 
+                        int filesRemaining = files.Length;
+
                         foreach ((int fileId, string fileName) in files)
                         {
                             string path = Path.Combine(exportDirectory, fileName);
                             string fileData = service.GetFileData(fileId);
 
                             File.WriteAllText(path, fileData);
+
+                            filesRemaining--;
+
+                            Log($"File exported. '{filesRemaining}' remaining files to be exported");
                         }
                     });
         }
@@ -117,6 +123,9 @@
                         "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files");
                 downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}.{fileReader.GetString(2)}"));
             });
+
+            Log($"'{downloads.Count}' files are to be exported");
+
             return downloads.ToArray();
         }
 
