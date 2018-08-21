@@ -102,6 +102,8 @@
 
                             Log($"File exported. '{filesRemaining}' remaining files to be exported");
                         }
+
+                        CreateSeparationInLog();
                     });
         }
 
@@ -118,10 +120,19 @@
             var databaseService = WindsorContainer.Instance.Resolve<IStatsDownloadDatabaseService>();
             databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
-                DbDataReader fileReader =
+                using (DbDataReader fileReader =
                     service.ExecuteReader(
-                        "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files");
-                downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}.{fileReader.GetString(2)}"));
+                        "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
+                {
+                    if (!fileReader.HasRows)
+                    {
+                        return;
+                    }
+
+                    fileReader.Read();
+
+                    downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                }
             });
 
             Log($"'{downloads.Count}' files are to be exported");
