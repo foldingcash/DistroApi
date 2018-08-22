@@ -75,6 +75,14 @@
         }
 
         [Test]
+        public void LogMethodFinished_WhenInvoked_LogsMethodFinished()
+        {
+            systemUnderTest.LogMethodFinished();
+
+            loggingServiceMock.Received().LogMethodFinished(nameof(LogMethodFinished_WhenInvoked_LogsMethodFinished));
+        }
+
+        [Test]
         public void LogMethodInvoked_WhenInvoked_LogsMethodInvoked()
         {
             systemUnderTest.LogMethodInvoked();

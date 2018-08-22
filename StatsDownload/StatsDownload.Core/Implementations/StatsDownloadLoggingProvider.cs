@@ -41,6 +41,11 @@
                      + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}");
         }
 
+        public void LogMethodFinished([CallerMemberName] string method = "")
+        {
+            loggingService.LogMethodFinished(method);
+        }
+
         public void LogMethodInvoked([CallerMemberName] string method = "")
         {
             loggingService.LogMethodInvoked(method);

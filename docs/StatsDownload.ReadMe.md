@@ -11,9 +11,9 @@ The stats downloader is used to download the stats data on a scheduled basis.
 
 ## Installation
 
-### Installing on Windows
+### Installing on Windows w/ Installer
 
-1. Place FileDownload and StatsUpload console applications in the desired directory
+1. Install using latest available installation package
 2. [Update applications configuration file](SettingsConfiguration.md)
 3. Navigate to FLDCDotNet/Database
 	1. Run the schema script to create a database (update path to database)

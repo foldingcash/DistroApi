@@ -9,12 +9,15 @@ This is a C# implementation for downloading FAH statistics on a scheduled basis,
 * Visual Studio 2017
 * Microsoft SQL Server 2017
 * ReSharper
+* WiX
 
 ## Solutions
 
 1. [StatsDownload](StatsDownload.ReadMe.md)
 	* The downloader interfaces with the StatsDownload database to upload the database with user statistics
-2. [StatsDownloadApi](StatsDownloadApi.ReadMe.md)
+2. [StatsDownloadSetup](StatsDownloadSetup.ReadMe.md)
+	* The downloader setup creates an installation package for Windows
+3. [StatsDownloadApi](StatsDownloadApi.ReadMe.md)
 	* The API interfaces with the StatsDownload database to return the data within based on query parameters
 
 ## Versioning
