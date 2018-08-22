@@ -6,7 +6,7 @@ The stats API is used to expose the stats, users, and team data from the stats d
 
 ## Prerequisites
 
-* .NET Core 2.0
+* .NET Core 2.1
 * Microsoft SQL Server 2017
 
 ## Installation

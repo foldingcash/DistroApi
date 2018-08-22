@@ -6,7 +6,7 @@ The stats downloader is used to download the stats data on a scheduled basis.
 
 ## Prerequisites
 
-* .NET Core 2.0
+* .NET Core 2.1
 * Microsoft SQL Server 2017
 
 ## Installation
