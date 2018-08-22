@@ -22,24 +22,10 @@
             IEmailSettingsValidatorService emailSettingsValidatorService,
             ILoggingService loggingService)
         {
-            if (settingsService == null)
-            {
-                throw new ArgumentNullException(nameof(settingsService));
-            }
-
-            if (emailSettingsValidatorService == null)
-            {
-                throw new ArgumentNullException(nameof(emailSettingsValidatorService));
-            }
-
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            this.settingsService = settingsService;
-            this.emailSettingsValidatorService = emailSettingsValidatorService;
-            this.loggingService = loggingService;
+            this.settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            this.emailSettingsValidatorService = emailSettingsValidatorService ??
+                                                 throw new ArgumentNullException(nameof(emailSettingsValidatorService));
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public EmailResult SendEmail(string subject, string body)

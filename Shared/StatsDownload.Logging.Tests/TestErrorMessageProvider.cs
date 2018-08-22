@@ -105,12 +105,59 @@
         [Test]
         public void GetErrorMessage_WhenFailedUsersData_ReturnsFailedUserDataMessage()
         {
-            var failedUsersData = new List<FailedUserData> { new FailedUserData(), new FailedUserData() };
+            var failedUsersData = new List<FailedUserData>
+            {
+                new FailedUserData(0, "userdata1", RejectionReason.FailedParsing),
+                new FailedUserData(0, "userdata2", RejectionReason.FailedParsing)
+            };
+
             string actual = systemUnderTest.GetErrorMessage(failedUsersData);
 
             Assert.That(actual,
                 Is.EqualTo(
-                    $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed users."));
+                    $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed users." +
+                    $"{Environment.NewLine}{Environment.NewLine}" +
+                    $"Top 10 Failed Users:{Environment.NewLine}" +
+                    $"There was a problem parsing a user from the stats file. The user 'userdata1' failed data parsing. You should contact your technical advisor to review the logs and rejected users.{Environment.NewLine}" +
+                    "There was a problem parsing a user from the stats file. The user 'userdata2' failed data parsing. You should contact your technical advisor to review the logs and rejected users."));
+        }
+
+        [Test]
+        public void GetErrorMessage_WhenFailedUsersData_ReturnsTopTenFailedUserDataMessages()
+        {
+            var failedUsersData = new List<FailedUserData>
+            {
+                new FailedUserData(0, "userdata1", RejectionReason.FailedParsing),
+                new FailedUserData(0, "userdata2", RejectionReason.FailedAddToDatabase,
+                    new UserData(0, "userdata2", 0, 0, 0)),
+                new FailedUserData(0, "userdata3", RejectionReason.FailedParsing),
+                new FailedUserData(0, "userdata4", RejectionReason.FailedParsing),
+                new FailedUserData(0, "userdata5", RejectionReason.FailedParsing),
+                new FailedUserData(0, "userdata6", RejectionReason.FailedParsing),
+                new FailedUserData(0, "userdata7", RejectionReason.FailedParsing),
+                new FailedUserData(0, "userdata8", RejectionReason.FailedParsing),
+                new FailedUserData(0, "userdata9", RejectionReason.FailedParsing),
+                new FailedUserData(0, "userdata10", RejectionReason.FailedParsing),
+                new FailedUserData(0, "userdata11", RejectionReason.FailedParsing)
+            };
+
+            string actual = systemUnderTest.GetErrorMessage(failedUsersData);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    $"There was a problem uploading the file payload. The file passed validation but {failedUsersData.Count} lines failed; processing continued after encountering these lines. If this problem occurs again, then you should contact your technical advisor to review the logs and failed users." +
+                    $"{Environment.NewLine}{Environment.NewLine}" +
+                    $"Top 10 Failed Users:{Environment.NewLine}" +
+                    $"There was a problem parsing a user from the stats file. The user 'userdata1' failed data parsing. You should contact your technical advisor to review the logs and rejected users.{Environment.NewLine}" +
+                    $"There was a problem adding the user 'userdata2' to the database. Contact your technical advisor to review the logs and rejected users.{Environment.NewLine}" +
+                    $"There was a problem parsing a user from the stats file. The user 'userdata3' failed data parsing. You should contact your technical advisor to review the logs and rejected users.{Environment.NewLine}" +
+                    $"There was a problem parsing a user from the stats file. The user 'userdata4' failed data parsing. You should contact your technical advisor to review the logs and rejected users.{Environment.NewLine}" +
+                    $"There was a problem parsing a user from the stats file. The user 'userdata5' failed data parsing. You should contact your technical advisor to review the logs and rejected users.{Environment.NewLine}" +
+                    $"There was a problem parsing a user from the stats file. The user 'userdata6' failed data parsing. You should contact your technical advisor to review the logs and rejected users.{Environment.NewLine}" +
+                    $"There was a problem parsing a user from the stats file. The user 'userdata7' failed data parsing. You should contact your technical advisor to review the logs and rejected users.{Environment.NewLine}" +
+                    $"There was a problem parsing a user from the stats file. The user 'userdata8' failed data parsing. You should contact your technical advisor to review the logs and rejected users.{Environment.NewLine}" +
+                    $"There was a problem parsing a user from the stats file. The user 'userdata9' failed data parsing. You should contact your technical advisor to review the logs and rejected users.{Environment.NewLine}" +
+                    "There was a problem parsing a user from the stats file. The user 'userdata10' failed data parsing. You should contact your technical advisor to review the logs and rejected users."));
         }
 
         [Test]
