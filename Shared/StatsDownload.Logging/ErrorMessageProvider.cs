@@ -76,7 +76,10 @@
 
         public string GetErrorMessage(IEnumerable<FailedUserData> failedUsersData)
         {
-            return string.Format(ErrorMessages.FailedUserDataCount, failedUsersData.Count());
+            string failedLinesMessage = string.Format(ErrorMessages.FailedUserDataCount, failedUsersData.Count());
+            string topTenFailedUsers = GetTopFailedUserMessages(failedUsersData, 10);
+
+            return $"{failedLinesMessage}{Environment.NewLine}{Environment.NewLine}{topTenFailedUsers}";
         }
 
         public string GetErrorMessage(FailedUserData failedUserData)
@@ -142,6 +145,20 @@
             }
 
             return defaultMessage;
+        }
+
+        private string GetTopFailedUserMessages(IEnumerable<FailedUserData> failedUsersData, int numberOfUsers)
+        {
+            int failedUsersCount = failedUsersData.Count();
+
+            string message = $"Top {numberOfUsers} Failed Users:";
+
+            for (var userIndex = 0; userIndex < numberOfUsers && userIndex < failedUsersCount; userIndex++)
+            {
+                message += $"{Environment.NewLine}{GetErrorMessage(failedUsersData.ElementAt(userIndex))}";
+            }
+
+            return message;
         }
     }
 }
