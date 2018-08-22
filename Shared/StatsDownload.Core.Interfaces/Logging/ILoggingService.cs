@@ -7,6 +7,8 @@
     {
         void LogException(Exception exception);
 
+        void LogMethodFinished([CallerMemberName] string method = "");
+
         void LogMethodInvoked([CallerMemberName] string method = "");
     }
 }

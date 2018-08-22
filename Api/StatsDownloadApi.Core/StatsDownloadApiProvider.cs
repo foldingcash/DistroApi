@@ -6,10 +6,13 @@
     using Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Logging;
 
     public class StatsDownloadApiProvider : IStatsDownloadApiService
     {
         private readonly IDateTimeService dateTimeService;
+
+        private readonly ILoggingService loggingService;
 
         private readonly IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService;
 
@@ -17,7 +20,7 @@
 
         public StatsDownloadApiProvider(IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
             IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService,
-            IDateTimeService dateTimeService)
+            IDateTimeService dateTimeService, ILoggingService loggingService)
         {
             this.statsDownloadApiDatabaseService = statsDownloadApiDatabaseService ??
                                                    throw new ArgumentNullException(
@@ -26,29 +29,40 @@
                                                             throw new ArgumentNullException(
                                                                 nameof(statsDownloadApiTokenDistributionService));
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public GetDistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount)
         {
+            loggingService.LogMethodInvoked();
+
             IList<ApiError> errors = new List<ApiError>();
 
             if (IsNotPreparedToRunDistro(startDate, endDate, amount, errors))
             {
+                loggingService.LogMethodFinished();
                 return new GetDistroResponse(errors);
             }
 
             IList<FoldingUser> foldingMembers = GetFoldingMembers(startDate, endDate);
             IList<DistroUser> distro = GetDistro(amount, foldingMembers);
 
-            return new GetDistroResponse(distro);
+            var distroResponse = new GetDistroResponse(distro);
+
+            loggingService.LogMethodFinished();
+
+            return distroResponse;
         }
 
         public GetMemberStatsResponse GetMemberStats(DateTime? startDate, DateTime? endDate)
         {
+            loggingService.LogMethodInvoked();
+
             IList<ApiError> errors = new List<ApiError>();
 
             if (IsNotPreparedToGetMemberStats(startDate, endDate, errors))
             {
+                loggingService.LogMethodFinished();
                 return new GetMemberStatsResponse(errors);
             }
 
@@ -56,21 +70,32 @@
                 statsDownloadApiDatabaseService.GetMembers(startDate.GetValueOrDefault(),
                     endDate.GetValueOrDefault());
 
-            return new GetMemberStatsResponse(members);
+            var memberStatsResponse = new GetMemberStatsResponse(members);
+
+            loggingService.LogMethodFinished();
+
+            return memberStatsResponse;
         }
 
         public GetTeamsResponse GetTeams()
         {
+            loggingService.LogMethodInvoked();
+
             var errors = new List<ApiError>();
 
             if (IsNotPreparedToGetTeams(errors))
             {
+                loggingService.LogMethodFinished();
                 return new GetTeamsResponse(errors);
             }
 
             IList<Team> teams = statsDownloadApiDatabaseService.GetTeams();
 
-            return new GetTeamsResponse(teams);
+            var teamsResponse = new GetTeamsResponse(teams);
+
+            loggingService.LogMethodFinished();
+
+            return teamsResponse;
         }
 
         private IList<DistroUser> GetDistro(int? amount, IList<FoldingUser> foldingUsers)

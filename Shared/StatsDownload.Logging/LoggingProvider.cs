@@ -32,6 +32,11 @@
                      + $"Exception Stack-trace: {Environment.NewLine}{exception.StackTrace}");
         }
 
+        public void LogMethodFinished(string method = "")
+        {
+            LogVerbose($"{method} Finished");
+        }
+
         public void LogMethodInvoked([CallerMemberName] string method = "")
         {
             LogVerbose($"{method} Invoked");

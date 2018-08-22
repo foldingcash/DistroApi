@@ -7,6 +7,7 @@
     using NUnit.Framework;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestStatsDownloadApiProvider
@@ -22,8 +23,10 @@
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
             dateTimeServiceMock.DateTimeNow().Returns(DateTime.UtcNow);
 
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
             systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock);
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock);
         }
 
         private readonly int amountMock = 7750000;
@@ -31,6 +34,8 @@
         private IDateTimeService dateTimeServiceMock;
 
         private readonly DateTime endDateMock = DateTime.UtcNow.Date.AddDays(-1);
+
+        private ILoggingService loggingServiceMock;
 
         private readonly DateTime startDateMock = DateTime.UtcNow.Date.AddDays(-1);
 
@@ -44,12 +49,17 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiProvider(null, statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock));
+                NewStatsDownloadApiProvider(null, statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock,
+                    loggingServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock, null, dateTimeServiceMock));
+                NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock, null, dateTimeServiceMock,
+                    loggingServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
                 NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                    statsDownloadApiTokenDistributionServiceMock, null));
+                    statsDownloadApiTokenDistributionServiceMock, null, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
+                    statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, null));
         }
 
         [Test]
@@ -88,6 +98,7 @@
         public void GetDistro_WhenEndDateInputIsTodayOrFutureDate_ReturnsEndDateUnsearchableResponse()
         {
             GetDistroResponse actual = InvokeGetDistro(startDateMock, DateTime.UtcNow, amountMock);
+
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.EndDateUnsearchable));
@@ -112,6 +123,22 @@
             Assert.That(actual.TotalPoints, Is.Null);
             Assert.That(actual.TotalWorkUnits, Is.Null);
             Assert.That(actual.TotalDistro, Is.Null);
+        }
+
+        [Test]
+        public void GetDistro_WhenInvoked_LogsMethodInvoked()
+        {
+            var foldingUsers = new FoldingUser[0];
+            statsDownloadApiDatabaseServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
+
+            systemUnderTest.GetDistro(startDateMock, endDateMock, amountMock);
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetDistro));
+                statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers);
+                loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetDistro));
+            });
         }
 
         [Test]
@@ -289,6 +316,19 @@
         }
 
         [Test]
+        public void GetMemberStats_WhenInvoked_LogsMethodInvoked()
+        {
+            systemUnderTest.GetMemberStats(startDateMock, endDateMock);
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetMemberStats));
+                statsDownloadApiDatabaseServiceMock.GetMembers(startDateMock, endDateMock);
+                loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetMemberStats));
+            });
+        }
+
+        [Test]
         public void GetMemberStats_WhenInvoked_ReturnsSuccessMemberStatsResponse()
         {
             var members = new Member[2];
@@ -390,6 +430,19 @@
         }
 
         [Test]
+        public void GetTeams_WhenInvoked_LogsMethodInvoked()
+        {
+            systemUnderTest.GetTeams();
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetTeams));
+                statsDownloadApiDatabaseServiceMock.GetTeams();
+                loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetTeams));
+            });
+        }
+
+        [Test]
         public void GetTeams_WhenInvoked_ReturnsSuccessGetTeamsResponse()
         {
             var teams = new[] { new Team(0, ""), new Team(0, "") };
@@ -433,10 +486,11 @@
         private IStatsDownloadApiService NewStatsDownloadApiProvider(
             IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
             IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService,
-            IDateTimeService dateTimeService)
+            IDateTimeService dateTimeService,
+            ILoggingService loggingService)
         {
             return new StatsDownloadApiProvider(statsDownloadApiDatabaseService,
-                statsDownloadApiTokenDistributionService, dateTimeService);
+                statsDownloadApiTokenDistributionService, dateTimeService, loggingService);
         }
     }
 }
