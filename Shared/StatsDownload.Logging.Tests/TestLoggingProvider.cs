@@ -59,6 +59,15 @@
         }
 
         [Test]
+        public void LogMethodFinishedInvoked_WhenInvoked_LogsMethodFinished()
+        {
+            systemUnderTest.LogMethodFinished();
+
+            applicationLoggingServiceMock.Received().LogVerbose(
+                $"{dateTime}{Environment.NewLine}{nameof(LogMethodFinishedInvoked_WhenInvoked_LogsMethodFinished)} Finished");
+        }
+
+        [Test]
         public void LogMethodInvoked_WhenInvoked_LogsMethodInvoked()
         {
             systemUnderTest.LogMethodInvoked();

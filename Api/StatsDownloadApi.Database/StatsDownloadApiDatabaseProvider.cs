@@ -8,19 +8,26 @@
     using Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Logging;
 
     public class StatsDownloadApiDatabaseProvider : IStatsDownloadApiDatabaseService
     {
+        private readonly ILoggingService loggingService;
+
         private readonly IStatsDownloadDatabaseService statsDownloadDatabaseService;
 
-        public StatsDownloadApiDatabaseProvider(IStatsDownloadDatabaseService statsDownloadDatabaseService)
+        public StatsDownloadApiDatabaseProvider(IStatsDownloadDatabaseService statsDownloadDatabaseService,
+            ILoggingService loggingService)
         {
             this.statsDownloadDatabaseService = statsDownloadDatabaseService ??
                                                 throw new ArgumentNullException(nameof(statsDownloadDatabaseService));
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public IList<FoldingUser> GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
+            loggingService.LogMethodInvoked();
+
             var users = new List<FoldingUser>();
             statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
@@ -50,6 +57,8 @@
 
         public IList<Member> GetMembers(DateTime startDate, DateTime endDate)
         {
+            loggingService.LogMethodInvoked();
+
             var users = new List<Member>();
             statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
@@ -82,6 +91,8 @@
 
         public IList<Team> GetTeams()
         {
+            loggingService.LogMethodInvoked();
+
             var users = new List<Team>();
             statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
