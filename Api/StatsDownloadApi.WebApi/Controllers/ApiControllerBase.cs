@@ -4,6 +4,7 @@
     using CastleWindsor;
     using Interfaces;
     using Microsoft.AspNetCore.Mvc;
+    using StatsDownload.Core.Interfaces.Logging;
 
     public abstract class ApiControllerBase : Controller
     {
@@ -18,12 +19,27 @@
             }
             catch (Exception exception)
             {
+                TryLoggingUnhandledException(exception);
                 TrySendingUnhandledExceptionEmail(exception);
                 return new ApiResponse(new[] { Constants.ApiErrors.UnexpectedException });
             }
             finally
             {
                 WindsorContainer.Instance.Release(apiService);
+            }
+        }
+
+        private void TryLoggingUnhandledException(Exception exception)
+        {
+            ILoggingService loggingService = null;
+            try
+            {
+                loggingService = WindsorContainer.Instance.Resolve<ILoggingService>();
+                loggingService.LogException(exception);
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(loggingService);
             }
         }
 
