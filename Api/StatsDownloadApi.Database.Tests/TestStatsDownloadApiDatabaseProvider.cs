@@ -11,6 +11,7 @@
     using NUnit.Framework;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Database.Tests;
     using Constants = Database.Constants;
 
@@ -35,10 +36,14 @@
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
-            systemUnderTest = NewStatsDownloadApiDatabaseProvider(statsDownloadDatabaseServiceMock);
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
+            systemUnderTest = NewStatsDownloadApiDatabaseProvider(statsDownloadDatabaseServiceMock, loggingServiceMock);
         }
 
         private IDatabaseConnectionService databaseConnectionServiceMock;
+
+        private ILoggingService loggingServiceMock;
 
         private IStatsDownloadDatabaseService statsDownloadDatabaseServiceMock;
 
@@ -49,7 +54,10 @@
         {
             Assert.Throws<ArgumentNullException>(
                 () =>
-                    NewStatsDownloadApiDatabaseProvider(null));
+                    NewStatsDownloadApiDatabaseProvider(null, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    NewStatsDownloadApiDatabaseProvider(statsDownloadDatabaseServiceMock, null));
         }
 
         [Test]
@@ -117,6 +125,14 @@
             Assert.That(actual[1].BitcoinAddress, Is.EqualTo("BitcoinAddress2"));
             Assert.That(actual[1].PointsGained, Is.EqualTo(200));
             Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(2000));
+        }
+
+        [Test]
+        public void GetFoldingMembers_WhenInvoked_LogsMethodInvoked()
+        {
+            systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
+
+            loggingServiceMock.Received().LogMethodInvoked(nameof(systemUnderTest.GetFoldingMembers));
         }
 
         [Test]
@@ -207,6 +223,14 @@
         }
 
         [Test]
+        public void GetMembers_WhenInvoked_LogsMethodInvoked()
+        {
+            systemUnderTest.GetMembers(DateTime.MinValue, DateTime.MaxValue);
+
+            loggingServiceMock.Received().LogMethodInvoked(nameof(systemUnderTest.GetMembers));
+        }
+
+        [Test]
         public void GetTeams_WhenInvoked_GetsTeams()
         {
             databaseConnectionServiceMock.When(service =>
@@ -236,6 +260,14 @@
             Assert.That(actual[1].TeamName, Is.EqualTo("TeamName2"));
         }
 
+        [Test]
+        public void GetTeams_WhenInvoked_LogsMethodInvoked()
+        {
+            systemUnderTest.GetTeams();
+
+            loggingServiceMock.Received().LogMethodInvoked(nameof(systemUnderTest.GetTeams));
+        }
+
         [TestCase(true, DatabaseFailedReason.None)]
         [TestCase(false, DatabaseFailedReason.DatabaseMissingRequiredObjects)]
         public void IsAvailable_WhenInvoked_ReturnsIsAvailable(bool expectedIsAvailable,
@@ -251,9 +283,10 @@
         }
 
         private IStatsDownloadApiDatabaseService NewStatsDownloadApiDatabaseProvider(
-            IStatsDownloadDatabaseService statsDownloadDatabaseService)
+            IStatsDownloadDatabaseService statsDownloadDatabaseService,
+            ILoggingService loggingService)
         {
-            return new StatsDownloadApiDatabaseProvider(statsDownloadDatabaseService);
+            return new StatsDownloadApiDatabaseProvider(statsDownloadDatabaseService, loggingService);
         }
     }
 }
