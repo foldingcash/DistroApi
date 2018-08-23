@@ -66,9 +66,18 @@
                 return new GetMemberStatsResponse(errors);
             }
 
+            DateTime startDateTime = startDate.GetValueOrDefault();
+            DateTime endDateTime = endDate.GetValueOrDefault();
+
+            if (startDateTime.Date == startDateTime && startDateTime.Date == endDateTime)
+            {
+                startDateTime = startDateTime.Date.AddHours(12);
+                endDateTime = endDateTime.Date.AddHours(36);
+            }
+
             IList<Member> members =
-                statsDownloadApiDatabaseService.GetMembers(startDate.GetValueOrDefault(),
-                    endDate.GetValueOrDefault());
+                statsDownloadApiDatabaseService.GetMembers(startDateTime,
+                    endDateTime);
 
             var memberStatsResponse = new GetMemberStatsResponse(members);
 
