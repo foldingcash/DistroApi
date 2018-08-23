@@ -318,12 +318,12 @@
         [Test]
         public void GetMemberStats_WhenInvoked_LogsMethodInvoked()
         {
-            systemUnderTest.GetMemberStats(startDateMock, endDateMock);
+            systemUnderTest.GetMemberStats(DateTime.MinValue, endDateMock);
 
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetMemberStats));
-                statsDownloadApiDatabaseServiceMock.GetMembers(startDateMock, endDateMock);
+                statsDownloadApiDatabaseServiceMock.GetMembers(DateTime.MinValue, endDateMock);
                 loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetMemberStats));
             });
         }
@@ -333,9 +333,9 @@
         {
             var members = new Member[2];
 
-            statsDownloadApiDatabaseServiceMock.GetMembers(startDateMock, endDateMock).Returns(members);
+            statsDownloadApiDatabaseServiceMock.GetMembers(DateTime.MinValue, endDateMock).Returns(members);
 
-            GetMemberStatsResponse actual = InvokeGetMemberStats();
+            GetMemberStatsResponse actual = InvokeGetMemberStats(DateTime.MinValue, endDateMock);
 
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.Errors, Is.Null);
@@ -369,6 +369,17 @@
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(
                     Constants.ErrorMessages.NoStartDateMessage));
+        }
+
+        [Test]
+        public void GetMemberStats_WhenStartAndEndSameDate_OffsetsStartAndEndDateTime()
+        {
+            DateTime dateTime = DateTime.UtcNow.Date.AddDays(-1);
+
+            systemUnderTest.GetMemberStats(dateTime, dateTime);
+
+            statsDownloadApiDatabaseServiceMock
+                .Received().GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
         }
 
         [Test]
