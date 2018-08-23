@@ -12,6 +12,7 @@
     using Database.Wrappers;
     using Email;
     using Logging;
+    using NLog;
     using SharpZipLib;
     using Wrappers;
 
@@ -19,6 +20,10 @@
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
+            container.Register(Component.For<ILogger>()
+                                        .Instance(LogManager
+                                                  .LoadConfiguration("nlog.config").GetCurrentClassLogger()));
+
             container.Register(
                 Component.For<IApplicationLoggingService>().ImplementedBy<StatsUploadConsoleLoggingProvider>(),
                 Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService>()
