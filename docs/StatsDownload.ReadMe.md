@@ -35,7 +35,7 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 
 ### Settings
 
-1. [Logging Settings](SettingsConfiguration.md#nlog-configuration)
+1. [Logging Settings](SettingsConfiguration.md#logging-configuration)
 2. [Database Settings](SettingsConfiguration.md#stats-download-database-connection-settings)
 3. [Email Settings](SettingsConfiguration.md#stats-download-email-settings)
 4. [Download Settings](SettingsConfiguration.md#file-download-settings)
