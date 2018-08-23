@@ -3,6 +3,7 @@
     using System;
     using CastleWindsor;
     using Core.Interfaces;
+    using NLog;
 
     public class Program
     {
@@ -16,13 +17,32 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                TryLogException(ex);
             }
             finally
             {
                 WindsorContainer.Dispose();
-                Console.WriteLine(new string('-', 100));
-                Console.WriteLine();
+                LogManager.Shutdown();
+            }
+        }
+
+        private static void TryLogException(Exception exception)
+        {
+            ILogger logger = null;
+
+            try
+            {
+                logger = WindsorContainer.Instance.Resolve<ILogger>();
+                logger.Error(exception);
+            }
+            catch (Exception ex)
+            {
+                // As a last resort log to standard output
+                Console.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(logger);
             }
         }
     }

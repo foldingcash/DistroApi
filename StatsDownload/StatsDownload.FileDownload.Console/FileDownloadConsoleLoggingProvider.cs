@@ -2,23 +2,25 @@
 {
     using System;
     using Core.Interfaces.Logging;
+    using NLog;
 
     public class FileDownloadConsoleLoggingProvider : IApplicationLoggingService
     {
+        private readonly ILogger logger;
+
+        public FileDownloadConsoleLoggingProvider(ILogger logger)
+        {
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         public void LogError(string message)
         {
-            WriteLine(message);
+            logger.Error(message);
         }
 
         public void LogVerbose(string message)
         {
-            WriteLine(message);
-        }
-
-        private void WriteLine(string message)
-        {
-            Console.WriteLine(message);
-            Console.WriteLine();
+            logger.Trace(message);
         }
     }
 }
