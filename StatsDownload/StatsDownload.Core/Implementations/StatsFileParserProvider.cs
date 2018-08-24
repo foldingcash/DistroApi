@@ -15,12 +15,9 @@
 
         public StatsFileParserProvider(IAdditionalUserDataParserService additionalUserDataParserService)
         {
-            if (additionalUserDataParserService == null)
-            {
-                throw new ArgumentNullException(nameof(additionalUserDataParserService));
-            }
-
-            this.additionalUserDataParserService = additionalUserDataParserService;
+            this.additionalUserDataParserService = additionalUserDataParserService ??
+                                                   throw new ArgumentNullException(
+                                                       nameof(additionalUserDataParserService));
         }
 
         public ParseResults Parse(string fileData)

@@ -24,30 +24,13 @@
             IStatsFileParserService statsFileParserService,
             IStatsUploadEmailService statsUploadEmailService)
         {
-            if (statsUploadDatabaseService == null)
-            {
-                throw new ArgumentNullException(nameof(statsUploadDatabaseService));
-            }
-
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            if (statsFileParserService == null)
-            {
-                throw new ArgumentNullException(nameof(statsFileParserService));
-            }
-
-            if (statsUploadEmailService == null)
-            {
-                throw new ArgumentNullException(nameof(statsUploadEmailService));
-            }
-
-            this.statsUploadDatabaseService = statsUploadDatabaseService;
-            this.loggingService = loggingService;
-            this.statsFileParserService = statsFileParserService;
-            this.statsUploadEmailService = statsUploadEmailService;
+            this.statsUploadDatabaseService = statsUploadDatabaseService ??
+                                              throw new ArgumentNullException(nameof(statsUploadDatabaseService));
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            this.statsFileParserService = statsFileParserService ??
+                                          throw new ArgumentNullException(nameof(statsFileParserService));
+            this.statsUploadEmailService = statsUploadEmailService ??
+                                           throw new ArgumentNullException(nameof(statsUploadEmailService));
         }
 
         public StatsUploadResults UploadStatsFiles()
@@ -55,9 +38,9 @@
             try
             {
                 LogVerbose($"{nameof(UploadStatsFiles)} Invoked");
-                if (DataStoreUnavailable())
+                if (DatabaseUnavailable(out FailedReason failedReason))
                 {
-                    var results = new StatsUploadResults(FailedReason.DataStoreUnavailable);
+                    var results = new StatsUploadResults(failedReason);
                     loggingService.LogResults(results);
                     statsUploadEmailService.SendEmail(results);
                     return results;
@@ -82,9 +65,25 @@
             }
         }
 
-        private bool DataStoreUnavailable()
+        private void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
+            IList<FailedUserData> failedUsersData)
         {
-            return !statsUploadDatabaseService.IsAvailable();
+            statsUploadDatabaseService.AddUsers(transaction, downloadId, usersData, failedUsersData);
+        }
+
+        private bool DatabaseUnavailable(out FailedReason failedReason)
+        {
+            (bool isAvailable, FailedReason reason) = statsUploadDatabaseService.IsAvailable();
+            failedReason = reason;
+            return !isAvailable;
+        }
+
+        private IList<FailedUserData> GetEmailFailedUsers(IList<FailedUserData> failedUsersData)
+        {
+            //This is filtering out users that failed because of an unexpected format because this is a common occurance
+            //Could consider removing if the file parsing engine is able to handle the common failing users
+            //Or if these users are removed from the file
+            return failedUsersData.Where(user => user.RejectionReason != RejectionReason.UnexpectedFormat).ToList();
         }
 
         private FailedReason GetFailedReason(Exception exception)
@@ -105,13 +104,14 @@
         private void HandleUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
             IList<FailedUserData> failedUsersData)
         {
-            statsUploadDatabaseService.AddUsers(transaction, downloadId, usersData, failedUsersData);
+            AddUsers(transaction, downloadId, usersData, failedUsersData);
+            IList<FailedUserData> emailFailedUsers = GetEmailFailedUsers(failedUsersData);
+            SendFailedUsers(emailFailedUsers);
+            LogFailedUserData(downloadId, failedUsersData);
+        }
 
-            if (failedUsersData.Any())
-            {
-                statsUploadEmailService.SendEmail(failedUsersData);
-            }
-
+        private void LogFailedUserData(int downloadId, IList<FailedUserData> failedUsersData)
+        {
             foreach (FailedUserData failedUserData in failedUsersData)
             {
                 loggingService.LogFailedUserData(downloadId, failedUserData);
@@ -126,6 +126,14 @@
         private StatsUploadResult NewFailedStatsUploadResult(int downloadId, FailedReason failedReason)
         {
             return new StatsUploadResult(downloadId, failedReason);
+        }
+
+        private void SendFailedUsers(IList<FailedUserData> emailFailedUsers)
+        {
+            if (emailFailedUsers.Any())
+            {
+                statsUploadEmailService.SendEmail(emailFailedUsers);
+            }
         }
 
         private void UploadStatsFile(List<StatsUploadResult> statsUploadResults, int downloadId)

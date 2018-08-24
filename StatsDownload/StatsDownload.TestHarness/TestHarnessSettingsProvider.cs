@@ -13,11 +13,25 @@
         ITestHarnessSettingsService, IEmailSettingsService, IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
         IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings, ITestHarnessStatsDownloadSettings
     {
+        bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
+
+        bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolConfig("EnableNoPaymentAddressUsersFilter");
+
+        bool ITestHarnessStatsDownloadSettings.Enabled => GetBoolConfig("EnableSqlExceptionDuringAddUsersTest");
+
+        bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
+
+        bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
+
+        public string GetAcceptAnySslCert()
+        {
+            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
+        }
+
         public int? GetCommandTimeout()
         {
             string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
-            int commandTimeoutValue;
-            if (int.TryParse(commandTimeoutString, out commandTimeoutValue))
+            if (int.TryParse(commandTimeoutString, out int commandTimeoutValue))
                 return commandTimeoutValue;
             return null;
         }
@@ -30,11 +44,6 @@
         public string GetDatabaseType()
         {
             return ConfigurationManager.AppSettings["DatabaseType"];
-        }
-
-        public string GetAcceptAnySslCert()
-        {
-            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
         }
 
         public string GetDownloadDirectory()
@@ -53,11 +62,6 @@
             return ConfigurationManager.AppSettings["DownloadUri"];
         }
 
-        public string GetMinimumWaitTimeInHours()
-        {
-            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
-        }
-
         public string GetFromAddress()
         {
             return ConfigurationManager.AppSettings["FromAddress"];
@@ -66,6 +70,11 @@
         public string GetFromDisplayName()
         {
             return ConfigurationManager.AppSettings["DisplayName"];
+        }
+
+        public string GetMinimumWaitTimeInHours()
+        {
+            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
         }
 
         public string GetPassword()
@@ -88,9 +97,10 @@
             return ConfigurationManager.AppSettings["SmtpHost"];
         }
 
-        bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
-
-        bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolConfig("EnableNoPaymentAddressUsersFilter");
+        public bool IsFileCompressionDisabled()
+        {
+            return GetBoolConfig("FileCompressionDisabled");
+        }
 
         public bool IsMinimumWaitTimeMetDisabled()
         {
@@ -107,16 +117,9 @@
             return GetBoolConfig("DisableSecureFilePayload");
         }
 
-        bool ITestHarnessStatsDownloadSettings.Enabled => GetBoolConfig("EnableSqlExceptionDuringAddUsersTest");
-
-        bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
-
-        bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
-
         private bool GetBoolConfig(string appSettingName)
         {
-            bool value;
-            bool.TryParse(ConfigurationManager.AppSettings[appSettingName], out value);
+            bool.TryParse(ConfigurationManager.AppSettings[appSettingName], out bool value);
             return value;
         }
     }

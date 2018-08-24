@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Security;
+    using System.Security.Cryptography.X509Certificates;
     using Interfaces;
     using Interfaces.DataTransfer;
     using Interfaces.Logging;
@@ -48,12 +49,26 @@
             webClient.DownloadFile(filePayload.DownloadUri, filePayload.DownloadFilePath);
         }
 
+        private void LogCertificate(X509Certificate certificate, SslPolicyErrors policyErrors)
+        {
+            string message =
+                $"SSL Certificate from Server.{Environment.NewLine}Details - Issuer: '{certificate.Issuer}' Subject: '{certificate.Subject}' Error Code: {policyErrors}";
+
+            if (policyErrors == SslPolicyErrors.None)
+            {
+                loggingService.LogVerbose(message);
+            }
+            else
+            {
+                loggingService.LogError(message);
+            }
+        }
+
         private void SetUpFileDownload(FilePayload filePayload, IWebClient webClient)
         {
             webClient.SslPolicyOverride = (certificate, chain, policyErrors) =>
             {
-                loggingService.LogError(
-                    $"Invalid SSL Certificate from Server.{Environment.NewLine}Details - Issuer: '{certificate.Issuer}' Subject: '{certificate.Subject}' Error Code: {policyErrors}");
+                LogCertificate(certificate, policyErrors);
 
                 if (filePayload.AcceptAnySslCert)
                 {

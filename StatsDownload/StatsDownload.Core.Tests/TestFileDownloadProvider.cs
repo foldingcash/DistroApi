@@ -19,7 +19,7 @@
             dateTime = DateTime.Today;
 
             fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
-            fileDownloadDatabaseServiceMock.IsAvailable().Returns(true);
+            fileDownloadDatabaseServiceMock.IsAvailable().Returns((true, FailedReason.None));
 
             loggingServiceMock = Substitute.For<IFileDownloadLoggingService>();
 
@@ -126,21 +126,21 @@
         }
 
         [Test]
-        public void DownloadFile_WhenDataStoreIsNotAvailable_ReturnsDataStoreUnavailableResult()
+        public void DownloadFile_WhenDatabaseIsNotAvailable_ReturnsDatabaseUnavailableResult()
         {
-            SetUpWhenDataStoreIsNotAvailable();
+            SetUpWhenDatabaseIsNotAvailable();
 
             FileDownloadResult actual = InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
-            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DatabaseUnavailable));
             Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
-        public void DownloadFile_WhenDataStoreIsNotAvailable_SendsEmail()
+        public void DownloadFile_WhenDatabaseIsNotAvailable_SendsEmail()
         {
-            SetUpWhenDataStoreIsNotAvailable();
+            SetUpWhenDatabaseIsNotAvailable();
 
             FileDownloadResult actual = InvokeDownloadFile();
 
@@ -193,6 +193,18 @@
             FileDownloadResult actual = InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadConnectFailure_ReturnsFailedResultFileDownloadNotFound()
+        {
+            SetUpFileDownloadConnectFailure();
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadNotFound));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
@@ -256,6 +268,18 @@
             FileDownloadResult actual = InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
+        }
+
+        [Test]
+        public void DownloadFile_WhenFileDownloadProtocolError_ReturnsFailedResultFileDownloadNotFound()
+        {
+            SetUpFileDownloadProtocolError();
+
+            FileDownloadResult actual = InvokeDownloadFile();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadNotFound));
+            Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
         }
 
         [Test]
@@ -422,11 +446,21 @@
                 filePayloadUploadService, fileDownloadEmailService);
         }
 
+        private void SetUpFileDownloadConnectFailure()
+        {
+            SetUpFileDownloadWebException(WebExceptionStatus.ConnectFailure);
+        }
+
         private WebException SetUpFileDownloadFails()
         {
             var exception = new WebException();
             fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
             return exception;
+        }
+
+        private void SetUpFileDownloadProtocolError()
+        {
+            SetUpFileDownloadWebException(WebExceptionStatus.ProtocolError);
         }
 
         private void SetUpFileDownloadSettingsInvalid()
@@ -437,20 +471,25 @@
 
         private WebException SetUpFileDownloadTimeout()
         {
-            var exception = new WebException("timeout", WebExceptionStatus.Timeout);
-            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
+            return SetUpFileDownloadWebException(WebExceptionStatus.Timeout);
+        }
+
+        private WebException SetUpFileDownloadWebException(WebExceptionStatus webExceptionStatus)
+        {
+            var exception = new WebException("sampleWebException", webExceptionStatus);
+            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => throw exception);
             return exception;
         }
 
-        private void SetUpWhenDataStoreIsNotAvailable()
+        private void SetUpWhenDatabaseIsNotAvailable()
         {
-            fileDownloadDatabaseServiceMock.IsAvailable().Returns(false);
+            fileDownloadDatabaseServiceMock.IsAvailable().Returns((false, FailedReason.DatabaseUnavailable));
         }
 
         private Exception SetUpWhenExceptionThrown()
         {
             var expected = new Exception();
-            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw expected; });
+            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => throw expected);
             return expected;
         }
 

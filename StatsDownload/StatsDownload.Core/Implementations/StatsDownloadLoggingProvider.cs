@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
     using Extensions;
     using Interfaces;
     using Interfaces.DataTransfer;
@@ -13,12 +14,7 @@
 
         public StatsDownloadLoggingProvider(ILoggingService loggingService)
         {
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            this.loggingService = loggingService;
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public void LogError(string message)
@@ -43,6 +39,16 @@
                      + $"Team Number: {failedUserData.UserData?.TeamNumber}{Environment.NewLine}"
                      + $"Friendly Name: {failedUserData.UserData?.FriendlyName}{Environment.NewLine}"
                      + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}");
+        }
+
+        public void LogMethodFinished([CallerMemberName] string method = "")
+        {
+            loggingService.LogMethodFinished(method);
+        }
+
+        public void LogMethodInvoked([CallerMemberName] string method = "")
+        {
+            loggingService.LogMethodInvoked(method);
         }
 
         public void LogResult(FileDownloadResult result)

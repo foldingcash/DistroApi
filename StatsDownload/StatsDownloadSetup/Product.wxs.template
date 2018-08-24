@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <?if $(var.Platform) = x64 ?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+    <?define FileSource = "$(var.ProjectDir)\Files\x64" ?>
+  <?else ?>
+    <?define Win64 = "no" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+    <?define FileSource = "$(var.ProjectDir)\Files\x86" ?>  
+  <?endif ?>  
+
+  <Product Id="*" Name="FoldingCoin Stats Downloader $(var.Platform)" Language="1033" Version="1.0.0.0"
+           Manufacturer="FoldingCoin, Inc." UpgradeCode="61d25c2a-d1e3-4661-9c2a-cbb65bb7be5c">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <!-- UI customization -->
+    <!--
+    <WixVariable Id="WixUIBannerBmp" Value="images\BannerTop.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="images\Dialog.bmp" />
+    -->
+
+    <!-- Define icons (ID should not be longer than 18 chars and must end with ".exe") -->
+    <Icon Id="Icon.exe" SourceFile="images\fldc.ico" />
+    <!-- Set properties for add/remove programs -->
+    <Property Id="ARPPRODUCTICON" Value="Icon.exe" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="FoldingCoin Stats Downloader" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <UIRef Id="WixUI_InstallDir" />
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="$(var.PlatformProgramFilesFolder)">
+        <Directory Id="INSTALLFOLDER" Name="FoldingCoin Stats Downloader" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <ComponentGroupRef Id="FilesGroup"/>
+    </ComponentGroup>
+  </Fragment>
+
+
+  <?if $(var.Platform) = x64 ?>  
+    <!-- Files-x64.wxs -->
+  <?else ?>
+    <!-- Files-x86.wxs -->  
+  <?endif ?>
+</Wix>

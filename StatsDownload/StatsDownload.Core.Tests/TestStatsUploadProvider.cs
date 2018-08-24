@@ -20,7 +20,7 @@
         public void SetUp()
         {
             statsUploadDatabaseServiceMock = Substitute.For<IStatsUploadDatabaseService>();
-            statsUploadDatabaseServiceMock.IsAvailable().Returns(true);
+            statsUploadDatabaseServiceMock.IsAvailable().Returns((true, FailedReason.None));
             statsUploadDatabaseServiceMock.GetDownloadsReadyForUpload().Returns(new List<int> { 1, 2 });
             statsUploadDatabaseServiceMock.GetFileData(1).Returns("File1");
             statsUploadDatabaseServiceMock.GetFileData(2).Returns("File2");
@@ -35,7 +35,7 @@
             user3 = new UserData();
             user4 = new UserData();
 
-            failedUser1 = new FailedUserData();
+            failedUser1 = new FailedUserData(3, RejectionReason.UnexpectedFormat, new UserData());
             failedUser2 = new FailedUserData();
             failedUser3 = new FailedUserData();
             failedUser4 = new FailedUserData();
@@ -107,6 +107,37 @@
         }
 
         [Test]
+        public void UploadStatsFiles_WhenDatabaseIsNotAvailable_LogsResult()
+        {
+            SetUpWhenDatabaseIsNotAvailable();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            loggingServiceMock.Received().LogResults(actual);
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenDatabaseIsNotAvailable_ReturnsDatabaseUnavailableResult()
+        {
+            SetUpWhenDatabaseIsNotAvailable();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DatabaseUnavailable));
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenDatabaseIsNotAvailable_SendsEmail()
+        {
+            SetUpWhenDatabaseIsNotAvailable();
+
+            StatsUploadResults actual = InvokeUploadStatsFiles();
+
+            statsUploadEmailServiceMock.Received().SendEmail(actual);
+        }
+
+        [Test]
         public void UploadStatsFiles_WhenDatabaseTimeoutExceptionThrown_ReturnsDatabaseTimeoutResult()
         {
             SetUpWhenDatabaseTimeoutExceptionThrown();
@@ -116,37 +147,6 @@
             Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
             Assert.That(actual.UploadResults.ElementAt(0).FailedReason,
                 Is.EqualTo(FailedReason.UnexpectedDatabaseException));
-        }
-
-        [Test]
-        public void UploadStatsFiles_WhenDataStoreIsNotAvailable_LogsResult()
-        {
-            SetUpWhenDataStoreIsNotAvailable();
-
-            StatsUploadResults actual = InvokeUploadStatsFiles();
-
-            loggingServiceMock.Received().LogResults(actual);
-        }
-
-        [Test]
-        public void UploadStatsFiles_WhenDataStoreIsNotAvailable_ReturnsDataStoreUnavailableResult()
-        {
-            SetUpWhenDataStoreIsNotAvailable();
-
-            StatsUploadResults actual = InvokeUploadStatsFiles();
-
-            Assert.That(actual.Success, Is.False);
-            Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
-        }
-
-        [Test]
-        public void UploadStatsFiles_WhenDataStoreIsNotAvailable_SendsEmail()
-        {
-            SetUpWhenDataStoreIsNotAvailable();
-
-            StatsUploadResults actual = InvokeUploadStatsFiles();
-
-            statsUploadEmailServiceMock.Received().SendEmail(actual);
         }
 
         [Test]
@@ -354,7 +354,21 @@
         {
             InvokeUploadStatsFiles();
 
-            statsUploadEmailServiceMock.Received(2).SendEmail(Arg.Any<List<FailedUserData>>());
+            statsUploadEmailServiceMock
+                .Received(1).SendEmail(Arg.Is<IList<FailedUserData>>(data => data.Contains(failedUser2)));
+            statsUploadEmailServiceMock
+                .Received(1)
+                .SendEmail(Arg.Is<IList<FailedUserData>>(data =>
+                    data.Contains(failedUser3) && data.Contains(failedUser4)));
+        }
+
+        [Test]
+        public void UploadStatsFiles_WhenUnexpectedFormat_DoesNotSendEmail()
+        {
+            InvokeUploadStatsFiles();
+
+            statsUploadEmailServiceMock
+                .DidNotReceive().SendEmail(Arg.Is<IList<FailedUserData>>(data => data.Contains(failedUser1)));
         }
 
         private StatsUploadResults InvokeUploadStatsFiles()
@@ -372,21 +386,21 @@
                 statsUploadEmailService);
         }
 
+        private void SetUpWhenDatabaseIsNotAvailable()
+        {
+            statsUploadDatabaseServiceMock.IsAvailable().Returns((false, FailedReason.DatabaseUnavailable));
+        }
+
         private void SetUpWhenDatabaseTimeoutExceptionThrown()
         {
             var exception = new TestDbTimeoutException();
             statsUploadDatabaseServiceMock.GetFileData(1).Throws(exception);
         }
 
-        private void SetUpWhenDataStoreIsNotAvailable()
-        {
-            statsUploadDatabaseServiceMock.IsAvailable().Returns(false);
-        }
-
         private Exception SetUpWhenExceptionBeforeAnUploadStarts()
         {
             var exception = new Exception();
-            statsUploadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
+            statsUploadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => throw exception);
             return exception;
         }
 

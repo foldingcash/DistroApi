@@ -22,18 +22,9 @@
 
         public StatsDownloadEmailProvider(IEmailService emailService, IErrorMessageService errorMessageService)
         {
-            if (emailService == null)
-            {
-                throw new ArgumentNullException(nameof(emailService));
-            }
-
-            if (errorMessageService == null)
-            {
-                throw new ArgumentNullException(nameof(errorMessageService));
-            }
-
-            this.emailService = emailService;
-            this.errorMessageService = errorMessageService;
+            this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            this.errorMessageService =
+                errorMessageService ?? throw new ArgumentNullException(nameof(errorMessageService));
         }
 
         public void SendEmail(FileDownloadResult fileDownloadResult)

@@ -74,6 +74,22 @@
                                         + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}");
         }
 
+        [Test]
+        public void LogMethodFinished_WhenInvoked_LogsMethodFinished()
+        {
+            systemUnderTest.LogMethodFinished();
+
+            loggingServiceMock.Received().LogMethodFinished(nameof(LogMethodFinished_WhenInvoked_LogsMethodFinished));
+        }
+
+        [Test]
+        public void LogMethodInvoked_WhenInvoked_LogsMethodInvoked()
+        {
+            systemUnderTest.LogMethodInvoked();
+
+            loggingServiceMock.Received().LogMethodInvoked(nameof(LogMethodInvoked_WhenInvoked_LogsMethodInvoked));
+        }
+
         [TestCase(150)]
         [TestCase(50)]
         [TestCase(0)]
@@ -125,7 +141,7 @@
         [Test]
         public void LogResult_WhenStatsUploadResult_LogsResult()
         {
-            var statsUploadResult = new StatsUploadResult(1, FailedReason.DataStoreUnavailable);
+            var statsUploadResult = new StatsUploadResult(1, FailedReason.DatabaseUnavailable);
 
             systemUnderTest.LogResult(statsUploadResult);
 
@@ -137,7 +153,7 @@
         [Test]
         public void LogResults_WhenInvoked_LogsResults()
         {
-            var statsUploadResult = new StatsUploadResult(1, FailedReason.DataStoreUnavailable);
+            var statsUploadResult = new StatsUploadResult(1, FailedReason.DatabaseUnavailable);
             var statsUploadResults =
                 new StatsUploadResults(new List<StatsUploadResult> { statsUploadResult, statsUploadResult });
 

@@ -2,21 +2,25 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Castle.Core" Version="4.3.0" />
+    <PackageReference Include="Castle.Core" Version="4.3.1" />
     <PackageReference Include="Castle.Windsor" Version="4.1.0" />
+    <PackageReference Include="NLog" Version="4.5.8" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.2.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Database.CastleWindsor\StatsDownload.Database.CastleWindsor.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Database\StatsDownload.Database.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Logging\StatsDownload.Logging.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Wrappers\StatsDownload.Wrappers.csproj" />
     <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj" />
-    <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj" />
-    <ProjectReference Include="..\StatsDownload.Logging\StatsDownload.Logging.csproj" />
     <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj" />
   </ItemGroup>
 
@@ -24,6 +28,12 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.4.1.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

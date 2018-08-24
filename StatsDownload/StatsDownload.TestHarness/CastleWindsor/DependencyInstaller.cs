@@ -8,11 +8,14 @@
     using Core.Interfaces;
     using Core.Interfaces.Logging;
     using Core.Interfaces.Networking;
-    using Core.Wrappers;
-    using Core.Wrappers.Networking;
+    using Database;
+    using Database.CastleWindsor;
+    using Database.Wrappers;
     using Email;
     using Logging;
     using SharpZipLib;
+    using Wrappers;
+    using Wrappers.Networking;
 
     public class DependencyInstaller : IWindsorInstaller
     {
@@ -29,8 +32,9 @@
                          .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessOneHundredUsersFilter>(),
-                Component.For<IFileDownloadDatabaseService, IStatsUploadDatabaseService>()
-                         .ImplementedBy<TestHarnessStatsDownloadDatabaseProvider>());
+                Component.For<IStatsUploadDatabaseService>()
+                         .ImplementedBy<TestHarnessStatsUploadDatabaseProvider>(),
+                Component.For<IFileCompressionService>().ImplementedBy<TestHarnessFileCompressionProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
@@ -42,6 +46,8 @@
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
+                Component.For<IStatsDownloadDatabaseParameterService>()
+                         .ImplementedBy<StatsDownloadDatabaseParameterProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<MySqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<MicrosoftSqlDatabaseConnectionProvider>()
                          .IsDefault(),
@@ -49,8 +55,14 @@
                 Component.For<IDatabaseConnectionServiceFactory>().AsFactory(selector =>
                     selector.SelectedWith<DatabaseFactoryComponentSelector>()),
                 Component
-                    .For<IFileDownloadDatabaseService, IStatsUploadDatabaseService, IStatsDownloadDatabaseService>()
+                    .For<IStatsDownloadDatabaseService>()
                     .ImplementedBy<StatsDownloadDatabaseProvider>(),
+                Component
+                    .For<IFileDownloadDatabaseService>()
+                    .ImplementedBy<FileDownloadDatabaseProvider>(),
+                Component
+                    .For<IStatsUploadDatabaseService>()
+                    .ImplementedBy<StatsUploadDatabaseProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<SecureFilePayloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),

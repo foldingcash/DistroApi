@@ -58,16 +58,19 @@
             {
                 LogMethodInvoked(nameof(DownloadStatsFile));
 
-                if (DataStoreUnavailable())
+                if (DatabaseUnavailable(out FailedReason failedReason))
                 {
-                    return HandleDataStoreUnavailable(filePayload);
+                    FileDownloadResult failedResult =
+                        NewFailedFileDownloadResult(failedReason, filePayload);
+                    LogResult(failedResult);
+                    SendEmail(failedResult);
+                    return failedResult;
                 }
 
                 UpdateToLatest();
                 LogVerbose($"Stats file download started: {DateTimeNow()}");
                 NewFileDownloadStarted(filePayload);
 
-                FailedReason failedReason;
                 if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
                 {
                     return HandleDownloadNotReadyToRun(failedReason, filePayload);
@@ -88,9 +91,11 @@
             resourceCleanupService.Cleanup(fileDownloadResult);
         }
 
-        private bool DataStoreUnavailable()
+        private bool DatabaseUnavailable(out FailedReason failedReason)
         {
-            return !fileDownloadDatabaseService.IsAvailable();
+            (bool isAvailable, FailedReason reason) = fileDownloadDatabaseService.IsAvailable();
+            failedReason = reason;
+            return !isAvailable;
         }
 
         private DateTime DateTimeNow()
@@ -106,15 +111,6 @@
         private void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
             fileDownloadDatabaseService.FileDownloadError(fileDownloadResult);
-        }
-
-        private FileDownloadResult HandleDataStoreUnavailable(FilePayload filePayload)
-        {
-            FileDownloadResult failedResult =
-                NewFailedFileDownloadResult(FailedReason.DataStoreUnavailable, filePayload);
-            LogResult(failedResult);
-            SendEmail(failedResult);
-            return failedResult;
         }
 
         private FileDownloadResult HandleDownloadNotReadyToRun(FailedReason failedReason, FilePayload filePayload)
@@ -195,6 +191,12 @@
             if (webException?.Status == WebExceptionStatus.Timeout)
             {
                 return NewFailedFileDownloadResult(FailedReason.FileDownloadTimeout, filePayload);
+            }
+
+            if (webException?.Status == WebExceptionStatus.ConnectFailure ||
+                webException?.Status == WebExceptionStatus.ProtocolError)
+            {
+                return NewFailedFileDownloadResult(FailedReason.FileDownloadNotFound, filePayload);
             }
 
             if (exception is FileDownloadFailedDecompressionException)
