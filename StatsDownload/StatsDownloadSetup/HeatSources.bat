@@ -5,18 +5,20 @@ IF NOT EXIST ".\Files\x64" MKDIR ".\Files\x64"
 DEL /Q ".\Files\x86\*"
 DEL /Q ".\Files\x64\*"
 
+SET VersionSuffix=1.1.0
+
 CD..
 CD StatsDownload.FileDownload.Console
-dotnet publish -c Release --self-contained -r win-x64
+dotnet publish -c Release --self-contained -r win-x64 --version-suffix %VersionSuffix%
 COPY /Y "bin\Release\netcoreapp2.0\win-x64\publish\*" "..\StatsDownloadSetup\Files\x64"
-dotnet publish -c Release --self-contained -r win-x86
+dotnet publish -c Release --self-contained -r win-x86 --version-suffix %VersionSuffix%
 COPY /Y "bin\Release\netcoreapp2.0\win-x86\publish\*" "..\StatsDownloadSetup\Files\x86"
 
 CD..
 CD StatsDownload.StatsUpload.Console
-dotnet publish -c Release --self-contained -r win-x64
+dotnet publish -c Release --self-contained -r win-x64 --version-suffix %VersionSuffix%
 COPY /Y "bin\Release\netcoreapp2.0\win-x64\publish\*" "..\StatsDownloadSetup\Files\x64"
-dotnet publish -c Release --self-contained -r win-x86
+dotnet publish -c Release --self-contained -r win-x86 --version-suffix %VersionSuffix%
 COPY /Y "bin\Release\netcoreapp2.0\win-x86\publish\*" "..\StatsDownloadSetup\Files\x86"
 
 CD..
