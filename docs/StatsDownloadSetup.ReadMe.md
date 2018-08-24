@@ -9,9 +9,20 @@ The stats downloader setup is used to create a Windows installation package to i
 * .NET Framework 4.7.1
 * WiX
 
-## Installation Package
+## Preparing for a Release
 
-### Creating the Installation Package
+### Update Version Number
+
+1. Update all projects
+	* StatsDownload, StatsDownloadSetup, and StatsDownloadApi
+	* Do not update WxsMerger unless modified
+2. Update Product.wxs.template
+
+### Update .NET Core Version
+
+If the .NET Core version has changed, then update the batch script that is havesting the source to pull from the correct folder (e.g. netcoreapp2.0 -> netcoreapp2.1).
+
+## Creating the Installation Package
 
 1. Load StatsDownload solution
 2. Run unit tests and ensure all tests pass
