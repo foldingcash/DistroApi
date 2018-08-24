@@ -22,7 +22,7 @@
         {
             container.Register(Component.For<ILogger>()
                                         .Instance(LogManager
-                                                  .LoadConfiguration("nlog.config").GetCurrentClassLogger()));
+                                                  .LoadConfiguration("nlog.statsupload.config").GetCurrentClassLogger()));
 
             container.Register(
                 Component.For<IApplicationLoggingService>().ImplementedBy<StatsUploadConsoleLoggingProvider>(),
