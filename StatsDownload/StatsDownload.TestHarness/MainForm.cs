@@ -66,6 +66,10 @@
         {
             FileDownloadButton.Enabled = enable;
             UploadStatsButton.Enabled = enable;
+
+            ExportDirectoryTextBox.Enabled = enable;
+            ExportButton.Enabled = enable;
+
             ImportDirectoryTextBox.Enabled = enable;
             ImportButton.Enabled = enable;
         }
@@ -129,9 +133,10 @@
                         return;
                     }
 
-                    fileReader.Read();
-
-                    downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                    while (fileReader.Read())
+                    {
+                        downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                    }
                 }
             });
 
