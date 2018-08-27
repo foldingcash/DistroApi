@@ -22,30 +22,13 @@
             IDownloadSettingsValidatorService downloadSettingsValidatorService,
             ILoggingService loggingService)
         {
-            if (dateTimeService == null)
-            {
-                throw new ArgumentNullException(nameof(dateTimeService));
-            }
-
-            if (downloadSettingsService == null)
-            {
-                throw new ArgumentNullException(nameof(downloadSettingsService));
-            }
-
-            if (downloadSettingsValidatorService == null)
-            {
-                throw new ArgumentNullException(nameof(downloadSettingsValidatorService));
-            }
-
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            this.dateTimeService = dateTimeService;
-            this.downloadSettingsService = downloadSettingsService;
-            this.downloadSettingsValidatorService = downloadSettingsValidatorService;
-            this.loggingService = loggingService;
+            this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            this.downloadSettingsService = downloadSettingsService ??
+                                           throw new ArgumentNullException(nameof(downloadSettingsService));
+            this.downloadSettingsValidatorService = downloadSettingsValidatorService ??
+                                                    throw new ArgumentNullException(
+                                                        nameof(downloadSettingsValidatorService));
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public void SetFilePayloadDownloadDetails(FilePayload filePayload)
@@ -130,29 +113,25 @@
             string unsafeAcceptAnySslCert = GetAcceptAnySslCert();
             string unsafeMinimumWaitTimeInHours = GetMinimumWaitTimeInHours();
 
-            Uri downloadUri;
-            if (!TryParseDownloadUri(unsafeDownloadUri, out downloadUri))
+            if (!TryParseDownloadUri(unsafeDownloadUri, out Uri downloadUri))
             {
                 throw NewFileDownloadArgumentException("Download Uri is invalid");
             }
 
-            int timeoutInSeconds;
-            if (!TryParseTimeout(downloadTimeout, out timeoutInSeconds))
+            if (!TryParseTimeout(downloadTimeout, out int timeoutInSeconds))
             {
                 timeoutInSeconds = 100;
                 loggingService.LogVerbose("The download timeout configuration was invalid, using the default value.");
             }
 
-            bool acceptAnySslCert;
-            if (!TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out acceptAnySslCert))
+            if (!TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out bool acceptAnySslCert))
             {
                 acceptAnySslCert = false;
                 loggingService.LogVerbose(
                     "The accept any SSL cert configuration was invalid, using the default value.");
             }
 
-            TimeSpan minimumWaitTimeSpan;
-            if (!TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out minimumWaitTimeSpan))
+            if (!TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan))
             {
                 minimumWaitTimeSpan = MinimumWait.TimeSpan;
                 loggingService.LogVerbose("The minimum wait time configuration was invalid, using the default value.");

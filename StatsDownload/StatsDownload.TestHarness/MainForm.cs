@@ -66,6 +66,10 @@
         {
             FileDownloadButton.Enabled = enable;
             UploadStatsButton.Enabled = enable;
+
+            ExportDirectoryTextBox.Enabled = enable;
+            ExportButton.Enabled = enable;
+
             ImportDirectoryTextBox.Enabled = enable;
             ImportButton.Enabled = enable;
         }
@@ -90,6 +94,8 @@
                         var service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
 
                         int filesRemaining = files.Length;
+
+                        Log($"'{filesRemaining}' files are to be exported");
 
                         foreach ((int fileId, string fileName) in files)
                         {
@@ -129,13 +135,12 @@
                         return;
                     }
 
-                    fileReader.Read();
-
-                    downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                    while (fileReader.Read())
+                    {
+                        downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                    }
                 }
             });
-
-            Log($"'{downloads.Count}' files are to be exported");
 
             return downloads.ToArray();
         }
@@ -167,11 +172,19 @@
                 ConfigurationManager.AppSettings["FileCompressionDisabled"] = "true";
                 ConfigurationManager.AppSettings["DisableMinimumWaitTime"] = "true";
 
+                int filesRemaining = importFiles.Length;
+
+                Log($"'{filesRemaining}' files are to be imported");
+
                 foreach (string importFile in importFiles)
                 {
                     ConfigurationManager.AppSettings["DownloadUri"] = importFile;
 
                     CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); });
+
+                    filesRemaining--;
+
+                    Log($"File imported. '{filesRemaining}' remaining files to be imported");
                 }
 
                 CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFiles(); });

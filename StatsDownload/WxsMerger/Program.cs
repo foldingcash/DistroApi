@@ -4,14 +4,14 @@
     using System.Collections.Generic;
     using System.IO;
 
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             ValidateArgs(args);
-            var contentTarget = ReadTargetWxsFile(args[0]);
-            var content32bit = ReadSourceWxsFile(args[1]);
-            var content64bit = ReadSourceWxsFile(args[2]);
+            string contentTarget = ReadTargetWxsFile(args[0]);
+            string content32bit = ReadSourceWxsFile(args[1]);
+            string content64bit = ReadSourceWxsFile(args[2]);
             contentTarget = contentTarget.Replace("<!-- Files-x86.wxs -->", content32bit);
             contentTarget = contentTarget.Replace("<!-- Files-x64.wxs -->", content64bit);
             File.WriteAllText(args[3], contentTarget);
@@ -19,7 +19,7 @@
 
         private static string ReadSourceWxsFile(string filename)
         {
-            var lines = ReadWxsFile(filename);
+            List<string> lines = ReadWxsFile(filename);
             while (string.IsNullOrWhiteSpace(lines[0]))
             {
                 lines.RemoveAt(0);
@@ -38,7 +38,7 @@
 
         private static string ReadTargetWxsFile(string filename)
         {
-            var lines = ReadWxsFile(filename);
+            List<string> lines = ReadWxsFile(filename);
             return string.Join(Environment.NewLine, lines);
         }
 
@@ -51,7 +51,7 @@
                 {
                     while (!reader.EndOfStream)
                     {
-                        var line = reader.ReadLine();
+                        string line = reader.ReadLine();
                         if (line != null)
                         {
                             lines.Add(line);
