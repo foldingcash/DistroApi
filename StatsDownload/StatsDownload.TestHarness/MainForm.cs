@@ -5,6 +5,7 @@
     using System.Configuration;
     using System.Data.Common;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Forms;
     using Castle.MicroKernel.Registration;
@@ -231,16 +232,21 @@
         {
             using (var selectExportFilesForm = new SelectExportFilesForm())
             {
+                foreach ((int fileId, string fileName) file in files)
+                {
+                    selectExportFilesForm.ExportFilesCheckedListBox.Items.Add(file, CheckState.Unchecked);
+                }
+
                 DialogResult result = selectExportFilesForm.ShowDialog();
 
                 if (result == DialogResult.OK)
                 {
+                    return selectExportFilesForm
+                           .ExportFilesCheckedListBox.CheckedItems.Cast<(int, string)>().ToArray();
                 }
-
-                selectExportFilesForm.Hide();
             }
 
-            return null;
+            return new (int, string)[0];
         }
 
         private async void UploadStatsButton_Click(object sender, EventArgs e)
