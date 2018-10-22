@@ -36,6 +36,7 @@
         [TestCase("Name_TAG_Address")]
         [TestCase("Name.TAG.Address")]
         [TestCase("Name-TAG-Address")]
+        [TestCase("Name__Address")]
         public void Parse_WhenInvoked_ReturnsBitcoinAddress(string name)
         {
             var userData = new UserData(0, name, 0, 0, 0);
@@ -51,6 +52,7 @@
         [TestCase("Name_TAG_Address")]
         [TestCase("Name.TAG.Address")]
         [TestCase("Name-TAG-Address")]
+        [TestCase("Name__Address")]
         public void Parse_WhenInvoked_ReturnsFriendlyName(string name)
         {
             var userData = new UserData(0, name, 0, 0, 0);
