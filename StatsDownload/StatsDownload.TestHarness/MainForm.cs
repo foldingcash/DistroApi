@@ -82,36 +82,14 @@
                 RunActionAsync(
                     () =>
                     {
-                        string exportDirectory = ExportDirectoryTextBox.Text;
-
-                        if (!Directory.Exists(exportDirectory))
+                        if (ExportAllRadioButton.Checked)
                         {
-                            Log(
-                                $"The directory does not exist, provide a new directory and try again. Directory: '{exportDirectory}'");
-                            CreateSeparationInLog();
-                            return;
+                            MassExport(files => files);
                         }
-
-                        (int fileId, string fileName)[] files = GetFiles();
-                        var service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
-
-                        int filesRemaining = files.Length;
-
-                        Log($"'{filesRemaining}' files are to be exported");
-
-                        foreach ((int fileId, string fileName) in files)
+                        else if (ExportSubsetRadioButton.Checked)
                         {
-                            string path = Path.Combine(exportDirectory, fileName);
-                            string fileData = service.GetFileData(fileId);
-
-                            File.WriteAllText(path, fileData);
-
-                            filesRemaining--;
-
-                            Log($"File exported. '{filesRemaining}' remaining files to be exported");
+                            MassExport(SelectSubsetOfExportFiles);
                         }
-
-                        CreateSeparationInLog();
                     });
         }
 
@@ -195,6 +173,43 @@
             });
         }
 
+        private void MassExport(
+            Func<(int fileId, string fileName)[], (int fileId, string fileName)[]> selectFilesFunction)
+        {
+            string exportDirectory = ExportDirectoryTextBox.Text;
+
+            if (!Directory.Exists(exportDirectory))
+            {
+                Log(
+                    $"The directory does not exist, provide a new directory and try again. Directory: '{exportDirectory}'");
+                CreateSeparationInLog();
+                return;
+            }
+
+            (int fileId, string fileName)[] files = GetFiles();
+            var service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
+
+            (int fileId, string fileName)[] subsetFiles = selectFilesFunction(files);
+
+            int filesRemaining = subsetFiles.Length;
+
+            Log($"'{filesRemaining}' files are to be exported");
+
+            foreach ((int fileId, string fileName) in subsetFiles)
+            {
+                string path = Path.Combine(exportDirectory, fileName);
+                string fileData = service.GetFileData(fileId);
+
+                File.WriteAllText(path, fileData);
+
+                filesRemaining--;
+
+                Log($"File exported. '{filesRemaining}' remaining files to be exported");
+            }
+
+            CreateSeparationInLog();
+        }
+
         private async Task RunActionAsync(Action action)
         {
             try
@@ -210,6 +225,22 @@
             {
                 EnableGui(true);
             }
+        }
+
+        private (int fileId, string fileName)[] SelectSubsetOfExportFiles((int fileId, string fileName)[] files)
+        {
+            using (var selectExportFilesForm = new SelectExportFilesForm())
+            {
+                DialogResult result = selectExportFilesForm.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                }
+
+                selectExportFilesForm.Hide();
+            }
+
+            return null;
         }
 
         private async void UploadStatsButton_Click(object sender, EventArgs e)
