@@ -68,6 +68,8 @@
             UploadStatsButton.Enabled = enable;
 
             ExportDirectoryTextBox.Enabled = enable;
+            ExportAllRadioButton.Enabled = enable;
+            ExportSubsetRadioButton.Enabled = enable;
             ExportButton.Enabled = enable;
 
             ImportDirectoryTextBox.Enabled = enable;
