@@ -1,9 +1,8 @@
 ﻿namespace StatsDownload.TestHarness
 {
-    using System;
     using System.Windows.Forms;
 
-    public interface ISelectExportFilesProvider : IDisposable
+    public interface ISelectExportFilesProvider
     {
         void AddFilesToList((int fileId, string fileName)[] files);
 
