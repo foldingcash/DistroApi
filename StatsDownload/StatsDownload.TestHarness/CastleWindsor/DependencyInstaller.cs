@@ -34,7 +34,8 @@
                 Component.For<IStatsFileParserService>().ImplementedBy<TestHarnessOneHundredUsersFilter>(),
                 Component.For<IStatsUploadDatabaseService>()
                          .ImplementedBy<TestHarnessStatsUploadDatabaseProvider>(),
-                Component.For<IFileCompressionService>().ImplementedBy<TestHarnessFileCompressionProvider>());
+                Component.For<IFileCompressionService>().ImplementedBy<TestHarnessFileCompressionProvider>(),
+                Component.For<ISelectExportFilesProvider>().ImplementedBy<SelectExportFilesForm>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),

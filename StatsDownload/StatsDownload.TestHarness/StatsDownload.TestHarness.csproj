@@ -85,6 +85,7 @@
   <ItemGroup>
     <Compile Include="CastleWindsor\DependencyInstaller.cs" />
     <Compile Include="CastleWindsor\DependencyRegistration.cs" />
+    <Compile Include="ISelectExportFilesProvider.cs" />
     <Compile Include="ITestHarnessSettingsService.cs" />
     <Compile Include="ITestHarnessStatsDownloadSettings.cs" />
     <Compile Include="MainForm.cs">
@@ -125,7 +126,9 @@
     <EmbeddedResource Include="SelectExportFilesForm.resx">
       <DependentUpon>SelectExportFilesForm.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

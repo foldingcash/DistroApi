@@ -81,9 +81,8 @@
         }
 
         #endregion
-
-        public System.Windows.Forms.CheckedListBox ExportFilesCheckedListBox;
         private System.Windows.Forms.Button FinishedButton;
         private System.Windows.Forms.Button CancelButton;
+        private System.Windows.Forms.CheckedListBox ExportFilesCheckedListBox;
     }
 }

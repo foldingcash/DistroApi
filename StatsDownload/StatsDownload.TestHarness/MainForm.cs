@@ -5,7 +5,6 @@
     using System.Configuration;
     using System.Data.Common;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Forms;
     using Castle.MicroKernel.Registration;
@@ -41,18 +40,34 @@
 
         private void CreateFileDownloadServiceAndPerformAction(Action<IFileDownloadService> fileDownloadServiceAction)
         {
-            var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
-            fileDownloadServiceAction?.Invoke(fileDownloadService);
-            CreateSeparationInLog();
-            WindsorContainer.Instance.Release(fileDownloadService);
+            IFileDownloadService fileDownloadService = null;
+
+            try
+            {
+                fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
+                fileDownloadServiceAction?.Invoke(fileDownloadService);
+                CreateSeparationInLog();
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(fileDownloadService);
+            }
         }
 
         private void CreateFileUploadServiceAndPerformAction(Action<IStatsUploadService> fileUploadServiceAction)
         {
-            var fileUploadService = WindsorContainer.Instance.Resolve<IStatsUploadService>();
-            fileUploadServiceAction?.Invoke(fileUploadService);
-            CreateSeparationInLog();
-            WindsorContainer.Instance.Release(fileUploadService);
+            IStatsUploadService fileUploadService = null;
+
+            try
+            {
+                fileUploadService = WindsorContainer.Instance.Resolve<IStatsUploadService>();
+                fileUploadServiceAction?.Invoke(fileUploadService);
+                CreateSeparationInLog();
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(fileUploadService);
+            }
         }
 
         private void CreateSeparationInLog()
@@ -101,27 +116,39 @@
                     () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
         }
 
-        private (int fileId, string fileName)[] GetFiles()
+        private (int fileId, string fileName)[] GetAllFiles()
         {
             var downloads = new List<(int downloadId, string fileName)>();
-            var databaseService = WindsorContainer.Instance.Resolve<IStatsDownloadDatabaseService>();
-            databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
-            {
-                using (DbDataReader fileReader =
-                    service.ExecuteReader(
-                        "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
-                {
-                    if (!fileReader.HasRows)
-                    {
-                        return;
-                    }
 
-                    while (fileReader.Read())
+            IStatsDownloadDatabaseService databaseService = null;
+
+            try
+            {
+                databaseService = WindsorContainer.Instance.Resolve<IStatsDownloadDatabaseService>();
+
+                databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
+                {
+                    using (DbDataReader fileReader =
+                        service.ExecuteReader(
+                            "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
                     {
-                        downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                        if (!fileReader.HasRows)
+                        {
+                            return;
+                        }
+
+                        while (fileReader.Read())
+                        {
+                            downloads.Add((fileReader.GetInt32(0),
+                                $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                        }
                     }
-                }
-            });
+                });
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(databaseService);
+            }
 
             return downloads.ToArray();
         }
@@ -187,28 +214,38 @@
                 return;
             }
 
-            (int fileId, string fileName)[] files = GetFiles();
-            var service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
+            (int fileId, string fileName)[] allFiles = GetAllFiles();
 
-            (int fileId, string fileName)[] subsetFiles = selectFilesFunction(files);
+            IStatsUploadDatabaseService service = null;
 
-            int filesRemaining = subsetFiles.Length;
-
-            Log($"'{filesRemaining}' files are to be exported");
-
-            foreach ((int fileId, string fileName) in subsetFiles)
+            try
             {
-                string path = Path.Combine(exportDirectory, fileName);
-                string fileData = service.GetFileData(fileId);
+                service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
 
-                File.WriteAllText(path, fileData);
+                (int fileId, string fileName)[] subsetFiles = selectFilesFunction(allFiles);
 
-                filesRemaining--;
+                int filesRemaining = subsetFiles.Length;
 
-                Log($"File exported. '{filesRemaining}' remaining files to be exported");
+                Log($"'{filesRemaining}' files are to be exported");
+
+                foreach ((int fileId, string fileName) in subsetFiles)
+                {
+                    string path = Path.Combine(exportDirectory, fileName);
+                    string fileData = service.GetFileData(fileId);
+
+                    File.WriteAllText(path, fileData);
+
+                    filesRemaining--;
+
+                    Log($"File exported. '{filesRemaining}' remaining files to be exported");
+                }
+
+                CreateSeparationInLog();
             }
-
-            CreateSeparationInLog();
+            finally
+            {
+                WindsorContainer.Instance.Release(service);
+            }
         }
 
         private async Task RunActionAsync(Action action)
@@ -230,20 +267,24 @@
 
         private (int fileId, string fileName)[] SelectSubsetOfExportFiles((int fileId, string fileName)[] files)
         {
-            using (var selectExportFilesForm = new SelectExportFilesForm())
+            ISelectExportFilesProvider selectExportFilesForm = null;
+
+            try
             {
-                foreach ((int fileId, string fileName) file in files)
-                {
-                    selectExportFilesForm.ExportFilesCheckedListBox.Items.Add(file, CheckState.Unchecked);
-                }
+                selectExportFilesForm = WindsorContainer.Instance.Resolve<ISelectExportFilesProvider>();
+
+                selectExportFilesForm.AddFilesToList(files);
 
                 DialogResult result = selectExportFilesForm.ShowDialog();
 
                 if (result == DialogResult.OK)
                 {
-                    return selectExportFilesForm
-                           .ExportFilesCheckedListBox.CheckedItems.Cast<(int, string)>().ToArray();
+                    return selectExportFilesForm.GetSelectedFiles();
                 }
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(selectExportFilesForm);
             }
 
             return new (int, string)[0];
