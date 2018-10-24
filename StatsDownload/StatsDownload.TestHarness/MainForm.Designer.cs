@@ -40,6 +40,8 @@
             this.ExportDirectoryLabel = new System.Windows.Forms.Label();
             this.ExportDirectoryTextBox = new System.Windows.Forms.TextBox();
             this.ExportButton = new System.Windows.Forms.Button();
+            this.ExportAllRadioButton = new System.Windows.Forms.RadioButton();
+            this.ExportSubsetRadioButton = new System.Windows.Forms.RadioButton();
             this.MassImportGroupBox.SuspendLayout();
             this.MassExportGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -117,12 +119,14 @@
             // 
             // MassExportGroupBox
             // 
+            this.MassExportGroupBox.Controls.Add(this.ExportSubsetRadioButton);
+            this.MassExportGroupBox.Controls.Add(this.ExportAllRadioButton);
             this.MassExportGroupBox.Controls.Add(this.ExportDirectoryLabel);
             this.MassExportGroupBox.Controls.Add(this.ExportDirectoryTextBox);
             this.MassExportGroupBox.Controls.Add(this.ExportButton);
-            this.MassExportGroupBox.Location = new System.Drawing.Point(17, 210);
+            this.MassExportGroupBox.Location = new System.Drawing.Point(17, 189);
             this.MassExportGroupBox.Name = "MassExportGroupBox";
-            this.MassExportGroupBox.Size = new System.Drawing.Size(263, 141);
+            this.MassExportGroupBox.Size = new System.Drawing.Size(263, 162);
             this.MassExportGroupBox.TabIndex = 5;
             this.MassExportGroupBox.TabStop = false;
             this.MassExportGroupBox.Text = "Mass Export";
@@ -146,13 +150,35 @@
             // 
             // ExportButton
             // 
-            this.ExportButton.Location = new System.Drawing.Point(6, 86);
+            this.ExportButton.Location = new System.Drawing.Point(5, 104);
             this.ExportButton.Name = "ExportButton";
             this.ExportButton.Size = new System.Drawing.Size(251, 49);
             this.ExportButton.TabIndex = 3;
             this.ExportButton.Text = "Export";
             this.ExportButton.UseVisualStyleBackColor = true;
             this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
+            // 
+            // ExportAllRadioButton
+            // 
+            this.ExportAllRadioButton.AutoSize = true;
+            this.ExportAllRadioButton.Checked = true;
+            this.ExportAllRadioButton.Location = new System.Drawing.Point(8, 77);
+            this.ExportAllRadioButton.Name = "ExportAllRadioButton";
+            this.ExportAllRadioButton.Size = new System.Drawing.Size(44, 21);
+            this.ExportAllRadioButton.TabIndex = 6;
+            this.ExportAllRadioButton.TabStop = true;
+            this.ExportAllRadioButton.Text = "All";
+            this.ExportAllRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // ExportSubsetRadioButton
+            // 
+            this.ExportSubsetRadioButton.AutoSize = true;
+            this.ExportSubsetRadioButton.Location = new System.Drawing.Point(58, 77);
+            this.ExportSubsetRadioButton.Name = "ExportSubsetRadioButton";
+            this.ExportSubsetRadioButton.Size = new System.Drawing.Size(73, 21);
+            this.ExportSubsetRadioButton.TabIndex = 7;
+            this.ExportSubsetRadioButton.Text = "Subset";
+            this.ExportSubsetRadioButton.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -193,6 +219,8 @@
         private System.Windows.Forms.Label ExportDirectoryLabel;
         private System.Windows.Forms.TextBox ExportDirectoryTextBox;
         private System.Windows.Forms.Button ExportButton;
+        private System.Windows.Forms.RadioButton ExportSubsetRadioButton;
+        private System.Windows.Forms.RadioButton ExportAllRadioButton;
     }
 }
 
