@@ -39,7 +39,6 @@
             this.ExportFilesCheckedListBox.Location = new System.Drawing.Point(122, 12);
             this.ExportFilesCheckedListBox.Name = "ExportFilesCheckedListBox";
             this.ExportFilesCheckedListBox.Size = new System.Drawing.Size(401, 463);
-            this.ExportFilesCheckedListBox.Sorted = true;
             this.ExportFilesCheckedListBox.TabIndex = 0;
             // 
             // FinishedButton
