@@ -318,7 +318,7 @@
             databaseConnection.ExecuteStoredProcedure(Constants.StatsUploadDatabase.GetFileDataProcedureName,
                 new List<DbParameter> { download, fileName, fileExtension, fileData });
 
-            return (string) fileData.Value;
+            return fileData.Value as string;
         }
 
         private bool IsUserDataValid(AddUserDataParameters addUserParameters, UserData userData,
