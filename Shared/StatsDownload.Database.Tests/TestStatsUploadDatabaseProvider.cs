@@ -564,6 +564,23 @@
         }
 
         [Test]
+        public void GetFileData_WhenFileDataDbNull_ReturnsNull()
+        {
+            var dbParameter = Substitute.For<DbParameter>();
+            dbParameter.Value.Returns(DBNull.Value);
+
+            databaseConnectionServiceMock.ClearSubstitute();
+            databaseConnectionServiceMock.CreateParameter("@FileData", DbType.String, ParameterDirection.Output, -1)
+                                         .Returns(dbParameter);
+            databaseConnectionServiceMock.CreateParameter("@DownloadId", DbType.Int32, ParameterDirection.Input)
+                                         .Returns(Substitute.For<DbParameter>());
+
+            string actual = systemUnderTest.GetFileData(100);
+
+            Assert.That(actual, Is.Null);
+        }
+
+        [Test]
         public void GetFileData_WhenInvoked_GetFileData()
         {
             systemUnderTest.GetFileData(100);
