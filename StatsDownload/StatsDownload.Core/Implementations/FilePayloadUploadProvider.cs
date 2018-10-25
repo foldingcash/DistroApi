@@ -16,24 +16,11 @@
             IFileReaderService fileReaderService,
             IFileDownloadDatabaseService fileDownloadDatabaseService)
         {
-            if (fileCompressionService == null)
-            {
-                throw new ArgumentNullException(nameof(fileCompressionService));
-            }
-
-            if (fileReaderService == null)
-            {
-                throw new ArgumentNullException(nameof(fileReaderService));
-            }
-
-            if (fileDownloadDatabaseService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
-            }
-
-            this.fileCompressionService = fileCompressionService;
-            this.fileReaderService = fileReaderService;
-            this.fileDownloadDatabaseService = fileDownloadDatabaseService;
+            this.fileCompressionService = fileCompressionService ??
+                                          throw new ArgumentNullException(nameof(fileCompressionService));
+            this.fileReaderService = fileReaderService ?? throw new ArgumentNullException(nameof(fileReaderService));
+            this.fileDownloadDatabaseService = fileDownloadDatabaseService ??
+                                               throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
         }
 
         public void UploadFile(FilePayload filePayload)
