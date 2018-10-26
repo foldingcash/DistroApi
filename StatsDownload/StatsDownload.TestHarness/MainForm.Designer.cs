@@ -37,13 +37,16 @@
             this.ImportDirectoryLabel = new System.Windows.Forms.Label();
             this.ImportDirectoryTextBox = new System.Windows.Forms.TextBox();
             this.MassExportGroupBox = new System.Windows.Forms.GroupBox();
+            this.ExportSubsetRadioButton = new System.Windows.Forms.RadioButton();
+            this.ExportAllRadioButton = new System.Windows.Forms.RadioButton();
             this.ExportDirectoryLabel = new System.Windows.Forms.Label();
             this.ExportDirectoryTextBox = new System.Windows.Forms.TextBox();
             this.ExportButton = new System.Windows.Forms.Button();
-            this.ExportAllRadioButton = new System.Windows.Forms.RadioButton();
-            this.ExportSubsetRadioButton = new System.Windows.Forms.RadioButton();
+            this.EmailGroupBox = new System.Windows.Forms.GroupBox();
+            this.TestEmailButton = new System.Windows.Forms.Button();
             this.MassImportGroupBox.SuspendLayout();
             this.MassExportGroupBox.SuspendLayout();
+            this.EmailGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // FileDownloadButton
@@ -131,6 +134,28 @@
             this.MassExportGroupBox.TabStop = false;
             this.MassExportGroupBox.Text = "Mass Export";
             // 
+            // ExportSubsetRadioButton
+            // 
+            this.ExportSubsetRadioButton.AutoSize = true;
+            this.ExportSubsetRadioButton.Location = new System.Drawing.Point(58, 77);
+            this.ExportSubsetRadioButton.Name = "ExportSubsetRadioButton";
+            this.ExportSubsetRadioButton.Size = new System.Drawing.Size(73, 21);
+            this.ExportSubsetRadioButton.TabIndex = 7;
+            this.ExportSubsetRadioButton.Text = "Subset";
+            this.ExportSubsetRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // ExportAllRadioButton
+            // 
+            this.ExportAllRadioButton.AutoSize = true;
+            this.ExportAllRadioButton.Checked = true;
+            this.ExportAllRadioButton.Location = new System.Drawing.Point(8, 77);
+            this.ExportAllRadioButton.Name = "ExportAllRadioButton";
+            this.ExportAllRadioButton.Size = new System.Drawing.Size(44, 21);
+            this.ExportAllRadioButton.TabIndex = 6;
+            this.ExportAllRadioButton.TabStop = true;
+            this.ExportAllRadioButton.Text = "All";
+            this.ExportAllRadioButton.UseVisualStyleBackColor = true;
+            // 
             // ExportDirectoryLabel
             // 
             this.ExportDirectoryLabel.AutoSize = true;
@@ -158,33 +183,32 @@
             this.ExportButton.UseVisualStyleBackColor = true;
             this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
             // 
-            // ExportAllRadioButton
+            // EmailGroupBox
             // 
-            this.ExportAllRadioButton.AutoSize = true;
-            this.ExportAllRadioButton.Checked = true;
-            this.ExportAllRadioButton.Location = new System.Drawing.Point(8, 77);
-            this.ExportAllRadioButton.Name = "ExportAllRadioButton";
-            this.ExportAllRadioButton.Size = new System.Drawing.Size(44, 21);
-            this.ExportAllRadioButton.TabIndex = 6;
-            this.ExportAllRadioButton.TabStop = true;
-            this.ExportAllRadioButton.Text = "All";
-            this.ExportAllRadioButton.UseVisualStyleBackColor = true;
+            this.EmailGroupBox.Controls.Add(this.TestEmailButton);
+            this.EmailGroupBox.Location = new System.Drawing.Point(16, 127);
+            this.EmailGroupBox.Name = "EmailGroupBox";
+            this.EmailGroupBox.Size = new System.Drawing.Size(263, 56);
+            this.EmailGroupBox.TabIndex = 6;
+            this.EmailGroupBox.TabStop = false;
+            this.EmailGroupBox.Text = "Email";
             // 
-            // ExportSubsetRadioButton
+            // TestEmailButton
             // 
-            this.ExportSubsetRadioButton.AutoSize = true;
-            this.ExportSubsetRadioButton.Location = new System.Drawing.Point(58, 77);
-            this.ExportSubsetRadioButton.Name = "ExportSubsetRadioButton";
-            this.ExportSubsetRadioButton.Size = new System.Drawing.Size(73, 21);
-            this.ExportSubsetRadioButton.TabIndex = 7;
-            this.ExportSubsetRadioButton.Text = "Subset";
-            this.ExportSubsetRadioButton.UseVisualStyleBackColor = true;
+            this.TestEmailButton.Location = new System.Drawing.Point(10, 21);
+            this.TestEmailButton.Name = "TestEmailButton";
+            this.TestEmailButton.Size = new System.Drawing.Size(247, 29);
+            this.TestEmailButton.TabIndex = 0;
+            this.TestEmailButton.Text = "Test Email";
+            this.TestEmailButton.UseVisualStyleBackColor = true;
+            this.TestEmailButton.Click += new System.EventHandler(this.TestEmailButton_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(977, 513);
+            this.Controls.Add(this.EmailGroupBox);
             this.Controls.Add(this.MassExportGroupBox);
             this.Controls.Add(this.MassImportGroupBox);
             this.Controls.Add(this.UploadStatsButton);
@@ -201,6 +225,7 @@
             this.MassImportGroupBox.PerformLayout();
             this.MassExportGroupBox.ResumeLayout(false);
             this.MassExportGroupBox.PerformLayout();
+            this.EmailGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -221,6 +246,8 @@
         private System.Windows.Forms.Button ExportButton;
         private System.Windows.Forms.RadioButton ExportSubsetRadioButton;
         private System.Windows.Forms.RadioButton ExportAllRadioButton;
+        private System.Windows.Forms.GroupBox EmailGroupBox;
+        private System.Windows.Forms.Button TestEmailButton;
     }
 }
 

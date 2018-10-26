@@ -10,6 +10,7 @@
     using Castle.MicroKernel.Registration;
     using CastleWindsor;
     using Core.Interfaces;
+    using Email;
 
     public partial class MainForm : Form
     {
@@ -82,6 +83,8 @@
         {
             FileDownloadButton.Enabled = enable;
             UploadStatsButton.Enabled = enable;
+
+            TestEmailButton.Enabled = enable;
 
             ExportDirectoryTextBox.Enabled = enable;
             ExportAllRadioButton.Enabled = enable;
@@ -261,6 +264,7 @@
             }
             finally
             {
+                CreateSeparationInLog();
                 EnableGui(true);
             }
         }
@@ -288,6 +292,25 @@
             }
 
             return new (int, string)[0];
+        }
+
+        private async void TestEmailButton_Click(object sender, EventArgs e)
+        {
+            await RunActionAsync(() =>
+            {
+                IEmailService emailService = null;
+
+                try
+                {
+                    emailService = WindsorContainer.Instance.Resolve<IEmailService>();
+
+                    emailService.SendEmail("TestHarness - Test Email", "This is a test email from the TestHarness.");
+                }
+                finally
+                {
+                    WindsorContainer.Instance.Release(emailService);
+                }
+            });
         }
 
         private async void UploadStatsButton_Click(object sender, EventArgs e)
