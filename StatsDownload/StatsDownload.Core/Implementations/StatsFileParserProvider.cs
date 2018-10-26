@@ -102,12 +102,20 @@
             foreach ((string format, int hourOffset) in Constants.StatsFile.DateTimeFormatsAndOffset)
             {
                 parsed = DateTime.TryParseExact(rawDateTime, format, CultureInfo.CurrentCulture,
-                    DateTimeStyles.NoCurrentDateDefault, out downloadDateTime);
+                    DateTimeStyles.None, out downloadDateTime);
 
                 if (parsed)
                 {
-                    downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, hourOffset, 0, 0))
-                        .UtcDateTime;
+                    if (hourOffset == 0)
+                    {
+                        downloadDateTime = new DateTimeOffset(downloadDateTime).UtcDateTime;
+                    }
+                    else
+                    {
+                        downloadDateTime = new DateTimeOffset(downloadDateTime, new TimeSpan(0, hourOffset, 0, 0))
+                            .UtcDateTime;
+                    }
+
                     break;
                 }
             }
