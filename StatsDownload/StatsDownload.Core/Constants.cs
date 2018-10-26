@@ -45,7 +45,10 @@
                 ("ddd MMM dd HH:mm:ss PDT yyyy", -7),
 
                 ("ddd MMM  d HH:mm:ss PST yyyy", -8),
-                ("ddd MMM dd HH:mm:ss PST yyyy", -8)
+                ("ddd MMM dd HH:mm:ss PST yyyy", -8),
+
+                ("ddd MMM  d HH:mm:ss GMT yyyy", 0),
+                ("ddd MMM dd HH:mm:ss GMT yyyy", 0)
             };
 
             public static readonly string[] ExpectedHeaders =
