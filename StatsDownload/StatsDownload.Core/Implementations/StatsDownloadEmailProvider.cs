@@ -20,11 +20,17 @@
 
         private readonly IErrorMessageService errorMessageService;
 
-        public StatsDownloadEmailProvider(IEmailService emailService, IErrorMessageService errorMessageService)
+        private readonly IStatsDownloadEmailSettingsService statsDownloadEmailSettingsService;
+
+        public StatsDownloadEmailProvider(IEmailService emailService, IErrorMessageService errorMessageService,
+            IStatsDownloadEmailSettingsService statsDownloadEmailSettingsService)
         {
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             this.errorMessageService =
                 errorMessageService ?? throw new ArgumentNullException(nameof(errorMessageService));
+            this.statsDownloadEmailSettingsService = statsDownloadEmailSettingsService ??
+                                                     throw new ArgumentNullException(
+                                                         nameof(statsDownloadEmailSettingsService));
         }
 
         public void SendEmail(FileDownloadResult fileDownloadResult)
@@ -64,12 +70,15 @@
 
         public void SendTestEmail()
         {
-            SendEmail("TestHarness - Test Email", "This is a test email from the TestHarness.");
+            SendEmail("Test Email", "This is a test email.");
         }
 
         private void SendEmail(string subject, string body)
         {
-            emailService.SendEmail(subject, body);
+            string instanceName = statsDownloadEmailSettingsService.GetInstanceName();
+            string subjectWithInstance = $"{instanceName} - {subject}";
+
+            emailService.SendEmail(subjectWithInstance, body);
         }
     }
 }

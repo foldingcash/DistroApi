@@ -20,20 +20,30 @@
 
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
-            systemUnderTest = NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock);
+            statsDownloadEmailSettingsServiceMock = Substitute.For<IStatsDownloadEmailSettingsService>();
+            statsDownloadEmailSettingsServiceMock.GetInstanceName().Returns("InstanceName");
+
+            systemUnderTest = NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock,
+                statsDownloadEmailSettingsServiceMock);
         }
 
         private IEmailService emailServiceMock;
 
         private IErrorMessageService errorMessageServiceMock;
 
+        private IStatsDownloadEmailSettingsService statsDownloadEmailSettingsServiceMock;
+
         private IStatsDownloadEmailService systemUnderTest;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadEmailProvider(null, errorMessageServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadEmailProvider(emailServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsDownloadEmailProvider(null, errorMessageServiceMock, statsDownloadEmailSettingsServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsDownloadEmailProvider(emailServiceMock, null, statsDownloadEmailSettingsServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock, null));
         }
 
         [Test]
@@ -44,7 +54,7 @@
 
             systemUnderTest.SendEmail(failedUsersData);
 
-            emailServiceMock.Received(1).SendEmail("User Data Failed", "ErrorMessage");
+            emailServiceMock.Received(1).SendEmail("InstanceName - User Data Failed", "ErrorMessage");
         }
 
         [Test]
@@ -57,7 +67,7 @@
 
             systemUnderTest.SendEmail(new FileDownloadResult(FailedReason.UnexpectedException, filePayload));
 
-            emailServiceMock.Received().SendEmail("File Download Failed", "ErrorMessage");
+            emailServiceMock.Received().SendEmail("InstanceName - File Download Failed", "ErrorMessage");
         }
 
         [Test]
@@ -68,7 +78,7 @@
 
             systemUnderTest.SendEmail(new StatsUploadResult(1, FailedReason.UnexpectedException));
 
-            emailServiceMock.Received().SendEmail("Stats Upload Failed", "ErrorMessage");
+            emailServiceMock.Received().SendEmail("InstanceName - Stats Upload Failed", "ErrorMessage");
         }
 
         [Test]
@@ -79,7 +89,7 @@
 
             systemUnderTest.SendEmail(new StatsUploadResults(FailedReason.UnexpectedException));
 
-            emailServiceMock.Received().SendEmail("Stats Upload Failed", "ErrorMessage");
+            emailServiceMock.Received().SendEmail("InstanceName - Stats Upload Failed", "ErrorMessage");
         }
 
         [Test]
@@ -88,13 +98,14 @@
             systemUnderTest.SendTestEmail();
 
             emailServiceMock
-                .Received().SendEmail("TestHarness - Test Email", "This is a test email from the TestHarness.");
+                .Received().SendEmail("InstanceName - Test Email", "This is a test email.");
         }
 
         private IStatsDownloadEmailService NewStatsDownloadEmailProvider(IEmailService emailService,
-            IErrorMessageService errorMessageService)
+            IErrorMessageService errorMessageService,
+            IStatsDownloadEmailSettingsService statsDownloadEmailSettingsService)
         {
-            return new StatsDownloadEmailProvider(emailService, errorMessageService);
+            return new StatsDownloadEmailProvider(emailService, errorMessageService, statsDownloadEmailSettingsService);
         }
     }
 }
