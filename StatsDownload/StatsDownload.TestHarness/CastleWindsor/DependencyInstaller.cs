@@ -80,7 +80,7 @@
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<FileDownloadMinimumWaitTimeProvider>(),
                 Component.For<IErrorMessageService>().ImplementedBy<ErrorMessageProvider>(),
-                Component.For<IFileDownloadEmailService, IStatsUploadEmailService>()
+                Component.For<IStatsDownloadEmailService, IFileDownloadEmailService, IStatsUploadEmailService>()
                          .ImplementedBy<StatsDownloadEmailProvider>(),
                 Component.For<IEmailSettingsValidatorService>().ImplementedBy<EmailSettingsValidatorProvider>(),
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),

@@ -37,21 +37,26 @@
             this.ImportDirectoryLabel = new System.Windows.Forms.Label();
             this.ImportDirectoryTextBox = new System.Windows.Forms.TextBox();
             this.MassExportGroupBox = new System.Windows.Forms.GroupBox();
+            this.ExportSubsetRadioButton = new System.Windows.Forms.RadioButton();
+            this.ExportAllRadioButton = new System.Windows.Forms.RadioButton();
             this.ExportDirectoryLabel = new System.Windows.Forms.Label();
             this.ExportDirectoryTextBox = new System.Windows.Forms.TextBox();
             this.ExportButton = new System.Windows.Forms.Button();
-            this.ExportAllRadioButton = new System.Windows.Forms.RadioButton();
-            this.ExportSubsetRadioButton = new System.Windows.Forms.RadioButton();
+            this.EmailGroupBox = new System.Windows.Forms.GroupBox();
+            this.TestEmailButton = new System.Windows.Forms.Button();
+            this.StatsDownloadGroupBox = new System.Windows.Forms.GroupBox();
             this.MassImportGroupBox.SuspendLayout();
             this.MassExportGroupBox.SuspendLayout();
+            this.EmailGroupBox.SuspendLayout();
+            this.StatsDownloadGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // FileDownloadButton
             // 
-            this.FileDownloadButton.Location = new System.Drawing.Point(16, 15);
+            this.FileDownloadButton.Location = new System.Drawing.Point(6, 22);
             this.FileDownloadButton.Margin = new System.Windows.Forms.Padding(4);
             this.FileDownloadButton.Name = "FileDownloadButton";
-            this.FileDownloadButton.Size = new System.Drawing.Size(263, 49);
+            this.FileDownloadButton.Size = new System.Drawing.Size(251, 49);
             this.FileDownloadButton.TabIndex = 0;
             this.FileDownloadButton.Text = "File Download";
             this.FileDownloadButton.UseVisualStyleBackColor = true;
@@ -59,20 +64,20 @@
             // 
             // LoggingTextBox
             // 
-            this.LoggingTextBox.Location = new System.Drawing.Point(287, 15);
+            this.LoggingTextBox.Location = new System.Drawing.Point(282, 13);
             this.LoggingTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.LoggingTextBox.Multiline = true;
             this.LoggingTextBox.Name = "LoggingTextBox";
             this.LoggingTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.LoggingTextBox.Size = new System.Drawing.Size(673, 483);
+            this.LoggingTextBox.Size = new System.Drawing.Size(682, 536);
             this.LoggingTextBox.TabIndex = 1;
             // 
             // UploadStatsButton
             // 
-            this.UploadStatsButton.Location = new System.Drawing.Point(16, 71);
+            this.UploadStatsButton.Location = new System.Drawing.Point(6, 79);
             this.UploadStatsButton.Margin = new System.Windows.Forms.Padding(4);
             this.UploadStatsButton.Name = "UploadStatsButton";
-            this.UploadStatsButton.Size = new System.Drawing.Size(263, 49);
+            this.UploadStatsButton.Size = new System.Drawing.Size(251, 49);
             this.UploadStatsButton.TabIndex = 2;
             this.UploadStatsButton.Text = "Stats Upload";
             this.UploadStatsButton.UseVisualStyleBackColor = true;
@@ -93,7 +98,7 @@
             this.MassImportGroupBox.Controls.Add(this.ImportDirectoryLabel);
             this.MassImportGroupBox.Controls.Add(this.ImportDirectoryTextBox);
             this.MassImportGroupBox.Controls.Add(this.ImportButton);
-            this.MassImportGroupBox.Location = new System.Drawing.Point(16, 357);
+            this.MassImportGroupBox.Location = new System.Drawing.Point(12, 408);
             this.MassImportGroupBox.Name = "MassImportGroupBox";
             this.MassImportGroupBox.Size = new System.Drawing.Size(263, 141);
             this.MassImportGroupBox.TabIndex = 4;
@@ -124,12 +129,34 @@
             this.MassExportGroupBox.Controls.Add(this.ExportDirectoryLabel);
             this.MassExportGroupBox.Controls.Add(this.ExportDirectoryTextBox);
             this.MassExportGroupBox.Controls.Add(this.ExportButton);
-            this.MassExportGroupBox.Location = new System.Drawing.Point(17, 189);
+            this.MassExportGroupBox.Location = new System.Drawing.Point(12, 240);
             this.MassExportGroupBox.Name = "MassExportGroupBox";
             this.MassExportGroupBox.Size = new System.Drawing.Size(263, 162);
             this.MassExportGroupBox.TabIndex = 5;
             this.MassExportGroupBox.TabStop = false;
             this.MassExportGroupBox.Text = "Mass Export";
+            // 
+            // ExportSubsetRadioButton
+            // 
+            this.ExportSubsetRadioButton.AutoSize = true;
+            this.ExportSubsetRadioButton.Location = new System.Drawing.Point(58, 77);
+            this.ExportSubsetRadioButton.Name = "ExportSubsetRadioButton";
+            this.ExportSubsetRadioButton.Size = new System.Drawing.Size(73, 21);
+            this.ExportSubsetRadioButton.TabIndex = 7;
+            this.ExportSubsetRadioButton.Text = "Subset";
+            this.ExportSubsetRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // ExportAllRadioButton
+            // 
+            this.ExportAllRadioButton.AutoSize = true;
+            this.ExportAllRadioButton.Checked = true;
+            this.ExportAllRadioButton.Location = new System.Drawing.Point(8, 77);
+            this.ExportAllRadioButton.Name = "ExportAllRadioButton";
+            this.ExportAllRadioButton.Size = new System.Drawing.Size(44, 21);
+            this.ExportAllRadioButton.TabIndex = 6;
+            this.ExportAllRadioButton.TabStop = true;
+            this.ExportAllRadioButton.Text = "All";
+            this.ExportAllRadioButton.UseVisualStyleBackColor = true;
             // 
             // ExportDirectoryLabel
             // 
@@ -158,38 +185,47 @@
             this.ExportButton.UseVisualStyleBackColor = true;
             this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
             // 
-            // ExportAllRadioButton
+            // EmailGroupBox
             // 
-            this.ExportAllRadioButton.AutoSize = true;
-            this.ExportAllRadioButton.Checked = true;
-            this.ExportAllRadioButton.Location = new System.Drawing.Point(8, 77);
-            this.ExportAllRadioButton.Name = "ExportAllRadioButton";
-            this.ExportAllRadioButton.Size = new System.Drawing.Size(44, 21);
-            this.ExportAllRadioButton.TabIndex = 6;
-            this.ExportAllRadioButton.TabStop = true;
-            this.ExportAllRadioButton.Text = "All";
-            this.ExportAllRadioButton.UseVisualStyleBackColor = true;
+            this.EmailGroupBox.Controls.Add(this.TestEmailButton);
+            this.EmailGroupBox.Location = new System.Drawing.Point(12, 155);
+            this.EmailGroupBox.Name = "EmailGroupBox";
+            this.EmailGroupBox.Size = new System.Drawing.Size(263, 79);
+            this.EmailGroupBox.TabIndex = 6;
+            this.EmailGroupBox.TabStop = false;
+            this.EmailGroupBox.Text = "Email";
             // 
-            // ExportSubsetRadioButton
+            // TestEmailButton
             // 
-            this.ExportSubsetRadioButton.AutoSize = true;
-            this.ExportSubsetRadioButton.Location = new System.Drawing.Point(58, 77);
-            this.ExportSubsetRadioButton.Name = "ExportSubsetRadioButton";
-            this.ExportSubsetRadioButton.Size = new System.Drawing.Size(73, 21);
-            this.ExportSubsetRadioButton.TabIndex = 7;
-            this.ExportSubsetRadioButton.Text = "Subset";
-            this.ExportSubsetRadioButton.UseVisualStyleBackColor = true;
+            this.TestEmailButton.Location = new System.Drawing.Point(5, 21);
+            this.TestEmailButton.Name = "TestEmailButton";
+            this.TestEmailButton.Size = new System.Drawing.Size(251, 49);
+            this.TestEmailButton.TabIndex = 0;
+            this.TestEmailButton.Text = "Test Email";
+            this.TestEmailButton.UseVisualStyleBackColor = true;
+            this.TestEmailButton.Click += new System.EventHandler(this.TestEmailButton_Click);
+            // 
+            // StatsDownloadGroupBox
+            // 
+            this.StatsDownloadGroupBox.Controls.Add(this.UploadStatsButton);
+            this.StatsDownloadGroupBox.Controls.Add(this.FileDownloadButton);
+            this.StatsDownloadGroupBox.Location = new System.Drawing.Point(12, 12);
+            this.StatsDownloadGroupBox.Name = "StatsDownloadGroupBox";
+            this.StatsDownloadGroupBox.Size = new System.Drawing.Size(263, 137);
+            this.StatsDownloadGroupBox.TabIndex = 7;
+            this.StatsDownloadGroupBox.TabStop = false;
+            this.StatsDownloadGroupBox.Text = "Stats Download";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(977, 513);
+            this.ClientSize = new System.Drawing.Size(977, 560);
+            this.Controls.Add(this.StatsDownloadGroupBox);
+            this.Controls.Add(this.EmailGroupBox);
             this.Controls.Add(this.MassExportGroupBox);
             this.Controls.Add(this.MassImportGroupBox);
-            this.Controls.Add(this.UploadStatsButton);
             this.Controls.Add(this.LoggingTextBox);
-            this.Controls.Add(this.FileDownloadButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -201,6 +237,8 @@
             this.MassImportGroupBox.PerformLayout();
             this.MassExportGroupBox.ResumeLayout(false);
             this.MassExportGroupBox.PerformLayout();
+            this.EmailGroupBox.ResumeLayout(false);
+            this.StatsDownloadGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -221,6 +259,9 @@
         private System.Windows.Forms.Button ExportButton;
         private System.Windows.Forms.RadioButton ExportSubsetRadioButton;
         private System.Windows.Forms.RadioButton ExportAllRadioButton;
+        private System.Windows.Forms.GroupBox EmailGroupBox;
+        private System.Windows.Forms.Button TestEmailButton;
+        private System.Windows.Forms.GroupBox StatsDownloadGroupBox;
     }
 }
 
