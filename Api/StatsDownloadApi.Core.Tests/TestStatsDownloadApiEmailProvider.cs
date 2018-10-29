@@ -40,7 +40,7 @@
         [TestCase("")]
         [TestCase("\t")]
         [TestCase("\n")]
-        public void SendUnhandledExceptionEmail_WhenEmptyDisplayName_DoesNotAppendDisplayName(string displayName)
+        public void SendUnhandledExceptionEmail_WhenEmptyDisplayName_DoesNotPrependDisplayName(string displayName)
         {
             emailSettingsServiceMock.ClearSubstitute();
             emailSettingsServiceMock.GetFromDisplayName().Returns(displayName);
