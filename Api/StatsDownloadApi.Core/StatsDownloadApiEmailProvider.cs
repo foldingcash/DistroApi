@@ -19,10 +19,22 @@
 
         public void SendUnhandledExceptionEmail(Exception exception)
         {
-            string subject = $"{emailSettingsService.GetFromDisplayName()} - {EmailMessages.UnhandledExceptionHeader}";
+            string subject = GetSubject(EmailMessages.UnhandledExceptionHeader);
 
             emailService.SendEmail(subject,
                 string.Format(EmailMessages.UnhandledExceptionBody, exception.Message));
+        }
+
+        private string GetSubject(string baseSubject)
+        {
+            string displayName = emailSettingsService.GetFromDisplayName();
+
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                return baseSubject;
+            }
+
+            return $"{displayName} - {baseSubject}";
         }
     }
 }

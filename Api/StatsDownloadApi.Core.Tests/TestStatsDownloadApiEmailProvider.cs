@@ -3,6 +3,7 @@
     using System;
     using Interfaces;
     using NSubstitute;
+    using NSubstitute.ClearExtensions;
     using NUnit.Framework;
     using StatsDownload.Email;
 
@@ -33,6 +34,23 @@
                 NewStatsDownloadApiEmailProvider(null, emailSettingsServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
                 NewStatsDownloadApiEmailProvider(emailServiceMock, null));
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("\t")]
+        [TestCase("\n")]
+        public void SendUnhandledExceptionEmail_WhenEmptyDisplayName_DoesNotAppendDisplayName(string displayName)
+        {
+            emailSettingsServiceMock.ClearSubstitute();
+            emailSettingsServiceMock.GetFromDisplayName().Returns(displayName);
+
+            var exception = new Exception("test message");
+
+            systemUnderTest.SendUnhandledExceptionEmail(exception);
+
+            emailServiceMock.Received().SendEmail("API Unhandled Exception Caught",
+                "The StatsDownload API experienced an unhandled exception. Contact your technical advisor with the exception message. Exception Message: test message");
         }
 
         [Test]
