@@ -18,19 +18,19 @@
 
         private readonly IEmailService emailService;
 
+        private readonly IEmailSettingsService emailSettingsService;
+
         private readonly IErrorMessageService errorMessageService;
 
-        private readonly IStatsDownloadEmailSettingsService statsDownloadEmailSettingsService;
-
         public StatsDownloadEmailProvider(IEmailService emailService, IErrorMessageService errorMessageService,
-            IStatsDownloadEmailSettingsService statsDownloadEmailSettingsService)
+            IEmailSettingsService emailSettingsService)
         {
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             this.errorMessageService =
                 errorMessageService ?? throw new ArgumentNullException(nameof(errorMessageService));
-            this.statsDownloadEmailSettingsService = statsDownloadEmailSettingsService ??
-                                                     throw new ArgumentNullException(
-                                                         nameof(statsDownloadEmailSettingsService));
+            this.emailSettingsService = emailSettingsService ??
+                                        throw new ArgumentNullException(
+                                            nameof(emailSettingsService));
         }
 
         public void SendEmail(FileDownloadResult fileDownloadResult)
@@ -75,7 +75,7 @@
 
         private void SendEmail(string subject, string body)
         {
-            string displayName = statsDownloadEmailSettingsService.GetDisplayName();
+            string displayName = emailSettingsService.GetFromDisplayName();
             string subjectWithInstance = $"{displayName} - {subject}";
 
             emailService.SendEmail(subjectWithInstance, body);

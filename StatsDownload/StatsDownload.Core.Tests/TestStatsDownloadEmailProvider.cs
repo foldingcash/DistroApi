@@ -19,18 +19,18 @@
 
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
-            statsDownloadEmailSettingsServiceMock = Substitute.For<IStatsDownloadEmailSettingsService>();
-            statsDownloadEmailSettingsServiceMock.GetDisplayName().Returns("DisplayName");
+            emailSettingsServiceMock = Substitute.For<IEmailSettingsService>();
+            emailSettingsServiceMock.GetFromDisplayName().Returns("DisplayName");
 
             systemUnderTest = NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock,
-                statsDownloadEmailSettingsServiceMock);
+                emailSettingsServiceMock);
         }
 
         private IEmailService emailServiceMock;
 
-        private IErrorMessageService errorMessageServiceMock;
+        private IEmailSettingsService emailSettingsServiceMock;
 
-        private IStatsDownloadEmailSettingsService statsDownloadEmailSettingsServiceMock;
+        private IErrorMessageService errorMessageServiceMock;
 
         private IStatsDownloadEmailService systemUnderTest;
 
@@ -38,9 +38,9 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadEmailProvider(null, errorMessageServiceMock, statsDownloadEmailSettingsServiceMock));
+                NewStatsDownloadEmailProvider(null, errorMessageServiceMock, emailSettingsServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadEmailProvider(emailServiceMock, null, statsDownloadEmailSettingsServiceMock));
+                NewStatsDownloadEmailProvider(emailServiceMock, null, emailSettingsServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
                 NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock, null));
         }
@@ -102,9 +102,9 @@
 
         private IStatsDownloadEmailService NewStatsDownloadEmailProvider(IEmailService emailService,
             IErrorMessageService errorMessageService,
-            IStatsDownloadEmailSettingsService statsDownloadEmailSettingsService)
+            IEmailSettingsService emailSettingsService)
         {
-            return new StatsDownloadEmailProvider(emailService, errorMessageService, statsDownloadEmailSettingsService);
+            return new StatsDownloadEmailProvider(emailService, errorMessageService, emailSettingsService);
         }
     }
 }
