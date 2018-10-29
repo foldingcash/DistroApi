@@ -75,8 +75,8 @@
 
         private void SendEmail(string subject, string body)
         {
-            string instanceName = statsDownloadEmailSettingsService.GetInstanceName();
-            string subjectWithInstance = $"{instanceName} - {subject}";
+            string displayName = statsDownloadEmailSettingsService.GetDisplayName();
+            string subjectWithInstance = $"{displayName} - {subject}";
 
             emailService.SendEmail(subjectWithInstance, body);
         }

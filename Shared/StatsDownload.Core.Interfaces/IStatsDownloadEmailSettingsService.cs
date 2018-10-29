@@ -2,6 +2,6 @@
 {
     public interface IStatsDownloadEmailSettingsService
     {
-        string GetInstanceName();
+        string GetDisplayName();
     }
 }

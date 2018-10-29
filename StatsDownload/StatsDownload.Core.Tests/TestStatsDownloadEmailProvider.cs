@@ -21,7 +21,7 @@
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
             statsDownloadEmailSettingsServiceMock = Substitute.For<IStatsDownloadEmailSettingsService>();
-            statsDownloadEmailSettingsServiceMock.GetInstanceName().Returns("InstanceName");
+            statsDownloadEmailSettingsServiceMock.GetDisplayName().Returns("DisplayName");
 
             systemUnderTest = NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock,
                 statsDownloadEmailSettingsServiceMock);
@@ -54,7 +54,7 @@
 
             systemUnderTest.SendEmail(failedUsersData);
 
-            emailServiceMock.Received(1).SendEmail("InstanceName - User Data Failed", "ErrorMessage");
+            emailServiceMock.Received(1).SendEmail("DisplayName - User Data Failed", "ErrorMessage");
         }
 
         [Test]
@@ -67,7 +67,7 @@
 
             systemUnderTest.SendEmail(new FileDownloadResult(FailedReason.UnexpectedException, filePayload));
 
-            emailServiceMock.Received().SendEmail("InstanceName - File Download Failed", "ErrorMessage");
+            emailServiceMock.Received().SendEmail("DisplayName - File Download Failed", "ErrorMessage");
         }
 
         [Test]
@@ -78,7 +78,7 @@
 
             systemUnderTest.SendEmail(new StatsUploadResult(1, FailedReason.UnexpectedException));
 
-            emailServiceMock.Received().SendEmail("InstanceName - Stats Upload Failed", "ErrorMessage");
+            emailServiceMock.Received().SendEmail("DisplayName - Stats Upload Failed", "ErrorMessage");
         }
 
         [Test]
@@ -89,7 +89,7 @@
 
             systemUnderTest.SendEmail(new StatsUploadResults(FailedReason.UnexpectedException));
 
-            emailServiceMock.Received().SendEmail("InstanceName - Stats Upload Failed", "ErrorMessage");
+            emailServiceMock.Received().SendEmail("DisplayName - Stats Upload Failed", "ErrorMessage");
         }
 
         [Test]
@@ -98,7 +98,7 @@
             systemUnderTest.SendTestEmail();
 
             emailServiceMock
-                .Received().SendEmail("InstanceName - Test Email", "This is a test email.");
+                .Received().SendEmail("DisplayName - Test Email", "This is a test email.");
         }
 
         private IStatsDownloadEmailService NewStatsDownloadEmailProvider(IEmailService emailService,
