@@ -36,7 +36,7 @@
             {
                 sb.AppendLine("Attempting to send email:");
                 sb.AppendLine($"Subject: {subject}");
-                sb.Append($"Body: {body}");
+                sb.AppendLine($"Body: {body}");
 
                 MailAddress fromAddress = NewMailAddress();
 
