@@ -1,7 +1,6 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using System.Collections.Generic;
     using Email;
     using Implementations;
     using Interfaces;
@@ -49,7 +48,7 @@
         [Test]
         public void SendEmail_WhenInvokedWithFailedUsersData_SendsEmail()
         {
-            var failedUsersData = new List<FailedUserData>();
+            var failedUsersData = new FailedUserData[0];
             errorMessageServiceMock.GetErrorMessage(failedUsersData).Returns("ErrorMessage");
 
             systemUnderTest.SendEmail(failedUsersData);
