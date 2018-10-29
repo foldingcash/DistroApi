@@ -62,6 +62,11 @@
             SendEmail(UserDataFailedParsingSubject, errorMessage);
         }
 
+        public void SendTestEmail()
+        {
+            SendEmail("TestHarness - Test Email", "This is a test email from the TestHarness.");
+        }
+
         private void SendEmail(string subject, string body)
         {
             emailService.SendEmail(subject, body);

@@ -82,6 +82,15 @@
             emailServiceMock.Received().SendEmail("Stats Upload Failed", "ErrorMessage");
         }
 
+        [Test]
+        public void SendTestEmail_WhenInvoked_SendsTestEmail()
+        {
+            systemUnderTest.SendTestEmail();
+
+            emailServiceMock
+                .Received().SendEmail("TestHarness - Test Email", "This is a test email from the TestHarness.");
+        }
+
         private IStatsDownloadEmailService NewStatsDownloadEmailProvider(IEmailService emailService,
             IErrorMessageService errorMessageService)
         {

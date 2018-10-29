@@ -298,13 +298,13 @@
         {
             await RunActionAsync(() =>
             {
-                IEmailService emailService = null;
+                IStatsDownloadEmailService emailService = null;
 
                 try
                 {
-                    emailService = WindsorContainer.Instance.Resolve<IEmailService>();
+                    emailService = WindsorContainer.Instance.Resolve<IStatsDownloadEmailService>();
 
-                    emailService.SendEmail("TestHarness - Test Email", "This is a test email from the TestHarness.");
+                    emailService.SendTestEmail();
                 }
                 finally
                 {
