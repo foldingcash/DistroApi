@@ -73,12 +73,23 @@
             SendEmail("Test Email", "This is a test email.");
         }
 
-        private void SendEmail(string subject, string body)
+        private string GetSubject(string baseSubject)
         {
             string displayName = emailSettingsService.GetFromDisplayName();
-            string subjectWithInstance = $"{displayName} - {subject}";
 
-            emailService.SendEmail(subjectWithInstance, body);
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                return baseSubject;
+            }
+
+            return $"{displayName} - {baseSubject}";
+        }
+
+        private void SendEmail(string baseSubject, string body)
+        {
+            string subject = GetSubject(baseSubject);
+
+            emailService.SendEmail(subject, body);
         }
     }
 }

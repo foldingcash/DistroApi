@@ -7,6 +7,7 @@
     using Interfaces.DataTransfer;
     using Interfaces.Enums;
     using NSubstitute;
+    using NSubstitute.ClearExtensions;
     using NUnit.Framework;
 
     [TestFixture]
@@ -89,6 +90,21 @@
             systemUnderTest.SendEmail(new StatsUploadResults(FailedReason.UnexpectedException));
 
             emailServiceMock.Received().SendEmail("DisplayName - Stats Upload Failed", "ErrorMessage");
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("\t")]
+        [TestCase("\n")]
+        public void SendTestEmail_WhenEmptyDisplayName_DoesNotPrependDisplayName(string displayName)
+        {
+            emailSettingsServiceMock.ClearSubstitute();
+            emailSettingsServiceMock.GetFromDisplayName().Returns(displayName);
+
+            systemUnderTest.SendTestEmail();
+
+            emailServiceMock
+                .Received().SendEmail("Test Email", "This is a test email.");
         }
 
         [Test]
