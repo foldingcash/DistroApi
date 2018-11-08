@@ -30,7 +30,8 @@
                 Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService>()
                          .ImplementedBy<StatsUploadConsoleSettingsProvider>()
                          .Forward<IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
-                             IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings>());
+                             IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings>()
+                         .Forward<IStatsFileDateTimeFormatsAndOffsetSettings>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),

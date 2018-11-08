@@ -11,7 +11,8 @@
     /// </summary>
     public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
         ITestHarnessSettingsService, IEmailSettingsService, IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
-        IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings, ITestHarnessStatsDownloadSettings
+        IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings, ITestHarnessStatsDownloadSettings,
+        IStatsFileDateTimeFormatsAndOffsetSettings
     {
         bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
 
@@ -95,6 +96,11 @@
         public string GetSmtpHost()
         {
             return ConfigurationManager.AppSettings["SmtpHost"];
+        }
+
+        public string GetStatsFileTimeZoneAndOffsetSettings()
+        {
+            return ConfigurationManager.AppSettings["StatsFileTimeZoneAndOffset"];
         }
 
         public bool IsFileCompressionDisabled()
