@@ -42,15 +42,15 @@
             Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
         }
 
-        [TestCase("Name.Name_Address")]
-        [TestCase("Name.Name_TAG_Address")]
-        public void Parse_WhenInvoked_ReturnsComplexFriendlyName(string name)
+        [TestCase("Name.Name_Address", "Name.Name")]
+        [TestCase("Name-Name_TAG_Address", "Name-Name")]
+        public void Parse_WhenInvoked_ReturnsComplexFriendlyName(string name, string expectedFriendlyName)
         {
             var userData = new UserData(0, name, 0, 0, 0);
 
             systemUnderTest.Parse(userData);
 
-            Assert.That(userData.FriendlyName, Is.EqualTo("Name.Name"));
+            Assert.That(userData.FriendlyName, Is.EqualTo(expectedFriendlyName));
         }
 
         [TestCase("Name_Address")]
