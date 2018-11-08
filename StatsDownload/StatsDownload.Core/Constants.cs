@@ -33,6 +33,12 @@
 
         public static class StatsFile
         {
+            public static readonly string[] DateTimeFormats =
+            {
+                "ddd MMM  d HH:mm:ss {0} yyyy",
+                "ddd MMM dd HH:mm:ss {0} yyyy"
+            };
+
             public static readonly (string format, int hourOffset)[] DateTimeFormatsAndOffset =
             {
                 ("ddd MMM  d HH:mm:ss GMT yyyy", 0),
