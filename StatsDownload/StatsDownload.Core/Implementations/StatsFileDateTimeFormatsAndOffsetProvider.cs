@@ -28,11 +28,11 @@
         {
             string settings = statsFileDateTimeFormatsAndOffsetSettings.GetStatsFileTimeZoneAndOffsetSettings();
 
-            string[] settingsSplit = settings.Split(';', '=');
+            string[] settingsSplit = settings?.Split(';', '=');
 
             var configuredFormatsAndOffset = new List<(string format, int hourOffset)>();
 
-            for (var index = 0; index < settingsSplit.Length && index + 1 < settingsSplit.Length; index++)
+            for (var index = 0; index < settingsSplit?.Length && index + 1 < settingsSplit.Length; index++)
             {
                 string timeZone = settingsSplit[index];
                 index++;

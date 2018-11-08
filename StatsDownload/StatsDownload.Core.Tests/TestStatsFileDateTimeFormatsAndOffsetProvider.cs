@@ -40,6 +40,29 @@
             CollectionAssert.IsSupersetOf(actual, Constants.StatsFile.DateTimeFormatsAndOffset);
         }
 
+        [TestCase("malformed")]
+        public void GetStatsFileDateTimeZoneAndOffset_WhenMalformedSettings_ReturnsDateTimeFormats(string settings)
+        {
+            statsFileDateTimeFormatsAndOffsetSettingsMock
+                .GetStatsFileTimeZoneAndOffsetSettings().Returns(settings);
+
+            (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
+
+            CollectionAssert.AreEquivalent(actual, Constants.StatsFile.DateTimeFormatsAndOffset);
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        public void GetStatsFileDateTimeZoneAndOffset_WhenSettingsEmpty_ReturnsDateTimeFormats(string settings)
+        {
+            statsFileDateTimeFormatsAndOffsetSettingsMock
+                .GetStatsFileTimeZoneAndOffsetSettings().Returns(settings);
+
+            (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
+
+            CollectionAssert.AreEquivalent(actual, Constants.StatsFile.DateTimeFormatsAndOffset);
+        }
+
         [Test]
         public void GetStatsFileDateTimeZoneAndOffsetSettings_WhenInvoked_ReturnsConfiguredDateTimeFormatsAndOffsets()
         {
