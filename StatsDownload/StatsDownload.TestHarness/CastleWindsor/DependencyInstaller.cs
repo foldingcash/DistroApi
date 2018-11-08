@@ -69,6 +69,8 @@
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
                 Component.For<IStatsUploadService>().ImplementedBy<StatsUploadProvider>(),
+                Component.For<IStatsFileDateTimeFormatsAndOffsetService>()
+                         .ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<GoogleUsersFilter>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<NoPaymentAddressUsersFilter>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<WhitespaceNameUsersFilter>(),
