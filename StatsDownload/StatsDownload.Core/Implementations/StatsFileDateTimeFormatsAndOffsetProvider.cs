@@ -19,12 +19,29 @@
 
         public (string format, int hourOffset)[] GetStatsFileDateTimeFormatsAndOffset()
         {
-            (string format, int hourOffset)[] configuredFormatsAndOffset = GetConfiguredFormatsAndOffset();
+            (string format, int hourOffset)[] configuredFormatsAndOffset = GetConfiguredFormats();
+            (string format, int hourOffset)[] codedFormatsAndOffset = GetCodedFormats();
 
-            return Constants.StatsFile.DateTimeFormatsAndOffset.Union(configuredFormatsAndOffset).ToArray();
+            return codedFormatsAndOffset.Union(configuredFormatsAndOffset).ToArray();
         }
 
-        private (string format, int hourOffset)[] GetConfiguredFormatsAndOffset()
+        private (string format, int hourOffset)[] GetCodedFormats()
+        {
+            var codedFormatsAndOffset = new List<(string format, int hourOffset)>();
+
+            foreach ((string timeZone, int hourOffset) timeZoneAndOffset in Constants.StatsFile.TimeZonesAndOffset)
+            {
+                foreach (string dateTimeFormat in Constants.StatsFile.DateTimeFormats)
+                {
+                    codedFormatsAndOffset.Add((string.Format(dateTimeFormat, timeZoneAndOffset.timeZone),
+                        timeZoneAndOffset.hourOffset));
+                }
+            }
+
+            return codedFormatsAndOffset.ToArray();
+        }
+
+        private (string format, int hourOffset)[] GetConfiguredFormats()
         {
             string settings = statsFileDateTimeFormatsAndOffsetSettings.GetStatsFileTimeZoneAndOffsetSettings();
 

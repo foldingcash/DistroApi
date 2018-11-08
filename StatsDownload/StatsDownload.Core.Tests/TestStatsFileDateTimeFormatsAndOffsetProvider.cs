@@ -21,6 +21,24 @@
                 NewStatsFileDateTimeFormatsAndOffsetProvider(statsFileDateTimeFormatsAndOffsetSettingsMock);
         }
 
+        private readonly (string format, int hourOffset)[] dateTimeFormatsAndOffset =
+        {
+            ("ddd MMM  d HH:mm:ss GMT yyyy", 0),
+            ("ddd MMM dd HH:mm:ss GMT yyyy", 0),
+
+            ("ddd MMM  d HH:mm:ss CDT yyyy", -5),
+            ("ddd MMM dd HH:mm:ss CDT yyyy", -5),
+
+            ("ddd MMM  d HH:mm:ss CST yyyy", -6),
+            ("ddd MMM dd HH:mm:ss CST yyyy", -6),
+
+            ("ddd MMM  d HH:mm:ss PDT yyyy", -7),
+            ("ddd MMM dd HH:mm:ss PDT yyyy", -7),
+
+            ("ddd MMM  d HH:mm:ss PST yyyy", -8),
+            ("ddd MMM dd HH:mm:ss PST yyyy", -8)
+        };
+
         private IStatsFileDateTimeFormatsAndOffsetSettings statsFileDateTimeFormatsAndOffsetSettingsMock;
 
         private IStatsFileDateTimeFormatsAndOffsetService systemUnderTest;
@@ -37,7 +55,7 @@
         {
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
-            CollectionAssert.IsSupersetOf(actual, Constants.StatsFile.DateTimeFormatsAndOffset);
+            CollectionAssert.IsSupersetOf(actual, dateTimeFormatsAndOffset);
         }
 
         [TestCase("malformed")]
@@ -48,7 +66,7 @@
 
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
-            CollectionAssert.AreEquivalent(actual, Constants.StatsFile.DateTimeFormatsAndOffset);
+            CollectionAssert.AreEquivalent(actual, dateTimeFormatsAndOffset);
         }
 
         [TestCase(null)]
@@ -60,7 +78,7 @@
 
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
-            CollectionAssert.AreEquivalent(actual, Constants.StatsFile.DateTimeFormatsAndOffset);
+            CollectionAssert.AreEquivalent(actual, dateTimeFormatsAndOffset);
         }
 
         [Test]

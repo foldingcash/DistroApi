@@ -21,7 +21,7 @@
 
             statsFileDateTimeFormatsAndOffsetServiceMock = Substitute.For<IStatsFileDateTimeFormatsAndOffsetService>();
             statsFileDateTimeFormatsAndOffsetServiceMock
-                .GetStatsFileDateTimeFormatsAndOffset().Returns(Constants.StatsFile.DateTimeFormatsAndOffset);
+                .GetStatsFileDateTimeFormatsAndOffset().Returns(dateTimeFormatsAndOffset);
 
             systemUnderTest = NewStatsFileParserProvider(additionalUserDataParserServiceMock,
                 statsFileDateTimeFormatsAndOffsetServiceMock);
@@ -97,6 +97,24 @@ anonymous	13937689581	64221589	not an int
 TheWasp	13660834951	734045	70335";
 
         private IAdditionalUserDataParserService additionalUserDataParserServiceMock;
+
+        private readonly (string format, int hourOffset)[] dateTimeFormatsAndOffset =
+        {
+            ("ddd MMM  d HH:mm:ss GMT yyyy", 0),
+            ("ddd MMM dd HH:mm:ss GMT yyyy", 0),
+
+            ("ddd MMM  d HH:mm:ss CDT yyyy", -5),
+            ("ddd MMM dd HH:mm:ss CDT yyyy", -5),
+
+            ("ddd MMM  d HH:mm:ss CST yyyy", -6),
+            ("ddd MMM dd HH:mm:ss CST yyyy", -6),
+
+            ("ddd MMM  d HH:mm:ss PDT yyyy", -7),
+            ("ddd MMM dd HH:mm:ss PDT yyyy", -7),
+
+            ("ddd MMM  d HH:mm:ss PST yyyy", -8),
+            ("ddd MMM dd HH:mm:ss PST yyyy", -8)
+        };
 
         private IStatsFileDateTimeFormatsAndOffsetService statsFileDateTimeFormatsAndOffsetServiceMock;
 
