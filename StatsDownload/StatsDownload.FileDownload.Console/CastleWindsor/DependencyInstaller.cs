@@ -55,10 +55,6 @@
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
-                Component.For<IStatsUploadService>().ImplementedBy<StatsUploadProvider>(),
-                Component.For<IStatsFileDateTimeFormatsAndOffsetService>()
-                         .ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>(),
-                Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
                 Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
                 Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),
