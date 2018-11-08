@@ -10,7 +10,6 @@
     using Castle.MicroKernel.Registration;
     using CastleWindsor;
     using Core.Interfaces;
-    using Email;
 
     public partial class MainForm : Form
     {
@@ -47,7 +46,6 @@
             {
                 fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
                 fileDownloadServiceAction?.Invoke(fileDownloadService);
-                CreateSeparationInLog();
             }
             finally
             {
@@ -63,7 +61,6 @@
             {
                 fileUploadService = WindsorContainer.Instance.Resolve<IStatsUploadService>();
                 fileUploadServiceAction?.Invoke(fileUploadService);
-                CreateSeparationInLog();
             }
             finally
             {
@@ -166,7 +163,6 @@
                 {
                     Log(
                         $"The directory does not exist, provide a new directory and try again. Directory: '{importDirectory}'");
-                    CreateSeparationInLog();
                     return;
                 }
 
@@ -176,7 +172,6 @@
                 {
                     Log(
                         $"There are no text files in the top directory, provide a directory with files to import and try again. Directory: '{importDirectory}'");
-                    CreateSeparationInLog();
                     return;
                 }
 
@@ -213,7 +208,6 @@
             {
                 Log(
                     $"The directory does not exist, provide a new directory and try again. Directory: '{exportDirectory}'");
-                CreateSeparationInLog();
                 return;
             }
 
@@ -242,8 +236,6 @@
 
                     Log($"File exported. '{filesRemaining}' remaining files to be exported");
                 }
-
-                CreateSeparationInLog();
             }
             finally
             {

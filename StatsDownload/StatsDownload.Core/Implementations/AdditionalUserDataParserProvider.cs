@@ -10,12 +10,7 @@
 
         public AdditionalUserDataParserProvider(IBitcoinAddressValidatorService bitcoinAddressValidatorService)
         {
-            if (bitcoinAddressValidatorService == null)
-            {
-                throw new ArgumentNullException(nameof(bitcoinAddressValidatorService));
-            }
-
-            this.bitcoinAddressValidatorService = bitcoinAddressValidatorService;
+            this.bitcoinAddressValidatorService = bitcoinAddressValidatorService ?? throw new ArgumentNullException(nameof(bitcoinAddressValidatorService));
         }
 
         public void Parse(UserData userData)
@@ -34,7 +29,7 @@
         private string[] GetTokenizedName(UserData userData)
         {
             string name = userData.Name;
-            return name?.Split(new[] { '_', '-', '.' }, StringSplitOptions.RemoveEmptyEntries);
+            return name?.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         private bool IsInvalidTokenLength(string[] tokenizedName)

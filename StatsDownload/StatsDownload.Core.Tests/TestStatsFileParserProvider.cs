@@ -19,7 +19,12 @@
         {
             additionalUserDataParserServiceMock = Substitute.For<IAdditionalUserDataParserService>();
 
-            systemUnderTest = NewStatsFileParserProvider(additionalUserDataParserServiceMock);
+            statsFileDateTimeFormatsAndOffsetServiceMock = Substitute.For<IStatsFileDateTimeFormatsAndOffsetService>();
+            statsFileDateTimeFormatsAndOffsetServiceMock
+                .GetStatsFileDateTimeFormatsAndOffset().Returns(dateTimeFormatsAndOffset);
+
+            systemUnderTest = NewStatsFileParserProvider(additionalUserDataParserServiceMock,
+                statsFileDateTimeFormatsAndOffsetServiceMock);
         }
 
         private const string EmptyStatsFile = @"Tue Dec 26 10:20:01 PST 2017
@@ -93,12 +98,35 @@ TheWasp	13660834951	734045	70335";
 
         private IAdditionalUserDataParserService additionalUserDataParserServiceMock;
 
+        private readonly (string format, int hourOffset)[] dateTimeFormatsAndOffset =
+        {
+            ("ddd MMM  d HH:mm:ss GMT yyyy", 0),
+            ("ddd MMM dd HH:mm:ss GMT yyyy", 0),
+
+            ("ddd MMM  d HH:mm:ss CDT yyyy", -5),
+            ("ddd MMM dd HH:mm:ss CDT yyyy", -5),
+
+            ("ddd MMM  d HH:mm:ss CST yyyy", -6),
+            ("ddd MMM dd HH:mm:ss CST yyyy", -6),
+
+            ("ddd MMM  d HH:mm:ss PDT yyyy", -7),
+            ("ddd MMM dd HH:mm:ss PDT yyyy", -7),
+
+            ("ddd MMM  d HH:mm:ss PST yyyy", -8),
+            ("ddd MMM dd HH:mm:ss PST yyyy", -8)
+        };
+
+        private IStatsFileDateTimeFormatsAndOffsetService statsFileDateTimeFormatsAndOffsetServiceMock;
+
         private IStatsFileParserService systemUnderTest;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewStatsFileParserProvider(null));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsFileParserProvider(null, statsFileDateTimeFormatsAndOffsetServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsFileParserProvider(additionalUserDataParserServiceMock, null));
         }
 
         [Test]
@@ -207,9 +235,11 @@ TheWasp	13660834951	734045	70335";
         }
 
         private IStatsFileParserService NewStatsFileParserProvider(
-            IAdditionalUserDataParserService additionalUserDataParserService)
+            IAdditionalUserDataParserService additionalUserDataParserService,
+            IStatsFileDateTimeFormatsAndOffsetService statsFileDateTimeFormatsAndOffsetService)
         {
-            return new StatsFileParserProvider(additionalUserDataParserService);
+            return new StatsFileParserProvider(additionalUserDataParserService,
+                statsFileDateTimeFormatsAndOffsetService);
         }
     }
 }

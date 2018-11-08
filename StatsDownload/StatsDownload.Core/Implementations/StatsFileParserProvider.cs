@@ -13,11 +13,17 @@
     {
         private readonly IAdditionalUserDataParserService additionalUserDataParserService;
 
-        public StatsFileParserProvider(IAdditionalUserDataParserService additionalUserDataParserService)
+        private readonly IStatsFileDateTimeFormatsAndOffsetService statsFileDateTimeFormatsAndOffsetService;
+
+        public StatsFileParserProvider(IAdditionalUserDataParserService additionalUserDataParserService,
+            IStatsFileDateTimeFormatsAndOffsetService statsFileDateTimeFormatsAndOffsetService)
         {
             this.additionalUserDataParserService = additionalUserDataParserService ??
                                                    throw new ArgumentNullException(
                                                        nameof(additionalUserDataParserService));
+            this.statsFileDateTimeFormatsAndOffsetService = statsFileDateTimeFormatsAndOffsetService ??
+                                                            throw new ArgumentNullException(
+                                                                nameof(statsFileDateTimeFormatsAndOffsetService));
         }
 
         public ParseResults Parse(string fileData)
@@ -99,7 +105,8 @@
             var parsed = false;
             downloadDateTime = default(DateTime);
 
-            foreach ((string format, int hourOffset) in Constants.StatsFile.DateTimeFormatsAndOffset)
+            foreach ((string format, int hourOffset) in statsFileDateTimeFormatsAndOffsetService
+                .GetStatsFileDateTimeFormatsAndOffset())
             {
                 parsed = DateTime.TryParseExact(rawDateTime, format, CultureInfo.CurrentCulture,
                     DateTimeStyles.None, out downloadDateTime);

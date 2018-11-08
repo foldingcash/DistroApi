@@ -10,7 +10,8 @@
     /// </summary>
     public class StatsUploadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
         IEmailSettingsService, IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
-        IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings
+        IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings,
+        IStatsFileDateTimeFormatsAndOffsetSettings
     {
         bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
 
@@ -94,6 +95,11 @@
         public string GetSmtpHost()
         {
             return ConfigurationManager.AppSettings["SmtpHost"];
+        }
+
+        public string GetStatsFileTimeZoneAndOffsetSettings()
+        {
+            return ConfigurationManager.AppSettings["StatsFileTimeZoneAndOffset"];
         }
 
         private bool GetBoolConfig(string appSettingName)

@@ -33,28 +33,25 @@
 
         public static class StatsFile
         {
-            public static readonly (string format, int hourOffset)[] DateTimeFormatsAndOffset =
+            public static readonly string[] DateTimeFormats =
             {
-                ("ddd MMM  d HH:mm:ss GMT yyyy", 0),
-                ("ddd MMM dd HH:mm:ss GMT yyyy", 0),
-
-                ("ddd MMM  d HH:mm:ss CDT yyyy", -5),
-                ("ddd MMM dd HH:mm:ss CDT yyyy", -5),
-
-                ("ddd MMM  d HH:mm:ss CST yyyy", -6),
-                ("ddd MMM dd HH:mm:ss CST yyyy", -6),
-
-                ("ddd MMM  d HH:mm:ss PDT yyyy", -7),
-                ("ddd MMM dd HH:mm:ss PDT yyyy", -7),
-
-                ("ddd MMM  d HH:mm:ss PST yyyy", -8),
-                ("ddd MMM dd HH:mm:ss PST yyyy", -8)
+                "ddd MMM  d HH:mm:ss {0} yyyy",
+                "ddd MMM dd HH:mm:ss {0} yyyy"
             };
 
             public static readonly string[] ExpectedHeaders =
             {
                 "name\tnewcredit\tsum(total)\tteam",
                 "name\tscore\twu\tteam"
+            };
+
+            public static readonly (string timeZone, int hourOffset)[] TimeZonesAndOffset =
+            {
+                ("GMT", 0),
+                ("CDT", -5),
+                ("CST", -6),
+                ("PDT", -7),
+                ("PST", -8)
             };
         }
     }
