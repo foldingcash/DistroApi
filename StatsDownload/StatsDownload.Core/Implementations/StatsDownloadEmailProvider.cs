@@ -18,13 +18,19 @@
 
         private readonly IEmailService emailService;
 
+        private readonly IEmailSettingsService emailSettingsService;
+
         private readonly IErrorMessageService errorMessageService;
 
-        public StatsDownloadEmailProvider(IEmailService emailService, IErrorMessageService errorMessageService)
+        public StatsDownloadEmailProvider(IEmailService emailService, IErrorMessageService errorMessageService,
+            IEmailSettingsService emailSettingsService)
         {
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             this.errorMessageService =
                 errorMessageService ?? throw new ArgumentNullException(nameof(errorMessageService));
+            this.emailSettingsService = emailSettingsService ??
+                                        throw new ArgumentNullException(
+                                            nameof(emailSettingsService));
         }
 
         public void SendEmail(FileDownloadResult fileDownloadResult)
@@ -62,8 +68,27 @@
             SendEmail(UserDataFailedParsingSubject, errorMessage);
         }
 
-        private void SendEmail(string subject, string body)
+        public void SendTestEmail()
         {
+            SendEmail("Test Email", "This is a test email.");
+        }
+
+        private string GetSubject(string baseSubject)
+        {
+            string displayName = emailSettingsService.GetFromDisplayName();
+
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                return baseSubject;
+            }
+
+            return $"{displayName} - {baseSubject}";
+        }
+
+        private void SendEmail(string baseSubject, string body)
+        {
+            string subject = GetSubject(baseSubject);
+
             emailService.SendEmail(subject, body);
         }
     }

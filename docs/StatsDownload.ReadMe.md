@@ -39,8 +39,8 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 2. [Database Settings](SettingsConfiguration.md#stats-download-database-connection-settings)
 3. [Email Settings](SettingsConfiguration.md#stats-download-email-settings)
 4. [Download Settings](SettingsConfiguration.md#file-download-settings)
-5. [Filter Settings](SettingsConfiguration.md#stats-upload-filter-settings)
-6. [Test Harness Settings](SettingsConfiguration.md#test-harness-only-settings)
+5. [Upload Settings](SettingsConfiguration.md#stats-upload-settings)
+6. [Test Settings](SettingsConfiguration.md#test-harness-only-settings)
 
 ### Applications
 

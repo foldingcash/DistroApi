@@ -40,18 +40,32 @@
 
         private void CreateFileDownloadServiceAndPerformAction(Action<IFileDownloadService> fileDownloadServiceAction)
         {
-            var fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
-            fileDownloadServiceAction?.Invoke(fileDownloadService);
-            CreateSeparationInLog();
-            WindsorContainer.Instance.Release(fileDownloadService);
+            IFileDownloadService fileDownloadService = null;
+
+            try
+            {
+                fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
+                fileDownloadServiceAction?.Invoke(fileDownloadService);
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(fileDownloadService);
+            }
         }
 
         private void CreateFileUploadServiceAndPerformAction(Action<IStatsUploadService> fileUploadServiceAction)
         {
-            var fileUploadService = WindsorContainer.Instance.Resolve<IStatsUploadService>();
-            fileUploadServiceAction?.Invoke(fileUploadService);
-            CreateSeparationInLog();
-            WindsorContainer.Instance.Release(fileUploadService);
+            IStatsUploadService fileUploadService = null;
+
+            try
+            {
+                fileUploadService = WindsorContainer.Instance.Resolve<IStatsUploadService>();
+                fileUploadServiceAction?.Invoke(fileUploadService);
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(fileUploadService);
+            }
         }
 
         private void CreateSeparationInLog()
@@ -67,7 +81,11 @@
             FileDownloadButton.Enabled = enable;
             UploadStatsButton.Enabled = enable;
 
+            TestEmailButton.Enabled = enable;
+
             ExportDirectoryTextBox.Enabled = enable;
+            ExportAllRadioButton.Enabled = enable;
+            ExportSubsetRadioButton.Enabled = enable;
             ExportButton.Enabled = enable;
 
             ImportDirectoryTextBox.Enabled = enable;
@@ -80,36 +98,14 @@
                 RunActionAsync(
                     () =>
                     {
-                        string exportDirectory = ExportDirectoryTextBox.Text;
-
-                        if (!Directory.Exists(exportDirectory))
+                        if (ExportAllRadioButton.Checked)
                         {
-                            Log(
-                                $"The directory does not exist, provide a new directory and try again. Directory: '{exportDirectory}'");
-                            CreateSeparationInLog();
-                            return;
+                            MassExport(files => files);
                         }
-
-                        (int fileId, string fileName)[] files = GetFiles();
-                        var service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
-
-                        int filesRemaining = files.Length;
-
-                        Log($"'{filesRemaining}' files are to be exported");
-
-                        foreach ((int fileId, string fileName) in files)
+                        else if (ExportSubsetRadioButton.Checked)
                         {
-                            string path = Path.Combine(exportDirectory, fileName);
-                            string fileData = service.GetFileData(fileId);
-
-                            File.WriteAllText(path, fileData);
-
-                            filesRemaining--;
-
-                            Log($"File exported. '{filesRemaining}' remaining files to be exported");
+                            MassExport(SelectSubsetOfExportFiles);
                         }
-
-                        CreateSeparationInLog();
                     });
         }
 
@@ -120,27 +116,39 @@
                     () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
         }
 
-        private (int fileId, string fileName)[] GetFiles()
+        private (int fileId, string fileName)[] GetAllFiles()
         {
             var downloads = new List<(int downloadId, string fileName)>();
-            var databaseService = WindsorContainer.Instance.Resolve<IStatsDownloadDatabaseService>();
-            databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
-            {
-                using (DbDataReader fileReader =
-                    service.ExecuteReader(
-                        "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
-                {
-                    if (!fileReader.HasRows)
-                    {
-                        return;
-                    }
 
-                    while (fileReader.Read())
+            IStatsDownloadDatabaseService databaseService = null;
+
+            try
+            {
+                databaseService = WindsorContainer.Instance.Resolve<IStatsDownloadDatabaseService>();
+
+                databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
+                {
+                    using (DbDataReader fileReader =
+                        service.ExecuteReader(
+                            "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
                     {
-                        downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                        if (!fileReader.HasRows)
+                        {
+                            return;
+                        }
+
+                        while (fileReader.Read())
+                        {
+                            downloads.Add((fileReader.GetInt32(0),
+                                $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                        }
                     }
-                }
-            });
+                });
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(databaseService);
+            }
 
             return downloads.ToArray();
         }
@@ -155,7 +163,6 @@
                 {
                     Log(
                         $"The directory does not exist, provide a new directory and try again. Directory: '{importDirectory}'");
-                    CreateSeparationInLog();
                     return;
                 }
 
@@ -165,7 +172,6 @@
                 {
                     Log(
                         $"There are no text files in the top directory, provide a directory with files to import and try again. Directory: '{importDirectory}'");
-                    CreateSeparationInLog();
                     return;
                 }
 
@@ -193,6 +199,50 @@
             });
         }
 
+        private void MassExport(
+            Func<(int fileId, string fileName)[], (int fileId, string fileName)[]> selectFilesFunction)
+        {
+            string exportDirectory = ExportDirectoryTextBox.Text;
+
+            if (!Directory.Exists(exportDirectory))
+            {
+                Log(
+                    $"The directory does not exist, provide a new directory and try again. Directory: '{exportDirectory}'");
+                return;
+            }
+
+            (int fileId, string fileName)[] allFiles = GetAllFiles();
+
+            IStatsUploadDatabaseService service = null;
+
+            try
+            {
+                service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
+
+                (int fileId, string fileName)[] subsetFiles = selectFilesFunction(allFiles);
+
+                int filesRemaining = subsetFiles.Length;
+
+                Log($"'{filesRemaining}' files are to be exported");
+
+                foreach ((int fileId, string fileName) in subsetFiles)
+                {
+                    string path = Path.Combine(exportDirectory, fileName);
+                    string fileData = service.GetFileData(fileId);
+
+                    File.WriteAllText(path, fileData);
+
+                    filesRemaining--;
+
+                    Log($"File exported. '{filesRemaining}' remaining files to be exported");
+                }
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(service);
+            }
+        }
+
         private async Task RunActionAsync(Action action)
         {
             try
@@ -206,8 +256,53 @@
             }
             finally
             {
+                CreateSeparationInLog();
                 EnableGui(true);
             }
+        }
+
+        private (int fileId, string fileName)[] SelectSubsetOfExportFiles((int fileId, string fileName)[] files)
+        {
+            ISelectExportFilesProvider selectExportFilesForm = null;
+
+            try
+            {
+                selectExportFilesForm = WindsorContainer.Instance.Resolve<ISelectExportFilesProvider>();
+
+                selectExportFilesForm.AddFilesToList(files);
+
+                DialogResult result = selectExportFilesForm.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    return selectExportFilesForm.GetSelectedFiles();
+                }
+            }
+            finally
+            {
+                WindsorContainer.Instance.Release(selectExportFilesForm);
+            }
+
+            return new (int, string)[0];
+        }
+
+        private async void TestEmailButton_Click(object sender, EventArgs e)
+        {
+            await RunActionAsync(() =>
+            {
+                IStatsDownloadEmailService emailService = null;
+
+                try
+                {
+                    emailService = WindsorContainer.Instance.Resolve<IStatsDownloadEmailService>();
+
+                    emailService.SendTestEmail();
+                }
+                finally
+                {
+                    WindsorContainer.Instance.Release(emailService);
+                }
+            });
         }
 
         private async void UploadStatsButton_Click(object sender, EventArgs e)

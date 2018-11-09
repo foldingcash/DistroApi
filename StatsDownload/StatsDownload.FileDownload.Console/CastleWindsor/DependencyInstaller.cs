@@ -24,7 +24,8 @@
         {
             container.Register(Component.For<ILogger>()
                                         .Instance(LogManager
-                                                  .LoadConfiguration("nlog.filedownload.config").GetCurrentClassLogger()));
+                                                  .LoadConfiguration("nlog.filedownload.config")
+                                                  .GetCurrentClassLogger()));
 
             container.Register(
                 Component.For<IApplicationLoggingService>().ImplementedBy<FileDownloadConsoleLoggingProvider>(),
@@ -54,8 +55,6 @@
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
-                Component.For<IStatsUploadService>().ImplementedBy<StatsUploadProvider>(),
-                Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
                 Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
                 Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
                 Component.For<IFileDownloadService>().ImplementedBy<FileDownloadProvider>(),

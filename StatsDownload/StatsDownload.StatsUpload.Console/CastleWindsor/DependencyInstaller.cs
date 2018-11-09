@@ -22,14 +22,16 @@
         {
             container.Register(Component.For<ILogger>()
                                         .Instance(LogManager
-                                                  .LoadConfiguration("nlog.statsupload.config").GetCurrentClassLogger()));
+                                                  .LoadConfiguration("nlog.statsupload.config")
+                                                  .GetCurrentClassLogger()));
 
             container.Register(
                 Component.For<IApplicationLoggingService>().ImplementedBy<StatsUploadConsoleLoggingProvider>(),
                 Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService>()
                          .ImplementedBy<StatsUploadConsoleSettingsProvider>()
                          .Forward<IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
-                             IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings>());
+                             IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings>()
+                         .Forward<IStatsFileDateTimeFormatsAndOffsetSettings>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
@@ -54,6 +56,8 @@
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
                 Component.For<IStatsUploadService>().ImplementedBy<StatsUploadProvider>(),
+                Component.For<IStatsFileDateTimeFormatsAndOffsetService>()
+                         .ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<GoogleUsersFilter>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<NoPaymentAddressUsersFilter>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<WhitespaceNameUsersFilter>(),

@@ -39,8 +39,12 @@
 5. MinimumWaitTimeInHours
 	* The amount of time in hours we should wait between file downloads
 	
-## Stats Upload Filter Settings
+## Stats Upload Settings
 
+1. StatsFileTimeZoneAndOffset
+	* A key value pair of time zone symbols and its' offset
+
+### Filters
 1. EnableNoPaymentAddressUsersFilter
 	* The stats upload only processes users with a payment address
 2. EnableZeroPointUsersFilter
