@@ -35,4 +35,4 @@ If the .NET Core version has changed, then update the batch script that is haves
 ### Windows 10 Using Powershell
 
 1. Use Get-FileHash Command
-	* Ex. PS C:\> Get-FileHash C:\StatsDownload-x64.msi -ALGO SHA256
+	* Ex. PS C:\Setups> Get-FileHash C:\StatsDownload-x64.msi -ALGO SHA256
