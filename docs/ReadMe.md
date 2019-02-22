@@ -1,6 +1,7 @@
 # FLDCDotNet
 
 [![Build Status](https://foldingcoin.visualstudio.com/StatsDownloadDotNet/_apis/build/status/TestStatsDownloadApi%20-%20CI?branchName=develop)](https://foldingcoin.visualstudio.com/StatsDownloadDotNet/_build/latest?definitionId=1&branchName=develop)
+[![Deployment Status](https://foldingcoin.vsrm.visualstudio.com/_apis/public/Release/badge/7276dea2-ed05-49df-b912-05a27a323bb1/1/1)](https://foldingcoin.vsrm.visualstudio.com/_apis/public/Release/badge/7276dea2-ed05-49df-b912-05a27a323bb1/1/1)
 
 ## Getting Started
 
