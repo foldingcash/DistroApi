@@ -1,5 +1,7 @@
 # FLDCDotNet
 
+[![Build Status](https://foldingcoin.visualstudio.com/StatsDownloadDotNet/_apis/build/status/TestStatsDownloadApi%20-%20CI?branchName=develop)](https://foldingcoin.visualstudio.com/StatsDownloadDotNet/_build/latest?definitionId=1&branchName=develop)
+
 ## Getting Started
 
 This is a C# implementation for downloading FAH statistics on a scheduled basis, parsing and loading the statistics into a database, and parsing metadata out of a FAH user's name. An API is used to expose the data in the database.
