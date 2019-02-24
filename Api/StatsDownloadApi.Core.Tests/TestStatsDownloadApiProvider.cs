@@ -60,8 +60,6 @@
             Assert.Throws<ArgumentNullException>(() =>
                 NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
                     statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, null));
-
-            Assert.Fail("testing unit test failure in CI process");
         }
 
         [Test]
