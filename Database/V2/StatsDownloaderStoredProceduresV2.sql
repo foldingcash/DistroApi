@@ -27,22 +27,22 @@ BEGIN
 					VALUES ('FILE DOWNLOAD ERROR', 'There was an error during the file download process.');
 				END
 
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD STARTED') = 0
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'VALIDATION STARTED') = 0
 				BEGIN
 					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
-					VALUES ('STATS UPLOAD STARTED', 'The stats upload has started.');
+					VALUES ('VALIDATION STARTED', 'The validation of the file has started.');
 				END
 
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD FINISHED')  = 0
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'VALIDATED')  = 0
 				BEGIN
 					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
-					VALUES ('STATS UPLOAD FINISHED', 'The stats upload has finished.');
+					VALUES ('VALIDATED', 'The file has been validated of any issues.');
 				END
 
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'STATS UPLOAD ERROR') = 0
+			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'VALIDATION ERROR') = 0
 				BEGIN
 					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
-					VALUES ('STATS UPLOAD ERROR', 'There was an error during the file download process.');
+					VALUES ('VALIDATION ERROR', 'There was an error during the file validation process.');
 				END
 		COMMIT
 	END TRY
