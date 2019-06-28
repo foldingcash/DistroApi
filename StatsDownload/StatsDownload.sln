@@ -37,6 +37,24 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Email", "..\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Email.Tests", "..\Shared\StatsDownload.Email.Tests\StatsDownload.Email.Tests.csproj", "{FA213D4C-7F3E-4991-ADE3-BE8B1EB78C94}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseScripts", "DatabaseScripts", "{CE0F794D-DBA3-4983-B4A3-B8622D2A0AB5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "V1", "V1", "{23AC285F-DA5E-46DB-BF09-9DF4360B362E}"
+	ProjectSection(SolutionItems) = preProject
+		..\Database\V1\RunningStatsDownloadV1.sql = ..\Database\V1\RunningStatsDownloadV1.sql
+		..\Database\V1\StatsApiStoredProceduresV1.SQL = ..\Database\V1\StatsApiStoredProceduresV1.SQL
+		..\Database\V1\StatsDownloaderStoredProceduresV1.sql = ..\Database\V1\StatsDownloaderStoredProceduresV1.sql
+		..\Database\V1\StatsDownloadSchemaV1.sql = ..\Database\V1\StatsDownloadSchemaV1.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "V2", "V2", "{2B7F5B21-A35E-4063-9EBD-21DE132E2761}"
+	ProjectSection(SolutionItems) = preProject
+		..\Database\V2\RunningStatsDownloadV2.sql = ..\Database\V2\RunningStatsDownloadV2.sql
+		..\Database\V2\StatsApiStoredProceduresV2.SQL = ..\Database\V2\StatsApiStoredProceduresV2.SQL
+		..\Database\V2\StatsDownloaderStoredProceduresV2.sql = ..\Database\V2\StatsDownloaderStoredProceduresV2.sql
+		..\Database\V2\StatsDownloadSchemaV2.sql = ..\Database\V2\StatsDownloadSchemaV2.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -254,6 +272,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{23AC285F-DA5E-46DB-BF09-9DF4360B362E} = {CE0F794D-DBA3-4983-B4A3-B8622D2A0AB5}
+		{2B7F5B21-A35E-4063-9EBD-21DE132E2761} = {CE0F794D-DBA3-4983-B4A3-B8622D2A0AB5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {902FB14E-0D74-426E-BDE2-8A4F1ABAF694}
