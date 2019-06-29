@@ -79,7 +79,6 @@
         private void EnableGui(bool enable)
         {
             FileDownloadButton.Enabled = enable;
-            UploadStatsButton.Enabled = enable;
 
             TestEmailButton.Enabled = enable;
 
@@ -303,13 +302,6 @@
                     WindsorContainer.Instance.Release(emailService);
                 }
             });
-        }
-
-        private async void UploadStatsButton_Click(object sender, EventArgs e)
-        {
-            await
-                RunActionAsync(
-                    () => { CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFiles(); }); });
         }
     }
 }
