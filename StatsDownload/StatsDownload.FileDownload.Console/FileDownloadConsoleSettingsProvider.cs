@@ -28,7 +28,7 @@
 
         public string GetConnectionString()
         {
-            return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
+            return ConfigurationManager.ConnectionStrings["FoldingCoin.Database"]?.ConnectionString;
         }
 
         public string GetDatabaseType()
