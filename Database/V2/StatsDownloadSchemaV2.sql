@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [FoldingCoin]    Script Date: 6/28/2019 7:28:51 PM ******/
+/****** Object:  Database [FoldingCoin]    Script Date: 6/29/2019 4:00:40 PM ******/
 CREATE DATABASE [FoldingCoin]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -77,10 +77,10 @@ EXEC sys.sp_db_vardecimal_storage_format N'FoldingCoin', N'ON'
 GO
 USE [FoldingCoin]
 GO
-/****** Object:  Schema [FoldingCoin]    Script Date: 6/28/2019 7:28:51 PM ******/
+/****** Object:  Schema [FoldingCoin]    Script Date: 6/29/2019 4:00:40 PM ******/
 CREATE SCHEMA [FoldingCoin]
 GO
-/****** Object:  Table [FoldingCoin].[Downloads]    Script Date: 6/28/2019 7:28:51 PM ******/
+/****** Object:  Table [FoldingCoin].[Downloads]    Script Date: 6/29/2019 4:00:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -96,7 +96,7 @@ CREATE TABLE [FoldingCoin].[Downloads](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Files]    Script Date: 6/28/2019 7:28:51 PM ******/
+/****** Object:  Table [FoldingCoin].[Files]    Script Date: 6/29/2019 4:00:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -112,7 +112,7 @@ CREATE TABLE [FoldingCoin].[Files](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Rejections]    Script Date: 6/28/2019 7:28:51 PM ******/
+/****** Object:  Table [FoldingCoin].[Rejections]    Script Date: 6/29/2019 4:00:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -120,7 +120,6 @@ GO
 CREATE TABLE [FoldingCoin].[Rejections](
 	[RejectionId] [int] IDENTITY(1,1) NOT NULL,
 	[DownloadId] [int] NOT NULL,
-	[LineNumber] [int] NULL,
 	[Reason] [nvarchar](500) NOT NULL,
  CONSTRAINT [PK_Rejections] PRIMARY KEY CLUSTERED 
 (
@@ -128,7 +127,7 @@ CREATE TABLE [FoldingCoin].[Rejections](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [FoldingCoin].[Statuses]    Script Date: 6/28/2019 7:28:51 PM ******/
+/****** Object:  Table [FoldingCoin].[Statuses]    Script Date: 6/29/2019 4:00:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

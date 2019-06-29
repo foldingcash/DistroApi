@@ -25,16 +25,24 @@ EXEC [FoldingCoin].[FileDownloadFinished] @DownloadId
 PRINT 'File validation started'
 EXEC [FoldingCoin].[FileValidationStarted] @DownloadId
 
+DECLARE @ValidatedDateTime DATETIME;
+
+SELECT @ValidatedDateTime = GETUTCDATE();
+
 PRINT 'File validated'
 EXEC [FoldingCoin].[FileValidated] @DownloadId
+	,@ValidatedDateTime
+	,'\\storage\location\processed'
+	,'NewFileName'
+	,'.ext';
 
-PRINT 'File validation error'
-EXEC [FoldingCoin].[FileValidationError] @DownloadId
+--PRINT 'File validation error'
+--EXEC [FoldingCoin].[FileValidationError] @DownloadId, 'File Validation Error';
 
 -- Use this function to get the last file download date time
 --PRINT 'Getting last file download datetime'
 --SELECT [FoldingCoin].[GetLastFileDownloadDateTime]();
 
 -- Use this view to get the download Ids of the downloads ready for stats upload
---PRINT 'Selecting downloads ready for upload'
---SELECT DownloadId FROM [FoldingCoin].[ValidatedDownloads];
+PRINT 'Selecting downloads ready for upload'
+SELECT DownloadId FROM [FoldingCoin].[ValidatedFiles];
