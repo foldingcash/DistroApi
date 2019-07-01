@@ -30,7 +30,7 @@
         int ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters);
 
         int ExecuteStoredProcedure(DbTransaction transaction, string storedProcedure,
-            IEnumerable<DbParameter> parameters);
+                                   IEnumerable<DbParameter> parameters);
 
         int ExecuteStoredProcedure(string storedProcedure);
 

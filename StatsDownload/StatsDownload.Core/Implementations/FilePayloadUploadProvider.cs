@@ -1,8 +1,9 @@
 ﻿namespace StatsDownload.Core.Implementations
 {
     using System;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class FilePayloadUploadProvider : IFilePayloadUploadService
     {
@@ -13,14 +14,14 @@
         private readonly IFileReaderService fileReaderService;
 
         public FilePayloadUploadProvider(IFileCompressionService fileCompressionService,
-            IFileReaderService fileReaderService,
-            IFileDownloadDatabaseService fileDownloadDatabaseService)
+                                         IFileReaderService fileReaderService,
+                                         IFileDownloadDatabaseService fileDownloadDatabaseService)
         {
-            this.fileCompressionService = fileCompressionService ??
-                                          throw new ArgumentNullException(nameof(fileCompressionService));
+            this.fileCompressionService =
+                fileCompressionService ?? throw new ArgumentNullException(nameof(fileCompressionService));
             this.fileReaderService = fileReaderService ?? throw new ArgumentNullException(nameof(fileReaderService));
-            this.fileDownloadDatabaseService = fileDownloadDatabaseService ??
-                                               throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
+            this.fileDownloadDatabaseService = fileDownloadDatabaseService
+                                               ?? throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
         }
 
         public void UploadFile(FilePayload filePayload)

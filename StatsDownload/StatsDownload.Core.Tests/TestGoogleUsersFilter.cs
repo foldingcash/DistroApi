@@ -2,11 +2,14 @@
 {
     using System;
     using System.Linq;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestGoogleUsersFilter
@@ -49,25 +52,23 @@
         {
             settingsMock.Enabled.Returns(true);
 
-            innerServiceMock.Parse("fileData")
-                            .Returns(
-                                new ParseResults(downloadDateTime,
-                                    new[]
-                                    {
-                                        new UserData(),
-                                        new UserData(0, "user", 0, 0, 0),
-                                        new UserData(0, "GOOGLE", 0, 0, 0),
-                                        new UserData(0, "Google", 0, 0, 0),
-                                        new UserData(0, "google", 0, 0, 0),
-                                        new UserData(0, "google123456", 0, 0, 0)
-                                    }, new[] { new FailedUserData() }));
+            innerServiceMock.Parse("fileData").Returns(new ParseResults(downloadDateTime,
+                new[]
+                {
+                    new UserData(),
+                    new UserData(0, "user", 0, 0, 0),
+                    new UserData(0, "GOOGLE", 0, 0, 0),
+                    new UserData(0, "Google", 0, 0, 0),
+                    new UserData(0, "google", 0, 0, 0),
+                    new UserData(0, "google123456", 0, 0, 0)
+                }, new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse("fileData");
 
             Assert.That(actual.UsersData.Count(), Is.EqualTo(2));
             Assert.That(
-                actual.UsersData.Count(
-                    data => data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ?? false),
+                actual.UsersData.Count(data =>
+                    data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ?? false),
                 Is.EqualTo(0));
         }
     }

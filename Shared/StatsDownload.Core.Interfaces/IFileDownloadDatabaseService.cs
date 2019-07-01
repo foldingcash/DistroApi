@@ -1,8 +1,9 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
     using System;
-    using DataTransfer;
-    using Enums;
+
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public interface IFileDownloadDatabaseService
     {

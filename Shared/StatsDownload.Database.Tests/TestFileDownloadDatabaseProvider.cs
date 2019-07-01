@@ -4,13 +4,16 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
-    using Core.Interfaces.Enums;
-    using Core.Interfaces.Logging;
+
     using NSubstitute;
     using NSubstitute.ClearExtensions;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestFileDownloadDatabaseProvider
@@ -23,31 +26,29 @@
             statsDownloadDatabaseServiceMock = Substitute.For<IStatsDownloadDatabaseService>();
             statsDownloadDatabaseServiceMock.When(service =>
                 service.CreateDatabaseConnectionAndExecuteAction(
-                    Arg.Any<Action<IDatabaseConnectionService>>())).Do(
-                callInfo =>
-                {
-                    var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
+                    Arg.Any<Action<IDatabaseConnectionService>>())).Do(callInfo =>
+            {
+                var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
 
-                    service.Invoke(databaseConnectionServiceMock);
-                });
+                service.Invoke(databaseConnectionServiceMock);
+            });
 
             statsDownloadDatabaseParameterServiceMock = Substitute.For<IStatsDownloadDatabaseParameterService>();
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
             systemUnderTest = NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock,
-                statsDownloadDatabaseParameterServiceMock,
-                loggingServiceMock);
+                statsDownloadDatabaseParameterServiceMock, loggingServiceMock);
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
             filePayload = new FilePayload
-            {
-                DownloadId = 100,
-                DecompressedDownloadFileName = "DecompressedDownloadFileName",
-                DecompressedDownloadFileExtension = "DecompressedDownloadFileExtension",
-                DecompressedDownloadFileData = "DecompressedDownloadFileData"
-            };
+                          {
+                              DownloadId = 100,
+                              DecompressedDownloadFileName = "DecompressedDownloadFileName",
+                              DecompressedDownloadFileExtension = "DecompressedDownloadFileExtension",
+                              DecompressedDownloadFileData = "DecompressedDownloadFileData"
+                          };
 
             fileDownloadResult = new FileDownloadResult(filePayload);
 
@@ -97,17 +98,12 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewFileDownloadDatabaseProvider(null, statsDownloadDatabaseParameterServiceMock,
-                        loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock, null, loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock,
-                        statsDownloadDatabaseParameterServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFileDownloadDatabaseProvider(null, statsDownloadDatabaseParameterServiceMock, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock, null, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock,
+                statsDownloadDatabaseParameterServiceMock, null));
         }
 
         [Test]
@@ -117,14 +113,14 @@
 
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            databaseConnectionServiceMock.When(
-                                             service =>
-                                                 service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]",
-                                                     Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            databaseConnectionServiceMock
+                .When(service =>
+                    service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]", Arg.Any<List<DbParameter>>()))
+                .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
-            statsDownloadDatabaseParameterServiceMock.CreateErrorMessageParameter(databaseConnectionServiceMock,
-                fileDownloadResult).Returns(errorMessageParameterMock);
+            statsDownloadDatabaseParameterServiceMock
+                .CreateErrorMessageParameter(databaseConnectionServiceMock, fileDownloadResult)
+                .Returns(errorMessageParameterMock);
 
             InvokeFileDownloadError();
 
@@ -164,11 +160,13 @@
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            databaseConnectionServiceMock.When(
-                                             service =>
-                                                 service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]",
-                                                     Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            databaseConnectionServiceMock
+                .When(service =>
+                    service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]",
+                        Arg.Any<List<DbParameter>>())).Do(callback =>
+                {
+                    actualParameters = callback.Arg<List<DbParameter>>();
+                });
 
             InvokeFileDownloadFinished();
 
@@ -223,8 +221,8 @@
         [TestCase(true, DatabaseFailedReason.None, FailedReason.None)]
         [TestCase(false, DatabaseFailedReason.DatabaseUnavailable, FailedReason.DatabaseUnavailable)]
         public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expectedIsAvailable,
-            DatabaseFailedReason failedReason,
-            FailedReason expectedReason)
+                                                                        DatabaseFailedReason failedReason,
+                                                                        FailedReason expectedReason)
         {
             statsDownloadDatabaseServiceMock.IsAvailable(Constants.FileDownloadDatabase.FileDownloadObjects)
                                             .Returns((expectedIsAvailable, failedReason));
@@ -253,12 +251,13 @@
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            databaseConnectionServiceMock.When(
-                                             service =>
-                                                 service.ExecuteStoredProcedure(
-                                                     "[FoldingCoin].[NewFileDownloadStarted]",
-                                                     Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            databaseConnectionServiceMock
+                .When(service =>
+                    service.ExecuteStoredProcedure("[FoldingCoin].[NewFileDownloadStarted]",
+                        Arg.Any<List<DbParameter>>())).Do(callback =>
+                {
+                    actualParameters = callback.Arg<List<DbParameter>>();
+                });
 
             InvokeNewFileDownloadStarted();
 

@@ -1,8 +1,9 @@
 ﻿namespace StatsDownload.Core.Implementations
 {
     using System.Linq;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class ZeroPointUsersFilter : IStatsFileParserService
     {

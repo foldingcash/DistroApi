@@ -16,13 +16,10 @@
 
             public static readonly string GetLastFileDownloadDateTimeSqlFunction =
                 $"{DatabaseSchema}{SchemaSeparator}[GetLastFileDownloadDateTime]";
-
             public static readonly string NewFileDownloadStartedProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[NewFileDownloadStarted]";
-
             public static readonly string UpdateToLatestStoredProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[UpdateToLatest]";
-
             public static readonly string[] FileDownloadObjects =
             {
                 UpdateToLatestStoredProcedureName,
@@ -56,7 +53,6 @@
 
             public static string GetDownloadsReadyForUploadSqlView =
                 $"{DatabaseSchema}{SchemaSeparator}[DownloadsReadyForUpload]";
-
             public static readonly string GetDownloadsReadyForUploadSql =
                 $"SELECT DownloadId FROM {GetDownloadsReadyForUploadSqlView}";
 

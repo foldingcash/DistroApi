@@ -1,14 +1,17 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Email;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+
     using NSubstitute;
     using NSubstitute.ClearExtensions;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Email;
 
     [TestFixture]
     public class TestStatsDownloadEmailProvider
@@ -62,8 +65,7 @@
         {
             var filePayload = new FilePayload();
             errorMessageServiceMock.GetErrorMessage(FailedReason.UnexpectedException, filePayload,
-                                       StatsDownloadService.FileDownload)
-                                   .Returns("ErrorMessage");
+                StatsDownloadService.FileDownload).Returns("ErrorMessage");
 
             systemUnderTest.SendEmail(new FileDownloadResult(FailedReason.UnexpectedException, filePayload));
 
@@ -103,8 +105,7 @@
 
             systemUnderTest.SendTestEmail();
 
-            emailServiceMock
-                .Received().SendEmail("Test Email", "This is a test email.");
+            emailServiceMock.Received().SendEmail("Test Email", "This is a test email.");
         }
 
         [Test]
@@ -112,13 +113,12 @@
         {
             systemUnderTest.SendTestEmail();
 
-            emailServiceMock
-                .Received().SendEmail("DisplayName - Test Email", "This is a test email.");
+            emailServiceMock.Received().SendEmail("DisplayName - Test Email", "This is a test email.");
         }
 
         private IStatsDownloadEmailService NewStatsDownloadEmailProvider(IEmailService emailService,
-            IErrorMessageService errorMessageService,
-            IEmailSettingsService emailSettingsService)
+                                                                         IErrorMessageService errorMessageService,
+                                                                         IEmailSettingsService emailSettingsService)
         {
             return new StatsDownloadEmailProvider(emailService, errorMessageService, emailSettingsService);
         }

@@ -4,10 +4,11 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
-    using Core.Interfaces.Enums;
-    using Core.Interfaces.Logging;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Logging;
 
     public class FileDownloadDatabaseProvider : IFileDownloadDatabaseService
     {
@@ -18,13 +19,14 @@
         private readonly IStatsDownloadDatabaseService statsDownloadDatabaseService;
 
         public FileDownloadDatabaseProvider(IStatsDownloadDatabaseService statsDownloadDatabaseService,
-            IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterService,
-            ILoggingService loggingService)
+                                            IStatsDownloadDatabaseParameterService
+                                                statsDownloadDatabaseParameterService, ILoggingService loggingService)
         {
-            this.statsDownloadDatabaseService = statsDownloadDatabaseService ??
-                                                throw new ArgumentNullException(nameof(statsDownloadDatabaseService));
-            this.statsDownloadDatabaseParameterService = statsDownloadDatabaseParameterService ??
-                                                         throw new ArgumentNullException(
+            this.statsDownloadDatabaseService = statsDownloadDatabaseService
+                                                ?? throw new ArgumentNullException(
+                                                    nameof(statsDownloadDatabaseService));
+            this.statsDownloadDatabaseParameterService = statsDownloadDatabaseParameterService
+                                                         ?? throw new ArgumentNullException(
                                                              nameof(statsDownloadDatabaseParameterService));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
@@ -45,8 +47,10 @@
         {
             loggingService.LogMethodInvoked();
             DateTime lastFileDownloadDateTime = default(DateTime);
-            CreateDatabaseConnectionAndExecuteAction(
-                service => { lastFileDownloadDateTime = GetLastFileDownloadDateTime(service); });
+            CreateDatabaseConnectionAndExecuteAction(service =>
+            {
+                lastFileDownloadDateTime = GetLastFileDownloadDateTime(service);
+            });
             return lastFileDownloadDateTime;
         }
 
@@ -102,7 +106,7 @@
         }
 
         private void FileDownloadError(IDatabaseConnectionService databaseConnection,
-            FileDownloadResult fileDownloadResult)
+                                       FileDownloadResult fileDownloadResult)
         {
             FilePayload filePayload = fileDownloadResult.FilePayload;
 
@@ -132,16 +136,14 @@
                 ParameterDirection.Input);
             fileData.Value = filePayload.DecompressedDownloadFileData;
 
-            databaseConnection.ExecuteStoredProcedure(
-                Constants.FileDownloadDatabase.FileDownloadFinishedProcedureName,
+            databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase.FileDownloadFinishedProcedureName,
                 new List<DbParameter> { downloadId, fileName, fileExtension, fileData });
         }
 
         private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
         {
-            return
-                databaseConnection.ExecuteScalar(Constants.FileDownloadDatabase.GetLastFileDownloadDateTimeSql) as
-                    DateTime? ?? default(DateTime);
+            return databaseConnection.ExecuteScalar(Constants.FileDownloadDatabase.GetLastFileDownloadDateTimeSql) as
+                       DateTime? ?? default(DateTime);
         }
 
         private void LogVerbose(string message)
@@ -159,14 +161,14 @@
                 Constants.FileDownloadDatabase.NewFileDownloadStartedProcedureName,
                 new List<DbParameter> { downloadId });
 
-            return (int) downloadId.Value;
+            return (int)downloadId.Value;
         }
 
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)
         {
             int numberOfRowsEffected =
-                databaseConnection.ExecuteStoredProcedure(
-                    Constants.FileDownloadDatabase.UpdateToLatestStoredProcedureName);
+                databaseConnection.ExecuteStoredProcedure(Constants
+                                                          .FileDownloadDatabase.UpdateToLatestStoredProcedureName);
 
             LogVerbose($"'{numberOfRowsEffected}' rows were effected");
         }

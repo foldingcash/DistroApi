@@ -4,19 +4,21 @@
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
-    using Core.Implementations;
-    using Core.Interfaces;
-    using Core.Interfaces.Logging;
-    using Core.Interfaces.Networking;
-    using Database;
-    using Database.CastleWindsor;
-    using Database.Wrappers;
-    using Email;
-    using Logging;
+
     using NLog;
-    using SharpZipLib;
-    using Wrappers;
-    using Wrappers.Networking;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Core.Interfaces.Networking;
+    using StatsDownload.Database;
+    using StatsDownload.Database.CastleWindsor;
+    using StatsDownload.Database.Wrappers;
+    using StatsDownload.Email;
+    using StatsDownload.Logging;
+    using StatsDownload.SharpZipLib;
+    using StatsDownload.Wrappers;
+    using StatsDownload.Wrappers.Networking;
 
     public class DependencyInstaller : IWindsorInstaller
     {

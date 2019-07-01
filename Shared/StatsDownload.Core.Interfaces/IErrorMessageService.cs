@@ -1,8 +1,9 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
     using System.Collections.Generic;
-    using DataTransfer;
-    using Enums;
+
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public interface IErrorMessageService
     {

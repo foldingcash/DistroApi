@@ -2,8 +2,9 @@
 {
     using System;
     using System.Linq;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class GoogleUsersFilter : IStatsFileParserService
     {
@@ -23,12 +24,10 @@
 
             if (settings.Enabled)
             {
-                return
-                    new ParseResults(results.DownloadDateTime,
-                        results.UsersData.Where(
-                            data => !data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ??
-                                    true),
-                        results.FailedUsersData);
+                return new ParseResults(results.DownloadDateTime,
+                    results.UsersData.Where(data =>
+                        !data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ?? true),
+                    results.FailedUsersData);
             }
 
             return results;

@@ -4,14 +4,17 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
-    using Exceptions;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestStatsUploadProvider
@@ -41,12 +44,12 @@
             failedUser4 = new FailedUserData();
 
             statsFileParserServiceMock = Substitute.For<IStatsFileParserService>();
-            statsFileParserServiceMock.Parse("File1")
-                                      .Returns(new ParseResults(downloadDateTime1, new List<UserData> { user1, user2 },
-                                          new List<FailedUserData> { failedUser1, failedUser2 }));
-            statsFileParserServiceMock.Parse("File2")
-                                      .Returns(new ParseResults(downloadDateTime2, new List<UserData> { user3, user4 },
-                                          new List<FailedUserData> { failedUser3, failedUser4 }));
+            statsFileParserServiceMock.Parse("File1").Returns(new ParseResults(downloadDateTime1,
+                new List<UserData> { user1, user2 },
+                new List<FailedUserData> { failedUser1, failedUser2 }));
+            statsFileParserServiceMock.Parse("File2").Returns(new ParseResults(downloadDateTime2,
+                new List<UserData> { user3, user4 },
+                new List<FailedUserData> { failedUser3, failedUser4 }));
 
             statsUploadEmailServiceMock = Substitute.For<IStatsUploadEmailService>();
 
@@ -87,23 +90,15 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadProvider(null, loggingServiceMock, statsFileParserServiceMock,
-                        statsUploadEmailServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadProvider(statsUploadDatabaseServiceMock, null, statsFileParserServiceMock,
-                        statsUploadEmailServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock, null,
-                        statsUploadEmailServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock,
-                        statsFileParserServiceMock,
-                        null));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsUploadProvider(null, loggingServiceMock, statsFileParserServiceMock,
+                    statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsUploadProvider(statsUploadDatabaseServiceMock, null,
+                statsFileParserServiceMock, statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsUploadProvider(statsUploadDatabaseServiceMock,
+                loggingServiceMock, null, statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsUploadProvider(statsUploadDatabaseServiceMock,
+                loggingServiceMock, statsFileParserServiceMock, null));
         }
 
         [Test]
@@ -204,8 +199,7 @@
             StatsUploadResults actual = InvokeUploadStatsFiles();
 
             Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
-            Assert.That(actual.UploadResults.ElementAt(0).FailedReason,
-                Is.EqualTo(FailedReason.UnexpectedException));
+            Assert.That(actual.UploadResults.ElementAt(0).FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
         }
 
         [Test]
@@ -277,12 +271,10 @@
             {
                 statsUploadDatabaseServiceMock.AddUsers(tranaction1, 1,
                     Arg.Is<IEnumerable<UserData>>(datas => datas.Contains(user1) && datas.Contains(user2)),
-                    Arg.Is<IList<FailedUserData>>(
-                        data => data.Contains(failedUser1) && data.Contains(failedUser2)));
+                    Arg.Is<IList<FailedUserData>>(data => data.Contains(failedUser1) && data.Contains(failedUser2)));
                 statsUploadDatabaseServiceMock.AddUsers(tranaction2, 2,
                     Arg.Is<IEnumerable<UserData>>(datas => datas.Contains(user3) && datas.Contains(user4)),
-                    Arg.Is<IList<FailedUserData>>(
-                        data => data.Contains(failedUser3) && data.Contains(failedUser4)));
+                    Arg.Is<IList<FailedUserData>>(data => data.Contains(failedUser3) && data.Contains(failedUser4)));
             });
         }
 
@@ -377,13 +369,12 @@
         }
 
         private IStatsUploadService NewStatsUploadProvider(IStatsUploadDatabaseService statsUploadDatabaseService,
-            IStatsUploadLoggingService statsUploadLoggingService,
-            IStatsFileParserService statsFileParserService,
-            IStatsUploadEmailService statsUploadEmailService)
+                                                           IStatsUploadLoggingService statsUploadLoggingService,
+                                                           IStatsFileParserService statsFileParserService,
+                                                           IStatsUploadEmailService statsUploadEmailService)
         {
             return new StatsUploadProvider(statsUploadDatabaseService, statsUploadLoggingService,
-                statsFileParserService,
-                statsUploadEmailService);
+                statsFileParserService, statsUploadEmailService);
         }
 
         private void SetUpWhenDatabaseIsNotAvailable()
@@ -412,7 +403,8 @@
 
         private class TestDbTimeoutException : DbException
         {
-            public TestDbTimeoutException() : base("Mock timeout exception")
+            public TestDbTimeoutException()
+                : base("Mock timeout exception")
             {
             }
         }

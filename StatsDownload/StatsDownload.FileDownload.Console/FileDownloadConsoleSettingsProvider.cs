@@ -3,14 +3,15 @@
     using System.Configuration;
     using System.IO;
     using System.Reflection;
-    using Core.Interfaces;
-    using Email;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Email;
 
     /// <summary>
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
     /// </summary>
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-        IEmailSettingsService
+                                                       IEmailSettingsService
     {
         public string GetAcceptAnySslCert()
         {
@@ -21,7 +22,10 @@
         {
             string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
             if (int.TryParse(commandTimeoutString, out int commandTimeoutValue))
+            {
                 return commandTimeoutValue;
+            }
+
             return null;
         }
 

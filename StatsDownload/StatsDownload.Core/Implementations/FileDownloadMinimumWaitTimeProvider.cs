@@ -1,8 +1,9 @@
 ﻿namespace StatsDownload.Core.Implementations
 {
     using System;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class FileDownloadMinimumWaitTimeProvider : IFileDownloadMinimumWaitTimeService
     {
@@ -11,7 +12,7 @@
         private readonly IFileDownloadDatabaseService fileDownloadDatabaseService;
 
         public FileDownloadMinimumWaitTimeProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
-            IDateTimeService dateTimeService)
+                                                   IDateTimeService dateTimeService)
         {
             if (fileDownloadDatabaseService == null)
             {

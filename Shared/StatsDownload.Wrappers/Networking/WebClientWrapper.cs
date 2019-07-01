@@ -3,7 +3,8 @@
     using System;
     using System.Net.Security;
     using System.Security.Cryptography.X509Certificates;
-    using Core.Interfaces.Networking;
+
+    using StatsDownload.Core.Interfaces.Networking;
 
     public class WebClientWrapper : IWebClient
     {

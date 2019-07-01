@@ -5,13 +5,16 @@
     using System.Data;
     using System.Data.Common;
     using System.Linq;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
-    using Core.Interfaces.Enums;
-    using Core.Interfaces.Logging;
+
     using NSubstitute;
     using NSubstitute.ClearExtensions;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestStatsUploadDatabaseProvider
@@ -24,13 +27,12 @@
             statsDownloadDatabaseServiceMock = Substitute.For<IStatsDownloadDatabaseService>();
             statsDownloadDatabaseServiceMock.When(service =>
                 service.CreateDatabaseConnectionAndExecuteAction(
-                    Arg.Any<Action<IDatabaseConnectionService>>())).Do(
-                callInfo =>
-                {
-                    var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
+                    Arg.Any<Action<IDatabaseConnectionService>>())).Do(callInfo =>
+            {
+                var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
 
-                    service.Invoke(databaseConnectionServiceMock);
-                });
+                service.Invoke(databaseConnectionServiceMock);
+            });
 
             statsDownloadDatabaseParameterServiceMock = Substitute.For<IStatsDownloadDatabaseParameterService>();
 
@@ -39,8 +41,7 @@
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
             systemUnderTest = NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock,
-                statsDownloadDatabaseParameterServiceMock, loggingServiceMock,
-                errorMessageServiceMock);
+                statsDownloadDatabaseParameterServiceMock, loggingServiceMock, errorMessageServiceMock);
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
@@ -106,23 +107,16 @@
                                          .Returns(dbParameter);
 
             var user1 = new UserData(999, "name", 10, 100, 1000)
-            {
-                BitcoinAddress = "address",
-                FriendlyName = "friendly"
-            };
+                        {
+                            BitcoinAddress = "address", FriendlyName = "friendly"
+                        };
             var user2 = new UserData(900, "name", 10, 100, 1000)
-            {
-                BitcoinAddress = "address",
-                FriendlyName = "friendly"
-            };
+                        {
+                            BitcoinAddress = "address", FriendlyName = "friendly"
+                        };
             IList<FailedUserData> failedUsers = new List<FailedUserData>();
 
-            systemUnderTest.AddUsers(null, 100,
-                new List<UserData>
-                {
-                    user1,
-                    user2
-                }, failedUsers);
+            systemUnderTest.AddUsers(null, 100, new List<UserData> { user1, user2 }, failedUsers);
 
             Assert.That(failedUsers.Count, Is.EqualTo(2));
 
@@ -142,13 +136,14 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
-            errorMessageServiceMock
-                .GetErrorMessage(Arg.Is<FailedUserData>(failedUser =>
-                    failedUser.RejectionReason == RejectionReason.BitcoinAddressExceedsMaxSize))
-                .Returns("btc");
+            errorMessageServiceMock.GetErrorMessage(Arg.Is<FailedUserData>(failedUser =>
+                                       failedUser.RejectionReason == RejectionReason.BitcoinAddressExceedsMaxSize))
+                                   .Returns("btc");
 
-            InvokeAddUsers(users:
-                new List<UserData> { new UserData(0, "", 10, 100, 1000) { BitcoinAddress = new string(' ', 51) } });
+            InvokeAddUsers(users: new List<UserData>
+                                  {
+                                      new UserData(0, "", 10, 100, 1000) { BitcoinAddress = new string(' ', 51) }
+                                  });
 
             Assert.That(actualParameters.Count, Is.AtLeast(2));
             Assert.That(actualParameters[2], Is.EqualTo(rejectionReasonParameterMock));
@@ -166,8 +161,7 @@
                 .GetErrorMessage(Arg.Is<FailedUserData>(failedUser =>
                     failedUser.RejectionReason == RejectionReason.FahNameExceedsMaxSize)).Returns("name");
 
-            InvokeAddUsers(users:
-                new List<UserData> { new UserData(0, new string(' ', 151), 10, 100, 1000) });
+            InvokeAddUsers(users: new List<UserData> { new UserData(0, new string(' ', 151), 10, 100, 1000) });
 
             Assert.That(actualParameters.Count, Is.AtLeast(2));
             Assert.That(actualParameters[2], Is.EqualTo(rejectionReasonParameterMock));
@@ -177,9 +171,8 @@
         [Test]
         public void AddUsers_WhenFailedUserListNull_ThrowsNullArgumentException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    InvokeAddUsers(null, Substitute.For<DbTransaction>(), 0, new UserData[0]));
+            Assert.Throws<ArgumentNullException>(() =>
+                InvokeAddUsers(null, Substitute.For<DbTransaction>(), 0, new UserData[0]));
         }
 
         [Test]
@@ -189,13 +182,14 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
-            errorMessageServiceMock
-                .GetErrorMessage(Arg.Is<FailedUserData>(failedUser =>
-                    failedUser.RejectionReason == RejectionReason.FriendlyNameExceedsMaxSize))
-                .Returns("friendly");
+            errorMessageServiceMock.GetErrorMessage(Arg.Is<FailedUserData>(failedUser =>
+                                       failedUser.RejectionReason == RejectionReason.FriendlyNameExceedsMaxSize))
+                                   .Returns("friendly");
 
-            InvokeAddUsers(users:
-                new List<UserData> { new UserData(0, "", 10, 100, 1000) { FriendlyName = new string(' ', 126) } });
+            InvokeAddUsers(users: new List<UserData>
+                                  {
+                                      new UserData(0, "", 10, 100, 1000) { FriendlyName = new string(' ', 126) }
+                                  });
 
             Assert.That(actualParameters.Count, Is.AtLeast(2));
             Assert.That(actualParameters[2], Is.EqualTo(rejectionReasonParameterMock));
@@ -209,11 +203,11 @@
             DbCommand addUsersCommand = null;
             DbCommand rebuildIndicesCommand = null;
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
-            {
-                dbCommand => addUsersCommand = dbCommand,
-                dbCommand => rebuildIndicesCommand = dbCommand,
-                dbCommand => failedUsersCommand = dbCommand
-            });
+                                                       {
+                                                           dbCommand => addUsersCommand = dbCommand,
+                                                           dbCommand => rebuildIndicesCommand = dbCommand,
+                                                           dbCommand => failedUsersCommand = dbCommand
+                                                       });
 
             InvokeAddUsers(users: new List<UserData> { new UserData(), new UserData(), new UserData() },
                 failedUsers: new List<FailedUserData> { new FailedUserData(), new FailedUserData() });
@@ -241,11 +235,7 @@
             systemUnderTest.AddUsers(null, 100,
                 new List<UserData>
                 {
-                    new UserData(999, "name", 10, 100, 1000)
-                    {
-                        BitcoinAddress = "address",
-                        FriendlyName = "friendly"
-                    }
+                    new UserData(999, "name", 10, 100, 1000) { BitcoinAddress = "address", FriendlyName = "friendly" }
                 }, new List<FailedUserData>());
 
             Assert.That(actualParameters.Count, Is.EqualTo(9));
@@ -328,11 +318,11 @@
             DbCommand addUsersCommand = null;
             DbCommand rebuildIndicesCommand = null;
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
-            {
-                dbCommand => failedUsersCommand = dbCommand,
-                dbCommand => addUsersCommand = dbCommand,
-                dbCommand => rebuildIndicesCommand = dbCommand
-            });
+                                                       {
+                                                           dbCommand => failedUsersCommand = dbCommand,
+                                                           dbCommand => addUsersCommand = dbCommand,
+                                                           dbCommand => rebuildIndicesCommand = dbCommand
+                                                       });
 
             systemUnderTest.AddUsers(null, 1, new[] { new UserData(), new UserData() }, new List<FailedUserData>());
 
@@ -346,11 +336,9 @@
         {
             DbCommand command = null;
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
-            {
-                null,
-                dbCommand => command = dbCommand,
-                null
-            });
+                                                       {
+                                                           null, dbCommand => command = dbCommand, null
+                                                       });
 
             var users = new UserData[2501];
             for (var index = 0; index < users.Length; index++)
@@ -390,10 +378,7 @@
         public void AddUsers_WhenInvoked_UsesAddUserDataStoredProcedure()
         {
             DbCommand command = default(DbCommand);
-            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
-            {
-                dbCommand => command = dbCommand
-            });
+            SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
             var transactionMock = Substitute.For<DbTransaction>();
 
@@ -409,11 +394,9 @@
         {
             DbCommand command = default(DbCommand);
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
-            {
-                null,
-                null,
-                dbCommand => command = dbCommand
-            });
+                                                       {
+                                                           null, null, dbCommand => command = dbCommand
+                                                       });
 
             var transactionMock = Substitute.For<DbTransaction>();
 
@@ -429,11 +412,9 @@
         {
             DbCommand command = default(DbCommand);
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
-            {
-                null,
-                dbCommand => command = dbCommand,
-                null
-            });
+                                                       {
+                                                           null, dbCommand => command = dbCommand, null
+                                                       });
 
             var transactionMock = Substitute.For<DbTransaction>();
 
@@ -452,9 +433,9 @@
                 new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
 
             InvokeAddUsers(users: new List<UserData>
-            {
-                new UserData(0, "name", 10, 100, 1000) { FriendlyName = "friendly" }
-            });
+                                  {
+                                      new UserData(0, "name", 10, 100, 1000) { FriendlyName = "friendly" }
+                                  });
 
             Assert.That(actualParameters.Count, Is.EqualTo(9));
             Assert.That(actualParameters[7].ParameterName, Is.EqualTo("@BitcoinAddress"));
@@ -469,9 +450,9 @@
                 new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
 
             InvokeAddUsers(users: new List<UserData>
-            {
-                new UserData(0, "name", 10, 100, 1000) { BitcoinAddress = "address" }
-            });
+                                  {
+                                      new UserData(0, "name", 10, 100, 1000) { BitcoinAddress = "address" }
+                                  });
 
             Assert.That(actualParameters.Count, Is.AtLeast(9));
             Assert.That(actualParameters[6].ParameterName, Is.EqualTo("@FriendlyName"));
@@ -491,24 +472,14 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadDatabaseProvider(null, statsDownloadDatabaseParameterServiceMock, loggingServiceMock,
-                        errorMessageServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock, null, loggingServiceMock,
-                        errorMessageServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock,
-                        statsDownloadDatabaseParameterServiceMock, null,
-                        errorMessageServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock,
-                        statsDownloadDatabaseParameterServiceMock, loggingServiceMock,
-                        null));
+            Assert.Throws<ArgumentNullException>(() => NewStatsUploadDatabaseProvider(null,
+                statsDownloadDatabaseParameterServiceMock, loggingServiceMock, errorMessageServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock,
+                null, loggingServiceMock, errorMessageServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock,
+                statsDownloadDatabaseParameterServiceMock, null, errorMessageServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsUploadDatabaseProvider(statsDownloadDatabaseServiceMock,
+                statsDownloadDatabaseParameterServiceMock, loggingServiceMock, null));
         }
 
         [Test]
@@ -598,10 +569,10 @@
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            databaseConnectionServiceMock.When(
-                                             service => service.ExecuteStoredProcedure("[FoldingCoin].[GetFileData]",
-                                                 Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            databaseConnectionServiceMock
+                .When(service =>
+                    service.ExecuteStoredProcedure("[FoldingCoin].[GetFileData]", Arg.Any<List<DbParameter>>()))
+                .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             systemUnderTest.GetFileData(100);
 
@@ -645,8 +616,8 @@
         [TestCase(true, DatabaseFailedReason.None, FailedReason.None)]
         [TestCase(false, DatabaseFailedReason.DatabaseUnavailable, FailedReason.DatabaseUnavailable)]
         public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expectedIsAvailable,
-            DatabaseFailedReason failedReason,
-            FailedReason expectedReason)
+                                                                        DatabaseFailedReason failedReason,
+                                                                        FailedReason expectedReason)
         {
             statsDownloadDatabaseServiceMock.IsAvailable(Constants.StatsUploadDatabase.StatsUploadObjects)
                                             .Returns((expectedIsAvailable, failedReason));
@@ -674,12 +645,12 @@
 
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            databaseConnectionServiceMock.When(
-                                             service =>
-                                                 service.ExecuteStoredProcedure(transaction,
-                                                     "[FoldingCoin].[StartStatsUpload]",
-                                                     Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            databaseConnectionServiceMock
+                .When(service => service.ExecuteStoredProcedure(transaction, "[FoldingCoin].[StartStatsUpload]",
+                    Arg.Any<List<DbParameter>>())).Do(callback =>
+                {
+                    actualParameters = callback.Arg<List<DbParameter>>();
+                });
 
             DateTime dateTime = DateTime.UtcNow;
 
@@ -715,11 +686,10 @@
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            databaseConnectionServiceMock.When(
-                                             service =>
-                                                 service.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadError]",
-                                                     Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            databaseConnectionServiceMock
+                .When(service =>
+                    service.ExecuteStoredProcedure("[FoldingCoin].[StatsUploadError]", Arg.Any<List<DbParameter>>()))
+                .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             var uploadResult = new StatsUploadResult(100, FailedReason.UnexpectedException);
 
@@ -754,12 +724,12 @@
 
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
-            databaseConnectionServiceMock.When(
-                                             service =>
-                                                 service.ExecuteStoredProcedure(transaction,
-                                                     "[FoldingCoin].[StatsUploadFinished]",
-                                                     Arg.Any<List<DbParameter>>()))
-                                         .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+            databaseConnectionServiceMock
+                .When(service => service.ExecuteStoredProcedure(transaction, "[FoldingCoin].[StatsUploadFinished]",
+                    Arg.Any<List<DbParameter>>())).Do(callback =>
+                {
+                    actualParameters = callback.Arg<List<DbParameter>>();
+                });
 
             systemUnderTest.StatsUploadFinished(transaction, 100);
 
@@ -783,13 +753,13 @@
         }
 
         private void InvokeAddUsers(DbTransaction transaction = null, int downloadId = 100,
-            IEnumerable<UserData> users = null)
+                                    IEnumerable<UserData> users = null)
         {
             InvokeAddUsers(new List<FailedUserData>(), transaction, downloadId, users);
         }
 
         private void InvokeAddUsers(IList<FailedUserData> failedUsers, DbTransaction transaction = null,
-            int downloadId = 100, IEnumerable<UserData> users = null)
+                                    int downloadId = 100, IEnumerable<UserData> users = null)
         {
             systemUnderTest.AddUsers(transaction, downloadId, users, failedUsers);
         }
@@ -802,8 +772,7 @@
         private IStatsUploadDatabaseService NewStatsUploadDatabaseProvider(
             IStatsDownloadDatabaseService statsDownloadDatabaseService,
             IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterService,
-            ILoggingService loggingService,
-            IErrorMessageService errorMessageService)
+            ILoggingService loggingService, IErrorMessageService errorMessageService)
         {
             return new StatsUploadDatabaseProvider(statsDownloadDatabaseService, statsDownloadDatabaseParameterService,
                 loggingService, errorMessageService);

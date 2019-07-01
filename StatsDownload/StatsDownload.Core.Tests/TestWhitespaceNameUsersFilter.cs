@@ -2,11 +2,14 @@
 {
     using System;
     using System.Linq;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestWhitespaceNameUsersFilter
@@ -49,16 +52,14 @@
         {
             settingsMock.Enabled.Returns(true);
 
-            innerServiceMock.Parse("fileData")
-                            .Returns(
-                                new ParseResults(downloadDateTime,
-                                    new[]
-                                    {
-                                        new UserData(),
-                                        new UserData(0, "", 0, 0, 0),
-                                        new UserData(0, "\t", 0, 0, 0),
-                                        new UserData(0, "name", 0, 0, 0)
-                                    }, new[] { new FailedUserData() }));
+            innerServiceMock.Parse("fileData").Returns(new ParseResults(downloadDateTime,
+                new[]
+                {
+                    new UserData(),
+                    new UserData(0, "", 0, 0, 0),
+                    new UserData(0, "\t", 0, 0, 0),
+                    new UserData(0, "name", 0, 0, 0)
+                }, new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse("fileData");
 

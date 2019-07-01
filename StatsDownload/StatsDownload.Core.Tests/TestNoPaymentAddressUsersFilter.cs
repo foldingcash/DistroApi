@@ -2,11 +2,14 @@
 {
     using System;
     using System.Linq;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestNoPaymentAddressUsersFilter
@@ -49,10 +52,9 @@
         {
             settingsMock.Enabled.Returns(true);
 
-            innerServiceMock.Parse("fileData")
-                            .Returns(new ParseResults(downloadDateTime,
-                                new[] { new UserData(), new UserData { BitcoinAddress = "addy" } },
-                                new[] { new FailedUserData() }));
+            innerServiceMock.Parse("fileData").Returns(new ParseResults(downloadDateTime,
+                new[] { new UserData(), new UserData { BitcoinAddress = "addy" } },
+                new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse("fileData");
 

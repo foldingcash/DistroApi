@@ -2,8 +2,9 @@
 {
     using System;
     using System.Runtime.CompilerServices;
-    using Core.Interfaces;
-    using Core.Interfaces.Logging;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Logging;
 
     public class LoggingProvider : ILoggingService
     {
@@ -13,8 +14,8 @@
 
         public LoggingProvider(IApplicationLoggingService applicationLoggingService, IDateTimeService dateTimeService)
         {
-            this.applicationLoggingService = applicationLoggingService ??
-                                             throw new ArgumentNullException(nameof(applicationLoggingService));
+            this.applicationLoggingService = applicationLoggingService
+                                             ?? throw new ArgumentNullException(nameof(applicationLoggingService));
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
         }
 

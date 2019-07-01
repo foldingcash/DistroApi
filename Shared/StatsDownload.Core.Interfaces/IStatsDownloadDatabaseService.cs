@@ -2,7 +2,8 @@
 {
     using System;
     using System.Data.Common;
-    using Enums;
+
+    using StatsDownload.Core.Interfaces.Enums;
 
     public interface IStatsDownloadDatabaseService
     {

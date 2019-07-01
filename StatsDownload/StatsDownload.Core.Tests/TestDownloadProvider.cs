@@ -1,13 +1,16 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Logging;
-    using Interfaces.Networking;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Core.Interfaces.Networking;
 
     [TestFixture]
     public class TestDownloadProvider

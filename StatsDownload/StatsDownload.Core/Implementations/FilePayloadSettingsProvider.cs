@@ -2,10 +2,11 @@
 {
     using System;
     using System.IO;
-    using Exceptions;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Logging;
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
     {
@@ -18,15 +19,15 @@
         private readonly ILoggingService loggingService;
 
         public FilePayloadSettingsProvider(IDateTimeService dateTimeService,
-            IDownloadSettingsService downloadSettingsService,
-            IDownloadSettingsValidatorService downloadSettingsValidatorService,
-            ILoggingService loggingService)
+                                           IDownloadSettingsService downloadSettingsService,
+                                           IDownloadSettingsValidatorService downloadSettingsValidatorService,
+                                           ILoggingService loggingService)
         {
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
-            this.downloadSettingsService = downloadSettingsService ??
-                                           throw new ArgumentNullException(nameof(downloadSettingsService));
-            this.downloadSettingsValidatorService = downloadSettingsValidatorService ??
-                                                    throw new ArgumentNullException(
+            this.downloadSettingsService = downloadSettingsService
+                                           ?? throw new ArgumentNullException(nameof(downloadSettingsService));
+            this.downloadSettingsValidatorService = downloadSettingsValidatorService
+                                                    ?? throw new ArgumentNullException(
                                                         nameof(downloadSettingsValidatorService));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
@@ -95,7 +96,7 @@
         }
 
         private void SetDecompressedDownloadFileDetails(FilePayload filePayload, DateTime dateTime,
-            string downloadDirectory)
+                                                        string downloadDirectory)
         {
             string decompressedFileName = $"{dateTime.ToFileTime()}.{Constants.FilePayload.DecompressedFileName}";
 

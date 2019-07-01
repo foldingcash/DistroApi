@@ -1,11 +1,14 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestFilePayloadUploadProvider
@@ -14,10 +17,10 @@
         public void SetUp()
         {
             filePayload = new FilePayload
-            {
-                DownloadFilePath = DownloadFilePath,
-                DecompressedDownloadFilePath = DecompressedDownloadFilePath
-            };
+                          {
+                              DownloadFilePath = DownloadFilePath,
+                              DecompressedDownloadFilePath = DecompressedDownloadFilePath
+                          };
 
             fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
 
@@ -46,12 +49,12 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () => NewFilePayloadUploadProvider(null, fileReaderServiceMock, fileDownloadDatabaseServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () => NewFilePayloadUploadProvider(fileCompressionServiceMock, null, fileDownloadDatabaseServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () => NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFilePayloadUploadProvider(null, fileReaderServiceMock, fileDownloadDatabaseServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFilePayloadUploadProvider(fileCompressionServiceMock, null, fileDownloadDatabaseServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, null));
         }
 
         [Test]
@@ -73,9 +76,9 @@
         }
 
         private IFilePayloadUploadService NewFilePayloadUploadProvider(IFileCompressionService fileCompressionService,
-            IFileReaderService fileReaderService,
-            IFileDownloadDatabaseService
-                fileDownloadDatabaseService)
+                                                                       IFileReaderService fileReaderService,
+                                                                       IFileDownloadDatabaseService
+                                                                           fileDownloadDatabaseService)
         {
             return new FilePayloadUploadProvider(fileCompressionService, fileReaderService,
                 fileDownloadDatabaseService);

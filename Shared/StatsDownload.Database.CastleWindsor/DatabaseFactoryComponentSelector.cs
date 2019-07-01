@@ -2,9 +2,11 @@
 {
     using System;
     using System.Reflection;
+
     using Castle.Facilities.TypedFactory;
-    using Core.Interfaces;
-    using Wrappers;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Database.Wrappers;
 
     public class DatabaseFactoryComponentSelector : DefaultTypedFactoryComponentSelector
     {

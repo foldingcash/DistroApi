@@ -4,10 +4,11 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using Exceptions;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class StatsFileParserProvider : IStatsFileParserService
     {
@@ -16,13 +17,14 @@
         private readonly IStatsFileDateTimeFormatsAndOffsetService statsFileDateTimeFormatsAndOffsetService;
 
         public StatsFileParserProvider(IAdditionalUserDataParserService additionalUserDataParserService,
-            IStatsFileDateTimeFormatsAndOffsetService statsFileDateTimeFormatsAndOffsetService)
+                                       IStatsFileDateTimeFormatsAndOffsetService
+                                           statsFileDateTimeFormatsAndOffsetService)
         {
-            this.additionalUserDataParserService = additionalUserDataParserService ??
-                                                   throw new ArgumentNullException(
+            this.additionalUserDataParserService = additionalUserDataParserService
+                                                   ?? throw new ArgumentNullException(
                                                        nameof(additionalUserDataParserService));
-            this.statsFileDateTimeFormatsAndOffsetService = statsFileDateTimeFormatsAndOffsetService ??
-                                                            throw new ArgumentNullException(
+            this.statsFileDateTimeFormatsAndOffsetService = statsFileDateTimeFormatsAndOffsetService
+                                                            ?? throw new ArgumentNullException(
                                                                 nameof(statsFileDateTimeFormatsAndOffsetService));
         }
 
@@ -75,8 +77,7 @@
 
                 if (IsInvalidUserData(unparsedUserData))
                 {
-                    failedUsersData.Add(
-                        new FailedUserData(lineNumber, currentLine, RejectionReason.UnexpectedFormat));
+                    failedUsersData.Add(new FailedUserData(lineNumber, currentLine, RejectionReason.UnexpectedFormat));
                     continue;
                 }
 
@@ -87,8 +88,8 @@
                     continue;
                 }
 
-                failedUsersData.Add(new FailedUserData(lineNumber, currentLine, RejectionReason.FailedParsing,
-                    userData));
+                failedUsersData.Add(
+                    new FailedUserData(lineNumber, currentLine, RejectionReason.FailedParsing, userData));
             }
         }
 
@@ -108,8 +109,8 @@
             foreach ((string format, int hourOffset) in statsFileDateTimeFormatsAndOffsetService
                 .GetStatsFileDateTimeFormatsAndOffset())
             {
-                parsed = DateTime.TryParseExact(rawDateTime, format, CultureInfo.CurrentCulture,
-                    DateTimeStyles.None, out downloadDateTime);
+                parsed = DateTime.TryParseExact(rawDateTime, format, CultureInfo.CurrentCulture, DateTimeStyles.None,
+                    out downloadDateTime);
 
                 if (parsed)
                 {

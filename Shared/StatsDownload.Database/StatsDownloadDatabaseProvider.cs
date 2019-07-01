@@ -4,9 +4,10 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
-    using Core.Interfaces;
-    using Core.Interfaces.Enums;
-    using Core.Interfaces.Logging;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
     {
@@ -19,14 +20,14 @@
         private readonly ILoggingService loggingService;
 
         public StatsDownloadDatabaseProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
-            IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
-            ILoggingService loggingService)
+                                             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
+                                             ILoggingService loggingService)
         {
-            this.databaseConnectionSettingsService = databaseConnectionSettingsService ??
-                                                     throw new ArgumentNullException(
+            this.databaseConnectionSettingsService = databaseConnectionSettingsService
+                                                     ?? throw new ArgumentNullException(
                                                          nameof(databaseConnectionSettingsService));
-            this.databaseConnectionServiceFactory = databaseConnectionServiceFactory ??
-                                                    throw new ArgumentNullException(
+            this.databaseConnectionServiceFactory = databaseConnectionServiceFactory
+                                                    ?? throw new ArgumentNullException(
                                                         nameof(databaseConnectionServiceFactory));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }

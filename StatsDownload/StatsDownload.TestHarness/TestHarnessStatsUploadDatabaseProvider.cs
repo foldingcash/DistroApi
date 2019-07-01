@@ -5,9 +5,10 @@
     using System.Data.Common;
     using System.Data.SqlTypes;
     using System.Linq;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
-    using Core.Interfaces.Enums;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class TestHarnessStatsUploadDatabaseProvider : IStatsUploadDatabaseService
     {
@@ -16,14 +17,14 @@
         private readonly ITestHarnessStatsDownloadSettings settings;
 
         public TestHarnessStatsUploadDatabaseProvider(IStatsUploadDatabaseService innerService,
-            ITestHarnessStatsDownloadSettings settings)
+                                                      ITestHarnessStatsDownloadSettings settings)
         {
             this.innerService = innerService;
             this.settings = settings;
         }
 
         public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
-            IList<FailedUserData> failedUsers)
+                             IList<FailedUserData> failedUsers)
         {
             innerService.AddUsers(transaction, downloadId, ModifiedUsers(usersData), failedUsers);
         }

@@ -1,8 +1,9 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System.Linq;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class TestHarnessOneHundredUsersFilter : IStatsFileParserService
     {
@@ -11,7 +12,7 @@
         private readonly ITestHarnessSettingsService settingsService;
 
         public TestHarnessOneHundredUsersFilter(IStatsFileParserService innerService,
-            ITestHarnessSettingsService settingsService)
+                                                ITestHarnessSettingsService settingsService)
         {
             this.innerService = innerService;
             this.settingsService = settingsService;

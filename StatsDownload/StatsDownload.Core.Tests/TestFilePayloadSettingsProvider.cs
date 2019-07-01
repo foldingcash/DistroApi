@@ -1,13 +1,16 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Exceptions;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestFilePayloadSettingsProvider
@@ -32,12 +35,12 @@
             downloadSettingsValidatorServiceMock = Substitute.For<IDownloadSettingsValidatorService>();
 
             int timeout;
-            downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
-                                                .Returns(callInfo =>
-                                                {
-                                                    callInfo[1] = 123;
-                                                    return true;
-                                                });
+            downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout).Returns(
+                callInfo =>
+                {
+                    callInfo[1] = 123;
+                    return true;
+                });
             bool acceptAnySslCert;
             downloadSettingsValidatorServiceMock.TryParseAcceptAnySslCert("AcceptAnySslCert", out acceptAnySslCert)
                                                 .Returns(callInfo =>
@@ -85,23 +88,15 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewFilePayloadSettingsProvider(null, downloadSettingsServiceMock,
-                        downloadSettingsValidatorServiceMock,
-                        loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewFilePayloadSettingsProvider(dateTimeServiceMock, null, downloadSettingsValidatorServiceMock,
-                        loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock, null,
-                        loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock,
-                        downloadSettingsValidatorServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(null, downloadSettingsServiceMock,
+                downloadSettingsValidatorServiceMock, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock, null,
+                downloadSettingsValidatorServiceMock, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock, null,
+                    loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
+                downloadSettingsServiceMock, downloadSettingsValidatorServiceMock, null));
         }
 
         [Test]
@@ -240,11 +235,11 @@
         }
 
         private IFilePayloadSettingsService NewFilePayloadSettingsProvider(IDateTimeService dateTimeService,
-            IDownloadSettingsService
-                downloadSettingsService,
-            IDownloadSettingsValidatorService
-                downloadSettingsValidatorService,
-            ILoggingService loggingService)
+                                                                           IDownloadSettingsService
+                                                                               downloadSettingsService,
+                                                                           IDownloadSettingsValidatorService
+                                                                               downloadSettingsValidatorService,
+                                                                           ILoggingService loggingService)
         {
             return new FilePayloadSettingsProvider(dateTimeService, downloadSettingsService,
                 downloadSettingsValidatorService, loggingService);

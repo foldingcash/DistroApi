@@ -1,8 +1,9 @@
 ﻿namespace StatsDownload.Core.Implementations
 {
     using System.Linq;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class NoPaymentAddressUsersFilter : IStatsFileParserService
     {
@@ -11,7 +12,7 @@
         private readonly INoPaymentAddressUsersFilterSettings settings;
 
         public NoPaymentAddressUsersFilter(IStatsFileParserService innerService,
-            INoPaymentAddressUsersFilterSettings settings)
+                                           INoPaymentAddressUsersFilterSettings settings)
         {
             this.innerService = innerService;
             this.settings = settings;

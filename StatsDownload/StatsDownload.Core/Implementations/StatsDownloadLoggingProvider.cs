@@ -3,10 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
-    using Extensions;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Extensions;
 
     public class StatsDownloadLoggingProvider : IStatsDownloadLoggingService
     {
@@ -83,8 +84,8 @@
             LogVerbose($"Success: {statsUploadResults.Success}{Environment.NewLine}"
                        + $"Failed Reason: {statsUploadResults.FailedReason}");
 
-            foreach (StatsUploadResult statsUploadResult in
-                statsUploadResults?.UploadResults ?? new List<StatsUploadResult>())
+            foreach (StatsUploadResult statsUploadResult in statsUploadResults?.UploadResults
+                                                            ?? new List<StatsUploadResult>())
             {
                 LogResult(statsUploadResult);
             }

@@ -7,9 +7,11 @@
     using System.IO;
     using System.Threading.Tasks;
     using System.Windows.Forms;
+
     using Castle.MicroKernel.Registration;
-    using CastleWindsor;
-    using Core.Interfaces;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.TestHarness.CastleWindsor;
 
     public partial class MainForm : Form
     {
@@ -93,26 +95,25 @@
 
         private async void ExportButton_Click(object sender, EventArgs e)
         {
-            await
-                RunActionAsync(
-                    () =>
-                    {
-                        if (ExportAllRadioButton.Checked)
-                        {
-                            MassExport(files => files);
-                        }
-                        else if (ExportSubsetRadioButton.Checked)
-                        {
-                            MassExport(SelectSubsetOfExportFiles);
-                        }
-                    });
+            await RunActionAsync(() =>
+            {
+                if (ExportAllRadioButton.Checked)
+                {
+                    MassExport(files => files);
+                }
+                else if (ExportSubsetRadioButton.Checked)
+                {
+                    MassExport(SelectSubsetOfExportFiles);
+                }
+            });
         }
 
         private async void FileDownloadButton_Click(object sender, EventArgs e)
         {
-            await
-                RunActionAsync(
-                    () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
+            await RunActionAsync(() =>
+            {
+                CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); });
+            });
         }
 
         private (int fileId, string fileName)[] GetAllFiles()
@@ -128,8 +129,7 @@
                 databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
                 {
                     using (DbDataReader fileReader =
-                        service.ExecuteReader(
-                            "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
+                        service.ExecuteReader("SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
                     {
                         if (!fileReader.HasRows)
                         {
@@ -139,7 +139,7 @@
                         while (fileReader.Read())
                         {
                             downloads.Add((fileReader.GetInt32(0),
-                                $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                                              $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
                         }
                     }
                 });
