@@ -37,10 +37,6 @@
                                     IFilePayloadUploadService filePayloadUploadService,
                                     IFileDownloadEmailService fileDownloadEmailService)
         {
-            ValidateCtorArgs(fileDownloadDatabaseService, loggingService, downloadService, filePayloadSettingsService,
-                resourceCleanupService, fileDownloadMinimumWaitTimeService, dateTimeService, filePayloadUploadService,
-                fileDownloadEmailService);
-
             this.fileDownloadDatabaseService = fileDownloadDatabaseService;
             this.loggingService = loggingService;
             this.downloadService = downloadService;
@@ -50,6 +46,8 @@
             this.dateTimeService = dateTimeService;
             this.filePayloadUploadService = filePayloadUploadService;
             this.fileDownloadEmailService = fileDownloadEmailService;
+
+            ValidateCtorArgs();
         }
 
         public FileDownloadResult DownloadStatsFile()
@@ -261,14 +259,7 @@
             filePayloadUploadService.UploadFile(filePayload);
         }
 
-        private void ValidateCtorArgs(IFileDownloadDatabaseService fileDownloadDatabaseService,
-                                      IFileDownloadLoggingService loggingService, IDownloadService downloadService,
-                                      IFilePayloadSettingsService filePayloadSettingsService,
-                                      IResourceCleanupService resourceCleanupService,
-                                      IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
-                                      IDateTimeService dateTimeService,
-                                      IFilePayloadUploadService filePayloadUploadService,
-                                      IFileDownloadEmailService fileDownloadEmailService)
+        private void ValidateCtorArgs()
         {
             if (fileDownloadDatabaseService == null)
             {
