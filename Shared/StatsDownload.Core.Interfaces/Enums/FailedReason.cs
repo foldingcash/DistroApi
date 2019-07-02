@@ -22,6 +22,8 @@
 
         UnexpectedDatabaseException,
 
-        UnexpectedException
+        UnexpectedException,
+
+        DataStoreUnavailable
     }
 }

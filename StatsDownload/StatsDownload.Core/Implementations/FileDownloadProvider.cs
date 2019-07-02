@@ -28,6 +28,8 @@
 
         private readonly IResourceCleanupService resourceCleanupService;
 
+        private readonly IDataStoreService dataStoreService;
+
         public FileDownloadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
                                     IFileDownloadLoggingService loggingService, IDownloadService downloadService,
                                     IFilePayloadSettingsService filePayloadSettingsService,
@@ -35,7 +37,7 @@
                                     IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
                                     IDateTimeService dateTimeService,
                                     IFilePayloadUploadService filePayloadUploadService,
-                                    IFileDownloadEmailService fileDownloadEmailService)
+                                    IFileDownloadEmailService fileDownloadEmailService, IDataStoreService dataStoreService)
         {
             this.fileDownloadDatabaseService = fileDownloadDatabaseService;
             this.loggingService = loggingService;
@@ -46,6 +48,7 @@
             this.dateTimeService = dateTimeService;
             this.filePayloadUploadService = filePayloadUploadService;
             this.fileDownloadEmailService = fileDownloadEmailService;
+            this.dataStoreService = dataStoreService;
 
             ValidateCtorArgs();
         }
@@ -100,9 +103,9 @@
 
         private bool DataStoreUnavailable(out FailedReason failedReason)
         {
-            //TODO: Implement this
-            failedReason = FailedReason.None;
-            return false;
+            (bool isAvailable, FailedReason reason) = dataStoreService.IsAvailable();
+            failedReason = reason;
+            return !isAvailable;
         }
 
         private DateTime DateTimeNow()
@@ -304,6 +307,11 @@
             if (fileDownloadEmailService == null)
             {
                 throw new ArgumentNullException(nameof(fileDownloadEmailService));
+            }
+
+            if (dataStoreService == null)
+            {
+                throw new ArgumentNullException(nameof(dataStoreService));
             }
         }
     }
