@@ -18,6 +18,8 @@
 
         public string DownloadDirectory { get; set; }
 
+        public byte[] DownloadFileData { get; set; }
+
         public string DownloadFileExtension { get; set; }
 
         public string DownloadFileName { get; set; }

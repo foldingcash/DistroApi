@@ -28,9 +28,13 @@
 
             fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
 
+            dataStoreServiceMock = Substitute.For<IDataStoreService>();
+
             systemUnderTest = NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock,
-                fileDownloadDatabaseServiceMock);
+                fileDownloadDatabaseServiceMock, dataStoreServiceMock);
         }
+
+        private IDataStoreService dataStoreServiceMock;
 
         private const string DecompressedDownloadFilePath = "test decompressed download file path";
 
@@ -50,11 +54,13 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                NewFilePayloadUploadProvider(null, fileReaderServiceMock, fileDownloadDatabaseServiceMock));
+                NewFilePayloadUploadProvider(null, fileReaderServiceMock, fileDownloadDatabaseServiceMock, dataStoreServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewFilePayloadUploadProvider(fileCompressionServiceMock, null, fileDownloadDatabaseServiceMock));
+                NewFilePayloadUploadProvider(fileCompressionServiceMock, null, fileDownloadDatabaseServiceMock, dataStoreServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, null));
+                NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, null, dataStoreServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, fileDownloadDatabaseServiceMock, null));
         }
 
         [Test]
@@ -66,6 +72,7 @@
             {
                 fileCompressionServiceMock.DecompressFile(DownloadFilePath, DecompressedDownloadFilePath);
                 fileReaderServiceMock.ReadFile(filePayload);
+                dataStoreServiceMock.UploadFile(filePayload);
                 fileDownloadDatabaseServiceMock.FileDownloadFinished(filePayload);
             });
         }
@@ -78,10 +85,11 @@
         private IFilePayloadUploadService NewFilePayloadUploadProvider(IFileCompressionService fileCompressionService,
                                                                        IFileReaderService fileReaderService,
                                                                        IFileDownloadDatabaseService
-                                                                           fileDownloadDatabaseService)
+                                                                           fileDownloadDatabaseService,
+                                                                       IDataStoreService dataStoreService)
         {
             return new FilePayloadUploadProvider(fileCompressionService, fileReaderService,
-                fileDownloadDatabaseService);
+                fileDownloadDatabaseService, dataStoreService);
         }
     }
 }
