@@ -48,7 +48,7 @@
             throw new NotImplementedException();
         }
 
-        public void FileValidationError(FileValidationResult fileValidationResult)
+        public void FileValidationError(FileDownloadResult fileDownloadResult)
         {
             throw new NotImplementedException();
         }

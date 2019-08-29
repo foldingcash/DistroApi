@@ -13,7 +13,7 @@
 
         void FileValidated(FilePayload filePayload);
 
-        void FileValidationError(FileValidationResult fileValidationResult);
+        void FileValidationError(FileDownloadResult fileDownloadResult);
 
         void FileValidationStarted(FilePayload filePayload);
 
