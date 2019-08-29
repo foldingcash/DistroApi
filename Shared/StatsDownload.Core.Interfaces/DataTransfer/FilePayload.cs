@@ -35,5 +35,7 @@
         public TimeSpan MinimumWaitTimeSpan { get; set; }
 
         public int TimeoutSeconds { get; set; }
+
+        public string UploadPath { get; set; }
     }
 }

@@ -124,20 +124,20 @@
         {
             DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, filePayload.DownloadId);
 
+            DbParameter fileLocation = databaseConnection.CreateParameter("@FileLocation", DbType.String,
+                ParameterDirection.Input);
+            fileLocation.Value = filePayload.UploadPath;
+
             DbParameter fileName = databaseConnection.CreateParameter("@FileName", DbType.String,
                 ParameterDirection.Input);
-            fileName.Value = filePayload.DecompressedDownloadFileName;
+            fileName.Value = filePayload.DownloadFileName;
 
             DbParameter fileExtension = databaseConnection.CreateParameter("@FileExtension", DbType.String,
                 ParameterDirection.Input);
-            fileExtension.Value = filePayload.DecompressedDownloadFileExtension;
-
-            DbParameter fileData = databaseConnection.CreateParameter("@FileData", DbType.String,
-                ParameterDirection.Input);
-            fileData.Value = filePayload.DecompressedDownloadFileData;
+            fileExtension.Value = filePayload.DownloadFileExtension;
 
             databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase.FileDownloadFinishedProcedureName,
-                new List<DbParameter> { downloadId, fileName, fileExtension, fileData });
+                new List<DbParameter> { downloadId, fileLocation, fileName, fileExtension });
         }
 
         private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
