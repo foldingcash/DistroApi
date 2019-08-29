@@ -24,6 +24,8 @@
 
         UnexpectedException,
 
-        DataStoreUnavailable
+        DataStoreUnavailable,
+
+        UnexpectedValidationException
     }
 }

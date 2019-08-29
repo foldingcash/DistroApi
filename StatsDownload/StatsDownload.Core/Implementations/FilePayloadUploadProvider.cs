@@ -2,6 +2,7 @@
 {
     using System;
 
+    using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
@@ -35,14 +36,19 @@
 
         public void UploadFile(FilePayload filePayload)
         {
-            fileCompressionService.DecompressFile(filePayload.DownloadFilePath,
-                filePayload.DecompressedDownloadFilePath);
-            fileReaderService.ReadFile(filePayload);
             dataStoreService.UploadFile(filePayload);
             fileDownloadDatabaseService.FileDownloadFinished(filePayload);
-            fileDownloadDatabaseService.FileValidationStarted(filePayload);
-            fileValidationService.ValidateFile(filePayload);
-            fileDownloadDatabaseService.FileValidated(filePayload);
+
+            try
+            {
+                fileDownloadDatabaseService.FileValidationStarted(filePayload);
+                fileValidationService.ValidateFile(filePayload);
+                fileDownloadDatabaseService.FileValidated(filePayload);
+            }
+            catch (Exception exception)
+            {
+                throw new UnexpectedValidationException(exception);
+            }
         }
     }
 }

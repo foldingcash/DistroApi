@@ -227,10 +227,8 @@
         [Test]
         public void DownloadFile_WhenFileDownloadFailedDecompressions_ReturnsFileDownloadFailedDecompression()
         {
-            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info =>
-            {
-                throw new FileDownloadFailedDecompressionException(string.Empty);
-            });
+            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable())
+                                           .Do(info => throw new FileDownloadFailedDecompressionException());
 
             FileDownloadResult actual = InvokeDownloadFile();
 
@@ -365,6 +363,18 @@
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
         }
 
+        [TestCase(typeof (FileDownloadFailedDecompressionException))]
+        [TestCase(typeof (InvalidStatsFileException))]
+        [TestCase(typeof (UnexpectedValidationException))]
+        public void DownloadFile_WhenFileValidationFails_UpdatesToFileValidationError(Type exceptionType)
+        {
+            SetUpFileValidationError(exceptionType);
+
+            InvokeDownloadFile();
+
+            fileDownloadDatabaseServiceMock.Received().FileValidationError(Arg.Any<FileDownloadResult>());
+        }
+
         [Test]
         public void DownloadFile_WhenInvoked_ResultIsSuccessAndContainsDownloadData()
         {
@@ -470,7 +480,7 @@
         private WebException SetUpFileDownloadFails()
         {
             var exception = new WebException();
-            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => { throw exception; });
+            fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => throw exception);
             return exception;
         }
 
@@ -482,7 +492,7 @@
         private void SetUpFileDownloadSettingsInvalid()
         {
             filePayloadSettingsServiceMock.When(mock => mock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>()))
-                                          .Throw(new FileDownloadArgumentException(string.Empty));
+                                          .Throw(new FileDownloadArgumentException());
         }
 
         private WebException SetUpFileDownloadTimeout()
@@ -495,6 +505,12 @@
             var exception = new WebException("sampleWebException", webExceptionStatus);
             fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable()).Do(info => throw exception);
             return exception;
+        }
+
+        private void SetUpFileValidationError(Type exceptionType)
+        {
+            filePayloadUploadServiceMock.When(mock => mock.UploadFile(Arg.Any<FilePayload>()))
+                                        .Throw(Activator.CreateInstance(exceptionType) as Exception);
         }
 
         private void SetUpWhenDatabaseIsNotAvailable()

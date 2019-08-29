@@ -6,6 +6,7 @@
 
     using NUnit.Framework;
 
+    using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
@@ -82,6 +83,17 @@
                 fileValidationServiceMock.ValidateFile(filePayload);
                 fileDownloadDatabaseServiceMock.FileValidated(filePayload);
             });
+        }
+
+        [Test]
+        public void
+            UploadFile_WhenUnexpectedValidationExceptionThrown_ThrownUnexpectedValidationExceptionWithInnerException()
+        {
+            var expected = new Exception();
+            fileValidationServiceMock.When(mock => mock.ValidateFile(Arg.Any<FilePayload>())).Throw(expected);
+
+            var actual = Assert.Throws<UnexpectedValidationException>(InvokeUploadFile);
+            Assert.That(actual.InnerException, Is.EqualTo(expected));
         }
 
         private void InvokeUploadFile()

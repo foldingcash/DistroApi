@@ -82,7 +82,6 @@
                 SetDownloadFileDetails(filePayload);
                 DownloadFile(filePayload);
                 return HandleSuccessAndUpload(filePayload);
-                // TODO: Add validation on the file and reject files completely unusable
             }
             catch (Exception exception)
             {
@@ -138,7 +137,7 @@
             FileDownloadResult exceptionResult = NewFailedFileDownloadResult(exception, filePayload);
             LogResult(exceptionResult);
             LogException(exception);
-            FileDownloadError(exceptionResult);
+            UpdateToError(exceptionResult);
             Cleanup(exceptionResult);
             SendEmail(exceptionResult);
             return exceptionResult;
@@ -152,6 +151,13 @@
             Cleanup(successResult);
             LogResult(successResult);
             return successResult;
+        }
+
+        private bool IsFileDownloadError(FileDownloadResult exceptionResult)
+        {
+            return exceptionResult.FailedReason != FailedReason.FileDownloadFailedDecompression
+                   && exceptionResult.FailedReason != FailedReason.InvalidStatsFileUpload
+                   && exceptionResult.FailedReason != FailedReason.UnexpectedValidationException;
         }
 
         private bool IsFileDownloadNotReadyToRun(FilePayload filePayload, out FailedReason failedReason)
@@ -220,6 +226,16 @@
                 return NewFailedFileDownloadResult(FailedReason.RequiredSettingsInvalid, filePayload);
             }
 
+            if (exception is InvalidStatsFileException)
+            {
+                return NewFailedFileDownloadResult(FailedReason.InvalidStatsFileUpload, filePayload);
+            }
+
+            if (exception is UnexpectedValidationException)
+            {
+                return NewFailedFileDownloadResult(FailedReason.UnexpectedValidationException, filePayload);
+            }
+
             return NewFailedFileDownloadResult(FailedReason.UnexpectedException, filePayload);
         }
 
@@ -251,6 +267,18 @@
         private void SetDownloadFileDetails(FilePayload filePayload)
         {
             filePayloadSettingsService.SetFilePayloadDownloadDetails(filePayload);
+        }
+
+        private void UpdateToError(FileDownloadResult exceptionResult)
+        {
+            if (IsFileDownloadError(exceptionResult))
+            {
+                fileDownloadDatabaseService.FileDownloadError(exceptionResult);
+            }
+            else
+            {
+                fileDownloadDatabaseService.FileValidationError(exceptionResult);
+            }
         }
 
         private void UpdateToLatest()
