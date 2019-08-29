@@ -10,23 +10,14 @@
     {
         private readonly IDataStoreService dataStoreService;
 
-        private readonly IFileCompressionService fileCompressionService;
-
         private readonly IFileDownloadDatabaseService fileDownloadDatabaseService;
-
-        private readonly IFileReaderService fileReaderService;
 
         private readonly IFileValidationService fileValidationService;
 
-        public FilePayloadUploadProvider(IFileCompressionService fileCompressionService,
-                                         IFileReaderService fileReaderService,
-                                         IFileDownloadDatabaseService fileDownloadDatabaseService,
+        public FilePayloadUploadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
                                          IDataStoreService dataStoreService,
                                          IFileValidationService fileValidationService)
         {
-            this.fileCompressionService =
-                fileCompressionService ?? throw new ArgumentNullException(nameof(fileCompressionService));
-            this.fileReaderService = fileReaderService ?? throw new ArgumentNullException(nameof(fileReaderService));
             this.fileDownloadDatabaseService = fileDownloadDatabaseService
                                                ?? throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
             this.dataStoreService = dataStoreService ?? throw new ArgumentNullException(nameof(dataStoreService));
