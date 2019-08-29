@@ -30,15 +30,17 @@
 
             dataStoreServiceMock = Substitute.For<IDataStoreService>();
 
-            systemUnderTest = NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock,
-                fileDownloadDatabaseServiceMock, dataStoreServiceMock);
-        }
+            fileValidationServiceMock = Substitute.For<IFileValidationService>();
 
-        private IDataStoreService dataStoreServiceMock;
+            systemUnderTest = NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock,
+                fileDownloadDatabaseServiceMock, dataStoreServiceMock, fileValidationServiceMock);
+        }
 
         private const string DecompressedDownloadFilePath = "test decompressed download file path";
 
         private const string DownloadFilePath = "test download file path";
+
+        private IDataStoreService dataStoreServiceMock;
 
         private IFileCompressionService fileCompressionServiceMock;
 
@@ -48,19 +50,23 @@
 
         private IFileReaderService fileReaderServiceMock;
 
+        private IFileValidationService fileValidationServiceMock;
+
         private IFilePayloadUploadService systemUnderTest;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-                NewFilePayloadUploadProvider(null, fileReaderServiceMock, fileDownloadDatabaseServiceMock, dataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() =>
-                NewFilePayloadUploadProvider(fileCompressionServiceMock, null, fileDownloadDatabaseServiceMock, dataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() =>
-                NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, null, dataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() =>
-                NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, fileDownloadDatabaseServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadUploadProvider(null, fileReaderServiceMock,
+                fileDownloadDatabaseServiceMock, dataStoreServiceMock, fileValidationServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadUploadProvider(fileCompressionServiceMock, null,
+                fileDownloadDatabaseServiceMock, dataStoreServiceMock, fileValidationServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadUploadProvider(fileCompressionServiceMock,
+                fileReaderServiceMock, null, dataStoreServiceMock, fileValidationServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadUploadProvider(fileCompressionServiceMock,
+                fileReaderServiceMock, fileDownloadDatabaseServiceMock, null, fileValidationServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadUploadProvider(fileCompressionServiceMock,
+                fileReaderServiceMock, fileDownloadDatabaseServiceMock, dataStoreServiceMock, null));
         }
 
         [Test]
@@ -70,10 +76,11 @@
 
             Received.InOrder(() =>
             {
-                fileCompressionServiceMock.DecompressFile(DownloadFilePath, DecompressedDownloadFilePath);
-                fileReaderServiceMock.ReadFile(filePayload);
                 dataStoreServiceMock.UploadFile(filePayload);
                 fileDownloadDatabaseServiceMock.FileDownloadFinished(filePayload);
+                fileDownloadDatabaseServiceMock.FileValidationStarted(filePayload);
+                fileValidationServiceMock.ValidateFile(filePayload);
+                fileDownloadDatabaseServiceMock.FileValidated(filePayload);
             });
         }
 
@@ -86,10 +93,11 @@
                                                                        IFileReaderService fileReaderService,
                                                                        IFileDownloadDatabaseService
                                                                            fileDownloadDatabaseService,
-                                                                       IDataStoreService dataStoreService)
+                                                                       IDataStoreService dataStoreService,
+                                                                       IFileValidationService fileValidationService)
         {
-            return new FilePayloadUploadProvider(fileCompressionService, fileReaderService,
-                fileDownloadDatabaseService, dataStoreService);
+            return new FilePayloadUploadProvider(fileCompressionService, fileReaderService, fileDownloadDatabaseService,
+                dataStoreService, fileValidationService);
         }
     }
 }

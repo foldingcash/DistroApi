@@ -43,6 +43,21 @@
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
         }
 
+        public void FileValidated(FilePayload filePayload)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FileValidationError(FileValidationResult fileValidationResult)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FileValidationStarted(FilePayload filePayload)
+        {
+            throw new NotImplementedException();
+        }
+
         public DateTime GetLastFileDownloadDateTime()
         {
             loggingService.LogMethodInvoked();

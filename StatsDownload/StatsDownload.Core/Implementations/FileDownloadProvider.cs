@@ -10,6 +10,8 @@
 
     public class FileDownloadProvider : IFileDownloadService
     {
+        private readonly IDataStoreService dataStoreService;
+
         private readonly IDateTimeService dateTimeService;
 
         private readonly IDownloadService downloadService;
@@ -28,8 +30,6 @@
 
         private readonly IResourceCleanupService resourceCleanupService;
 
-        private readonly IDataStoreService dataStoreService;
-
         public FileDownloadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
                                     IFileDownloadLoggingService loggingService, IDownloadService downloadService,
                                     IFilePayloadSettingsService filePayloadSettingsService,
@@ -37,7 +37,8 @@
                                     IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
                                     IDateTimeService dateTimeService,
                                     IFilePayloadUploadService filePayloadUploadService,
-                                    IFileDownloadEmailService fileDownloadEmailService, IDataStoreService dataStoreService)
+                                    IFileDownloadEmailService fileDownloadEmailService,
+                                    IDataStoreService dataStoreService)
         {
             this.fileDownloadDatabaseService = fileDownloadDatabaseService;
             this.loggingService = loggingService;

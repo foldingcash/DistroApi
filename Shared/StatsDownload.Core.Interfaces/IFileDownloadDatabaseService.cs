@@ -11,6 +11,12 @@
 
         void FileDownloadFinished(FilePayload filePayload);
 
+        void FileValidated(FilePayload filePayload);
+
+        void FileValidationError(FileValidationResult fileValidationResult);
+
+        void FileValidationStarted(FilePayload filePayload);
+
         /// <summary>
         ///     Returns a DateTime of the last successful file download.
         ///     If there is no last successful download, should return DateTime.MinValue.

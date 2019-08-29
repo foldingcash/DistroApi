@@ -13,7 +13,6 @@
 
             public static readonly string FileDownloadFinishedProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[FileDownloadFinished]";
-
             public static readonly string GetLastFileDownloadDateTimeSqlFunction =
                 $"{DatabaseSchema}{SchemaSeparator}[GetLastFileDownloadDateTime]";
             public static readonly string NewFileDownloadStartedProcedureName =

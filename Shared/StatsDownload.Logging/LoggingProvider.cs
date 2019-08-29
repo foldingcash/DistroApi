@@ -33,7 +33,7 @@
                      + $"Exception Stack-trace: {Environment.NewLine}{exception.StackTrace}");
         }
 
-        public void LogMethodFinished(string method = "")
+        public void LogMethodFinished([CallerMemberName] string method = "")
         {
             LogVerbose($"{method} Finished");
         }

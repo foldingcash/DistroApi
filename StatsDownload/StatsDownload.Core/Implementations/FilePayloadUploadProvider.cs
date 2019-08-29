@@ -15,10 +15,13 @@
 
         private readonly IFileReaderService fileReaderService;
 
+        private readonly IFileValidationService fileValidationService;
+
         public FilePayloadUploadProvider(IFileCompressionService fileCompressionService,
                                          IFileReaderService fileReaderService,
                                          IFileDownloadDatabaseService fileDownloadDatabaseService,
-                                         IDataStoreService dataStoreService)
+                                         IDataStoreService dataStoreService,
+                                         IFileValidationService fileValidationService)
         {
             this.fileCompressionService =
                 fileCompressionService ?? throw new ArgumentNullException(nameof(fileCompressionService));
@@ -26,6 +29,8 @@
             this.fileDownloadDatabaseService = fileDownloadDatabaseService
                                                ?? throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
             this.dataStoreService = dataStoreService ?? throw new ArgumentNullException(nameof(dataStoreService));
+            this.fileValidationService =
+                fileValidationService ?? throw new ArgumentNullException(nameof(fileValidationService));
         }
 
         public void UploadFile(FilePayload filePayload)
@@ -35,6 +40,9 @@
             fileReaderService.ReadFile(filePayload);
             dataStoreService.UploadFile(filePayload);
             fileDownloadDatabaseService.FileDownloadFinished(filePayload);
+            fileDownloadDatabaseService.FileValidationStarted(filePayload);
+            fileValidationService.ValidateFile(filePayload);
+            fileDownloadDatabaseService.FileValidated(filePayload);
         }
     }
 }
