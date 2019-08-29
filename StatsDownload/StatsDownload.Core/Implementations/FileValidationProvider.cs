@@ -9,11 +9,15 @@
 
         private readonly IFileReaderService fileReaderService;
 
+        private readonly IStatsFileParserService statsFileParserService;
+
         public FileValidationProvider(IFileCompressionService fileCompressionService,
-                                      IFileReaderService fileReaderService)
+                                      IFileReaderService fileReaderService,
+                                      IStatsFileParserService statsFileParserService)
         {
             this.fileCompressionService = fileCompressionService;
             this.fileReaderService = fileReaderService;
+            this.statsFileParserService = statsFileParserService;
         }
 
         public void ValidateFile(FilePayload filePayload)
@@ -21,6 +25,7 @@
             fileCompressionService.DecompressFile(filePayload.DownloadFilePath,
                 filePayload.DecompressedDownloadFilePath);
             fileReaderService.ReadFile(filePayload);
+            statsFileParserService.Parse(filePayload.DecompressedDownloadFileData);
         }
     }
 }
