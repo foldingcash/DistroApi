@@ -229,7 +229,7 @@ GO
 
 CREATE PROCEDURE [FoldingCoin].[FileDownloadFinished] 
 	 @DownloadId INT
-	,@FileLocation NVARCHAR(250)
+	,@FilePath NVARCHAR(250)
 	,@FileName NVARCHAR(50)
 	,@FileExtension NVARCHAR(5)
 AS
@@ -238,8 +238,8 @@ BEGIN
 
 	BEGIN TRY
 		BEGIN TRANSACTION
-			INSERT INTO [FoldingCoin].[Files] ([FileLocation], [FileName], [FileExtension])
-			VALUES (@FileLocation, @FileName, @FileExtension);
+			INSERT INTO [FoldingCoin].[Files] ([FilePath], [FileName], [FileExtension])
+			VALUES (@FilePath, @FileName, @FileExtension);
 
 			SELECT TOP 1 @FileId = @@Identity FROM [FoldingCoin].[Files];
 
@@ -330,7 +330,7 @@ GO
 CREATE PROCEDURE [FoldingCoin].[FileValidated]
 	@DownloadId INT
 	,@FileUtcDateTime DATETIME
-	,@FileLocation NVARCHAR(250)
+	,@FilePath NVARCHAR(250)
 	,@FileName NVARCHAR(50)
 	,@FileExtension NVARCHAR(5)
 AS
@@ -348,7 +348,7 @@ BEGIN
 			WHERE DownloadId = @DownloadId;
 
 			UPDATE [FoldingCoin].[Files]
-			SET FileLocation = @FileLocation, [FileName] = @FileName, FileExtension = @FileExtension
+			SET FilePath = @FilePath, [FileName] = @FileName, FileExtension = @FileExtension
 			WHERE FileId = @FileId;
 		COMMIT
 	END TRY

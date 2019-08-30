@@ -172,7 +172,7 @@
 
             Assert.That(actualParameters.Count, Is.EqualTo(4));
             Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
-            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@FileLocation"));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@FilePath"));
             Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.String));
             Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters[1].Value, Is.EqualTo("UploadPath"));

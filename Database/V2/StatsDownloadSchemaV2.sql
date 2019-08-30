@@ -103,7 +103,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [FoldingCoin].[Files](
 	[FileId] [int] IDENTITY(1,1) NOT NULL,
-	[FileLocation] [nvarchar](250) NOT NULL,
+	[FilePath] [nvarchar](250) NOT NULL,
 	[FileName] [nvarchar](50) NOT NULL,
 	[FileExtension] [nvarchar](5) NOT NULL,
  CONSTRAINT [PK_Files] PRIMARY KEY CLUSTERED 
