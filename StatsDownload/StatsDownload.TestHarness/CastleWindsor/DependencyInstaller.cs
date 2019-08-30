@@ -82,7 +82,9 @@
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),
                 Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>(),
                 Component.For<IWebClient>().ImplementedBy<WebClientWrapper>().LifestyleTransient(),
-                Component.For<IWebClientFactory>().AsFactory());
+                Component.For<IWebClientFactory>().AsFactory(),
+                Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
+                Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>());
         }
     }
 }
