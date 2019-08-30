@@ -65,9 +65,14 @@
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
+            dataStoreSettingsMock = Substitute.For<IDataStoreSettings>();
+            dataStoreSettingsMock.UploadDirectory.Returns("UploadDirectory");
+
             systemUnderTest = NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock,
-                downloadSettingsValidatorServiceMock, loggingServiceMock);
+                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsMock);
         }
+
+        private IDataStoreSettings dataStoreSettingsMock;
 
         private DateTime dateTime;
 
@@ -89,14 +94,15 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(null, downloadSettingsServiceMock,
-                downloadSettingsValidatorServiceMock, loggingServiceMock));
+                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock, null,
-                downloadSettingsValidatorServiceMock, loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(() =>
-                NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock, null,
-                    loggingServiceMock));
+                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
-                downloadSettingsServiceMock, downloadSettingsValidatorServiceMock, null));
+                downloadSettingsServiceMock, null, loggingServiceMock, dataStoreSettingsMock));
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
+                downloadSettingsServiceMock, downloadSettingsValidatorServiceMock, null, dataStoreSettingsMock));
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
+                downloadSettingsServiceMock, downloadSettingsValidatorServiceMock, loggingServiceMock, null));
         }
 
         [Test]
@@ -185,7 +191,7 @@
             Assert.That(filePayload.DecompressedDownloadDirectory, Is.EqualTo("DownloadDirectory"));
             Assert.That(filePayload.DecompressedDownloadFileName,
                 Is.EqualTo($"{dateTime.ToFileTime()}.daily_user_summary"));
-            Assert.That(filePayload.DecompressedDownloadFileExtension, Is.EqualTo(".txt"));
+            Assert.That(filePayload.DecompressedDownloadFileExtension, Is.EqualTo("txt"));
             Assert.That(filePayload.DecompressedDownloadFilePath,
                 Is.EqualTo($"DownloadDirectory\\{dateTime.ToFileTime()}.daily_user_summary.txt"));
         }
@@ -212,7 +218,7 @@
 
             Assert.That(filePayload.DownloadDirectory, Is.EqualTo("DownloadDirectory"));
             Assert.That(filePayload.DownloadFileName, Is.EqualTo($"{dateTime.ToFileTime()}.daily_user_summary.txt"));
-            Assert.That(filePayload.DownloadFileExtension, Is.EqualTo(".bz2"));
+            Assert.That(filePayload.DownloadFileExtension, Is.EqualTo("bz2"));
             Assert.That(filePayload.DownloadFilePath,
                 Is.EqualTo($"DownloadDirectory\\{dateTime.ToFileTime()}.daily_user_summary.txt.bz2"));
         }
@@ -229,6 +235,17 @@
                     $"DownloadDirectory\\FileDownloadFailed\\{dateTime.ToFileTime()}.daily_user_summary.txt.bz2"));
         }
 
+        [Test]
+        public void SetFilePayloadDownloadDetails_WhenInvoked_UploadDetailsAreSet()
+        {
+            var filePayload = new FilePayload();
+
+            systemUnderTest.SetFilePayloadDownloadDetails(filePayload);
+
+            Assert.That(filePayload.UploadPath,
+                Is.EqualTo($"UploadDirectory\\{dateTime.ToFileTime()}.daily_user_summary.txt.bz2"));
+        }
+
         private void InvokeSetFilePayloadDownloadDetails(FilePayload filePayload)
         {
             systemUnderTest.SetFilePayloadDownloadDetails(filePayload);
@@ -239,10 +256,11 @@
                                                                                downloadSettingsService,
                                                                            IDownloadSettingsValidatorService
                                                                                downloadSettingsValidatorService,
-                                                                           ILoggingService loggingService)
+                                                                           ILoggingService loggingService,
+                                                                           IDataStoreSettings dataStoreSettings)
         {
             return new FilePayloadSettingsProvider(dateTimeService, downloadSettingsService,
-                downloadSettingsValidatorService, loggingService);
+                downloadSettingsValidatorService, loggingService, dataStoreSettings);
         }
     }
 }

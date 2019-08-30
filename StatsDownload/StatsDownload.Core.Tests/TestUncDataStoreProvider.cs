@@ -1,7 +1,5 @@
 ﻿namespace StatsDownload.Core.Tests
 {
-    using System;
-
     using NSubstitute;
 
     using NUnit.Framework;
@@ -20,19 +18,21 @@
             filePayloadMock = new FilePayload
                               {
                                   DownloadFilePath = "\\DownloadDirectory\\Source.ext",
-                                  UploadPath = "\\UncUploadDirectory\\Target.ext"
+                                  UploadPath = "\\UploadDirectory\\Target.ext"
                               };
 
-            uncDataStoreSettingsMock = Substitute.For<IUncDataStoreSettings>();
+            dataStoreSettingsMock = Substitute.For<IDataStoreSettings>();
 
-            uncDataStoreSettingsMock.UncUploadDirectory.Returns(new Uri("C:\\Path"));
+            dataStoreSettingsMock.UploadDirectory.Returns("C:\\Path");
 
             directoryServiceMock = Substitute.For<IDirectoryService>();
 
             fileServiceMock = Substitute.For<IFileService>();
 
-            systemUnderTest = new UncDataStoreProvider(uncDataStoreSettingsMock, directoryServiceMock, fileServiceMock);
+            systemUnderTest = new UncDataStoreProvider(dataStoreSettingsMock, directoryServiceMock, fileServiceMock);
         }
+
+        private IDataStoreSettings dataStoreSettingsMock;
 
         private IDirectoryService directoryServiceMock;
 
@@ -41,8 +41,6 @@
         private IFileService fileServiceMock;
 
         private IDataStoreService systemUnderTest;
-
-        private IUncDataStoreSettings uncDataStoreSettingsMock;
 
         [Test]
         public void IsAvailable_WhenDirectoryNotAvailable_ReturnsDataStoreUnavailable()
@@ -70,7 +68,7 @@
         {
             systemUnderTest.UploadFile(filePayloadMock);
 
-            fileServiceMock.Received(1).CopyFile("\\DownloadDirectory\\Source.ext", "\\UncUploadDirectory\\Target.ext");
+            fileServiceMock.Received(1).CopyFile("\\DownloadDirectory\\Source.ext", "\\UploadDirectory\\Target.ext");
         }
     }
 }

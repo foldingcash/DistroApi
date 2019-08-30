@@ -10,9 +10,9 @@
 
         private readonly IFileService fileService;
 
-        private readonly IUncDataStoreSettings settings;
+        private readonly IDataStoreSettings settings;
 
-        public UncDataStoreProvider(IUncDataStoreSettings settings, IDirectoryService directoryService,
+        public UncDataStoreProvider(IDataStoreSettings settings, IDirectoryService directoryService,
                                     IFileService fileService)
         {
             this.settings = settings;
@@ -22,7 +22,7 @@
 
         public (bool, FailedReason) IsAvailable()
         {
-            string uploadDirectory = settings.UncUploadDirectory.LocalPath;
+            string uploadDirectory = settings.UploadDirectory;
             bool directoryExists = directoryService.Exists(uploadDirectory);
             return (directoryExists, FailedReason.DataStoreUnavailable);
         }

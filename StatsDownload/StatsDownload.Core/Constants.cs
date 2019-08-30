@@ -22,11 +22,11 @@
 
         public static class FilePayload
         {
-            public const string DecompressedFileExtension = ".txt";
+            public const string DecompressedFileExtension = "txt";
 
             public const string DecompressedFileName = "daily_user_summary";
 
-            public const string FileExtension = ".bz2";
+            public const string FileExtension = "bz2";
 
             public const string FileName = "daily_user_summary.txt";
         }

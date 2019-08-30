@@ -16,7 +16,7 @@
                                                IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
                                                IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings,
                                                ITestHarnessStatsDownloadSettings,
-                                               IStatsFileDateTimeFormatsAndOffsetSettings, IUncDataStoreSettings
+                                               IStatsFileDateTimeFormatsAndOffsetSettings, IDataStoreSettings
     {
         bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
 
@@ -28,7 +28,7 @@
 
         bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
 
-        public Uri UncUploadDirectory => new Uri(ConfigurationManager.AppSettings["UncUploadDirectory"]);
+        public string UploadDirectory => ConfigurationManager.AppSettings["UploadDirectory"];
 
         public string GetAcceptAnySslCert()
         {
