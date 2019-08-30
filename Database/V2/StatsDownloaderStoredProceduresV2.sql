@@ -181,7 +181,8 @@ BEGIN
 	DECLARE @DownloadDateTime DATETIME;
 	
 	SELECT TOP (1) @DownloadDateTime = DownloadDateTime	FROM [FoldingCoin].[Downloads]
-	WHERE StatusId <> FoldingCoin.GetFileDownloadErrorStatusId()
+	WHERE StatusId <> FoldingCoin.GetFileDownloadStartedStatusId()
+	AND StatusId <> FoldingCoin.GetFileDownloadErrorStatusId()
 	AND StatusId <> FoldingCoin.GetFileValidationErrorStatusId()
 	ORDER BY DownloadDateTime DESC;
 
