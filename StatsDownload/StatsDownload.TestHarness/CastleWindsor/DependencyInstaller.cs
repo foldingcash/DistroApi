@@ -29,7 +29,7 @@
                     .ImplementedBy<TestHarnessSettingsProvider>()
                     .Forward<IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
                         IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings>()
-                    .Forward<IStatsFileDateTimeFormatsAndOffsetSettings>(),
+                    .Forward<IStatsFileDateTimeFormatsAndOffsetSettings, IUncDataStoreSettings>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),

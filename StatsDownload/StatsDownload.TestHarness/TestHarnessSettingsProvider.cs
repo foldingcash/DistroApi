@@ -1,5 +1,6 @@
 ﻿namespace StatsDownload.TestHarness
 {
+    using System;
     using System.Configuration;
     using System.IO;
     using System.Reflection;
@@ -15,7 +16,7 @@
                                                IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
                                                IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings,
                                                ITestHarnessStatsDownloadSettings,
-                                               IStatsFileDateTimeFormatsAndOffsetSettings
+                                               IStatsFileDateTimeFormatsAndOffsetSettings, IUncDataStoreSettings
     {
         bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
 
@@ -26,6 +27,8 @@
         bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
 
         bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
+
+        public Uri UncUploadDirectory => new Uri(ConfigurationManager.AppSettings["UncUploadDirectory"]);
 
         public string GetAcceptAnySslCert()
         {

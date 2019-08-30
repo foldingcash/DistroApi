@@ -4,6 +4,6 @@
 
     public interface IUncDataStoreSettings
     {
-        Uri UploadDirectory { get; }
+        Uri UncUploadDirectory { get; }
     }
 }

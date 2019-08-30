@@ -20,12 +20,12 @@
             filePayloadMock = new FilePayload
                               {
                                   DownloadFilePath = "\\DownloadDirectory\\Source.ext",
-                                  UploadPath = "\\UploadDirectory\\Target.ext"
+                                  UploadPath = "\\UncUploadDirectory\\Target.ext"
                               };
 
             uncDataStoreSettingsMock = Substitute.For<IUncDataStoreSettings>();
 
-            uncDataStoreSettingsMock.UploadDirectory.Returns(new Uri("C:\\Path"));
+            uncDataStoreSettingsMock.UncUploadDirectory.Returns(new Uri("C:\\Path"));
 
             directoryServiceMock = Substitute.For<IDirectoryService>();
 
@@ -70,7 +70,7 @@
         {
             systemUnderTest.UploadFile(filePayloadMock);
 
-            fileServiceMock.Received(1).CopyFile("\\DownloadDirectory\\Source.ext", "\\UploadDirectory\\Target.ext");
+            fileServiceMock.Received(1).CopyFile("\\DownloadDirectory\\Source.ext", "\\UncUploadDirectory\\Target.ext");
         }
     }
 }

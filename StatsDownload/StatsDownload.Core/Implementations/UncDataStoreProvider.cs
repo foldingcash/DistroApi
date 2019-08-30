@@ -22,7 +22,7 @@
 
         public (bool, FailedReason) IsAvailable()
         {
-            string uploadDirectory = settings.UploadDirectory.LocalPath;
+            string uploadDirectory = settings.UncUploadDirectory.LocalPath;
             bool directoryExists = directoryService.Exists(uploadDirectory);
             return (directoryExists, FailedReason.DataStoreUnavailable);
         }
