@@ -36,6 +36,14 @@
                 fileValidationService.ValidateFile(filePayload);
                 fileDownloadDatabaseService.FileValidated(filePayload);
             }
+            catch (FileDownloadFailedDecompressionException)
+            {
+                throw;
+            }
+            catch (InvalidStatsFileException)
+            {
+                throw;
+            }
             catch (Exception exception)
             {
                 throw new UnexpectedValidationException(exception);

@@ -84,6 +84,16 @@
             Assert.That(actual.InnerException, Is.EqualTo(expected));
         }
 
+        [TestCase(typeof (FileDownloadFailedDecompressionException))]
+        [TestCase(typeof (InvalidStatsFileException))]
+        public void UploadFile_WhenValidationExceptionThrown_ExceptionRethrown(Type expectedException)
+        {
+            var expected = Activator.CreateInstance(expectedException) as Exception;
+            fileValidationServiceMock.When(mock => mock.ValidateFile(Arg.Any<FilePayload>())).Throw(expected);
+
+            Assert.Throws(expectedException, InvokeUploadFile);
+        }
+
         private void InvokeUploadFile()
         {
             systemUnderTest.UploadFile(filePayload);
