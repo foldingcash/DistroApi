@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Tests
+﻿namespace StatsDownload.Core.Tests.Legacy
 {
     using System;
     using System.Collections.Generic;
@@ -17,6 +17,7 @@
     using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
+    [Ignore("Deprecating")]
     public class TestStatsUploadProvider
     {
         [SetUp]
@@ -259,7 +260,6 @@
         }
 
         [Test]
-        [Ignore("May not be needed")]
         public void UploadStatsFiles_WhenInvoked_AddsUsersData()
         {
             var transaction1 = Substitute.For<DbTransaction>();
@@ -280,7 +280,6 @@
         }
 
         [Test]
-        [Ignore("May not be needed")]
         public void UploadStatsFiles_WhenInvoked_LogsVerboseMessages()
         {
             InvokeUploadStatsFiles();
@@ -313,7 +312,6 @@
         }
 
         [Test]
-        [Ignore("May not be needed")]
         public void UploadStatsFiles_WhenInvoked_UpdatesTheDownloadFileState()
         {
             var transaction1 = Substitute.For<DbTransaction>();
@@ -336,7 +334,6 @@
         }
 
         [Test]
-        [Ignore("May not be needed")]
         public void UploadStatsFiles_WhenParsingUserDataFails_ErrorsLogged()
         {
             InvokeUploadStatsFiles();
@@ -346,7 +343,6 @@
         }
 
         [Test]
-        [Ignore("May not be needed")]
         public void UploadStatsFiles_WhenParsingUserDataFails_SendsEmail()
         {
             InvokeUploadStatsFiles();
