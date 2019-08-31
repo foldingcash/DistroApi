@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
+    using System;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -25,6 +27,7 @@
             fileReaderServiceMock = Substitute.For<IFileReaderService>();
 
             statsFileParserServiceMock = Substitute.For<IStatsFileParserService>();
+            statsFileParserServiceMock.Parse(filePayloadMock).Returns(new ParseResults(DateTime.Today, null, null));
 
             systemUnderTest = new FileValidationProvider(fileCompressionServiceMock, fileReaderServiceMock,
                 statsFileParserServiceMock);
@@ -39,6 +42,14 @@
         private IStatsFileParserService statsFileParserServiceMock;
 
         private IFileValidationService systemUnderTest;
+
+        [Test]
+        public void ValidateFile_WhenInvoked_SetsFileUtcDateTime()
+        {
+            systemUnderTest.ValidateFile(filePayloadMock);
+
+            Assert.That(filePayloadMock.FileUtcDateTime, Is.EqualTo(DateTime.Today));
+        }
 
         [Test]
         public void ValidateFile_WhenInvoked_ValidatesFile()

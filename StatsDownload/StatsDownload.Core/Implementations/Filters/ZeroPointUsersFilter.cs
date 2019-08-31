@@ -1,18 +1,17 @@
-﻿namespace StatsDownload.Core.Implementations
+﻿namespace StatsDownload.Core.Implementations.Filters
 {
     using System.Linq;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
-    public class NoPaymentAddressUsersFilter : IStatsFileParserService
+    public class ZeroPointUsersFilter : IStatsFileParserService
     {
         private readonly IStatsFileParserService innerService;
 
-        private readonly INoPaymentAddressUsersFilterSettings settings;
+        private readonly IZeroPointUsersFilterSettings settings;
 
-        public NoPaymentAddressUsersFilter(IStatsFileParserService innerService,
-                                           INoPaymentAddressUsersFilterSettings settings)
+        public ZeroPointUsersFilter(IStatsFileParserService innerService, IZeroPointUsersFilterSettings settings)
         {
             this.innerService = innerService;
             this.settings = settings;
@@ -24,8 +23,7 @@
 
             if (settings.Enabled)
             {
-                return new ParseResults(results.DownloadDateTime,
-                    results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.BitcoinAddress)),
+                return new ParseResults(results.DownloadDateTime, results.UsersData.Where(data => data.TotalPoints > 0),
                     results.FailedUsersData);
             }
 
