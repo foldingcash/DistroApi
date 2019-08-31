@@ -11,7 +11,7 @@
     using NUnit.Framework;
 
     using StatsDownload.Core.Exceptions;
-    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Implementations.Legacy;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;

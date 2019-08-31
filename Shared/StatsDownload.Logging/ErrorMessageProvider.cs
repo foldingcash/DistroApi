@@ -30,6 +30,11 @@
                     ErrorMessages.StatsUploadDatabaseUnavailable, ErrorMessages.DefaultDatabaseUnavailable);
             }
 
+            if (failedReason == FailedReason.DataStoreUnavailable)
+            {
+                return ErrorMessages.DataStoreUnavailable;
+            }
+
             if (failedReason == FailedReason.DatabaseMissingRequiredObjects)
             {
                 return GetErrorMessageByServiceType(service, ErrorMessages.FileDownloadMissingRequiredObjects,
@@ -70,6 +75,11 @@
             {
                 return GetErrorMessageByServiceType(service, ErrorMessages.FileDownloadUnexpectedException,
                     ErrorMessages.StatsUploadUnexpectedException, ErrorMessages.DefaultUnexpectedException);
+            }
+
+            if (failedReason == FailedReason.UnexpectedValidationException)
+            {
+                return ErrorMessages.UnexpectedValidationException;
             }
 
             return string.Empty;

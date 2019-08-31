@@ -12,12 +12,7 @@
 
         public SecureFilePayloadProvider(ILoggingService loggingService)
         {
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            this.loggingService = loggingService;
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public void DisableSecureFilePayload(FilePayload filePayload)

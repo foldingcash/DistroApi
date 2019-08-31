@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Implementations
+﻿namespace StatsDownload.Core.Implementations.Legacy
 {
     using System;
     using System.Collections.Generic;

@@ -7,6 +7,7 @@
 
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Implementations.Filters;
+    using StatsDownload.Core.Implementations.Legacy;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Core.Interfaces.Networking;

@@ -70,6 +70,15 @@ namespace StatsDownload.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was a problem downloading the file payload. There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again..
+        /// </summary>
+        internal static string DataStoreUnavailable {
+            get {
+                return ResourceManager.GetString("DataStoreUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was a problem connecting to the database. The database is unavailable, ensure the database is available and configured correctly and try again..
         /// </summary>
         internal static string DefaultDatabaseUnavailable {
@@ -255,6 +264,15 @@ namespace StatsDownload.Logging {
         internal static string StatsUploadUnexpectedException {
             get {
                 return ResourceManager.GetString("StatsUploadUnexpectedException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was a problem validating the file. There was an unexpected exception while validating. Check the log for more information..
+        /// </summary>
+        internal static string UnexpectedValidationException {
+            get {
+                return ResourceManager.GetString("UnexpectedValidationException", resourceCulture);
             }
         }
         

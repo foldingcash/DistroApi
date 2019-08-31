@@ -57,6 +57,17 @@
         }
 
         [Test]
+        public void GetErrorMessage_WhenDataStoreUnavailableDuringFileDownload_ReturnsDataStoreUnavailableMessage()
+        {
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.DataStoreUnavailable, new FilePayload(),
+                StatsDownloadService.FileDownload);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem downloading the file payload. There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again."));
+        }
+
+        [Test]
         public void GetErrorMessage_WhenFahNameExceedsMaxSize_ReturnsFahNameExceedsMaxSizeMessage()
         {
             var failedUserData = new FailedUserData(0, RejectionReason.FahNameExceedsMaxSize,
@@ -326,6 +337,18 @@
                 (StatsDownloadService)Enum.Parse(typeof (StatsDownloadService), "-1"));
 
             Assert.That(actual, Is.EqualTo("There was an unexpected exception. Check the log for more information."));
+        }
+
+        [Test]
+        public void
+            GetErrorMessage_WhenUnexpectedValidationExceptionDuringFileDownload_ReturnsUnexpectedValidationExceptionMessage()
+        {
+            string actual = systemUnderTest.GetErrorMessage(FailedReason.UnexpectedValidationException,
+                new FilePayload(), StatsDownloadService.FileDownload);
+
+            Assert.That(actual,
+                Is.EqualTo(
+                    "There was a problem validating the file. There was an unexpected exception while validating. Check the log for more information."));
         }
 
         [Test]
