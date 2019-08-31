@@ -25,7 +25,7 @@
             fileCompressionService.DecompressFile(filePayload.DownloadFilePath,
                 filePayload.DecompressedDownloadFilePath);
             fileReaderService.ReadFile(filePayload);
-            statsFileParserService.Parse(filePayload.DecompressedDownloadFileData);
+            statsFileParserService.Parse(filePayload);
         }
     }
 }

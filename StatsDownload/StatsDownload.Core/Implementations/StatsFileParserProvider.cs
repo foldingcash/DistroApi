@@ -28,8 +28,9 @@
                                                                 nameof(statsFileDateTimeFormatsAndOffsetService));
         }
 
-        public ParseResults Parse(string fileData)
+        public ParseResults Parse(FilePayload filePayload)
         {
+            string fileData = filePayload.DecompressedDownloadFileData;
             var usersData = new List<UserData>();
             var failedUsersData = new List<FailedUserData>();
 
@@ -156,7 +157,7 @@
 
         private bool ValidDateTime(string[] fileLines)
         {
-            return TryParseDownloadDateTime(fileLines, out DateTime downloadDateTime);
+            return TryParseDownloadDateTime(fileLines, out DateTime _);
         }
     }
 }

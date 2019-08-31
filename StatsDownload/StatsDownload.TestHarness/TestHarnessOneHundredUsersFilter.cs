@@ -18,15 +18,16 @@
             this.settingsService = settingsService;
         }
 
-        public ParseResults Parse(string fileData)
+        public ParseResults Parse(FilePayload filePayload)
         {
+            ParseResults results = innerService.Parse(filePayload);
+
             if (settingsService.IsOneHundredUsersFilterEnabled())
             {
-                ParseResults results = innerService.Parse(fileData);
                 return new ParseResults(results.DownloadDateTime, results.UsersData.Take(100), results.FailedUsersData);
             }
 
-            return innerService.Parse(fileData);
+            return results;
         }
     }
 }

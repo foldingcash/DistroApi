@@ -145,7 +145,8 @@
             {
                 LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
                 string fileData = statsUploadDatabaseService.GetFileData(downloadId);
-                ParseResults results = statsFileParserService.Parse(fileData);
+                ParseResults results =
+                    statsFileParserService.Parse(new FilePayload { DecompressedDownloadFileData = fileData });
                 transaction = statsUploadDatabaseService.CreateTransaction();
                 statsUploadDatabaseService.StartStatsUpload(transaction, downloadId, results.DownloadDateTime);
                 IEnumerable<UserData> usersData = results.UsersData;

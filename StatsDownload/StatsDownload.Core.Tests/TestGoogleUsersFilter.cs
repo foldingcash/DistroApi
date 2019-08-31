@@ -28,6 +28,8 @@
 
         private DateTime downloadDateTime;
 
+        private readonly FilePayload FilePayload = new FilePayload { DecompressedDownloadFileData = "fileData" };
+
         private IStatsFileParserService innerServiceMock;
 
         private IGoogleUsersFilterSettings settingsMock;
@@ -40,9 +42,9 @@
             settingsMock.Enabled.Returns(false);
 
             var expected = new ParseResults(downloadDateTime, null, null);
-            innerServiceMock.Parse("fileData").Returns(expected);
+            innerServiceMock.Parse(FilePayload).Returns(expected);
 
-            ParseResults actual = systemUnderTest.Parse("fileData");
+            ParseResults actual = systemUnderTest.Parse(FilePayload);
 
             Assert.That(actual, Is.EqualTo(expected));
         }
@@ -52,7 +54,7 @@
         {
             settingsMock.Enabled.Returns(true);
 
-            innerServiceMock.Parse("fileData").Returns(new ParseResults(downloadDateTime,
+            innerServiceMock.Parse(FilePayload).Returns(new ParseResults(downloadDateTime,
                 new[]
                 {
                     new UserData(),
@@ -63,7 +65,7 @@
                     new UserData(0, "google123456", 0, 0, 0)
                 }, new[] { new FailedUserData() }));
 
-            ParseResults actual = systemUnderTest.Parse("fileData");
+            ParseResults actual = systemUnderTest.Parse(FilePayload);
 
             Assert.That(actual.UsersData.Count(), Is.EqualTo(2));
             Assert.That(

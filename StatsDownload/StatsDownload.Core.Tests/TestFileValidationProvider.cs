@@ -17,8 +17,7 @@
             filePayloadMock = new FilePayload
                               {
                                   DownloadFilePath = "DownloadFilePath",
-                                  DecompressedDownloadFilePath = "DecompressedDownloadFilePath",
-                                  DecompressedDownloadFileData = "DecompressedDownloadFileData"
+                                  DecompressedDownloadFilePath = "DecompressedDownloadFilePath"
                               };
 
             fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
@@ -51,7 +50,7 @@
                 fileCompressionServiceMock
                     .Received(1).DecompressFile("DownloadFilePath", "DecompressedDownloadFilePath");
                 fileReaderServiceMock.Received(1).ReadFile(filePayloadMock);
-                statsFileParserServiceMock.Parse("DecompressedDownloadFileData");
+                statsFileParserServiceMock.Parse(filePayloadMock);
             });
         }
     }

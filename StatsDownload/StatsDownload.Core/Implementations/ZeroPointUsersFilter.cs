@@ -17,9 +17,9 @@
             this.settings = settings;
         }
 
-        public ParseResults Parse(string fileData)
+        public ParseResults Parse(FilePayload filePayload)
         {
-            ParseResults results = innerService.Parse(fileData);
+            ParseResults results = innerService.Parse(filePayload);
 
             if (settings.Enabled)
             {

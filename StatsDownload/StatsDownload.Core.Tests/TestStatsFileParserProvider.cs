@@ -230,7 +230,7 @@ TheWasp	13660834951	734045	70335";
 
         private ParseResults InvokeParse(string fileData = GoodStatsFile)
         {
-            return systemUnderTest.Parse(fileData);
+            return systemUnderTest.Parse(new FilePayload { DecompressedDownloadFileData = fileData });
         }
 
         private IStatsFileParserService NewStatsFileParserProvider(

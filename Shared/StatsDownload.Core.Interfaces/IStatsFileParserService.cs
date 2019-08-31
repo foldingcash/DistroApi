@@ -4,6 +4,6 @@
 
     public interface IStatsFileParserService
     {
-        ParseResults Parse(string fileData);
+        ParseResults Parse(FilePayload filePayload);
     }
 }
