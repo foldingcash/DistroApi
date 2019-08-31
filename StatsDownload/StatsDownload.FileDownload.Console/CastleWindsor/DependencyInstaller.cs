@@ -26,12 +26,12 @@
         {
             container.Register(Component.For<ILogger>()
                                         .Instance(LogManager
-                                                  .LoadConfiguration("nlog.filedownload.config")
+                                                  .LoadConfiguration(LoggerSettings.ConfigFile)
                                                   .GetCurrentClassLogger()));
 
             container.Register(
                 Component.For<IApplicationLoggingService>().ImplementedBy<FileDownloadConsoleLoggingProvider>(),
-                Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService>()
+                Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService, IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
                          .ImplementedBy<FileDownloadConsoleSettingsProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
@@ -67,7 +67,11 @@
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),
                 Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>(),
                 Component.For<IWebClient>().ImplementedBy<WebClientWrapper>().LifestyleTransient(),
-                Component.For<IWebClientFactory>().AsFactory());
+                Component.For<IWebClientFactory>().AsFactory(),
+                Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
+                Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
+                Component.For<IStatsFileDateTimeFormatsAndOffsetService>().ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>());
         }
     }
 }

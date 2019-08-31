@@ -11,10 +11,12 @@
     {
         public static void Main(string[] args)
         {
+            IFileDownloadService service = null;
+
             try
             {
                 DependencyRegistration.Register();
-                var service = WindsorContainer.Instance.Resolve<IFileDownloadService>();
+                service = WindsorContainer.Instance.Resolve<IFileDownloadService>();
                 service.DownloadStatsFile();
             }
             catch (Exception ex)
@@ -23,6 +25,7 @@
             }
             finally
             {
+                WindsorContainer.Instance.Release(service);
                 WindsorContainer.Dispose();
                 LogManager.Shutdown();
             }
@@ -41,6 +44,7 @@
             {
                 // As a last resort log to standard output
                 Console.WriteLine(ex.ToString());
+                Console.WriteLine(exception.ToString());
             }
             finally
             {
