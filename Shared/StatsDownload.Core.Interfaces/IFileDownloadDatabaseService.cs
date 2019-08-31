@@ -26,7 +26,7 @@
 
         (bool isAvailable, FailedReason reason) IsAvailable();
 
-        void NewFileDownloadStarted(FilePayload filePayload);
+        void FileDownloadStarted(FilePayload filePayload);
 
         void UpdateToLatest();
     }

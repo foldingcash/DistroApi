@@ -396,7 +396,7 @@
                 fileDownloadDatabaseServiceMock.UpdateToLatest();
                 dateTimeServiceMock.DateTimeNow();
                 loggingServiceMock.LogVerbose($"Stats file download started: {dateTime}");
-                fileDownloadDatabaseServiceMock.NewFileDownloadStarted(Arg.Any<FilePayload>());
+                fileDownloadDatabaseServiceMock.FileDownloadStarted(Arg.Any<FilePayload>());
                 fileDownloadMinimumWaitTimeServiceMock.IsMinimumWaitTimeMet(Arg.Any<FilePayload>());
                 filePayloadSettingsServiceMock.SetFilePayloadDownloadDetails(Arg.Any<FilePayload>());
                 downloadServiceMock.DownloadFile(Arg.Any<FilePayload>());

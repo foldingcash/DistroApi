@@ -96,11 +96,11 @@
             return (isAvailable, failedReason);
         }
 
-        public void NewFileDownloadStarted(FilePayload filePayload)
+        public void FileDownloadStarted(FilePayload filePayload)
         {
             loggingService.LogMethodInvoked();
             int downloadId = default(int);
-            CreateDatabaseConnectionAndExecuteAction(service => { downloadId = NewFileDownloadStarted(service); });
+            CreateDatabaseConnectionAndExecuteAction(service => { downloadId = FileDownloadStarted(service); });
             filePayload.DownloadId = downloadId;
         }
 
@@ -166,14 +166,14 @@
             loggingService.LogVerbose(message);
         }
 
-        private int NewFileDownloadStarted(IDatabaseConnectionService databaseConnection)
+        private int FileDownloadStarted(IDatabaseConnectionService databaseConnection)
         {
             DbParameter downloadId =
                 statsDownloadDatabaseParameterService.CreateDownloadIdParameter(databaseConnection,
                     ParameterDirection.Output);
 
             databaseConnection.ExecuteStoredProcedure(
-                Constants.FileDownloadDatabase.NewFileDownloadStartedProcedureName,
+                Constants.FileDownloadDatabase.FileDownloadStartedProcedureName,
                 new List<DbParameter> { downloadId });
 
             return (int)downloadId.Value;

@@ -234,32 +234,32 @@
         }
 
         [Test]
-        public void NewFileDownloadStarted_WhenInvoked_NewFileDownloadStarted()
+        public void FileDownloadStarted_WhenInvoked_FileDownloadStarted()
         {
-            InvokeNewFileDownloadStarted();
+            InvokeFileDownloadStarted();
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.NewFileDownloadStarted));
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[NewFileDownloadStarted]",
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileDownloadStarted));
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadStarted]",
                     Arg.Any<List<DbParameter>>());
             });
         }
 
         [Test]
-        public void NewFileDownloadStarted_WhenInvoked_ParametersAreProvided()
+        public void FileDownloadStarted_WhenInvoked_ParametersAreProvided()
         {
             List<DbParameter> actualParameters = default(List<DbParameter>);
 
             databaseConnectionServiceMock
                 .When(service =>
-                    service.ExecuteStoredProcedure("[FoldingCoin].[NewFileDownloadStarted]",
+                    service.ExecuteStoredProcedure("[FoldingCoin].FileDownloadStarted]",
                         Arg.Any<List<DbParameter>>())).Do(callback =>
                 {
                     actualParameters = callback.Arg<List<DbParameter>>();
                 });
 
-            InvokeNewFileDownloadStarted();
+            InvokeFileDownloadStarted();
 
             Assert.That(actualParameters.Count, Is.EqualTo(1));
             Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
@@ -268,7 +268,7 @@
         }
 
         [Test]
-        public void NewFileDownloadStarted_WhenInvoked_ReturnsDownloadId()
+        public void FileDownloadStarted_WhenInvoked_ReturnsDownloadId()
         {
             var dbParameter = Substitute.For<DbParameter>();
             dbParameter.Value.Returns(100);
@@ -277,7 +277,7 @@
             statsDownloadDatabaseParameterServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock)
                                                      .Returns(dbParameter);
 
-            InvokeNewFileDownloadStarted();
+            InvokeFileDownloadStarted();
 
             Assert.That(filePayload.DownloadId, Is.EqualTo(100));
         }
@@ -318,9 +318,9 @@
             return systemUnderTest.IsAvailable();
         }
 
-        private void InvokeNewFileDownloadStarted()
+        private void InvokeFileDownloadStarted()
         {
-            systemUnderTest.NewFileDownloadStarted(filePayload);
+            systemUnderTest.FileDownloadStarted(filePayload);
         }
 
         private void InvokeUpdateToLatest()

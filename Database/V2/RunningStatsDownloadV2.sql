@@ -6,7 +6,7 @@ DECLARE @DownloadId INT;
 
 -- Call this to start when a new file download is started
 PRINT 'Starting a new download'
-EXEC [FoldingCoin].[NewFileDownloadStarted] @DownloadId OUTPUT;
+EXEC [FoldingCoin].[FileDownloadStarted] @DownloadId OUTPUT;
 
 -- This Id will be used later to update the status
 --SELECT @DownloadId;

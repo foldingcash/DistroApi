@@ -15,15 +15,15 @@
                 $"{DatabaseSchema}{SchemaSeparator}[FileDownloadFinished]";
             public static readonly string GetLastFileDownloadDateTimeSqlFunction =
                 $"{DatabaseSchema}{SchemaSeparator}[GetLastFileDownloadDateTime]";
-            public static readonly string NewFileDownloadStartedProcedureName =
-                $"{DatabaseSchema}{SchemaSeparator}[NewFileDownloadStarted]";
+            public static readonly string FileDownloadStartedProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[FileDownloadStarted]";
             public static readonly string UpdateToLatestStoredProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[UpdateToLatest]";
             public static readonly string[] FileDownloadObjects =
             {
                 UpdateToLatestStoredProcedureName,
                 GetLastFileDownloadDateTimeSqlFunction,
-                NewFileDownloadStartedProcedureName,
+                FileDownloadStartedProcedureName,
                 FileDownloadFinishedProcedureName,
                 FileDownloadErrorProcedureName
             };

@@ -72,7 +72,7 @@
 
                 UpdateToLatest();
                 LogVerbose($"Stats file download started: {DateTimeNow()}");
-                NewFileDownloadStarted(filePayload);
+                FileDownloadStarted(filePayload);
 
                 if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
                 {
@@ -244,9 +244,9 @@
             return new FileDownloadResult(failedReason, filePayload);
         }
 
-        private void NewFileDownloadStarted(FilePayload filePayload)
+        private void FileDownloadStarted(FilePayload filePayload)
         {
-            fileDownloadDatabaseService.NewFileDownloadStarted(filePayload);
+            fileDownloadDatabaseService.FileDownloadStarted(filePayload);
         }
 
         private FilePayload NewStatsPayload()

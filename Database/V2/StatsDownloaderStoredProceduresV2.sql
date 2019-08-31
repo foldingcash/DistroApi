@@ -192,13 +192,13 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.NewFileDownloadStarted') IS NOT NULL
+IF OBJECT_ID('FoldingCoin.FileDownloadStarted') IS NOT NULL
 BEGIN
-	DROP PROCEDURE [FoldingCoin].[NewFileDownloadStarted];
+	DROP PROCEDURE [FoldingCoin].[FileDownloadStarted];
 END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[NewFileDownloadStarted] @DownloadId INT OUTPUT
+CREATE PROCEDURE [FoldingCoin].[FileDownloadStarted] @DownloadId INT OUTPUT
 AS
 BEGIN
 	DECLARE @FileDownloadStartedStatusId INT;
