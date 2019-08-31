@@ -37,5 +37,7 @@
         public int TimeoutSeconds { get; set; }
 
         public string UploadPath { get; set; }
+
+        public DateTime? FileUtcDateTime { get; set; }
     }
 }

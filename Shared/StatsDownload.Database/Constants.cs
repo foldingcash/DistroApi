@@ -28,6 +28,15 @@
                 FileDownloadErrorProcedureName
             };
 
+            public static readonly string FileValidatedProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[FileValidated]";
+
+            public static readonly string FileValidationErrorProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[FileValidationError]";
+
+            public static readonly string FileValidationStartedProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[FileValidationStarted]";
+
             public static readonly string GetLastFileDownloadDateTimeSql =
                 $"SELECT {GetLastFileDownloadDateTimeSqlFunction}()";
         }

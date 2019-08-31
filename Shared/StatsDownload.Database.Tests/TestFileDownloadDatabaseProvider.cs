@@ -47,7 +47,8 @@
                               DownloadId = 100,
                               UploadPath = "UploadPath",
                               DownloadFileName = "DownloadFileName",
-                              DownloadFileExtension = "DownloadFileExtension"
+                              DownloadFileExtension = "DownloadFileExtension",
+                              FileUtcDateTime = DateTime.Today
                           };
 
             fileDownloadResult = new FileDownloadResult(filePayload);
@@ -206,7 +207,7 @@
 
             databaseConnectionServiceMock
                 .When(service =>
-                    service.ExecuteStoredProcedure("[FoldingCoin].FileDownloadStarted]", Arg.Any<List<DbParameter>>()))
+                    service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadStarted]", Arg.Any<List<DbParameter>>()))
                 .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             InvokeFileDownloadStarted();
@@ -233,9 +234,122 @@
         }
 
         [Test]
+        public void FileValidated_WhenInvoked_FileMarkedValidated()
+        {
+            InvokeFileValidated();
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileValidated));
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileValidated]",
+                    Arg.Any<List<DbParameter>>());
+            });
+        }
+
+        [Test]
+        public void FileValidated_WhenInvoked_ParametersAreProvided()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock
+                .When(service =>
+                    service.ExecuteStoredProcedure("[FoldingCoin].[FileValidated]", Arg.Any<List<DbParameter>>()))
+                .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            InvokeFileValidated();
+
+            Assert.That(actualParameters.Count, Is.EqualTo(5));
+            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
+            Assert.That(actualParameters[1].ParameterName, Is.EqualTo("@FileUtcDateTime"));
+            Assert.That(actualParameters[1].DbType, Is.EqualTo(DbType.DateTime));
+            Assert.That(actualParameters[1].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[1].Value, Is.EqualTo(DateTime.Today));
+            Assert.That(actualParameters[2].ParameterName, Is.EqualTo("@FilePath"));
+            Assert.That(actualParameters[2].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[2].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[2].Value, Is.EqualTo("UploadPath"));
+            Assert.That(actualParameters[3].ParameterName, Is.EqualTo("@FileName"));
+            Assert.That(actualParameters[3].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[3].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[3].Value, Is.EqualTo("DownloadFileName"));
+            Assert.That(actualParameters[4].ParameterName, Is.EqualTo("@FileExtension"));
+            Assert.That(actualParameters[4].DbType, Is.EqualTo(DbType.String));
+            Assert.That(actualParameters[4].Direction, Is.EqualTo(ParameterDirection.Input));
+            Assert.That(actualParameters[4].Value, Is.EqualTo("DownloadFileExtension"));
+        }
+
+        [Test]
+        public void FileValidationError_WhenInvoked_ParametersAreProvided()
+        {
+            fileDownloadResult = new FileDownloadResult(FailedReason.UnexpectedValidationException, filePayload);
+
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock
+                .When(service =>
+                    service.ExecuteStoredProcedure("[FoldingCoin].[FileValidationError]", Arg.Any<List<DbParameter>>()))
+                .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            statsDownloadDatabaseParameterServiceMock
+                .CreateErrorMessageParameter(databaseConnectionServiceMock, fileDownloadResult)
+                .Returns(errorMessageParameterMock);
+
+            InvokeFileValidationError();
+
+            Assert.That(actualParameters.Count, Is.EqualTo(2));
+            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
+            Assert.That(actualParameters[1], Is.EqualTo(errorMessageParameterMock));
+        }
+
+        [Test]
+        public void FileValidationError_WhenInvoked_UpdatesFileDownloadToValidationError()
+        {
+            InvokeFileValidationError();
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileValidationError));
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileValidationError]",
+                    Arg.Any<List<DbParameter>>());
+            });
+        }
+
+        [Test]
+        public void FileValidationStarted_WhenInvoked_FileValidationStarted()
+        {
+            InvokeFileValidationStarted();
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileValidationStarted));
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileValidationStarted]",
+                    Arg.Any<List<DbParameter>>());
+            });
+        }
+
+        [Test]
+        public void FileValidationStarted_WhenInvoked_ParametersAreProvided()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock
+                .When(service =>
+                    service.ExecuteStoredProcedure("[FoldingCoin].[FileValidationStarted]",
+                        Arg.Any<List<DbParameter>>())).Do(callback =>
+                {
+                    actualParameters = callback.Arg<List<DbParameter>>();
+                });
+
+            InvokeFileValidationStarted();
+
+            Assert.That(actualParameters.Count, Is.EqualTo(1));
+            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
+        }
+
+        [Test]
         public void GetLastFileDownloadDateTime_WhenInvoked_GetsLastfileDownloadDateTime()
         {
-            InvokeGetLastFileFownloadDateTime();
+            InvokeGetLastFileDownloadDateTime();
 
             Received.InOrder(() =>
             {
@@ -251,7 +365,7 @@
             databaseConnectionServiceMock.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()")
                                          .Returns(dateTime);
 
-            DateTime actual = InvokeGetLastFileFownloadDateTime();
+            DateTime actual = InvokeGetLastFileDownloadDateTime();
 
             Assert.That(actual, Is.EqualTo(dateTime));
         }
@@ -259,7 +373,7 @@
         [Test]
         public void GetLastFileDownloadDateTime_WhenNoRowsReturned_ReturnsDefaultDateTime()
         {
-            DateTime actual = InvokeGetLastFileFownloadDateTime();
+            DateTime actual = InvokeGetLastFileDownloadDateTime();
 
             Assert.That(actual, Is.EqualTo(default(DateTime)));
         }
@@ -310,7 +424,22 @@
             systemUnderTest.FileDownloadStarted(filePayload);
         }
 
-        private DateTime InvokeGetLastFileFownloadDateTime()
+        private void InvokeFileValidated()
+        {
+            systemUnderTest.FileValidated(filePayload);
+        }
+
+        private void InvokeFileValidationError()
+        {
+            systemUnderTest.FileValidationError(fileDownloadResult);
+        }
+
+        private void InvokeFileValidationStarted()
+        {
+            systemUnderTest.FileValidationStarted(filePayload);
+        }
+
+        private DateTime InvokeGetLastFileDownloadDateTime()
         {
             return systemUnderTest.GetLastFileDownloadDateTime();
         }

@@ -53,17 +53,20 @@
 
         public void FileValidated(FilePayload filePayload)
         {
-            throw new NotImplementedException();
+            loggingService.LogMethodInvoked();
+            CreateDatabaseConnectionAndExecuteAction(service => { FileValidated(service, filePayload); });
         }
 
         public void FileValidationError(FileDownloadResult fileDownloadResult)
         {
-            throw new NotImplementedException();
+            loggingService.LogMethodInvoked();
+            CreateDatabaseConnectionAndExecuteAction(service => { FileValidationError(service, fileDownloadResult); });
         }
 
         public void FileValidationStarted(FilePayload filePayload)
         {
-            throw new NotImplementedException();
+            loggingService.LogMethodInvoked();
+            CreateDatabaseConnectionAndExecuteAction(service => { FileValidationStarted(service, filePayload); });
         }
 
         public DateTime GetLastFileDownloadDateTime()
@@ -165,6 +168,60 @@
                 new List<DbParameter> { downloadId });
 
             return (int)downloadId.Value;
+        }
+
+        private void FileValidated(IDatabaseConnectionService databaseConnection, FilePayload filePayload)
+        {
+            DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, filePayload.DownloadId);
+
+            DbParameter fileUtcDateTime =
+                databaseConnection.CreateParameter("@FileUtcDateTime", DbType.DateTime, ParameterDirection.Input);
+            fileUtcDateTime.Value = filePayload.FileUtcDateTime;
+
+            DbParameter filePath = databaseConnection.CreateParameter("@FilePath", DbType.String,
+                ParameterDirection.Input);
+            filePath.Value = filePayload.UploadPath;
+
+            DbParameter fileName = databaseConnection.CreateParameter("@FileName", DbType.String,
+                ParameterDirection.Input);
+            fileName.Value = filePayload.DownloadFileName;
+
+            DbParameter fileExtension = databaseConnection.CreateParameter("@FileExtension", DbType.String,
+                ParameterDirection.Input);
+            fileExtension.Value = filePayload.DownloadFileExtension;
+
+            databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase.FileValidatedProcedureName,
+                new List<DbParameter>
+                {
+                    downloadId,
+                    fileUtcDateTime,
+                    filePath,
+                    fileName,
+                    fileExtension
+                });
+        }
+
+        private void FileValidationError(IDatabaseConnectionService databaseConnection,
+                                         FileDownloadResult fileDownloadResult)
+        {
+            FilePayload filePayload = fileDownloadResult.FilePayload;
+
+            DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, filePayload.DownloadId);
+
+            DbParameter errorMessage =
+                statsDownloadDatabaseParameterService.CreateErrorMessageParameter(databaseConnection,
+                    fileDownloadResult);
+
+            databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase.FileValidationErrorProcedureName,
+                new List<DbParameter> { downloadId, errorMessage });
+        }
+
+        private void FileValidationStarted(IDatabaseConnectionService databaseConnection, FilePayload filePayload)
+        {
+            DbParameter downloadId = CreateDownloadIdParameter(databaseConnection, filePayload.DownloadId);
+
+            databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase.FileValidationStartedProcedureName,
+                new List<DbParameter> { downloadId });
         }
 
         private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
