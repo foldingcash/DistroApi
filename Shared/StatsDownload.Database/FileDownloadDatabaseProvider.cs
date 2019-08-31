@@ -43,6 +43,14 @@
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
         }
 
+        public void FileDownloadStarted(FilePayload filePayload)
+        {
+            loggingService.LogMethodInvoked();
+            int downloadId = default(int);
+            CreateDatabaseConnectionAndExecuteAction(service => { downloadId = FileDownloadStarted(service); });
+            filePayload.DownloadId = downloadId;
+        }
+
         public void FileValidated(FilePayload filePayload)
         {
             throw new NotImplementedException();
@@ -96,14 +104,6 @@
             return (isAvailable, failedReason);
         }
 
-        public void FileDownloadStarted(FilePayload filePayload)
-        {
-            loggingService.LogMethodInvoked();
-            int downloadId = default(int);
-            CreateDatabaseConnectionAndExecuteAction(service => { downloadId = FileDownloadStarted(service); });
-            filePayload.DownloadId = downloadId;
-        }
-
         public void UpdateToLatest()
         {
             loggingService.LogMethodInvoked();
@@ -155,6 +155,18 @@
                 new List<DbParameter> { downloadId, filePath, fileName, fileExtension });
         }
 
+        private int FileDownloadStarted(IDatabaseConnectionService databaseConnection)
+        {
+            DbParameter downloadId =
+                statsDownloadDatabaseParameterService.CreateDownloadIdParameter(databaseConnection,
+                    ParameterDirection.Output);
+
+            databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase.FileDownloadStartedProcedureName,
+                new List<DbParameter> { downloadId });
+
+            return (int)downloadId.Value;
+        }
+
         private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
         {
             return databaseConnection.ExecuteScalar(Constants.FileDownloadDatabase.GetLastFileDownloadDateTimeSql) as
@@ -164,19 +176,6 @@
         private void LogVerbose(string message)
         {
             loggingService.LogVerbose(message);
-        }
-
-        private int FileDownloadStarted(IDatabaseConnectionService databaseConnection)
-        {
-            DbParameter downloadId =
-                statsDownloadDatabaseParameterService.CreateDownloadIdParameter(databaseConnection,
-                    ParameterDirection.Output);
-
-            databaseConnection.ExecuteStoredProcedure(
-                Constants.FileDownloadDatabase.FileDownloadStartedProcedureName,
-                new List<DbParameter> { downloadId });
-
-            return (int)downloadId.Value;
         }
 
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)

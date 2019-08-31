@@ -11,6 +11,8 @@
 
         void FileDownloadFinished(FilePayload filePayload);
 
+        void FileDownloadStarted(FilePayload filePayload);
+
         void FileValidated(FilePayload filePayload);
 
         void FileValidationError(FileDownloadResult fileDownloadResult);
@@ -25,8 +27,6 @@
         DateTime GetLastFileDownloadDateTime();
 
         (bool isAvailable, FailedReason reason) IsAvailable();
-
-        void FileDownloadStarted(FilePayload filePayload);
 
         void UpdateToLatest();
     }

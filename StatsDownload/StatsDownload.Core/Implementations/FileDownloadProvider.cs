@@ -123,6 +123,11 @@
             fileDownloadDatabaseService.FileDownloadError(fileDownloadResult);
         }
 
+        private void FileDownloadStarted(FilePayload filePayload)
+        {
+            fileDownloadDatabaseService.FileDownloadStarted(filePayload);
+        }
+
         private FileDownloadResult HandleDownloadNotReadyToRun(FailedReason failedReason, FilePayload filePayload)
         {
             FileDownloadResult failedResult = NewFailedFileDownloadResult(failedReason, filePayload);
@@ -242,11 +247,6 @@
         private FileDownloadResult NewFailedFileDownloadResult(FailedReason failedReason, FilePayload filePayload)
         {
             return new FileDownloadResult(failedReason, filePayload);
-        }
-
-        private void FileDownloadStarted(FilePayload filePayload)
-        {
-            fileDownloadDatabaseService.FileDownloadStarted(filePayload);
         }
 
         private FilePayload NewStatsPayload()

@@ -187,6 +187,52 @@
         }
 
         [Test]
+        public void FileDownloadStarted_WhenInvoked_FileDownloadStarted()
+        {
+            InvokeFileDownloadStarted();
+
+            Received.InOrder(() =>
+            {
+                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileDownloadStarted));
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadStarted]",
+                    Arg.Any<List<DbParameter>>());
+            });
+        }
+
+        [Test]
+        public void FileDownloadStarted_WhenInvoked_ParametersAreProvided()
+        {
+            List<DbParameter> actualParameters = default(List<DbParameter>);
+
+            databaseConnectionServiceMock
+                .When(service =>
+                    service.ExecuteStoredProcedure("[FoldingCoin].FileDownloadStarted]", Arg.Any<List<DbParameter>>()))
+                .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
+
+            InvokeFileDownloadStarted();
+
+            Assert.That(actualParameters.Count, Is.EqualTo(1));
+            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
+            statsDownloadDatabaseParameterServiceMock
+                .Received().CreateDownloadIdParameter(databaseConnectionServiceMock, ParameterDirection.Output);
+        }
+
+        [Test]
+        public void FileDownloadStarted_WhenInvoked_ReturnsDownloadId()
+        {
+            var dbParameter = Substitute.For<DbParameter>();
+            dbParameter.Value.Returns(100);
+
+            databaseConnectionServiceMock.ClearSubstitute();
+            statsDownloadDatabaseParameterServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock)
+                                                     .Returns(dbParameter);
+
+            InvokeFileDownloadStarted();
+
+            Assert.That(filePayload.DownloadId, Is.EqualTo(100));
+        }
+
+        [Test]
         public void GetLastFileDownloadDateTime_WhenInvoked_GetsLastfileDownloadDateTime()
         {
             InvokeGetLastFileFownloadDateTime();
@@ -234,55 +280,6 @@
         }
 
         [Test]
-        public void FileDownloadStarted_WhenInvoked_FileDownloadStarted()
-        {
-            InvokeFileDownloadStarted();
-
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileDownloadStarted));
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadStarted]",
-                    Arg.Any<List<DbParameter>>());
-            });
-        }
-
-        [Test]
-        public void FileDownloadStarted_WhenInvoked_ParametersAreProvided()
-        {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
-
-            databaseConnectionServiceMock
-                .When(service =>
-                    service.ExecuteStoredProcedure("[FoldingCoin].FileDownloadStarted]",
-                        Arg.Any<List<DbParameter>>())).Do(callback =>
-                {
-                    actualParameters = callback.Arg<List<DbParameter>>();
-                });
-
-            InvokeFileDownloadStarted();
-
-            Assert.That(actualParameters.Count, Is.EqualTo(1));
-            Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
-            statsDownloadDatabaseParameterServiceMock
-                .Received().CreateDownloadIdParameter(databaseConnectionServiceMock, ParameterDirection.Output);
-        }
-
-        [Test]
-        public void FileDownloadStarted_WhenInvoked_ReturnsDownloadId()
-        {
-            var dbParameter = Substitute.For<DbParameter>();
-            dbParameter.Value.Returns(100);
-
-            databaseConnectionServiceMock.ClearSubstitute();
-            statsDownloadDatabaseParameterServiceMock.CreateDownloadIdParameter(databaseConnectionServiceMock)
-                                                     .Returns(dbParameter);
-
-            InvokeFileDownloadStarted();
-
-            Assert.That(filePayload.DownloadId, Is.EqualTo(100));
-        }
-
-        [Test]
         public void UpdateToLatest_WhenInvoked_DatabaseUpdatedToLatest()
         {
             databaseConnectionServiceMock.ExecuteStoredProcedure(Arg.Any<string>())
@@ -308,6 +305,11 @@
             systemUnderTest.FileDownloadFinished(filePayload);
         }
 
+        private void InvokeFileDownloadStarted()
+        {
+            systemUnderTest.FileDownloadStarted(filePayload);
+        }
+
         private DateTime InvokeGetLastFileFownloadDateTime()
         {
             return systemUnderTest.GetLastFileDownloadDateTime();
@@ -316,11 +318,6 @@
         private (bool isAvailable, FailedReason reason) InvokeIsAvailable()
         {
             return systemUnderTest.IsAvailable();
-        }
-
-        private void InvokeFileDownloadStarted()
-        {
-            systemUnderTest.FileDownloadStarted(filePayload);
         }
 
         private void InvokeUpdateToLatest()
