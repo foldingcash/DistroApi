@@ -3,16 +3,19 @@
     using System.Configuration;
     using System.IO;
     using System.Reflection;
-    using Core.Interfaces;
-    using Email;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Email;
 
     /// <summary>
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
     /// </summary>
     public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-        ITestHarnessSettingsService, IEmailSettingsService, IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
-        IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings, ITestHarnessStatsDownloadSettings,
-        IStatsFileDateTimeFormatsAndOffsetSettings
+                                               ITestHarnessSettingsService, IEmailSettingsService,
+                                               IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
+                                               IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings,
+                                               ITestHarnessStatsDownloadSettings,
+                                               IStatsFileDateTimeFormatsAndOffsetSettings, IDataStoreSettings
     {
         bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
 
@@ -24,6 +27,8 @@
 
         bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
 
+        public string UploadDirectory => ConfigurationManager.AppSettings["UploadDirectory"];
+
         public string GetAcceptAnySslCert()
         {
             return ConfigurationManager.AppSettings["AcceptAnySslCert"];
@@ -33,13 +38,16 @@
         {
             string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
             if (int.TryParse(commandTimeoutString, out int commandTimeoutValue))
+            {
                 return commandTimeoutValue;
+            }
+
             return null;
         }
 
         public string GetConnectionString()
         {
-            return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
+            return ConfigurationManager.ConnectionStrings["FoldingCoin.Database"]?.ConnectionString;
         }
 
         public string GetDatabaseType()

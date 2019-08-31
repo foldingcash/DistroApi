@@ -1,6 +1,6 @@
 ﻿namespace StatsDownload.Core.Interfaces.DataTransfer
 {
-    using Enums;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class FailedUserData
     {
@@ -9,8 +9,8 @@
         {
         }
 
-        public FailedUserData(int lineNumber, RejectionReason rejectionReason, UserData userdata) : this(lineNumber,
-            null, rejectionReason, userdata)
+        public FailedUserData(int lineNumber, RejectionReason rejectionReason, UserData userdata)
+            : this(lineNumber, null, rejectionReason, userdata)
         {
         }
 

@@ -1,9 +1,11 @@
 ﻿namespace StatsDownload.FileDownload.Console
 {
     using System;
-    using CastleWindsor;
-    using Core.Interfaces;
+
     using NLog;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.FileDownload.Console.CastleWindsor;
 
     public class Program
     {

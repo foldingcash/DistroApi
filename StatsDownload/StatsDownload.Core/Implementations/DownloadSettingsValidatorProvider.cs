@@ -1,7 +1,8 @@
 ﻿namespace StatsDownload.Core.Implementations
 {
     using System;
-    using Interfaces;
+
+    using StatsDownload.Core.Interfaces;
 
     public class DownloadSettingsValidatorProvider : IDownloadSettingsValidatorService
     {

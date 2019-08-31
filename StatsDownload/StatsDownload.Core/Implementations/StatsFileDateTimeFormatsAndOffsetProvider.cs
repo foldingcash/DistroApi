@@ -3,7 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Interfaces;
+
+    using StatsDownload.Core.Interfaces;
 
     public class StatsFileDateTimeFormatsAndOffsetProvider : IStatsFileDateTimeFormatsAndOffsetService
     {
@@ -12,8 +13,8 @@
         public StatsFileDateTimeFormatsAndOffsetProvider(
             IStatsFileDateTimeFormatsAndOffsetSettings statsFileDateTimeFormatsAndOffsetSettings)
         {
-            this.statsFileDateTimeFormatsAndOffsetSettings = statsFileDateTimeFormatsAndOffsetSettings ??
-                                                             throw new ArgumentNullException(
+            this.statsFileDateTimeFormatsAndOffsetSettings = statsFileDateTimeFormatsAndOffsetSettings
+                                                             ?? throw new ArgumentNullException(
                                                                  nameof(statsFileDateTimeFormatsAndOffsetSettings));
         }
 
@@ -34,7 +35,7 @@
                 foreach (string dateTimeFormat in Constants.StatsFile.DateTimeFormats)
                 {
                     codedFormatsAndOffset.Add((string.Format(dateTimeFormat, timeZoneAndOffset.timeZone),
-                        timeZoneAndOffset.hourOffset));
+                                                  timeZoneAndOffset.hourOffset));
                 }
             }
 

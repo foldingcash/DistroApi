@@ -1,10 +1,13 @@
 ﻿namespace StatsDownload.Logging.Tests
 {
     using System;
-    using Core.Interfaces;
-    using Core.Interfaces.Logging;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestLoggingProvider
@@ -51,11 +54,10 @@
             var exception = new Exception("message");
             systemUnderTest.LogException(exception);
 
-            applicationLoggingServiceMock.Received()
-                                         .LogError($"{dateTime}{Environment.NewLine}"
-                                                   + $"Exception Type: {exception.GetType()}{Environment.NewLine}"
-                                                   + $"Exception Message: {exception.Message}{Environment.NewLine}"
-                                                   + $"Exception Stack-trace: {Environment.NewLine}{exception.StackTrace}");
+            applicationLoggingServiceMock.Received().LogError($"{dateTime}{Environment.NewLine}"
+                                                              + $"Exception Type: {exception.GetType()}{Environment.NewLine}"
+                                                              + $"Exception Message: {exception.Message}{Environment.NewLine}"
+                                                              + $"Exception Stack-trace: {Environment.NewLine}{exception.StackTrace}");
         }
 
         [Test]
@@ -96,7 +98,7 @@
         }
 
         private ILoggingService NewLoggingProvider(IApplicationLoggingService applicationLoggingService,
-            IDateTimeService dateTimeService)
+                                                   IDateTimeService dateTimeService)
         {
             return new LoggingProvider(applicationLoggingService, dateTimeService);
         }

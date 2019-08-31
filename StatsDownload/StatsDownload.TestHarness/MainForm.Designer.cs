@@ -31,7 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.FileDownloadButton = new System.Windows.Forms.Button();
             this.LoggingTextBox = new System.Windows.Forms.TextBox();
-            this.UploadStatsButton = new System.Windows.Forms.Button();
             this.ImportButton = new System.Windows.Forms.Button();
             this.MassImportGroupBox = new System.Windows.Forms.GroupBox();
             this.ImportDirectoryLabel = new System.Windows.Forms.Label();
@@ -53,10 +52,9 @@
             // 
             // FileDownloadButton
             // 
-            this.FileDownloadButton.Location = new System.Drawing.Point(6, 22);
-            this.FileDownloadButton.Margin = new System.Windows.Forms.Padding(4);
+            this.FileDownloadButton.Location = new System.Drawing.Point(4, 18);
             this.FileDownloadButton.Name = "FileDownloadButton";
-            this.FileDownloadButton.Size = new System.Drawing.Size(251, 49);
+            this.FileDownloadButton.Size = new System.Drawing.Size(188, 40);
             this.FileDownloadButton.TabIndex = 0;
             this.FileDownloadButton.Text = "File Download";
             this.FileDownloadButton.UseVisualStyleBackColor = true;
@@ -64,30 +62,19 @@
             // 
             // LoggingTextBox
             // 
-            this.LoggingTextBox.Location = new System.Drawing.Point(282, 13);
-            this.LoggingTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.LoggingTextBox.Location = new System.Drawing.Point(212, 11);
             this.LoggingTextBox.Multiline = true;
             this.LoggingTextBox.Name = "LoggingTextBox";
             this.LoggingTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.LoggingTextBox.Size = new System.Drawing.Size(682, 536);
+            this.LoggingTextBox.Size = new System.Drawing.Size(512, 436);
             this.LoggingTextBox.TabIndex = 1;
-            // 
-            // UploadStatsButton
-            // 
-            this.UploadStatsButton.Location = new System.Drawing.Point(6, 79);
-            this.UploadStatsButton.Margin = new System.Windows.Forms.Padding(4);
-            this.UploadStatsButton.Name = "UploadStatsButton";
-            this.UploadStatsButton.Size = new System.Drawing.Size(251, 49);
-            this.UploadStatsButton.TabIndex = 2;
-            this.UploadStatsButton.Text = "Stats Upload";
-            this.UploadStatsButton.UseVisualStyleBackColor = true;
-            this.UploadStatsButton.Click += new System.EventHandler(this.UploadStatsButton_Click);
             // 
             // ImportButton
             // 
-            this.ImportButton.Location = new System.Drawing.Point(6, 86);
+            this.ImportButton.Location = new System.Drawing.Point(4, 70);
+            this.ImportButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ImportButton.Name = "ImportButton";
-            this.ImportButton.Size = new System.Drawing.Size(251, 49);
+            this.ImportButton.Size = new System.Drawing.Size(188, 40);
             this.ImportButton.TabIndex = 3;
             this.ImportButton.Text = "Import";
             this.ImportButton.UseVisualStyleBackColor = true;
@@ -98,9 +85,11 @@
             this.MassImportGroupBox.Controls.Add(this.ImportDirectoryLabel);
             this.MassImportGroupBox.Controls.Add(this.ImportDirectoryTextBox);
             this.MassImportGroupBox.Controls.Add(this.ImportButton);
-            this.MassImportGroupBox.Location = new System.Drawing.Point(12, 408);
+            this.MassImportGroupBox.Location = new System.Drawing.Point(9, 332);
+            this.MassImportGroupBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MassImportGroupBox.Name = "MassImportGroupBox";
-            this.MassImportGroupBox.Size = new System.Drawing.Size(263, 141);
+            this.MassImportGroupBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MassImportGroupBox.Size = new System.Drawing.Size(197, 115);
             this.MassImportGroupBox.TabIndex = 4;
             this.MassImportGroupBox.TabStop = false;
             this.MassImportGroupBox.Text = "Mass Import";
@@ -108,17 +97,19 @@
             // ImportDirectoryLabel
             // 
             this.ImportDirectoryLabel.AutoSize = true;
-            this.ImportDirectoryLabel.Location = new System.Drawing.Point(6, 29);
+            this.ImportDirectoryLabel.Location = new System.Drawing.Point(4, 24);
+            this.ImportDirectoryLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ImportDirectoryLabel.Name = "ImportDirectoryLabel";
-            this.ImportDirectoryLabel.Size = new System.Drawing.Size(108, 17);
+            this.ImportDirectoryLabel.Size = new System.Drawing.Size(81, 13);
             this.ImportDirectoryLabel.TabIndex = 5;
             this.ImportDirectoryLabel.Text = "Import Directory";
             // 
             // ImportDirectoryTextBox
             // 
-            this.ImportDirectoryTextBox.Location = new System.Drawing.Point(6, 49);
+            this.ImportDirectoryTextBox.Location = new System.Drawing.Point(4, 40);
+            this.ImportDirectoryTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ImportDirectoryTextBox.Name = "ImportDirectoryTextBox";
-            this.ImportDirectoryTextBox.Size = new System.Drawing.Size(251, 22);
+            this.ImportDirectoryTextBox.Size = new System.Drawing.Size(189, 20);
             this.ImportDirectoryTextBox.TabIndex = 4;
             this.ImportDirectoryTextBox.Text = "C:\\Path\\ImportDirectory";
             // 
@@ -129,9 +120,11 @@
             this.MassExportGroupBox.Controls.Add(this.ExportDirectoryLabel);
             this.MassExportGroupBox.Controls.Add(this.ExportDirectoryTextBox);
             this.MassExportGroupBox.Controls.Add(this.ExportButton);
-            this.MassExportGroupBox.Location = new System.Drawing.Point(12, 240);
+            this.MassExportGroupBox.Location = new System.Drawing.Point(9, 195);
+            this.MassExportGroupBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MassExportGroupBox.Name = "MassExportGroupBox";
-            this.MassExportGroupBox.Size = new System.Drawing.Size(263, 162);
+            this.MassExportGroupBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MassExportGroupBox.Size = new System.Drawing.Size(197, 132);
             this.MassExportGroupBox.TabIndex = 5;
             this.MassExportGroupBox.TabStop = false;
             this.MassExportGroupBox.Text = "Mass Export";
@@ -139,9 +132,10 @@
             // ExportSubsetRadioButton
             // 
             this.ExportSubsetRadioButton.AutoSize = true;
-            this.ExportSubsetRadioButton.Location = new System.Drawing.Point(58, 77);
+            this.ExportSubsetRadioButton.Location = new System.Drawing.Point(44, 63);
+            this.ExportSubsetRadioButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ExportSubsetRadioButton.Name = "ExportSubsetRadioButton";
-            this.ExportSubsetRadioButton.Size = new System.Drawing.Size(73, 21);
+            this.ExportSubsetRadioButton.Size = new System.Drawing.Size(58, 17);
             this.ExportSubsetRadioButton.TabIndex = 7;
             this.ExportSubsetRadioButton.Text = "Subset";
             this.ExportSubsetRadioButton.UseVisualStyleBackColor = true;
@@ -150,9 +144,10 @@
             // 
             this.ExportAllRadioButton.AutoSize = true;
             this.ExportAllRadioButton.Checked = true;
-            this.ExportAllRadioButton.Location = new System.Drawing.Point(8, 77);
+            this.ExportAllRadioButton.Location = new System.Drawing.Point(6, 63);
+            this.ExportAllRadioButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ExportAllRadioButton.Name = "ExportAllRadioButton";
-            this.ExportAllRadioButton.Size = new System.Drawing.Size(44, 21);
+            this.ExportAllRadioButton.Size = new System.Drawing.Size(36, 17);
             this.ExportAllRadioButton.TabIndex = 6;
             this.ExportAllRadioButton.TabStop = true;
             this.ExportAllRadioButton.Text = "All";
@@ -161,25 +156,28 @@
             // ExportDirectoryLabel
             // 
             this.ExportDirectoryLabel.AutoSize = true;
-            this.ExportDirectoryLabel.Location = new System.Drawing.Point(6, 29);
+            this.ExportDirectoryLabel.Location = new System.Drawing.Point(4, 24);
+            this.ExportDirectoryLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ExportDirectoryLabel.Name = "ExportDirectoryLabel";
-            this.ExportDirectoryLabel.Size = new System.Drawing.Size(109, 17);
+            this.ExportDirectoryLabel.Size = new System.Drawing.Size(82, 13);
             this.ExportDirectoryLabel.TabIndex = 5;
             this.ExportDirectoryLabel.Text = "Export Directory";
             // 
             // ExportDirectoryTextBox
             // 
-            this.ExportDirectoryTextBox.Location = new System.Drawing.Point(6, 49);
+            this.ExportDirectoryTextBox.Location = new System.Drawing.Point(4, 40);
+            this.ExportDirectoryTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ExportDirectoryTextBox.Name = "ExportDirectoryTextBox";
-            this.ExportDirectoryTextBox.Size = new System.Drawing.Size(251, 22);
+            this.ExportDirectoryTextBox.Size = new System.Drawing.Size(189, 20);
             this.ExportDirectoryTextBox.TabIndex = 4;
             this.ExportDirectoryTextBox.Text = "C:\\Path\\ExportDirectory";
             // 
             // ExportButton
             // 
-            this.ExportButton.Location = new System.Drawing.Point(5, 104);
+            this.ExportButton.Location = new System.Drawing.Point(4, 84);
+            this.ExportButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ExportButton.Name = "ExportButton";
-            this.ExportButton.Size = new System.Drawing.Size(251, 49);
+            this.ExportButton.Size = new System.Drawing.Size(188, 40);
             this.ExportButton.TabIndex = 3;
             this.ExportButton.Text = "Export";
             this.ExportButton.UseVisualStyleBackColor = true;
@@ -188,18 +186,21 @@
             // EmailGroupBox
             // 
             this.EmailGroupBox.Controls.Add(this.TestEmailButton);
-            this.EmailGroupBox.Location = new System.Drawing.Point(12, 155);
+            this.EmailGroupBox.Location = new System.Drawing.Point(9, 79);
+            this.EmailGroupBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.EmailGroupBox.Name = "EmailGroupBox";
-            this.EmailGroupBox.Size = new System.Drawing.Size(263, 79);
+            this.EmailGroupBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.EmailGroupBox.Size = new System.Drawing.Size(197, 64);
             this.EmailGroupBox.TabIndex = 6;
             this.EmailGroupBox.TabStop = false;
             this.EmailGroupBox.Text = "Email";
             // 
             // TestEmailButton
             // 
-            this.TestEmailButton.Location = new System.Drawing.Point(5, 21);
+            this.TestEmailButton.Location = new System.Drawing.Point(4, 17);
+            this.TestEmailButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.TestEmailButton.Name = "TestEmailButton";
-            this.TestEmailButton.Size = new System.Drawing.Size(251, 49);
+            this.TestEmailButton.Size = new System.Drawing.Size(188, 40);
             this.TestEmailButton.TabIndex = 0;
             this.TestEmailButton.Text = "Test Email";
             this.TestEmailButton.UseVisualStyleBackColor = true;
@@ -207,20 +208,21 @@
             // 
             // StatsDownloadGroupBox
             // 
-            this.StatsDownloadGroupBox.Controls.Add(this.UploadStatsButton);
             this.StatsDownloadGroupBox.Controls.Add(this.FileDownloadButton);
-            this.StatsDownloadGroupBox.Location = new System.Drawing.Point(12, 12);
+            this.StatsDownloadGroupBox.Location = new System.Drawing.Point(9, 10);
+            this.StatsDownloadGroupBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.StatsDownloadGroupBox.Name = "StatsDownloadGroupBox";
-            this.StatsDownloadGroupBox.Size = new System.Drawing.Size(263, 137);
+            this.StatsDownloadGroupBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.StatsDownloadGroupBox.Size = new System.Drawing.Size(197, 65);
             this.StatsDownloadGroupBox.TabIndex = 7;
             this.StatsDownloadGroupBox.TabStop = false;
             this.StatsDownloadGroupBox.Text = "Stats Download";
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(977, 560);
+            this.ClientSize = new System.Drawing.Size(733, 455);
             this.Controls.Add(this.StatsDownloadGroupBox);
             this.Controls.Add(this.EmailGroupBox);
             this.Controls.Add(this.MassExportGroupBox);
@@ -228,7 +230,6 @@
             this.Controls.Add(this.LoggingTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainForm";
@@ -248,7 +249,6 @@
 
         private System.Windows.Forms.Button FileDownloadButton;
         private System.Windows.Forms.TextBox LoggingTextBox;
-        private System.Windows.Forms.Button UploadStatsButton;
         private System.Windows.Forms.Button ImportButton;
         private System.Windows.Forms.GroupBox MassImportGroupBox;
         private System.Windows.Forms.Label ImportDirectoryLabel;

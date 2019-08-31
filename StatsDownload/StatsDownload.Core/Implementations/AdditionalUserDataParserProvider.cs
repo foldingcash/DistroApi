@@ -1,8 +1,9 @@
 ﻿namespace StatsDownload.Core.Implementations
 {
     using System;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class AdditionalUserDataParserProvider : IAdditionalUserDataParserService
     {
@@ -10,7 +11,9 @@
 
         public AdditionalUserDataParserProvider(IBitcoinAddressValidatorService bitcoinAddressValidatorService)
         {
-            this.bitcoinAddressValidatorService = bitcoinAddressValidatorService ?? throw new ArgumentNullException(nameof(bitcoinAddressValidatorService));
+            this.bitcoinAddressValidatorService = bitcoinAddressValidatorService
+                                                  ?? throw new ArgumentNullException(
+                                                      nameof(bitcoinAddressValidatorService));
         }
 
         public void Parse(UserData userData)

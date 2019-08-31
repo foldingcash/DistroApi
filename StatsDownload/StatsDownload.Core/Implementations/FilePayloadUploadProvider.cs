@@ -1,34 +1,53 @@
 ﻿namespace StatsDownload.Core.Implementations
 {
     using System;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class FilePayloadUploadProvider : IFilePayloadUploadService
     {
-        private readonly IFileCompressionService fileCompressionService;
+        private readonly IDataStoreService dataStoreService;
 
         private readonly IFileDownloadDatabaseService fileDownloadDatabaseService;
 
-        private readonly IFileReaderService fileReaderService;
+        private readonly IFileValidationService fileValidationService;
 
-        public FilePayloadUploadProvider(IFileCompressionService fileCompressionService,
-            IFileReaderService fileReaderService,
-            IFileDownloadDatabaseService fileDownloadDatabaseService)
+        public FilePayloadUploadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
+                                         IDataStoreService dataStoreService,
+                                         IFileValidationService fileValidationService)
         {
-            this.fileCompressionService = fileCompressionService ??
-                                          throw new ArgumentNullException(nameof(fileCompressionService));
-            this.fileReaderService = fileReaderService ?? throw new ArgumentNullException(nameof(fileReaderService));
-            this.fileDownloadDatabaseService = fileDownloadDatabaseService ??
-                                               throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
+            this.fileDownloadDatabaseService = fileDownloadDatabaseService
+                                               ?? throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
+            this.dataStoreService = dataStoreService ?? throw new ArgumentNullException(nameof(dataStoreService));
+            this.fileValidationService =
+                fileValidationService ?? throw new ArgumentNullException(nameof(fileValidationService));
         }
 
         public void UploadFile(FilePayload filePayload)
         {
-            fileCompressionService.DecompressFile(filePayload.DownloadFilePath,
-                filePayload.DecompressedDownloadFilePath);
-            fileReaderService.ReadFile(filePayload);
+            dataStoreService.UploadFile(filePayload);
             fileDownloadDatabaseService.FileDownloadFinished(filePayload);
+
+            try
+            {
+                fileDownloadDatabaseService.FileValidationStarted(filePayload);
+                fileValidationService.ValidateFile(filePayload);
+                fileDownloadDatabaseService.FileValidated(filePayload);
+            }
+            catch (FileDownloadFailedDecompressionException)
+            {
+                throw;
+            }
+            catch (InvalidStatsFileException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                throw new UnexpectedValidationException(exception);
+            }
         }
     }
 }

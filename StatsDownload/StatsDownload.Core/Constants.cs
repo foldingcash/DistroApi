@@ -22,11 +22,11 @@
 
         public static class FilePayload
         {
-            public const string DecompressedFileExtension = ".txt";
+            public const string DecompressedFileExtension = "txt";
 
             public const string DecompressedFileName = "daily_user_summary";
 
-            public const string FileExtension = ".bz2";
+            public const string FileExtension = "bz2";
 
             public const string FileName = "daily_user_summary.txt";
         }
@@ -35,23 +35,17 @@
         {
             public static readonly string[] DateTimeFormats =
             {
-                "ddd MMM  d HH:mm:ss {0} yyyy",
-                "ddd MMM dd HH:mm:ss {0} yyyy"
+                "ddd MMM  d HH:mm:ss {0} yyyy", "ddd MMM dd HH:mm:ss {0} yyyy"
             };
 
             public static readonly string[] ExpectedHeaders =
             {
-                "name\tnewcredit\tsum(total)\tteam",
-                "name\tscore\twu\tteam"
+                "name\tnewcredit\tsum(total)\tteam", "name\tscore\twu\tteam"
             };
 
             public static readonly (string timeZone, int hourOffset)[] TimeZonesAndOffset =
             {
-                ("GMT", 0),
-                ("CDT", -5),
-                ("CST", -6),
-                ("PDT", -7),
-                ("PST", -8)
+                ("GMT", 0), ("CDT", -5), ("CST", -6), ("PDT", -7), ("PST", -8)
             };
         }
     }

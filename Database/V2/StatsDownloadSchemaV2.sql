@@ -1,0 +1,163 @@
+USE [master]
+GO
+/****** Object:  Database [FoldingCoin]    Script Date: 6/29/2019 4:00:40 PM ******/
+CREATE DATABASE [FoldingCoin]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'FoldingCoin', FILENAME = N'C:\Databases\FoldingCoin.mdf' , SIZE = 10240KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+ LOG ON 
+( NAME = N'FoldingCoin_log', FILENAME = N'C:\Databases\FoldingCoin_log.ldf' , SIZE = 1280KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+GO
+ALTER DATABASE [FoldingCoin] SET COMPATIBILITY_LEVEL = 110
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [FoldingCoin].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [FoldingCoin] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [FoldingCoin] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [FoldingCoin] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [FoldingCoin] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [FoldingCoin] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET RECOVERY FULL 
+GO
+ALTER DATABASE [FoldingCoin] SET  MULTI_USER 
+GO
+ALTER DATABASE [FoldingCoin] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [FoldingCoin] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [FoldingCoin] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [FoldingCoin] SET TARGET_RECOVERY_TIME = 0 SECONDS 
+GO
+ALTER DATABASE [FoldingCoin] SET DELAYED_DURABILITY = DISABLED 
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'FoldingCoin', N'ON'
+GO
+USE [FoldingCoin]
+GO
+/****** Object:  Schema [FoldingCoin]    Script Date: 6/29/2019 4:00:40 PM ******/
+CREATE SCHEMA [FoldingCoin]
+GO
+/****** Object:  Table [FoldingCoin].[Downloads]    Script Date: 6/29/2019 4:00:40 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [FoldingCoin].[Downloads](
+	[DownloadId] [int] IDENTITY(1,1) NOT NULL,
+	[StatusId] [int] NOT NULL,
+	[FileId] [int] NULL,
+	[DownloadDateTime] [datetime] NOT NULL,
+ CONSTRAINT [PK_Downloads] PRIMARY KEY CLUSTERED 
+(
+	[DownloadId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [FoldingCoin].[Files]    Script Date: 6/29/2019 4:00:40 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [FoldingCoin].[Files](
+	[FileId] [int] IDENTITY(1,1) NOT NULL,
+	[FilePath] [nvarchar](250) NOT NULL,
+	[FileName] [nvarchar](50) NOT NULL,
+	[FileExtension] [nvarchar](5) NOT NULL,
+ CONSTRAINT [PK_Files] PRIMARY KEY CLUSTERED 
+(
+	[FileId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [FoldingCoin].[Rejections]    Script Date: 6/29/2019 4:00:40 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [FoldingCoin].[Rejections](
+	[RejectionId] [int] IDENTITY(1,1) NOT NULL,
+	[DownloadId] [int] NOT NULL,
+	[Reason] [nvarchar](500) NOT NULL,
+ CONSTRAINT [PK_Rejections] PRIMARY KEY CLUSTERED 
+(
+	[RejectionId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [FoldingCoin].[Statuses]    Script Date: 6/29/2019 4:00:40 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [FoldingCoin].[Statuses](
+	[StatusId] [int] IDENTITY(1,1) NOT NULL,
+	[Status] [nvarchar](50) NOT NULL,
+	[StatusDescription] [nvarchar](100) NOT NULL,
+ CONSTRAINT [PK_Statuses] PRIMARY KEY CLUSTERED 
+(
+	[StatusId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [FoldingCoin].[Downloads]  WITH CHECK ADD  CONSTRAINT [FK_Downloads_Files] FOREIGN KEY([FileId])
+REFERENCES [FoldingCoin].[Files] ([FileId])
+GO
+ALTER TABLE [FoldingCoin].[Downloads] CHECK CONSTRAINT [FK_Downloads_Files]
+GO
+ALTER TABLE [FoldingCoin].[Downloads]  WITH CHECK ADD  CONSTRAINT [FK_Downloads_Statuses] FOREIGN KEY([StatusId])
+REFERENCES [FoldingCoin].[Statuses] ([StatusId])
+GO
+ALTER TABLE [FoldingCoin].[Downloads] CHECK CONSTRAINT [FK_Downloads_Statuses]
+GO
+ALTER TABLE [FoldingCoin].[Rejections]  WITH CHECK ADD  CONSTRAINT [FK_Rejections_Downloads] FOREIGN KEY([DownloadId])
+REFERENCES [FoldingCoin].[Downloads] ([DownloadId])
+GO
+ALTER TABLE [FoldingCoin].[Rejections] CHECK CONSTRAINT [FK_Rejections_Downloads]
+GO
+USE [master]
+GO
+ALTER DATABASE [FoldingCoin] SET  READ_WRITE 
+GO

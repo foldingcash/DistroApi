@@ -1,13 +1,14 @@
-﻿namespace StatsDownload.Core.Implementations
+﻿namespace StatsDownload.Core.Implementations.Legacy
 {
     using System;
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
-    using Exceptions;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class StatsUploadProvider : IStatsUploadService
     {
@@ -20,17 +21,17 @@
         private readonly IStatsUploadEmailService statsUploadEmailService;
 
         public StatsUploadProvider(IStatsUploadDatabaseService statsUploadDatabaseService,
-            IStatsUploadLoggingService loggingService,
-            IStatsFileParserService statsFileParserService,
-            IStatsUploadEmailService statsUploadEmailService)
+                                   IStatsUploadLoggingService loggingService,
+                                   IStatsFileParserService statsFileParserService,
+                                   IStatsUploadEmailService statsUploadEmailService)
         {
-            this.statsUploadDatabaseService = statsUploadDatabaseService ??
-                                              throw new ArgumentNullException(nameof(statsUploadDatabaseService));
+            this.statsUploadDatabaseService = statsUploadDatabaseService
+                                              ?? throw new ArgumentNullException(nameof(statsUploadDatabaseService));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
-            this.statsFileParserService = statsFileParserService ??
-                                          throw new ArgumentNullException(nameof(statsFileParserService));
-            this.statsUploadEmailService = statsUploadEmailService ??
-                                           throw new ArgumentNullException(nameof(statsUploadEmailService));
+            this.statsFileParserService =
+                statsFileParserService ?? throw new ArgumentNullException(nameof(statsFileParserService));
+            this.statsUploadEmailService = statsUploadEmailService
+                                           ?? throw new ArgumentNullException(nameof(statsUploadEmailService));
         }
 
         public StatsUploadResults UploadStatsFiles()
@@ -66,7 +67,7 @@
         }
 
         private void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
-            IList<FailedUserData> failedUsersData)
+                              IList<FailedUserData> failedUsersData)
         {
             statsUploadDatabaseService.AddUsers(transaction, downloadId, usersData, failedUsersData);
         }
@@ -102,7 +103,7 @@
         }
 
         private void HandleUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
-            IList<FailedUserData> failedUsersData)
+                                 IList<FailedUserData> failedUsersData)
         {
             AddUsers(transaction, downloadId, usersData, failedUsersData);
             IList<FailedUserData> emailFailedUsers = GetEmailFailedUsers(failedUsersData);
@@ -144,7 +145,8 @@
             {
                 LogVerbose($"Starting stats file upload. DownloadId: {downloadId}");
                 string fileData = statsUploadDatabaseService.GetFileData(downloadId);
-                ParseResults results = statsFileParserService.Parse(fileData);
+                ParseResults results =
+                    statsFileParserService.Parse(new FilePayload { DecompressedDownloadFileData = fileData });
                 transaction = statsUploadDatabaseService.CreateTransaction();
                 statsUploadDatabaseService.StartStatsUpload(transaction, downloadId, results.DownloadDateTime);
                 IEnumerable<UserData> usersData = results.UsersData;

@@ -1,11 +1,14 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestAdditionalUserDataParserProvider

@@ -2,12 +2,15 @@
 {
     using System;
     using System.Net;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestSecureDownloadProvider
@@ -40,12 +43,12 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () => NewSecureDownloadProvider(null, secureFilePayloadServiceMock, loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () => NewSecureDownloadProvider(downloadServiceMock, null, loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () => NewSecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewSecureDownloadProvider(null, secureFilePayloadServiceMock, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewSecureDownloadProvider(downloadServiceMock, null, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewSecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock, null));
         }
 
         [Test]
@@ -155,8 +158,8 @@
         }
 
         private IDownloadService NewSecureDownloadProvider(IDownloadService downloadService,
-            ISecureFilePayloadService secureFilePayloadService,
-            ILoggingService loggingService)
+                                                           ISecureFilePayloadService secureFilePayloadService,
+                                                           ILoggingService loggingService)
         {
             return new SecureDownloadProvider(downloadService, secureFilePayloadService, loggingService);
         }

@@ -22,6 +22,10 @@
 
         UnexpectedDatabaseException,
 
-        UnexpectedException
+        UnexpectedException,
+
+        DataStoreUnavailable,
+
+        UnexpectedValidationException
     }
 }

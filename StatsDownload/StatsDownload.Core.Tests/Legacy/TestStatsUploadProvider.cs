@@ -1,19 +1,23 @@
-﻿namespace StatsDownload.Core.Tests
+﻿namespace StatsDownload.Core.Tests.Legacy
 {
     using System;
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
-    using Exceptions;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
+
     using NUnit.Framework;
 
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Implementations.Legacy;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
+
     [TestFixture]
+    [Ignore("Deprecating")]
     public class TestStatsUploadProvider
     {
         [SetUp]
@@ -41,12 +45,12 @@
             failedUser4 = new FailedUserData();
 
             statsFileParserServiceMock = Substitute.For<IStatsFileParserService>();
-            statsFileParserServiceMock.Parse("File1")
-                                      .Returns(new ParseResults(downloadDateTime1, new List<UserData> { user1, user2 },
-                                          new List<FailedUserData> { failedUser1, failedUser2 }));
-            statsFileParserServiceMock.Parse("File2")
-                                      .Returns(new ParseResults(downloadDateTime2, new List<UserData> { user3, user4 },
-                                          new List<FailedUserData> { failedUser3, failedUser4 }));
+            statsFileParserServiceMock.Parse(new FilePayload { DecompressedDownloadFileData = "File1" }).Returns(
+                new ParseResults(downloadDateTime1, new List<UserData> { user1, user2 },
+                    new List<FailedUserData> { failedUser1, failedUser2 }));
+            statsFileParserServiceMock.Parse(new FilePayload { DecompressedDownloadFileData = "File2" }).Returns(
+                new ParseResults(downloadDateTime2, new List<UserData> { user3, user4 },
+                    new List<FailedUserData> { failedUser3, failedUser4 }));
 
             statsUploadEmailServiceMock = Substitute.For<IStatsUploadEmailService>();
 
@@ -87,23 +91,15 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadProvider(null, loggingServiceMock, statsFileParserServiceMock,
-                        statsUploadEmailServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadProvider(statsUploadDatabaseServiceMock, null, statsFileParserServiceMock,
-                        statsUploadEmailServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock, null,
-                        statsUploadEmailServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsUploadProvider(statsUploadDatabaseServiceMock, loggingServiceMock,
-                        statsFileParserServiceMock,
-                        null));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewStatsUploadProvider(null, loggingServiceMock, statsFileParserServiceMock,
+                    statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsUploadProvider(statsUploadDatabaseServiceMock, null,
+                statsFileParserServiceMock, statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsUploadProvider(statsUploadDatabaseServiceMock,
+                loggingServiceMock, null, statsUploadEmailServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsUploadProvider(statsUploadDatabaseServiceMock,
+                loggingServiceMock, statsFileParserServiceMock, null));
         }
 
         [Test]
@@ -189,7 +185,7 @@
         public void UploadStatsFiles_WhenExceptionThrown_LogsException()
         {
             var expected = new Exception();
-            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(expected);
+            statsFileParserServiceMock.Parse(Arg.Any<FilePayload>()).Throws(expected);
 
             InvokeUploadStatsFiles();
 
@@ -199,13 +195,12 @@
         [Test]
         public void UploadStatsFiles_WhenExceptionThrown_ResultInvalidStatFileData()
         {
-            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(new Exception());
+            statsFileParserServiceMock.Parse(Arg.Any<FilePayload>()).Throws(new Exception());
 
             StatsUploadResults actual = InvokeUploadStatsFiles();
 
             Assert.That(actual.UploadResults.ElementAt(0).DownloadId, Is.EqualTo(1));
-            Assert.That(actual.UploadResults.ElementAt(0).FailedReason,
-                Is.EqualTo(FailedReason.UnexpectedException));
+            Assert.That(actual.UploadResults.ElementAt(0).FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
         }
 
         [Test]
@@ -267,22 +262,20 @@
         [Test]
         public void UploadStatsFiles_WhenInvoked_AddsUsersData()
         {
-            var tranaction1 = Substitute.For<DbTransaction>();
-            var tranaction2 = Substitute.For<DbTransaction>();
-            statsUploadDatabaseServiceMock.CreateTransaction().Returns(tranaction1, tranaction2);
+            var transaction1 = Substitute.For<DbTransaction>();
+            var transaction2 = Substitute.For<DbTransaction>();
+            statsUploadDatabaseServiceMock.CreateTransaction().Returns(transaction1, transaction2);
 
             InvokeUploadStatsFiles();
 
             Received.InOrder(() =>
             {
-                statsUploadDatabaseServiceMock.AddUsers(tranaction1, 1,
+                statsUploadDatabaseServiceMock.AddUsers(transaction1, 1,
                     Arg.Is<IEnumerable<UserData>>(datas => datas.Contains(user1) && datas.Contains(user2)),
-                    Arg.Is<IList<FailedUserData>>(
-                        data => data.Contains(failedUser1) && data.Contains(failedUser2)));
-                statsUploadDatabaseServiceMock.AddUsers(tranaction2, 2,
+                    Arg.Is<IList<FailedUserData>>(data => data.Contains(failedUser1) && data.Contains(failedUser2)));
+                statsUploadDatabaseServiceMock.AddUsers(transaction2, 2,
                     Arg.Is<IEnumerable<UserData>>(datas => datas.Contains(user3) && datas.Contains(user4)),
-                    Arg.Is<IList<FailedUserData>>(
-                        data => data.Contains(failedUser3) && data.Contains(failedUser4)));
+                    Arg.Is<IList<FailedUserData>>(data => data.Contains(failedUser3) && data.Contains(failedUser4)));
             });
         }
 
@@ -321,22 +314,22 @@
         [Test]
         public void UploadStatsFiles_WhenInvoked_UpdatesTheDownloadFileState()
         {
-            var tranaction1 = Substitute.For<DbTransaction>();
-            var tranaction2 = Substitute.For<DbTransaction>();
-            statsUploadDatabaseServiceMock.CreateTransaction().Returns(tranaction1, tranaction2);
+            var transaction1 = Substitute.For<DbTransaction>();
+            var transaction2 = Substitute.For<DbTransaction>();
+            statsUploadDatabaseServiceMock.CreateTransaction().Returns(transaction1, transaction2);
 
             InvokeUploadStatsFiles();
 
             Received.InOrder(() =>
             {
                 statsUploadDatabaseServiceMock.GetFileData(1);
-                statsUploadDatabaseServiceMock.StartStatsUpload(tranaction1, 1, downloadDateTime1);
-                statsUploadDatabaseServiceMock.StatsUploadFinished(tranaction1, 1);
-                statsUploadDatabaseServiceMock.Commit(tranaction1);
+                statsUploadDatabaseServiceMock.StartStatsUpload(transaction1, 1, downloadDateTime1);
+                statsUploadDatabaseServiceMock.StatsUploadFinished(transaction1, 1);
+                statsUploadDatabaseServiceMock.Commit(transaction1);
                 statsUploadDatabaseServiceMock.GetFileData(2);
-                statsUploadDatabaseServiceMock.StartStatsUpload(tranaction2, 2, downloadDateTime2);
-                statsUploadDatabaseServiceMock.StatsUploadFinished(tranaction2, 2);
-                statsUploadDatabaseServiceMock.Commit(tranaction2);
+                statsUploadDatabaseServiceMock.StartStatsUpload(transaction2, 2, downloadDateTime2);
+                statsUploadDatabaseServiceMock.StatsUploadFinished(transaction2, 2);
+                statsUploadDatabaseServiceMock.Commit(transaction2);
             });
         }
 
@@ -377,13 +370,12 @@
         }
 
         private IStatsUploadService NewStatsUploadProvider(IStatsUploadDatabaseService statsUploadDatabaseService,
-            IStatsUploadLoggingService statsUploadLoggingService,
-            IStatsFileParserService statsFileParserService,
-            IStatsUploadEmailService statsUploadEmailService)
+                                                           IStatsUploadLoggingService statsUploadLoggingService,
+                                                           IStatsFileParserService statsFileParserService,
+                                                           IStatsUploadEmailService statsUploadEmailService)
         {
             return new StatsUploadProvider(statsUploadDatabaseService, statsUploadLoggingService,
-                statsFileParserService,
-                statsUploadEmailService);
+                statsFileParserService, statsUploadEmailService);
         }
 
         private void SetUpWhenDatabaseIsNotAvailable()
@@ -407,12 +399,13 @@
         private void SetUpWhenInvalidStatsFileExceptionThrown()
         {
             var exception = new InvalidStatsFileException();
-            statsFileParserServiceMock.Parse(Arg.Any<string>()).Throws(exception);
+            statsFileParserServiceMock.Parse(Arg.Any<FilePayload>()).Throws(exception);
         }
 
         private class TestDbTimeoutException : DbException
         {
-            public TestDbTimeoutException() : base("Mock timeout exception")
+            public TestDbTimeoutException()
+                : base("Mock timeout exception")
             {
             }
         }

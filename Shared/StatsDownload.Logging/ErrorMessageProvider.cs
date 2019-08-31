@@ -3,9 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
-    using Core.Interfaces.Enums;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class ErrorMessageProvider : IErrorMessageService
     {
@@ -27,6 +28,11 @@
             {
                 return GetErrorMessageByServiceType(service, ErrorMessages.FileDownloadDatabaseUnavailable,
                     ErrorMessages.StatsUploadDatabaseUnavailable, ErrorMessages.DefaultDatabaseUnavailable);
+            }
+
+            if (failedReason == FailedReason.DataStoreUnavailable)
+            {
+                return ErrorMessages.DataStoreUnavailable;
             }
 
             if (failedReason == FailedReason.DatabaseMissingRequiredObjects)
@@ -71,6 +77,11 @@
                     ErrorMessages.StatsUploadUnexpectedException, ErrorMessages.DefaultUnexpectedException);
             }
 
+            if (failedReason == FailedReason.UnexpectedValidationException)
+            {
+                return ErrorMessages.UnexpectedValidationException;
+            }
+
             return string.Empty;
         }
 
@@ -98,7 +109,7 @@
             }
 
             string name = failedUserData.UserData?.Name?.Length > 175 ? failedUserData.UserData?.Name?.Substring(0, 175)
-                : failedUserData.UserData?.Name;
+                              : failedUserData.UserData?.Name;
 
             if (rejectionReason == RejectionReason.FahNameExceedsMaxSize)
             {
@@ -132,7 +143,7 @@
         }
 
         private string GetErrorMessageByServiceType(StatsDownloadService service, string fileDownloadMessage,
-            string statsUploadMessage, string defaultMessage)
+                                                    string statsUploadMessage, string defaultMessage)
         {
             if (service == StatsDownloadService.FileDownload)
             {

@@ -2,9 +2,10 @@
 {
     using System;
     using System.Net;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Logging;
 
     public class SecureDownloadProvider : IDownloadService
     {
@@ -15,7 +16,8 @@
         private readonly ISecureFilePayloadService secureFilePayloadService;
 
         public SecureDownloadProvider(IDownloadService downloadService,
-            ISecureFilePayloadService secureFilePayloadService, ILoggingService loggingService)
+                                      ISecureFilePayloadService secureFilePayloadService,
+                                      ILoggingService loggingService)
         {
             if (downloadService == null)
             {

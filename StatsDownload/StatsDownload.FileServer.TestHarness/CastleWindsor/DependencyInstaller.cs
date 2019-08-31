@@ -9,8 +9,8 @@
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(
-                Component.For<ITestHarnessFileServer>().ImplementedBy<TestHarnessFileServer>().AsWcfService());
+            container.Register(Component.For<ITestHarnessFileServer>().ImplementedBy<TestHarnessFileServer>()
+                                        .AsWcfService());
         }
     }
 }

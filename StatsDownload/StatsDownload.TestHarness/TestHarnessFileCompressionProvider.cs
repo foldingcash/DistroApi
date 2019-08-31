@@ -1,7 +1,8 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System.IO;
-    using Core.Interfaces;
+
+    using StatsDownload.Core.Interfaces;
 
     public class TestHarnessFileCompressionProvider : IFileCompressionService
     {
@@ -10,7 +11,7 @@
         private readonly ITestHarnessSettingsService settingsService;
 
         public TestHarnessFileCompressionProvider(IFileCompressionService innerService,
-            ITestHarnessSettingsService settingsService)
+                                                  ITestHarnessSettingsService settingsService)
         {
             this.innerService = innerService;
             this.settingsService = settingsService;

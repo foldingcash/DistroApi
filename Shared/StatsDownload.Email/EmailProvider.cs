@@ -6,7 +6,8 @@
     using System.Net.Mail;
     using System.Text;
     using System.Threading;
-    using Core.Interfaces.Logging;
+
+    using StatsDownload.Core.Interfaces.Logging;
 
     public class EmailProvider : IEmailService
     {
@@ -19,12 +20,13 @@
         private readonly int WaitTimeInMillisecondsBeforeTryingSendAgain = 5000;
 
         public EmailProvider(IEmailSettingsService settingsService,
-            IEmailSettingsValidatorService emailSettingsValidatorService,
-            ILoggingService loggingService)
+                             IEmailSettingsValidatorService emailSettingsValidatorService,
+                             ILoggingService loggingService)
         {
             this.settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
-            this.emailSettingsValidatorService = emailSettingsValidatorService ??
-                                                 throw new ArgumentNullException(nameof(emailSettingsValidatorService));
+            this.emailSettingsValidatorService = emailSettingsValidatorService
+                                                 ?? throw new ArgumentNullException(
+                                                     nameof(emailSettingsValidatorService));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
@@ -151,14 +153,14 @@
             sb.AppendLine();
 
             return new SmtpClient
-            {
-                Host = host,
-                Port = port,
-                EnableSsl = enableSsl,
-                DeliveryMethod = deliveryMethod,
-                UseDefaultCredentials = useDefaultCredentials,
-                Credentials = credentials
-            };
+                   {
+                       Host = host,
+                       Port = port,
+                       EnableSsl = enableSsl,
+                       DeliveryMethod = deliveryMethod,
+                       UseDefaultCredentials = useDefaultCredentials,
+                       Credentials = credentials
+                   };
         }
 
         private string ParseFromAddress(string unsafeFromAddress)
@@ -192,8 +194,7 @@
         }
 
         private void SendMessage(StringBuilder sb, SmtpClient smtpClient, MailAddress fromAddress,
-            MailAddress toAddress,
-            string subject, string body)
+                                 MailAddress toAddress, string subject, string body)
         {
             sb.AppendLine($"Sending message to {toAddress.Address}");
 

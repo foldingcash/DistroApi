@@ -18,6 +18,8 @@
 
         public string DownloadDirectory { get; set; }
 
+        public byte[] DownloadFileData { get; set; }
+
         public string DownloadFileExtension { get; set; }
 
         public string DownloadFileName { get; set; }
@@ -30,8 +32,12 @@
 
         public string FailedDownloadFilePath { get; set; }
 
+        public DateTime? FileUtcDateTime { get; set; }
+
         public TimeSpan MinimumWaitTimeSpan { get; set; }
 
         public int TimeoutSeconds { get; set; }
+
+        public string UploadPath { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 {
     using Castle.Facilities.TypedFactory;
     using Castle.Windsor;
+
     using CastleWindsorContainer = Castle.Windsor.WindsorContainer;
 
     internal static class WindsorContainer

@@ -5,7 +5,8 @@
     using System.Data.Common;
     using System.Data.SqlClient;
     using System.Linq;
-    using Core.Interfaces;
+
+    using StatsDownload.Core.Interfaces;
 
     public class MicrosoftSqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
@@ -98,7 +99,7 @@
         }
 
         public void ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters,
-            DataTable dataTable)
+                                           DataTable dataTable)
         {
             using (DbCommand command = CreateStoredProcedureCommand(storedProcedure))
             {
@@ -120,7 +121,7 @@
         }
 
         public int ExecuteStoredProcedure(DbTransaction transaction, string storedProcedure,
-            IEnumerable<DbParameter> parameters)
+                                          IEnumerable<DbParameter> parameters)
         {
             using (DbCommand command = CreateStoredProcedureCommand(storedProcedure))
             {
@@ -132,7 +133,7 @@
 
         public int ExecuteStoredProcedure(string storedProcedure)
         {
-            return ExecuteStoredProcedure(storedProcedure, (IEnumerable<DbParameter>) null);
+            return ExecuteStoredProcedure(storedProcedure, (IEnumerable<DbParameter>)null);
         }
 
         public void ExecuteStoredProcedure(string storedProcedure, DataTable dataTable)

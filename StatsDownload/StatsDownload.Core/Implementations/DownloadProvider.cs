@@ -3,10 +3,11 @@
     using System;
     using System.Net.Security;
     using System.Security.Cryptography.X509Certificates;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Logging;
-    using Interfaces.Networking;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Core.Interfaces.Networking;
 
     public class DownloadProvider : IDownloadService
     {
@@ -17,7 +18,7 @@
         private readonly IWebClientFactory webClientFactory;
 
         public DownloadProvider(ILoggingService loggingService, IDateTimeService dateTimeService,
-            IWebClientFactory webClientFactory)
+                                IWebClientFactory webClientFactory)
         {
             this.loggingService = loggingService;
             this.dateTimeService = dateTimeService;

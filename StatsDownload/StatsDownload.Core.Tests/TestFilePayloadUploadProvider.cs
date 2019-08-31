@@ -1,11 +1,15 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestFilePayloadUploadProvider
@@ -14,44 +18,44 @@
         public void SetUp()
         {
             filePayload = new FilePayload
-            {
-                DownloadFilePath = DownloadFilePath,
-                DecompressedDownloadFilePath = DecompressedDownloadFilePath
-            };
-
-            fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
-
-            fileReaderServiceMock = Substitute.For<IFileReaderService>();
+                          {
+                              DownloadFilePath = DownloadFilePath,
+                              DecompressedDownloadFilePath = DecompressedDownloadFilePath
+                          };
 
             fileDownloadDatabaseServiceMock = Substitute.For<IFileDownloadDatabaseService>();
 
-            systemUnderTest = NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock,
-                fileDownloadDatabaseServiceMock);
+            dataStoreServiceMock = Substitute.For<IDataStoreService>();
+
+            fileValidationServiceMock = Substitute.For<IFileValidationService>();
+
+            systemUnderTest = NewFilePayloadUploadProvider(fileDownloadDatabaseServiceMock, dataStoreServiceMock,
+                fileValidationServiceMock);
         }
 
         private const string DecompressedDownloadFilePath = "test decompressed download file path";
 
         private const string DownloadFilePath = "test download file path";
 
-        private IFileCompressionService fileCompressionServiceMock;
+        private IDataStoreService dataStoreServiceMock;
 
         private IFileDownloadDatabaseService fileDownloadDatabaseServiceMock;
 
         private FilePayload filePayload;
 
-        private IFileReaderService fileReaderServiceMock;
+        private IFileValidationService fileValidationServiceMock;
 
         private IFilePayloadUploadService systemUnderTest;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () => NewFilePayloadUploadProvider(null, fileReaderServiceMock, fileDownloadDatabaseServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () => NewFilePayloadUploadProvider(fileCompressionServiceMock, null, fileDownloadDatabaseServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () => NewFilePayloadUploadProvider(fileCompressionServiceMock, fileReaderServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFilePayloadUploadProvider(null, dataStoreServiceMock, fileValidationServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFilePayloadUploadProvider(fileDownloadDatabaseServiceMock, null, fileValidationServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFilePayloadUploadProvider(fileDownloadDatabaseServiceMock, dataStoreServiceMock, null));
         }
 
         [Test]
@@ -61,10 +65,33 @@
 
             Received.InOrder(() =>
             {
-                fileCompressionServiceMock.DecompressFile(DownloadFilePath, DecompressedDownloadFilePath);
-                fileReaderServiceMock.ReadFile(filePayload);
+                dataStoreServiceMock.UploadFile(filePayload);
                 fileDownloadDatabaseServiceMock.FileDownloadFinished(filePayload);
+                fileDownloadDatabaseServiceMock.FileValidationStarted(filePayload);
+                fileValidationServiceMock.ValidateFile(filePayload);
+                fileDownloadDatabaseServiceMock.FileValidated(filePayload);
             });
+        }
+
+        [Test]
+        public void
+            UploadFile_WhenUnexpectedValidationExceptionThrown_ThrownUnexpectedValidationExceptionWithInnerException()
+        {
+            var expected = new Exception();
+            fileValidationServiceMock.When(mock => mock.ValidateFile(Arg.Any<FilePayload>())).Throw(expected);
+
+            var actual = Assert.Throws<UnexpectedValidationException>(InvokeUploadFile);
+            Assert.That(actual.InnerException, Is.EqualTo(expected));
+        }
+
+        [TestCase(typeof (FileDownloadFailedDecompressionException))]
+        [TestCase(typeof (InvalidStatsFileException))]
+        public void UploadFile_WhenValidationExceptionThrown_ExceptionRethrown(Type expectedException)
+        {
+            var expected = Activator.CreateInstance(expectedException) as Exception;
+            fileValidationServiceMock.When(mock => mock.ValidateFile(Arg.Any<FilePayload>())).Throw(expected);
+
+            Assert.Throws(expectedException, InvokeUploadFile);
         }
 
         private void InvokeUploadFile()
@@ -72,13 +99,11 @@
             systemUnderTest.UploadFile(filePayload);
         }
 
-        private IFilePayloadUploadService NewFilePayloadUploadProvider(IFileCompressionService fileCompressionService,
-            IFileReaderService fileReaderService,
-            IFileDownloadDatabaseService
-                fileDownloadDatabaseService)
+        private IFilePayloadUploadService NewFilePayloadUploadProvider(
+            IFileDownloadDatabaseService fileDownloadDatabaseService, IDataStoreService dataStoreService,
+            IFileValidationService fileValidationService)
         {
-            return new FilePayloadUploadProvider(fileCompressionService, fileReaderService,
-                fileDownloadDatabaseService);
+            return new FilePayloadUploadProvider(fileDownloadDatabaseService, dataStoreService, fileValidationService);
         }
     }
 }

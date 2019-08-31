@@ -1,9 +1,10 @@
 ﻿namespace StatsDownload.Wrappers
 {
     using System.IO;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
-    using Core.Interfaces.Logging;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Logging;
 
     public class FileReaderProvider : IFileReaderService
     {
@@ -19,12 +20,24 @@
 
         public void ReadFile(FilePayload filePayload)
         {
+            ReadDecompressedFile(filePayload);
+            ReadCompressedFile(filePayload);
+        }
+
+        private void ReadCompressedFile(FilePayload filePayload)
+        {
             loggingService.LogVerbose($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
 
-            using (var reader = new StreamReader(filePayload.DecompressedDownloadFilePath))
-            {
-                filePayload.DecompressedDownloadFileData = reader.ReadToEnd();
-            }
+            filePayload.DownloadFileData = File.ReadAllBytes(filePayload.DownloadFilePath);
+
+            loggingService.LogVerbose($"Reading file complete: {dateTimeService.DateTimeNow()}");
+        }
+
+        private void ReadDecompressedFile(FilePayload filePayload)
+        {
+            loggingService.LogVerbose($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
+
+            filePayload.DecompressedDownloadFileData = File.ReadAllText(filePayload.DecompressedDownloadFilePath);
 
             loggingService.LogVerbose($"Reading file complete: {dateTimeService.DateTimeNow()}");
         }

@@ -3,13 +3,16 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Exceptions;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Exceptions;
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestStatsFileParserProvider
@@ -61,13 +64,13 @@ msi_TW	15889476570	359312	31403
 anonymous	13937689581	64221589	0
 TheWasp	13660834951	734045	4294967295";
 
-        private const string GoodStatsFileWithOnlyNewLine =
-            "Tue Dec 26 10:20:01 PST 2017\n" + "name	newcredit	sum(total)	team\n"
-                                             + "PS3EdOlkkola	25882218711	458785	224497\n" +
-                                             "war	20508731397	544139	37651\n"
-                                             + "msi_TW	15889476570	359312	31403\n" +
-                                             "anonymous	13937689581	64221589	0\n"
-                                             + "TheWasp	13660834951	734045	70335";
+        private const string GoodStatsFileWithOnlyNewLine = "Tue Dec 26 10:20:01 PST 2017\n"
+                                                            + "name	newcredit	sum(total)	team\n"
+                                                            + "PS3EdOlkkola	25882218711	458785	224497\n"
+                                                            + "war	20508731397	544139	37651\n"
+                                                            + "msi_TW	15889476570	359312	31403\n"
+                                                            + "anonymous	13937689581	64221589	0\n"
+                                                            + "TheWasp	13660834951	734045	70335";
 
         private const string MalformedDateTime = @"a malformed date time not exactly matching the good stats file header
 name	newcredit	sum(total)	team
@@ -102,16 +105,12 @@ TheWasp	13660834951	734045	70335";
         {
             ("ddd MMM  d HH:mm:ss GMT yyyy", 0),
             ("ddd MMM dd HH:mm:ss GMT yyyy", 0),
-
             ("ddd MMM  d HH:mm:ss CDT yyyy", -5),
             ("ddd MMM dd HH:mm:ss CDT yyyy", -5),
-
             ("ddd MMM  d HH:mm:ss CST yyyy", -6),
             ("ddd MMM dd HH:mm:ss CST yyyy", -6),
-
             ("ddd MMM  d HH:mm:ss PDT yyyy", -7),
             ("ddd MMM dd HH:mm:ss PDT yyyy", -7),
-
             ("ddd MMM  d HH:mm:ss PST yyyy", -8),
             ("ddd MMM dd HH:mm:ss PST yyyy", -8)
         };
@@ -148,7 +147,7 @@ TheWasp	13660834951	734045	70335";
         [TestCase("Tue Dec  5 10:20:01 CDT 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 15, 20, 1)]
         [TestCase("Tue Dec  5 10:20:01 GMT 2017\n" + GoodHeaderAndUsers, 2017, 12, 5, 10, 20, 1)]
         public void Parse_WhenInvoked_ReturnsDownloadDateTimeInUTC(string fileData, int year, int month, int day,
-            int hour, int minute, int second)
+                                                                   int hour, int minute, int second)
         {
             DateTime actual = InvokeParse(fileData).DownloadDateTime;
 
@@ -231,7 +230,7 @@ TheWasp	13660834951	734045	70335";
 
         private ParseResults InvokeParse(string fileData = GoodStatsFile)
         {
-            return systemUnderTest.Parse(fileData);
+            return systemUnderTest.Parse(new FilePayload { DecompressedDownloadFileData = fileData });
         }
 
         private IStatsFileParserService NewStatsFileParserProvider(

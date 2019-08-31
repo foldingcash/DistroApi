@@ -1,9 +1,9 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
-    using DataTransfer;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public interface IStatsFileParserService
     {
-        ParseResults Parse(string fileData);
+        ParseResults Parse(FilePayload filePayload);
     }
 }
