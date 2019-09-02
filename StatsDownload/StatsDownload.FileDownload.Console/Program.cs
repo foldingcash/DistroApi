@@ -5,6 +5,7 @@
     using NLog;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.FileDownload.Console.CastleWindsor;
 
     public class Program
@@ -17,11 +18,13 @@
             {
                 DependencyRegistration.Register();
                 service = WindsorContainer.Instance.Resolve<IFileDownloadService>();
-                service.DownloadStatsFile();
+                FileDownloadResult results = service.DownloadStatsFile();
+                Environment.Exit(results.Success ? 0 : -1);
             }
             catch (Exception ex)
             {
                 TryLogException(ex);
+                Environment.Exit(-1);
             }
             finally
             {

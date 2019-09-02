@@ -31,8 +31,10 @@
 
             container.Register(
                 Component.For<IApplicationLoggingService>().ImplementedBy<FileDownloadConsoleLoggingProvider>(),
-                Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService, IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
-                         .ImplementedBy<FileDownloadConsoleSettingsProvider>());
+                Component
+                    .For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService,
+                        IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
+                    .ImplementedBy<FileDownloadConsoleSettingsProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
@@ -71,7 +73,11 @@
                 Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
                 Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
-                Component.For<IStatsFileDateTimeFormatsAndOffsetService>().ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>());
+                Component.For<IStatsFileDateTimeFormatsAndOffsetService>()
+                         .ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>(),
+                Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DataStoreFactoryComponentSelector>(),
+                Component.For<IDataStoreServiceFactory>().AsFactory(selector =>
+                    selector.SelectedWith<DataStoreFactoryComponentSelector>()));
         }
     }
 }
