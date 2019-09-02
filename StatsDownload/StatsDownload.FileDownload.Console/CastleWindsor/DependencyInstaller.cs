@@ -71,7 +71,7 @@
                 Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
                 Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
-                Component.For<IStatsFileDateTimeFormatsAndOffsetService>().ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>());
+                Component.For<IStatsFileDateTimeFormatsAndOffsetService>().ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>());)
         }
     }
 }

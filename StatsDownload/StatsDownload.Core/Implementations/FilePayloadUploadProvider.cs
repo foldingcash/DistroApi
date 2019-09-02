@@ -15,14 +15,16 @@
         private readonly IFileValidationService fileValidationService;
 
         public FilePayloadUploadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
-                                         IDataStoreService dataStoreService,
+                                         IDataStoreServiceFactory dataStoreServiceFactory,
                                          IFileValidationService fileValidationService)
         {
             this.fileDownloadDatabaseService = fileDownloadDatabaseService
                                                ?? throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
-            this.dataStoreService = dataStoreService ?? throw new ArgumentNullException(nameof(dataStoreService));
             this.fileValidationService =
                 fileValidationService ?? throw new ArgumentNullException(nameof(fileValidationService));
+
+            dataStoreService = dataStoreServiceFactory?.Create()
+                               ?? throw new ArgumentNullException(nameof(dataStoreService));
         }
 
         public void UploadFile(FilePayload filePayload)

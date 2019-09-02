@@ -11,8 +11,13 @@
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
     /// </summary>
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-                                                       IEmailSettingsService, IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings
+                                                       IEmailSettingsService, IDataStoreSettings,
+                                                       IStatsFileDateTimeFormatsAndOffsetSettings
     {
+        public string DataStoreType => ConfigurationManager.AppSettings["DataStoreType"];
+
+        public string UploadDirectory => ConfigurationManager.AppSettings["UploadDirectory"];
+
         public string GetAcceptAnySslCert()
         {
             return ConfigurationManager.AppSettings["AcceptAnySslCert"];
@@ -89,8 +94,6 @@
         {
             return ConfigurationManager.AppSettings["SmtpHost"];
         }
-
-        public string UploadDirectory => ConfigurationManager.AppSettings["UploadDirectory"];
 
         public string GetStatsFileTimeZoneAndOffsetSettings()
         {

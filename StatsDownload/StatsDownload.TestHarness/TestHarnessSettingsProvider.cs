@@ -17,6 +17,8 @@
                                                ITestHarnessStatsDownloadSettings,
                                                IStatsFileDateTimeFormatsAndOffsetSettings, IDataStoreSettings
     {
+        public string DataStoreType => ConfigurationManager.AppSettings["DataStoreType"];
+
         bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
 
         bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolConfig("EnableNoPaymentAddressUsersFilter");

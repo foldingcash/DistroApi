@@ -38,7 +38,7 @@
                                     IDateTimeService dateTimeService,
                                     IFilePayloadUploadService filePayloadUploadService,
                                     IFileDownloadEmailService fileDownloadEmailService,
-                                    IDataStoreService dataStoreService)
+                                    IDataStoreServiceFactory dataStoreServiceFactory)
         {
             this.fileDownloadDatabaseService = fileDownloadDatabaseService;
             this.loggingService = loggingService;
@@ -49,7 +49,8 @@
             this.dateTimeService = dateTimeService;
             this.filePayloadUploadService = filePayloadUploadService;
             this.fileDownloadEmailService = fileDownloadEmailService;
-            this.dataStoreService = dataStoreService;
+
+            dataStoreService = dataStoreServiceFactory?.Create();
 
             ValidateCtorArgs();
         }

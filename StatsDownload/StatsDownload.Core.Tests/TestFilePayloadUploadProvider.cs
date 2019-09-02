@@ -29,13 +29,18 @@
 
             fileValidationServiceMock = Substitute.For<IFileValidationService>();
 
-            systemUnderTest = NewFilePayloadUploadProvider(fileDownloadDatabaseServiceMock, dataStoreServiceMock,
+            dataStoreServiceFactoryMock = Substitute.For<IDataStoreServiceFactory>();
+            dataStoreServiceFactoryMock.Create().Returns(dataStoreServiceMock);
+
+            systemUnderTest = NewFilePayloadUploadProvider(fileDownloadDatabaseServiceMock, dataStoreServiceFactoryMock,
                 fileValidationServiceMock);
         }
 
         private const string DecompressedDownloadFilePath = "test decompressed download file path";
 
         private const string DownloadFilePath = "test download file path";
+
+        private IDataStoreServiceFactory dataStoreServiceFactoryMock;
 
         private IDataStoreService dataStoreServiceMock;
 
@@ -51,11 +56,11 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                NewFilePayloadUploadProvider(null, dataStoreServiceMock, fileValidationServiceMock));
+                NewFilePayloadUploadProvider(null, dataStoreServiceFactoryMock, fileValidationServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
                 NewFilePayloadUploadProvider(fileDownloadDatabaseServiceMock, null, fileValidationServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewFilePayloadUploadProvider(fileDownloadDatabaseServiceMock, dataStoreServiceMock, null));
+                NewFilePayloadUploadProvider(fileDownloadDatabaseServiceMock, dataStoreServiceFactoryMock, null));
         }
 
         [Test]
@@ -100,10 +105,11 @@
         }
 
         private IFilePayloadUploadService NewFilePayloadUploadProvider(
-            IFileDownloadDatabaseService fileDownloadDatabaseService, IDataStoreService dataStoreService,
+            IFileDownloadDatabaseService fileDownloadDatabaseService, IDataStoreServiceFactory dataStoreServiceFactory,
             IFileValidationService fileValidationService)
         {
-            return new FilePayloadUploadProvider(fileDownloadDatabaseService, dataStoreService, fileValidationService);
+            return new FilePayloadUploadProvider(fileDownloadDatabaseService, dataStoreServiceFactory,
+                fileValidationService);
         }
     }
 }
