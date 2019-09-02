@@ -13,13 +13,6 @@ dotnet publish -c Release --self-contained -r win-x86
 COPY /Y "bin\Release\netcoreapp2.2\win-x86\publish\*" "..\StatsDownloadSetup\Files\x86"
 
 CD..
-CD StatsDownload.StatsUpload.Console
-dotnet publish -c Release --self-contained -r win-x64
-COPY /Y "bin\Release\netcoreapp2.2\win-x64\publish\*" "..\StatsDownloadSetup\Files\x64"
-dotnet publish -c Release --self-contained -r win-x86
-COPY /Y "bin\Release\netcoreapp2.2\win-x86\publish\*" "..\StatsDownloadSetup\Files\x86"
-
-CD..
 CD StatsDownloadSetup
 DEL /Q ".\Files\x86\*.pdb"
 DEL /Q ".\Files\x86\*.xml"
