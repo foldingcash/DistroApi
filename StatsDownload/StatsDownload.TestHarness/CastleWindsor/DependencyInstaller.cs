@@ -7,7 +7,6 @@
 
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Implementations.Filters;
-    using StatsDownload.Core.Implementations.Legacy;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Core.Interfaces.Networking;
@@ -64,7 +63,6 @@
                 Component.For<IDownloadService>().ImplementedBy<SecureDownloadProvider>(),
                 Component.For<IDownloadService>().ImplementedBy<DownloadProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
-                Component.For<IStatsUploadService>().ImplementedBy<StatsUploadProvider>(),
                 Component.For<IStatsFileDateTimeFormatsAndOffsetService>()
                          .ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<GoogleUsersFilter>(),
