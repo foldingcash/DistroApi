@@ -395,16 +395,3 @@ END
 GO
 
 -----------------------------------------------------------------
-
-IF OBJECT_ID('FoldingCoin.ValidatedFiles') IS NOT NULL
-	BEGIN
-		DROP VIEW [FoldingCoin].[ValidatedFiles];
-	END
-GO
-
-CREATE VIEW [FoldingCoin].[ValidatedFiles]
-AS
-	SELECT DownloadId  FROM [FoldingCoin].[Downloads] D
-	INNER JOIN [FoldingCoin].[Files] F ON D.FileId = F.FileId
-	WHERE StatusId = FoldingCoin.GetFileValidatedStatusId();
-GO

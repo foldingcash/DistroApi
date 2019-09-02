@@ -1,6 +1,10 @@
 -- Call this every time, the scripts will be updated if the database changes
 PRINT 'Updating to latest'
-EXEC [FoldingCoin].[UpdateToLatest];
+EXEC [FoldingCoin].[UpdateToLatest]; --TODO: Remove this requirement
+
+-- Use this function to get the last file download date time
+--PRINT 'Getting last file download datetime'
+--SELECT [FoldingCoin].[GetLastFileDownloadDateTime]();
 
 DECLARE @DownloadId INT;
 
@@ -18,7 +22,7 @@ EXEC [FoldingCoin].[FileDownloadStarted] @DownloadId OUTPUT;
 -- When the file download is finished, upload the file data
 PRINT 'File download finished'
 EXEC [FoldingCoin].[FileDownloadFinished] @DownloadId
-	,'\\storage\location'
+	,'\\storage\location\unprocessed\FileName.ext'
 	,'FileName'
 	,'.ext';
 
@@ -28,21 +32,26 @@ EXEC [FoldingCoin].[FileValidationStarted] @DownloadId
 DECLARE @ValidatedDateTime DATETIME;
 
 SELECT @ValidatedDateTime = GETUTCDATE();
+--SELECT @ValidatedDateTime = DATEFROMPARTS(2019, 01, 01); --year/month/day
 
 PRINT 'File validated'
 EXEC [FoldingCoin].[FileValidated] @DownloadId
 	,@ValidatedDateTime
-	,'\\storage\location\processed'
-	,'NewFileName'
+	,'\\storage\location\processed\FileName.ext'
+	,'FileName'
 	,'.ext';
 
 --PRINT 'File validation error'
 --EXEC [FoldingCoin].[FileValidationError] @DownloadId, 'File Validation Error';
 
--- Use this function to get the last file download date time
---PRINT 'Getting last file download datetime'
---SELECT [FoldingCoin].[GetLastFileDownloadDateTime]();
+--------------- The API starts here ---------------
 
--- Use this view to get the download Ids of the downloads ready for stats upload
+-- Use this view to get the file paths of the validated files ready for API use
+DECLARE @StartDate DATE;
+DECLARE @EndDate DATE;
+
+SELECT @StartDate = DATEADD(month, -1, GETUTCDATE());
+SELECT @EndDate = GETUTCDATE();
+
 PRINT 'Selecting downloads ready for upload'
-SELECT DownloadId FROM [FoldingCoin].[ValidatedFiles];
+EXEC [FoldingCoin].[GetValidatedFiles] @StartDate, @EndDate;
