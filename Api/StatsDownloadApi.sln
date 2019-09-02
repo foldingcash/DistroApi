@@ -35,6 +35,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Email", "..\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Email.Tests", "..\Shared\StatsDownload.Email.Tests\StatsDownload.Email.Tests.csproj", "{0DF513BF-45CB-43E0-998D-511C36B396AE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseScripts", "DatabaseScripts", "{422CBC12-CC7E-4E3B-936A-A19DE5F310E2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "V2", "V2", "{64B2AAB0-86DF-412D-90CF-010319F3E7D1}"
+	ProjectSection(SolutionItems) = preProject
+		..\Database\V2\RunningStatsDownloadV2.sql = ..\Database\V2\RunningStatsDownloadV2.sql
+		..\Database\V2\StatsApiStoredProceduresV2.SQL = ..\Database\V2\StatsApiStoredProceduresV2.SQL
+		..\Database\V2\StatsDownloaderStoredProceduresV2.sql = ..\Database\V2\StatsDownloaderStoredProceduresV2.sql
+		..\Database\V2\StatsDownloadSchemaV2.sql = ..\Database\V2\StatsDownloadSchemaV2.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,6 +118,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{64B2AAB0-86DF-412D-90CF-010319F3E7D1} = {422CBC12-CC7E-4E3B-936A-A19DE5F310E2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8E2BE45E-58C3-4886-A037-A5C5DF4A9F59}
