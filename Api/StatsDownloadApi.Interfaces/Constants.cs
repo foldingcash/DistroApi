@@ -4,39 +4,38 @@
     {
         public static class ApiErrors
         {
-            public static ApiError DatabaseMissingRequiredObjects => new ApiError(
-                ApiErrorCode.DatabaseMissingRequiredObjects,
-                ErrorMessages.DatabaseMissingRequiredObjectsMessage);
+            public static ApiError DatabaseMissingRequiredObjects =>
+                new ApiError(ApiErrorCode.DatabaseMissingRequiredObjects,
+                    ErrorMessages.DatabaseMissingRequiredObjectsMessage);
 
-            public static ApiError DatabaseUnavailable => new ApiError(ApiErrorCode.DatabaseUnavailable,
-                ErrorMessages.DatabaseUnavailableMessage);
+            public static ApiError DatabaseUnavailable =>
+                new ApiError(ApiErrorCode.DatabaseUnavailable, ErrorMessages.DatabaseUnavailableMessage);
 
-            public static ApiError EndDateUnsearchable => new ApiError(ApiErrorCode.EndDateUnsearchable,
-                ErrorMessages.EndDateUnsearchableMessage);
+            public static ApiError EndDateUnsearchable =>
+                new ApiError(ApiErrorCode.EndDateUnsearchable, ErrorMessages.EndDateUnsearchableMessage);
 
-            public static ApiError InvalidDateRange => new ApiError(ApiErrorCode.InvalidDateRange,
-                ErrorMessages.InvalidDateRangeMessage);
+            public static ApiError InvalidDateRange =>
+                new ApiError(ApiErrorCode.InvalidDateRange, ErrorMessages.InvalidDateRangeMessage);
 
             public static ApiError NegativeAmount =>
                 new ApiError(ApiErrorCode.NegativeAmount, ErrorMessages.NegativeAmountMessage);
 
-            public static ApiError NoAmount =>
-                new ApiError(ApiErrorCode.NoAmount, ErrorMessages.NoAmountMessage);
+            public static ApiError NoAmount => new ApiError(ApiErrorCode.NoAmount, ErrorMessages.NoAmountMessage);
 
-            public static ApiError NoEndDate => new ApiError(ApiErrorCode.NoEndDate,
-                ErrorMessages.NoEndDateMessage);
+            public static ApiError NoEndDate => new ApiError(ApiErrorCode.NoEndDate, ErrorMessages.NoEndDateMessage);
 
-            public static ApiError NoStartDate => new ApiError(ApiErrorCode.NoStartDate,
-                ErrorMessages.NoStartDateMessage);
+            public static ApiError NoStartDate =>
+                new ApiError(ApiErrorCode.NoStartDate, ErrorMessages.NoStartDateMessage);
 
-            public static ApiError StartDateUnsearchable => new ApiError(ApiErrorCode.StartDateUnsearchable,
-                ErrorMessages.StartDateUnsearchableMessage);
+            public static ApiError StartDateUnsearchable =>
+                new ApiError(ApiErrorCode.StartDateUnsearchable, ErrorMessages.StartDateUnsearchableMessage);
 
-            public static ApiError UnexpectedException => new ApiError(ApiErrorCode.UnexpectedException,
-                ErrorMessages.UnexpectedExceptionMessage);
+            public static ApiError UnexpectedException =>
+                new ApiError(ApiErrorCode.UnexpectedException, ErrorMessages.UnexpectedExceptionMessage);
 
-            public static ApiError ZeroAmount =>
-                new ApiError(ApiErrorCode.ZeroAmount, ErrorMessages.ZeroAmountMessage);
+            public static ApiError ZeroAmount => new ApiError(ApiErrorCode.ZeroAmount, ErrorMessages.ZeroAmountMessage);
+
+            public static ApiError DataStoreUnavailable =>new ApiError(ApiErrorCode.DataStoreUnavailable, ErrorMessages.DataStoreUnavailableMessage);
         }
 
         public static class ErrorMessages
@@ -46,6 +45,9 @@
 
             public static string DatabaseUnavailableMessage =>
                 "The database is unavailable. Try again in a short period of time. If the problem continues, then contact the technical team about the problem.";
+
+            public static string DataStoreUnavailableMessage =>
+                "The datastore is unavailable. Try again in a short period of time. If the problem continues, then contact the technical team about the problem.";
 
             public static string EndDateUnsearchableMessage =>
                 "The end date provided is unsearchable. The end date must not be today or a future day's date. Provide a new end date and try again.";

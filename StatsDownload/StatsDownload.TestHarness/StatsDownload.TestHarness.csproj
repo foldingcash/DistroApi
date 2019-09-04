@@ -155,6 +155,10 @@
       <Project>{ECE601B0-D016-4F2F-B511-EC353B4C9E6C}</Project>
       <Name>StatsDownload.Database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Shared\StatsDownload.DataStore\StatsDownload.DataStore.csproj">
+      <Project>{F557F680-BF8E-4492-B099-480999F928A1}</Project>
+      <Name>StatsDownload.DataStore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Shared\StatsDownload.Email\StatsDownload.Email.csproj">
       <Project>{EE8E9FF2-9826-41C2-9219-04B446EBBEA2}</Project>
       <Name>StatsDownload.Email</Name>

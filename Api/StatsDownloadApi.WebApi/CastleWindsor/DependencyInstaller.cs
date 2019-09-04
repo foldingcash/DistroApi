@@ -1,5 +1,7 @@
 ﻿namespace StatsDownloadApi.WebApi.CastleWindsor
 {
+    using System;
+
     using Castle.Facilities.TypedFactory;
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
@@ -8,6 +10,7 @@
     using Database;
     using Interfaces;
     using NLog;
+    using NLog.Config;
     using NLog.Web;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
@@ -23,7 +26,7 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Component.For<ILogger>()
-                                        .Instance(NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger()));
+                                        .Instance(CreateLogger()));
 
             container.Register(
                 Component.For<IDatabaseConnectionSettingsService, IEmailSettingsService>()
@@ -49,6 +52,18 @@
                 Component.For<IStatsDownloadApiDatabaseService>().ImplementedBy<StatsDownloadApiDatabaseProvider>(),
                 Component.For<IStatsDownloadApiService>().ImplementedBy<StatsDownloadApiProvider>()
             );
+        }
+
+        private ILogger CreateLogger()
+        {
+            try
+            {
+                return NLogBuilder.ConfigureNLog("nlog.statsapi.config").GetCurrentClassLogger();
+            }
+            catch (Exception)
+            {
+                return LogManager.CreateNullLogger();
+            }
         }
     }
 }

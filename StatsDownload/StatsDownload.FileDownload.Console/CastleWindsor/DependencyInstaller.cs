@@ -1,11 +1,14 @@
 ﻿namespace StatsDownload.FileDownload.Console.CastleWindsor
 {
+    using System;
+
     using Castle.Facilities.TypedFactory;
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
 
     using NLog;
+    using NLog.Config;
 
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
@@ -14,6 +17,7 @@
     using StatsDownload.Database;
     using StatsDownload.Database.CastleWindsor;
     using StatsDownload.Database.Wrappers;
+    using StatsDownload.DataStore;
     using StatsDownload.Email;
     using StatsDownload.Logging;
     using StatsDownload.SharpZipLib;
@@ -22,12 +26,22 @@
 
     public class DependencyInstaller : IWindsorInstaller
     {
+        private ILogger CreateLogger()
+        {
+            try
+            {
+                return LogManager.LoadConfiguration(LoggerSettings.ConfigFile).GetCurrentClassLogger();
+            }
+            catch (Exception)
+            {
+                return LogManager.CreateNullLogger();
+            }
+        }
+
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Component.For<ILogger>()
-                                        .Instance(LogManager
-                                                  .LoadConfiguration(LoggerSettings.ConfigFile)
-                                                  .GetCurrentClassLogger()));
+                                        .Instance(CreateLogger()));
 
             container.Register(
                 Component.For<IApplicationLoggingService>().ImplementedBy<FileDownloadConsoleLoggingProvider>(),

@@ -7,10 +7,13 @@
 
     public interface IStatsDownloadApiDatabaseService
     {
+        [Obsolete]
         IList<FoldingUser> GetFoldingMembers(DateTime startDate, DateTime endDate);
 
+        [Obsolete]
         IList<Member> GetMembers(DateTime startDate, DateTime endDate);
 
+        [Obsolete]
         IList<Team> GetTeams();
 
         (bool isAvailable, DatabaseFailedReason reason) IsAvailable();

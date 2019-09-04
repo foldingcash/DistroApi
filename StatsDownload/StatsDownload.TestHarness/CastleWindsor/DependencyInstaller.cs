@@ -13,6 +13,7 @@
     using StatsDownload.Database;
     using StatsDownload.Database.CastleWindsor;
     using StatsDownload.Database.Wrappers;
+    using StatsDownload.DataStore;
     using StatsDownload.Email;
     using StatsDownload.Logging;
     using StatsDownload.SharpZipLib;

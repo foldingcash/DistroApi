@@ -6,6 +6,7 @@
     using Castle.Facilities.TypedFactory;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.DataStore;
 
     public class DataStoreFactoryComponentSelector : DefaultTypedFactoryComponentSelector
     {

@@ -104,9 +104,9 @@
 
         private bool DataStoreUnavailable(out FailedReason failedReason)
         {
-            (bool isAvailable, FailedReason reason) = dataStoreService.IsAvailable();
-            failedReason = reason;
-            return !isAvailable;
+            var isAvailable = dataStoreService.IsAvailable();
+            failedReason = isAvailable ? FailedReason.None : FailedReason.DataStoreUnavailable;
+            return !dataStoreService.IsAvailable();
         }
 
         private DateTime DateTimeNow()

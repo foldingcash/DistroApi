@@ -1,13 +1,17 @@
 ﻿namespace StatsDownloadApi.Core.Tests
 {
     using System;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Core.Interfaces.Logging;
+
+    using StatsDownloadApi.Interfaces;
+    using StatsDownloadApi.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestStatsDownloadApiProvider
@@ -25,11 +29,17 @@
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
+            dataStoreServiceMock = Substitute.For<IDataStoreService>();
+            dataStoreServiceMock.IsAvailable().Returns(true);
+
             systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock);
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock,
+                dataStoreServiceMock);
         }
 
         private readonly int amountMock = 7750000;
+
+        private IDataStoreService dataStoreServiceMock;
 
         private IDateTimeService dateTimeServiceMock;
 
@@ -48,18 +58,17 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiProvider(null, statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock,
-                    loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock, null, dateTimeServiceMock,
-                    loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                    statsDownloadApiTokenDistributionServiceMock, null, loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                    statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(null,
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock,
+                dataStoreServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
+                null, dateTimeServiceMock, loggingServiceMock, dataStoreServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
+                statsDownloadApiTokenDistributionServiceMock, null, loggingServiceMock, dataStoreServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, null, dataStoreServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock, null));
         }
 
         [Test]
@@ -74,8 +83,7 @@
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseUnavailable));
             Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.DatabaseUnavailableMessage));
+                Is.EqualTo(Constants.ErrorMessages.DatabaseUnavailableMessage));
         }
 
         [Test]
@@ -90,8 +98,20 @@
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseMissingRequiredObjects));
             Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
+                Is.EqualTo(Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
+        }
+
+        [Test]
+        public void GetDistro_WhenDataStoreIsUnavailable_ReturnsDataStoreUnavailableResponse()
+        {
+            dataStoreServiceMock.IsAvailable().Returns(false);
+
+            GetDistroResponse actual = InvokeGetDistro();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DataStoreUnavailable));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.DataStoreUnavailableMessage));
         }
 
         [Test]
@@ -102,9 +122,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.EndDateUnsearchable));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.EndDateUnsearchableMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.EndDateUnsearchableMessage));
         }
 
         [Test]
@@ -145,11 +163,7 @@
         public void GetDistro_WhenInvoked_ReturnsSuccessGetDistroResponse()
         {
             var foldingUsers = new FoldingUser[0];
-            var distro = new[]
-            {
-                new DistroUser(null, 1, 2, 0.12345678m),
-                new DistroUser(null, 3, 4, 100m)
-            };
+            var distro = new[] { new DistroUser(null, 1, 2, 0.12345678m), new DistroUser(null, 3, 4, 100m) };
             statsDownloadApiDatabaseServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);
 
@@ -173,9 +187,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.NegativeAmount));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.NegativeAmountMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.NegativeAmountMessage));
         }
 
         [Test]
@@ -186,9 +198,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.NoAmount));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.NoAmountMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.NoAmountMessage));
         }
 
         [Test]
@@ -199,9 +209,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.NoEndDate));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.NoEndDateMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.NoEndDateMessage));
         }
 
         [Test]
@@ -212,9 +220,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.NoStartDate));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.NoStartDateMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.NoStartDateMessage));
         }
 
         [Test]
@@ -226,8 +232,7 @@
             Assert.That(actual.Errors?.Count, Is.EqualTo(2));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.StartDateUnsearchable));
             Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.StartDateUnsearchableMessage));
+                Is.EqualTo(Constants.ErrorMessages.StartDateUnsearchableMessage));
         }
 
         [Test]
@@ -238,9 +243,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.InvalidDateRange));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.InvalidDateRangeMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.InvalidDateRangeMessage));
         }
 
         [Test]
@@ -251,9 +254,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.ZeroAmount));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.ZeroAmountMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.ZeroAmountMessage));
         }
 
         [Test]
@@ -267,9 +268,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseUnavailable));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.DatabaseUnavailableMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.DatabaseUnavailableMessage));
         }
 
         [Test]
@@ -284,8 +283,21 @@
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseMissingRequiredObjects));
             Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
+                Is.EqualTo(Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
+        }
+
+        [Test]
+        public void GetMemberStats_WhenDataStoreIsUnavailable_ReturnsDataStoreUnavailableResponse()
+        {
+            dataStoreServiceMock.IsAvailable().Returns(false);
+
+            GetMemberStatsResponse actual = InvokeGetMemberStats();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DataStoreUnavailable));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(Constants.ErrorMessages.DataStoreUnavailableMessage));
         }
 
         [Test]
@@ -296,9 +308,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.EndDateUnsearchable));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.EndDateUnsearchableMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.EndDateUnsearchableMessage));
         }
 
         [Test]
@@ -353,9 +363,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.NoEndDate));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.NoEndDateMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.NoEndDateMessage));
         }
 
         [Test]
@@ -366,9 +374,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.NoStartDate));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.NoStartDateMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.NoStartDateMessage));
         }
 
         [Test]
@@ -378,8 +384,7 @@
 
             systemUnderTest.GetMemberStats(dateTime, dateTime);
 
-            statsDownloadApiDatabaseServiceMock
-                .Received().GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
+            statsDownloadApiDatabaseServiceMock.Received().GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
         }
 
         [Test]
@@ -391,8 +396,7 @@
             Assert.That(actual.Errors?.Count, Is.EqualTo(2));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.StartDateUnsearchable));
             Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.StartDateUnsearchableMessage));
+                Is.EqualTo(Constants.ErrorMessages.StartDateUnsearchableMessage));
         }
 
         [Test]
@@ -403,9 +407,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.InvalidDateRange));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.InvalidDateRangeMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.InvalidDateRangeMessage));
         }
 
         [Test]
@@ -419,9 +421,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseUnavailable));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.DatabaseUnavailableMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.DatabaseUnavailableMessage));
         }
 
         [Test]
@@ -436,8 +436,20 @@
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseMissingRequiredObjects));
             Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(
-                    Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
+                Is.EqualTo(Constants.ErrorMessages.DatabaseMissingRequiredObjectsMessage));
+        }
+
+        [Test]
+        public void GetTeams_WhenDataStoreIsUnavailable_ReturnsDataStoreUnavailableResponse()
+        {
+            dataStoreServiceMock.IsAvailable().Returns(false);
+
+            GetTeamsResponse actual = InvokeGetTeams();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DataStoreUnavailable));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.DataStoreUnavailableMessage));
         }
 
         [Test]
@@ -497,11 +509,10 @@
         private IStatsDownloadApiService NewStatsDownloadApiProvider(
             IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
             IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService,
-            IDateTimeService dateTimeService,
-            ILoggingService loggingService)
+            IDateTimeService dateTimeService, ILoggingService loggingService, IDataStoreService dataStoreService)
         {
             return new StatsDownloadApiProvider(statsDownloadApiDatabaseService,
-                statsDownloadApiTokenDistributionService, dateTimeService, loggingService);
+                statsDownloadApiTokenDistributionService, dateTimeService, loggingService, dataStoreService);
         }
     }
 }

@@ -1,13 +1,13 @@
-﻿namespace StatsDownload.Core.Tests
+﻿namespace StatsDownload.DataStore.Tests
 {
     using NSubstitute;
 
     using NUnit.Framework;
 
-    using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.DataStore;
 
     [TestFixture]
     public class TestUncDataStoreProvider
@@ -41,26 +41,16 @@
         private IFileService fileServiceMock;
 
         private IDataStoreService systemUnderTest;
-
-        [Test]
-        public void IsAvailable_WhenDirectoryNotAvailable_ReturnsDataStoreUnavailable()
-        {
-            directoryServiceMock.Exists("C:\\Path").Returns(false);
-
-            (bool, FailedReason failedReason) actual = systemUnderTest.IsAvailable();
-
-            Assert.That(actual.failedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
-        }
-
+        
         [TestCase(true)]
         [TestCase(false)]
         public void IsAvailable_WhenInvoked_CheckForAccessToUploadDirectory(bool expected)
         {
             directoryServiceMock.Exists("C:\\Path").Returns(expected);
 
-            (bool isAvailable, FailedReason) actual = systemUnderTest.IsAvailable();
+            var actual = systemUnderTest.IsAvailable();
 
-            Assert.That(actual.isAvailable, Is.EqualTo(expected));
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]

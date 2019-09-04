@@ -43,7 +43,7 @@
             fileDownloadEmailServiceMock = Substitute.For<IFileDownloadEmailService>();
 
             dataStoreServiceMock = Substitute.For<IDataStoreService>();
-            dataStoreServiceMock.IsAvailable().Returns((true, FailedReason.None));
+            dataStoreServiceMock.IsAvailable().Returns(true);
 
             dataStoreServiceFactoryMock = Substitute.For<IDataStoreServiceFactory>();
             dataStoreServiceFactoryMock.Create().Returns(dataStoreServiceMock);
@@ -525,7 +525,7 @@
 
         private void SetUpWhenDataStoreIsNotAvailable()
         {
-            dataStoreServiceMock.IsAvailable().Returns((false, FailedReason.DataStoreUnavailable));
+            dataStoreServiceMock.IsAvailable().Returns(false);
         }
 
         private Exception SetUpWhenExceptionThrown()

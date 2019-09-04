@@ -1,8 +1,7 @@
-﻿namespace StatsDownload.Core.Implementations
+﻿namespace StatsDownload.DataStore
 {
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
 
     public class UncDataStoreProvider : IDataStoreService
     {
@@ -20,11 +19,10 @@
             this.fileService = fileService;
         }
 
-        public (bool, FailedReason) IsAvailable()
+        public bool IsAvailable()
         {
             string uploadDirectory = settings.UploadDirectory;
-            bool directoryExists = directoryService.Exists(uploadDirectory);
-            return (directoryExists, FailedReason.DataStoreUnavailable);
+            return directoryService.Exists(uploadDirectory);
         }
 
         public void UploadFile(FilePayload filePayload)
