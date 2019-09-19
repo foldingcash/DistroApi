@@ -29,17 +29,15 @@
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
-            dataStoreServiceMock = Substitute.For<IDataStoreService>();
-            dataStoreServiceMock.IsAvailable().Returns(true);
+            statsDownloadApiDataStoreServiceMock = Substitute.For<IStatsDownloadApiDataStoreService>();
+            statsDownloadApiDataStoreServiceMock.IsAvailable().Returns(true);
 
             systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
                 statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock,
-                dataStoreServiceMock);
+                statsDownloadApiDataStoreServiceMock);
         }
 
         private readonly int amountMock = 7750000;
-
-        private IDataStoreService dataStoreServiceMock;
 
         private IDateTimeService dateTimeServiceMock;
 
@@ -51,6 +49,8 @@
 
         private IStatsDownloadApiDatabaseService statsDownloadApiDatabaseServiceMock;
 
+        private IStatsDownloadApiDataStoreService statsDownloadApiDataStoreServiceMock;
+
         private IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionServiceMock;
 
         private IStatsDownloadApiService systemUnderTest;
@@ -60,13 +60,15 @@
         {
             Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(null,
                 statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock,
-                dataStoreServiceMock));
+                statsDownloadApiDataStoreServiceMock));
             Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                null, dateTimeServiceMock, loggingServiceMock, dataStoreServiceMock));
+                null, dateTimeServiceMock, loggingServiceMock, statsDownloadApiDataStoreServiceMock));
             Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, null, loggingServiceMock, dataStoreServiceMock));
+                statsDownloadApiTokenDistributionServiceMock, null, loggingServiceMock,
+                statsDownloadApiDataStoreServiceMock));
             Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, null, dataStoreServiceMock));
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, null,
+                statsDownloadApiDataStoreServiceMock));
             Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
                 statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock, null));
         }
@@ -82,8 +84,7 @@
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DatabaseUnavailable));
-            Assert.That(actual.Errors?[0].ErrorMessage,
-                Is.EqualTo(Constants.ErrorMessages.DatabaseUnavailableMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.DatabaseUnavailableMessage));
         }
 
         [Test]
@@ -104,14 +105,15 @@
         [Test]
         public void GetDistro_WhenDataStoreIsUnavailable_ReturnsDataStoreUnavailableResponse()
         {
-            dataStoreServiceMock.IsAvailable().Returns(false);
+            statsDownloadApiDataStoreServiceMock.IsAvailable().Returns(false);
 
             GetDistroResponse actual = InvokeGetDistro();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DataStoreUnavailable));
-            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.DataStoreUnavailableMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(Constants.ErrorMessages.DataStoreUnavailableMessage));
         }
 
         [Test]
@@ -147,7 +149,7 @@
         public void GetDistro_WhenInvoked_LogsMethodInvoked()
         {
             var foldingUsers = new FoldingUser[0];
-            statsDownloadApiDatabaseServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
+            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
 
             systemUnderTest.GetDistro(startDateMock, endDateMock, amountMock);
 
@@ -164,7 +166,7 @@
         {
             var foldingUsers = new FoldingUser[0];
             var distro = new[] { new DistroUser(null, 1, 2, 0.12345678m), new DistroUser(null, 3, 4, 100m) };
-            statsDownloadApiDatabaseServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
+            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);
 
             GetDistroResponse actual = InvokeGetDistro();
@@ -289,7 +291,7 @@
         [Test]
         public void GetMemberStats_WhenDataStoreIsUnavailable_ReturnsDataStoreUnavailableResponse()
         {
-            dataStoreServiceMock.IsAvailable().Returns(false);
+            statsDownloadApiDataStoreServiceMock.IsAvailable().Returns(false);
 
             GetMemberStatsResponse actual = InvokeGetMemberStats();
 
@@ -333,7 +335,7 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetMemberStats));
-                statsDownloadApiDatabaseServiceMock.GetMembers(DateTime.MinValue, endDateMock);
+                statsDownloadApiDataStoreServiceMock.GetMembers(DateTime.MinValue, endDateMock);
                 loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetMemberStats));
             });
         }
@@ -343,7 +345,7 @@
         {
             var members = new Member[2];
 
-            statsDownloadApiDatabaseServiceMock.GetMembers(DateTime.MinValue, endDateMock).Returns(members);
+            statsDownloadApiDataStoreServiceMock.GetMembers(DateTime.MinValue, endDateMock).Returns(members);
 
             GetMemberStatsResponse actual = InvokeGetMemberStats(DateTime.MinValue, endDateMock);
 
@@ -384,7 +386,7 @@
 
             systemUnderTest.GetMemberStats(dateTime, dateTime);
 
-            statsDownloadApiDatabaseServiceMock.Received().GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
+            statsDownloadApiDataStoreServiceMock.Received().GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
         }
 
         [Test]
@@ -442,14 +444,15 @@
         [Test]
         public void GetTeams_WhenDataStoreIsUnavailable_ReturnsDataStoreUnavailableResponse()
         {
-            dataStoreServiceMock.IsAvailable().Returns(false);
+            statsDownloadApiDataStoreServiceMock.IsAvailable().Returns(false);
 
             GetTeamsResponse actual = InvokeGetTeams();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DataStoreUnavailable));
-            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo(Constants.ErrorMessages.DataStoreUnavailableMessage));
+            Assert.That(actual.Errors?[0].ErrorMessage,
+                Is.EqualTo(Constants.ErrorMessages.DataStoreUnavailableMessage));
         }
 
         [Test]
@@ -460,7 +463,7 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetTeams));
-                statsDownloadApiDatabaseServiceMock.GetTeams();
+                statsDownloadApiDataStoreServiceMock.GetTeams();
                 loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetTeams));
             });
         }
@@ -469,7 +472,7 @@
         public void GetTeams_WhenInvoked_ReturnsSuccessGetTeamsResponse()
         {
             var teams = new[] { new Team(0, ""), new Team(0, "") };
-            statsDownloadApiDatabaseServiceMock.GetTeams().Returns(teams);
+            statsDownloadApiDataStoreServiceMock.GetTeams().Returns(teams);
 
             GetTeamsResponse actual = InvokeGetTeams();
 
@@ -509,10 +512,12 @@
         private IStatsDownloadApiService NewStatsDownloadApiProvider(
             IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
             IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService,
-            IDateTimeService dateTimeService, ILoggingService loggingService, IDataStoreService dataStoreService)
+            IDateTimeService dateTimeService, ILoggingService loggingService,
+            IStatsDownloadApiDataStoreService statsDownloadApiDataStoreService)
         {
             return new StatsDownloadApiProvider(statsDownloadApiDatabaseService,
-                statsDownloadApiTokenDistributionService, dateTimeService, loggingService, dataStoreService);
+                statsDownloadApiTokenDistributionService, dateTimeService, loggingService,
+                statsDownloadApiDataStoreService);
         }
     }
 }

@@ -12,20 +12,21 @@
 
     public class StatsDownloadApiProvider : IStatsDownloadApiService
     {
-        private readonly IDataStoreService dataStoreService;
-
         private readonly IDateTimeService dateTimeService;
 
         private readonly ILoggingService loggingService;
 
         private readonly IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService;
 
+        private readonly IStatsDownloadApiDataStoreService statsDownloadApiDataStoreService;
+
         private readonly IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService;
 
         public StatsDownloadApiProvider(IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
                                         IStatsDownloadApiTokenDistributionService
                                             statsDownloadApiTokenDistributionService, IDateTimeService dateTimeService,
-                                        ILoggingService loggingService, IDataStoreService dataStoreService)
+                                        ILoggingService loggingService,
+                                        IStatsDownloadApiDataStoreService statsDownloadApiDataStoreService)
         {
             this.statsDownloadApiDatabaseService = statsDownloadApiDatabaseService
                                                    ?? throw new ArgumentNullException(
@@ -35,7 +36,9 @@
                                                                 nameof(statsDownloadApiTokenDistributionService));
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
-            this.dataStoreService = dataStoreService ?? throw new ArgumentNullException(nameof(dataStoreService));
+            this.statsDownloadApiDataStoreService = statsDownloadApiDataStoreService
+                                                    ?? throw new ArgumentNullException(
+                                                        nameof(statsDownloadApiDataStoreService));
         }
 
         public GetDistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount)
@@ -49,8 +52,7 @@
                 loggingService.LogMethodFinished();
                 return new GetDistroResponse(errors);
             }
-
-            //TODO: Get folding members from the datastore
+            
             IList<FoldingUser> foldingMembers = GetFoldingMembers(startDate, endDate);
             IList<DistroUser> distro = GetDistro(amount, foldingMembers);
 
@@ -81,9 +83,8 @@
                 startDateTime = startDateTime.Date.AddHours(12);
                 endDateTime = endDateTime.Date.AddHours(36);
             }
-
-            // TODO: Get the members from the datastore
-            IList<Member> members = statsDownloadApiDatabaseService.GetMembers(startDateTime, endDateTime);
+            
+            IList<Member> members = statsDownloadApiDataStoreService.GetMembers(startDateTime, endDateTime);
 
             var memberStatsResponse = new GetMemberStatsResponse(members);
 
@@ -103,9 +104,8 @@
                 loggingService.LogMethodFinished();
                 return new GetTeamsResponse(errors);
             }
-
-            // TODO: Get the teams from the datastore
-            IList<Team> teams = statsDownloadApiDatabaseService.GetTeams();
+            
+            IList<Team> teams = statsDownloadApiDataStoreService.GetTeams();
 
             var teamsResponse = new GetTeamsResponse(teams);
 
@@ -121,7 +121,7 @@
 
         private IList<FoldingUser> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
         {
-            return statsDownloadApiDatabaseService.GetFoldingMembers(startDate.GetValueOrDefault(),
+            return statsDownloadApiDataStoreService.GetFoldingMembers(startDate.GetValueOrDefault(),
                 endDate.GetValueOrDefault());
         }
 
@@ -154,14 +154,6 @@
             return errors.Count > 0;
         }
 
-        private void ValidateApiIsAvailable(IList<ApiError> errors)
-        {
-            ValidateDatabaseIsAvailable(errors);
-            ValidateDataStoreIsAvailable(errors);
-        }
-
-        
-
         private void ValidateAmount(int? amount, IList<ApiError> errors)
         {
             if (amount == null)
@@ -181,12 +173,10 @@
             }
         }
 
-        private void ValidateDataStoreIsAvailable(IList<ApiError> errors)
+        private void ValidateApiIsAvailable(IList<ApiError> errors)
         {
-            if (!dataStoreService.IsAvailable())
-            {
-                errors.Add(Constants.ApiErrors.DataStoreUnavailable);
-            }
+            ValidateDatabaseIsAvailable(errors);
+            ValidateDataStoreIsAvailable(errors);
         }
 
         private void ValidateDatabaseIsAvailable(IList<ApiError> errors)
@@ -203,6 +193,14 @@
                 {
                     errors.Add(Constants.ApiErrors.DatabaseMissingRequiredObjects);
                 }
+            }
+        }
+
+        private void ValidateDataStoreIsAvailable(IList<ApiError> errors)
+        {
+            if (!statsDownloadApiDataStoreService.IsAvailable())
+            {
+                errors.Add(Constants.ApiErrors.DataStoreUnavailable);
             }
         }
 
