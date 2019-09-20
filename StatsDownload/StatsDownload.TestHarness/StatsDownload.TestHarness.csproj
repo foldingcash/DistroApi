@@ -175,6 +175,10 @@
       <Project>{77BB08E3-FD87-4E4D-AEC3-916DC6CEFAB2}</Project>
       <Name>StatsDownload.Parsing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Shared\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj">
+      <Project>{d628cc2e-dc8c-4259-b455-ae5f6a0290e4}</Project>
+      <Name>StatsDownload.SharpZipLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Shared\StatsDownload.Wrappers\StatsDownload.Wrappers.csproj">
       <Project>{E449C9B2-F60D-457D-B2F7-A31058513C88}</Project>
       <Name>StatsDownload.Wrappers</Name>
@@ -182,10 +186,6 @@
     <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj">
       <Project>{9C2C5AA3-9E2C-4A2F-97E3-081633B83F6D}</Project>
       <Name>StatsDownload.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj">
-      <Project>{C37684C9-D044-4D42-B10F-3D670A95293E}</Project>
-      <Name>StatsDownload.SharpZipLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

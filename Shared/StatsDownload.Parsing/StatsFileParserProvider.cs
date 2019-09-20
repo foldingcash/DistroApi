@@ -8,7 +8,7 @@
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Parsing.Exceptions;
+    using StatsDownload.Core.Interfaces.Exceptions;
 
     public class StatsFileParserProvider : IStatsFileParserService
     {

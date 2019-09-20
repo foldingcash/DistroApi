@@ -6,11 +6,10 @@
 
     using NUnit.Framework;
 
-    using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Parsing.Exceptions;
+    using StatsDownload.Core.Interfaces.Exceptions;
 
     [TestFixture]
     public class TestFilePayloadUploadProvider

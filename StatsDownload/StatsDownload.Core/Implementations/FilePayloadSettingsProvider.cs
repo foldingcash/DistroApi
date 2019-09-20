@@ -3,9 +3,9 @@
     using System;
     using System.IO;
 
-    using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Exceptions;
     using StatsDownload.Core.Interfaces.Logging;
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService

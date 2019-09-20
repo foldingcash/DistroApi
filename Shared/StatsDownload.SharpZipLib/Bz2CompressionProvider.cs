@@ -4,8 +4,8 @@
 
     using ICSharpCode.SharpZipLib.BZip2;
 
-    using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Exceptions;
 
     public class Bz2CompressionProvider : IFileCompressionService
     {

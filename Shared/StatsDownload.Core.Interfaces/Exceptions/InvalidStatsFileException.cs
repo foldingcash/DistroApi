@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Parsing.Exceptions
+﻿namespace StatsDownload.Core.Interfaces.Exceptions
 {
     using System;
 
