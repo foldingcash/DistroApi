@@ -20,6 +20,7 @@
     using StatsDownload.DataStore;
     using StatsDownload.Email;
     using StatsDownload.Logging;
+    using StatsDownload.Parsing;
     using StatsDownload.SharpZipLib;
     using StatsDownload.Wrappers;
     using StatsDownload.Wrappers.Networking;

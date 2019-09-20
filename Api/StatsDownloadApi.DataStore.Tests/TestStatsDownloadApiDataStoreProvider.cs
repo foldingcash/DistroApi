@@ -34,14 +34,17 @@ namespace StatsDownloadApi.DataStore.Tests
             Assert.That(actual, Is.EqualTo(expected));
         }
 
+        [Test]
         public void GetFoldingMembers_WhenInvoked()
         {
         }
 
+        [Test]
         public void GetMembers_WhenInvoked()
         {
         }
 
+        [Test]
         public void GetTeams_WhenInvoked()
         {
         }

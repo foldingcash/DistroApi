@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Castle.Windsor" Version="5.0.0" />
-    <PackageReference Include="MySql.Data" Version="8.0.15" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+    <PackageReference Include="Castle.Windsor" Version="5.0.1" />
+    <PackageReference Include="MySql.Data" Version="8.0.17" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\Shared\StatsDownload.DataStore\StatsDownload.DataStore.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Email\StatsDownload.Email.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Extensions\StatsDownload.Extensions.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.Parsing\StatsDownload.Parsing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

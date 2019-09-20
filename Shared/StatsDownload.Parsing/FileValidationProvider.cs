@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Implementations
+﻿namespace StatsDownload.Parsing
 {
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;

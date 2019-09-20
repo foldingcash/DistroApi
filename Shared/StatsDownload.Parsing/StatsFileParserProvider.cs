@@ -1,14 +1,14 @@
-﻿namespace StatsDownload.Core.Implementations
+﻿namespace StatsDownload.Parsing
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
 
-    using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Parsing.Exceptions;
 
     public class StatsFileParserProvider : IStatsFileParserService
     {

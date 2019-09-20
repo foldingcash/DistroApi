@@ -18,6 +18,11 @@
 
         public FoldingUser[] GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
+            //TODO: Identify the files we need to load, should just be two
+            //TODO: Move those files to download directory for processing
+            //TODO: Decompress the file and validate it
+            // IFileValidationService
+
             throw new NotImplementedException();
         }
 

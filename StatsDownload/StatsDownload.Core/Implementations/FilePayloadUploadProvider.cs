@@ -5,6 +5,7 @@
     using StatsDownload.Core.Exceptions;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Parsing.Exceptions;
 
     public class FilePayloadUploadProvider : IFilePayloadUploadService
     {
