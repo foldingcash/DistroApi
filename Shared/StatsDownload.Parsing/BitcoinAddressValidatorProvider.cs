@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Implementations
+﻿namespace StatsDownload.Parsing
 {
     using System;
     using System.Linq;

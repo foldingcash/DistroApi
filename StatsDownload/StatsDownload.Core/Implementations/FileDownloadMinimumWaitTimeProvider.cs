@@ -14,18 +14,8 @@
         public FileDownloadMinimumWaitTimeProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
                                                    IDateTimeService dateTimeService)
         {
-            if (fileDownloadDatabaseService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
-            }
-
-            if (dateTimeService == null)
-            {
-                throw new ArgumentNullException(nameof(dateTimeService));
-            }
-
-            this.fileDownloadDatabaseService = fileDownloadDatabaseService;
-            this.dateTimeService = dateTimeService;
+            this.fileDownloadDatabaseService = fileDownloadDatabaseService ?? throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
+            this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
         }
 
         public bool IsMinimumWaitTimeMet(FilePayload filePayload)

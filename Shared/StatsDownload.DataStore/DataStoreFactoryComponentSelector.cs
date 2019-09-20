@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Implementations
+﻿namespace StatsDownload.DataStore
 {
     using System;
     using System.Reflection;
@@ -6,7 +6,6 @@
     using Castle.Facilities.TypedFactory;
 
     using StatsDownload.Core.Interfaces;
-    using StatsDownload.DataStore;
 
     public class DataStoreFactoryComponentSelector : DefaultTypedFactoryComponentSelector
     {

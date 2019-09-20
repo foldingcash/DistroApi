@@ -7,9 +7,9 @@
 
     using NUnit.Framework;
 
-    using StatsDownload.Core.Implementations.Filters;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Parsing.Filters;
 
     [TestFixture]
     public class TestZeroPointUsersFilter

@@ -6,7 +6,6 @@
     using Castle.Windsor;
 
     using StatsDownload.Core.Implementations;
-    using StatsDownload.Core.Implementations.Filters;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Core.Interfaces.Networking;
@@ -17,6 +16,7 @@
     using StatsDownload.Email;
     using StatsDownload.Logging;
     using StatsDownload.Parsing;
+    using StatsDownload.Parsing.Filters;
     using StatsDownload.SharpZipLib;
     using StatsDownload.Wrappers;
     using StatsDownload.Wrappers.Networking;

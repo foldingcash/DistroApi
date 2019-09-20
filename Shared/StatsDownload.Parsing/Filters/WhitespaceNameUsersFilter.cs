@@ -1,18 +1,18 @@
-﻿namespace StatsDownload.Core.Implementations.Filters
+﻿namespace StatsDownload.Parsing.Filters
 {
-    using System;
     using System.Linq;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
-    public class GoogleUsersFilter : IStatsFileParserService
+    public class WhitespaceNameUsersFilter : IStatsFileParserService
     {
         private readonly IStatsFileParserService innerService;
 
-        private readonly IGoogleUsersFilterSettings settings;
+        private readonly IWhitespaceNameUsersFilterSettings settings;
 
-        public GoogleUsersFilter(IStatsFileParserService innerService, IGoogleUsersFilterSettings settings)
+        public WhitespaceNameUsersFilter(IStatsFileParserService innerService,
+                                         IWhitespaceNameUsersFilterSettings settings)
         {
             this.innerService = innerService;
             this.settings = settings;
@@ -25,9 +25,7 @@
             if (settings.Enabled)
             {
                 return new ParseResults(results.DownloadDateTime,
-                    results.UsersData.Where(data =>
-                        !data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ?? true),
-                    results.FailedUsersData);
+                    results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.Name)), results.FailedUsersData);
             }
 
             return results;

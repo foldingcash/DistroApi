@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Implementations.Filters
+﻿namespace StatsDownload.Parsing.Filters
 {
     using System.Linq;
 

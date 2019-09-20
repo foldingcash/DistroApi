@@ -1,18 +1,17 @@
-﻿namespace StatsDownload.Core.Implementations.Filters
+﻿namespace StatsDownload.Parsing.Filters
 {
     using System.Linq;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
-    public class WhitespaceNameUsersFilter : IStatsFileParserService
+    public class ZeroPointUsersFilter : IStatsFileParserService
     {
         private readonly IStatsFileParserService innerService;
 
-        private readonly IWhitespaceNameUsersFilterSettings settings;
+        private readonly IZeroPointUsersFilterSettings settings;
 
-        public WhitespaceNameUsersFilter(IStatsFileParserService innerService,
-                                         IWhitespaceNameUsersFilterSettings settings)
+        public ZeroPointUsersFilter(IStatsFileParserService innerService, IZeroPointUsersFilterSettings settings)
         {
             this.innerService = innerService;
             this.settings = settings;
@@ -24,8 +23,8 @@
 
             if (settings.Enabled)
             {
-                return new ParseResults(results.DownloadDateTime,
-                    results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.Name)), results.FailedUsersData);
+                return new ParseResults(results.DownloadDateTime, results.UsersData.Where(data => data.TotalPoints > 0),
+                    results.FailedUsersData);
             }
 
             return results;

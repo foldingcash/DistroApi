@@ -1,17 +1,18 @@
-﻿namespace StatsDownload.Core.Implementations.Filters
+﻿namespace StatsDownload.Parsing.Filters
 {
+    using System;
     using System.Linq;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
-    public class ZeroPointUsersFilter : IStatsFileParserService
+    public class GoogleUsersFilter : IStatsFileParserService
     {
         private readonly IStatsFileParserService innerService;
 
-        private readonly IZeroPointUsersFilterSettings settings;
+        private readonly IGoogleUsersFilterSettings settings;
 
-        public ZeroPointUsersFilter(IStatsFileParserService innerService, IZeroPointUsersFilterSettings settings)
+        public GoogleUsersFilter(IStatsFileParserService innerService, IGoogleUsersFilterSettings settings)
         {
             this.innerService = innerService;
             this.settings = settings;
@@ -23,7 +24,9 @@
 
             if (settings.Enabled)
             {
-                return new ParseResults(results.DownloadDateTime, results.UsersData.Where(data => data.TotalPoints > 0),
+                return new ParseResults(results.DownloadDateTime,
+                    results.UsersData.Where(data =>
+                        !data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ?? true),
                     results.FailedUsersData);
             }
 
