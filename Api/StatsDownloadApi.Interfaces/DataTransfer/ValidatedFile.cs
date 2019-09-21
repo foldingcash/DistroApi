@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Interfaces.DataTransfer
+﻿namespace StatsDownloadApi.Interfaces.DataTransfer
 {
     using System;
 
