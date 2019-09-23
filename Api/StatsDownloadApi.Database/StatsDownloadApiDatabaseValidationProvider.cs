@@ -19,7 +19,14 @@
 
         public IList<ValidatedFile> GetValidatedFiles(DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            IList<ValidatedFile> results = innerService.GetValidatedFiles(startDate, endDate);
+
+            if (results is null || results.Count == 0)
+            {
+                throw new NoAvailableStatsFilesException();
+            }
+
+            return results;
         }
 
         public (bool isAvailable, DatabaseFailedReason reason) IsAvailable()

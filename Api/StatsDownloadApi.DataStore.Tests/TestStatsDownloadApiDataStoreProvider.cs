@@ -1,5 +1,7 @@
 namespace StatsDownloadApi.DataStore.Tests
 {
+    using System;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -7,6 +9,7 @@ namespace StatsDownloadApi.DataStore.Tests
     using StatsDownload.Core.Interfaces;
 
     using StatsDownloadApi.Interfaces;
+    using StatsDownloadApi.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestStatsDownloadApiDataStoreProvider
@@ -14,29 +17,39 @@ namespace StatsDownloadApi.DataStore.Tests
         [SetUp]
         public void SetUp()
         {
+            var validatedFiles = new[]
+                                 {
+                                     new ValidatedFile(1, DateTime.Today.AddMinutes(1), "FilePath1"),
+                                     new ValidatedFile(2, DateTime.Today.AddMinutes(2), "FilePath2"),
+                                     new ValidatedFile(3, DateTime.Today.AddMinutes(3), "FilePath3")
+                                 };
+
             dataStoreServiceMock = Substitute.For<IDataStoreService>();
 
-            systemUnderTest = new StatsDownloadApiDataStoreProvider(dataStoreServiceMock);
+            databaseServiceMock = Substitute.For<IStatsDownloadApiDatabaseService>();
+            databaseServiceMock.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue).Returns(validatedFiles);
+
+            systemUnderTest = new StatsDownloadApiDataStoreProvider(dataStoreServiceMock, databaseServiceMock);
         }
+
+        private IStatsDownloadApiDatabaseService databaseServiceMock;
 
         private IDataStoreService dataStoreServiceMock;
 
         private IStatsDownloadApiDataStoreService systemUnderTest;
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void IsAvailable_WhenInvoked_DefersToDataStore(bool expected)
+        [Test]
+        public void GetFoldingMembers_WhenInvoked_GetsValidatedFilesFromDatabase()
         {
-            dataStoreServiceMock.IsAvailable().Returns(expected);
+            systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
 
-            bool actual = systemUnderTest.IsAvailable();
-
-            Assert.That(actual, Is.EqualTo(expected));
+            databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
         }
 
         [Test]
-        public void GetFoldingMembers_WhenInvoked()
+        public void GetFoldingMembers_WhenMoreThanTwoValidatedFiles_UsesTheFirstAndLastFile()
         {
+            systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
         }
 
         [Test]
@@ -47,6 +60,17 @@ namespace StatsDownloadApi.DataStore.Tests
         [Test]
         public void GetTeams_WhenInvoked()
         {
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void IsAvailable_WhenInvoked_DefersToDataStore(bool expected)
+        {
+            dataStoreServiceMock.IsAvailable().Returns(expected);
+
+            bool actual = systemUnderTest.IsAvailable();
+
+            Assert.That(actual, Is.EqualTo(expected));
         }
     }
 }
