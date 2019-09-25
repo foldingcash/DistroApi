@@ -7,6 +7,7 @@ namespace StatsDownloadApi.DataStore.Tests
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     using StatsDownloadApi.Interfaces;
     using StatsDownloadApi.Interfaces.DataTransfer;
@@ -29,27 +30,41 @@ namespace StatsDownloadApi.DataStore.Tests
             databaseServiceMock = Substitute.For<IStatsDownloadApiDatabaseService>();
             databaseServiceMock.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue).Returns(validatedFiles);
 
-            systemUnderTest = new StatsDownloadApiDataStoreProvider(dataStoreServiceMock, databaseServiceMock);
+            fileValidationServiceMock = Substitute.For<IFileValidationService>();
+
+            filePayloadApiSettingsServiceMock = Substitute.For<IFilePayloadApiSettingsService>();
+
+            systemUnderTest = new StatsDownloadApiDataStoreProvider(dataStoreServiceMock, databaseServiceMock,
+                fileValidationServiceMock, filePayloadApiSettingsServiceMock);
         }
 
         private IStatsDownloadApiDatabaseService databaseServiceMock;
 
         private IDataStoreService dataStoreServiceMock;
 
+        private IFilePayloadApiSettingsService filePayloadApiSettingsServiceMock;
+
+        private IFileValidationService fileValidationServiceMock;
+
         private IStatsDownloadApiDataStoreService systemUnderTest;
 
         [Test]
-        public void GetFoldingMembers_WhenInvoked_GetsValidatedFilesFromDatabase()
+        public void GetFoldingMembers_WhenInvoked_GetsFoldingMembers()
         {
             systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
 
-            databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
-        }
+            Received.InOrder(() =>
+            {
+                databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
 
-        [Test]
-        public void GetFoldingMembers_WhenMoreThanTwoValidatedFiles_UsesTheFirstAndLastFile()
-        {
-            systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
+                filePayloadApiSettingsServiceMock.Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+                dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>());
+                fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
+
+                filePayloadApiSettingsServiceMock.Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+                dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>());
+                fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
+            });
         }
 
         [Test]

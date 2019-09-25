@@ -21,12 +21,14 @@
                                   DecompressedDownloadFilePath = "DecompressedDownloadFilePath"
                               };
 
+            parseResultsMock = new ParseResults(DateTime.Today, null, null);
+
             fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
 
             fileReaderServiceMock = Substitute.For<IFileReaderService>();
 
             statsFileParserServiceMock = Substitute.For<IStatsFileParserService>();
-            statsFileParserServiceMock.Parse(filePayloadMock).Returns(new ParseResults(DateTime.Today, null, null));
+            statsFileParserServiceMock.Parse(filePayloadMock).Returns(parseResultsMock);
 
             systemUnderTest = new FileValidationProvider(fileCompressionServiceMock, fileReaderServiceMock,
                 statsFileParserServiceMock);
@@ -38,9 +40,19 @@
 
         private IFileReaderService fileReaderServiceMock;
 
+        private ParseResults parseResultsMock;
+
         private IStatsFileParserService statsFileParserServiceMock;
 
         private IFileValidationService systemUnderTest;
+
+        [Test]
+        public void ValidateFile_WhenInvoked_ReturnsValidationResults()
+        {
+            ParseResults actual = systemUnderTest.ValidateFile(filePayloadMock);
+
+            Assert.That(actual, Is.EqualTo(parseResultsMock));
+        }
 
         [Test]
         public void ValidateFile_WhenInvoked_SetsFileUtcDateTime()

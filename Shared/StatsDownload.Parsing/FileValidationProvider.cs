@@ -20,12 +20,14 @@
             this.statsFileParserService = statsFileParserService;
         }
 
-        public void ValidateFile(FilePayload filePayload)
+        public ParseResults ValidateFile(FilePayload filePayload)
         {
             fileCompressionService.DecompressFile(filePayload.DownloadFilePath,
                 filePayload.DecompressedDownloadFilePath);
             fileReaderService.ReadFile(filePayload);
-            filePayload.FileUtcDateTime = statsFileParserService.Parse(filePayload).DownloadDateTime;
+            ParseResults parseResults = statsFileParserService.Parse(filePayload);
+            filePayload.FileUtcDateTime = parseResults.DownloadDateTime;
+            return parseResults;
         }
     }
 }

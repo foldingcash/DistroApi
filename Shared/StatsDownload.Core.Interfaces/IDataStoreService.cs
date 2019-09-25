@@ -4,6 +4,8 @@
 
     public interface IDataStoreService
     {
+        void DownloadFile(FilePayload filePayload);
+
         bool IsAvailable();
 
         void UploadFile(FilePayload filePayload);

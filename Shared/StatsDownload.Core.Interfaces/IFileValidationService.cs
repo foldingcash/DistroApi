@@ -4,6 +4,6 @@
 
     public interface IFileValidationService
     {
-        void ValidateFile(FilePayload filePayload);
+        ParseResults ValidateFile(FilePayload filePayload);
     }
 }

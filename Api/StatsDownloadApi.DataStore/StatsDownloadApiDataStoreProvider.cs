@@ -2,8 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     using StatsDownloadApi.Interfaces;
     using StatsDownloadApi.Interfaces.DataTransfer;
@@ -14,22 +16,38 @@
 
         private readonly IDataStoreService dataStoreService;
 
+        private readonly IFilePayloadApiSettingsService filePayloadApiSettingsService;
+
+        private readonly IFileValidationService fileValidationService;
+
         public StatsDownloadApiDataStoreProvider(IDataStoreService dataStoreService,
-                                                 IStatsDownloadApiDatabaseService databaseService)
+                                                 IStatsDownloadApiDatabaseService databaseService,
+                                                 IFileValidationService fileValidationService,
+                                                 IFilePayloadApiSettingsService filePayloadApiSettingsService)
         {
             this.dataStoreService = dataStoreService;
             this.databaseService = databaseService;
+            this.fileValidationService = fileValidationService;
+            this.filePayloadApiSettingsService = filePayloadApiSettingsService;
         }
 
         public FoldingUser[] GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
             IList<ValidatedFile> validatedFiles = databaseService.GetValidatedFiles(startDate, endDate);
 
-            //TODO: Identify the files we need to load, should just be two
-            //TODO: Move those files to download directory for processing
-            //TODO: Decompress the file and validate it
+            ValidatedFile firstFile = validatedFiles.First();
+            var filePayload = new FilePayload();
+            filePayloadApiSettingsService.SetFilePayloadApiSettings(filePayload);
+            dataStoreService.DownloadFile(filePayload);
+            ParseResults firstFileResults = fileValidationService.ValidateFile(filePayload);
+
+            ValidatedFile lastFile = validatedFiles.Last();
+            filePayload = new FilePayload();
+            filePayloadApiSettingsService.SetFilePayloadApiSettings(filePayload);
+            dataStoreService.DownloadFile(filePayload);
+            ParseResults lastFileResults = fileValidationService.ValidateFile(filePayload);
+
             //TODO: Return the folding users
-            // IFileValidationService
             return null;
         }
 
