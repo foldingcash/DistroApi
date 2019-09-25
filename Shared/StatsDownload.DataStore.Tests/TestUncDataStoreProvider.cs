@@ -6,8 +6,6 @@
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.DataStore;
 
     [TestFixture]
     public class TestUncDataStoreProvider
@@ -41,14 +39,22 @@
         private IFileService fileServiceMock;
 
         private IDataStoreService systemUnderTest;
-        
+
+        [Test]
+        public void DownloadFile_WhenInvoked_CopysFile()
+        {
+            systemUnderTest.UploadFile(filePayloadMock);
+
+            fileServiceMock.Received(1).CopyFile("\\UploadDirectory\\Target.exe", "\\DownloadDirectory\\Source.ext");
+        }
+
         [TestCase(true)]
         [TestCase(false)]
         public void IsAvailable_WhenInvoked_CheckForAccessToUploadDirectory(bool expected)
         {
             directoryServiceMock.Exists("C:\\Path").Returns(expected);
 
-            var actual = systemUnderTest.IsAvailable();
+            bool actual = systemUnderTest.IsAvailable();
 
             Assert.That(actual, Is.EqualTo(expected));
         }

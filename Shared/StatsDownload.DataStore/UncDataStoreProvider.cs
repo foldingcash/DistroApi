@@ -19,6 +19,11 @@
             this.fileService = fileService;
         }
 
+        public void DownloadFile(FilePayload filePayload)
+        {
+            fileService.CopyFile(filePayload.UploadPath, filePayload.DownloadFilePath);
+        }
+
         public bool IsAvailable()
         {
             string uploadDirectory = settings.UploadDirectory;
