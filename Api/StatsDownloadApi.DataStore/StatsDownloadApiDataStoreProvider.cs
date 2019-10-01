@@ -33,22 +33,8 @@
 
         public FoldingUser[] GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
-            IList<ValidatedFile> validatedFiles = databaseService.GetValidatedFiles(startDate, endDate);
-
-            ValidatedFile firstFile = validatedFiles.First();
-            var filePayload = new FilePayload();
-            filePayloadApiSettingsService.SetFilePayloadApiSettings(filePayload);
-            dataStoreService.DownloadFile(filePayload);
-            ParseResults firstFileResults = fileValidationService.ValidateFile(filePayload);
-
-            ValidatedFile lastFile = validatedFiles.Last();
-            filePayload = new FilePayload();
-            filePayloadApiSettingsService.SetFilePayloadApiSettings(filePayload);
-            dataStoreService.DownloadFile(filePayload);
-            ParseResults lastFileResults = fileValidationService.ValidateFile(filePayload);
-
-            //TODO: Return the folding users
-            return null;
+            ParseResults[] parsedFiles = GetValidatedFiles(startDate, endDate);
+            return AggregateParseResults(parsedFiles.First(), parsedFiles.Last());
         }
 
         public Member[] GetMembers(DateTime minValue, DateTime endDate)
@@ -64,6 +50,44 @@
         public bool IsAvailable()
         {
             return dataStoreService.IsAvailable();
+        }
+
+        private FoldingUser[] AggregateParseResults(ParseResults firstFileResults, ParseResults lastFileResults)
+        {
+            var foldingUsers = new List<FoldingUser>();
+
+            foreach (UserData userData in lastFileResults.UsersData)
+            {
+                if (firstFileResults.UsersData.Any(user => user.Name == userData.Name))
+                {
+                    UserData previous = firstFileResults.UsersData.First(user => user.Name == userData.Name);
+                    foldingUsers.Add(new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
+                        userData.TotalPoints - previous.TotalPoints,
+                        userData.TotalWorkUnits - previous.TotalWorkUnits));
+                }
+                else
+                {
+                    foldingUsers.Add(new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
+                        userData.TotalPoints, userData.TotalWorkUnits));
+                }
+            }
+
+            return foldingUsers.ToArray();
+        }
+
+        private ParseResults GetValidatedFile(ValidatedFile validatedFile)
+        {
+            var filePayload = new FilePayload();
+            filePayloadApiSettingsService.SetFilePayloadApiSettings(filePayload, validatedFile);
+            dataStoreService.DownloadFile(filePayload);
+            return fileValidationService.ValidateFile(filePayload);
+        }
+
+        private ParseResults[] GetValidatedFiles(DateTime startDate, DateTime endDate)
+        {
+            IList<ValidatedFile> validatedFiles = databaseService.GetValidatedFiles(startDate, endDate);
+
+            return new[] { GetValidatedFile(validatedFiles.First()), GetValidatedFile(validatedFiles.Last()) };
         }
     }
 }

@@ -18,12 +18,31 @@ namespace StatsDownloadApi.DataStore.Tests
         [SetUp]
         public void SetUp()
         {
-            var validatedFiles = new[]
+            ValidatedFile[] validatedFiles = { validatedFileMock1, validatedFileMock2, validatedFileMock3 };
+
+            var firstUsersData = new[]
                                  {
-                                     new ValidatedFile(1, DateTime.Today.AddMinutes(1), "FilePath1"),
-                                     new ValidatedFile(2, DateTime.Today.AddMinutes(2), "FilePath2"),
-                                     new ValidatedFile(3, DateTime.Today.AddMinutes(3), "FilePath3")
+                                     new UserData(1, "user1", 1, 1, 1)
+                                     {
+                                         BitcoinAddress = "btc1", FriendlyName = "user1"
+                                     },
+                                     new UserData(2, "user2", 2, 2, 2)
+                                     {
+                                         BitcoinAddress = "btc2", FriendlyName = "user2"
+                                     }
                                  };
+
+            var followingUsersData = new[]
+                                     {
+                                         new UserData(1, "user1", 2, 2, 2)
+                                         {
+                                             BitcoinAddress = "btc1", FriendlyName = "user1"
+                                         },
+                                         new UserData(2, "user2", 4, 4, 4)
+                                         {
+                                             BitcoinAddress = "btc2", FriendlyName = "user2"
+                                         }
+                                     };
 
             dataStoreServiceMock = Substitute.For<IDataStoreService>();
 
@@ -31,6 +50,9 @@ namespace StatsDownloadApi.DataStore.Tests
             databaseServiceMock.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue).Returns(validatedFiles);
 
             fileValidationServiceMock = Substitute.For<IFileValidationService>();
+            fileValidationServiceMock.ValidateFile(Arg.Any<FilePayload>()).Returns(
+                new ParseResults(DateTime.MinValue, firstUsersData, null),
+                new ParseResults(DateTime.MaxValue, followingUsersData, null));
 
             filePayloadApiSettingsServiceMock = Substitute.For<IFilePayloadApiSettingsService>();
 
@@ -48,8 +70,17 @@ namespace StatsDownloadApi.DataStore.Tests
 
         private IStatsDownloadApiDataStoreService systemUnderTest;
 
+        private readonly ValidatedFile validatedFileMock1 =
+            new ValidatedFile(1, DateTime.Today.AddMinutes(1), "FilePath1");
+
+        private readonly ValidatedFile validatedFileMock2 =
+            new ValidatedFile(2, DateTime.Today.AddMinutes(2), "FilePath2");
+
+        private readonly ValidatedFile validatedFileMock3 =
+            new ValidatedFile(3, DateTime.Today.AddMinutes(3), "FilePath3");
+
         [Test]
-        public void GetFoldingMembers_WhenInvoked_GetsFoldingMembers()
+        public void GetFoldingMembers_WhenInvoked_GetsAndValidatesStatsFiles()
         {
             systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
 
@@ -57,14 +88,34 @@ namespace StatsDownloadApi.DataStore.Tests
             {
                 databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
 
-                filePayloadApiSettingsServiceMock.Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+                filePayloadApiSettingsServiceMock
+                    .Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>(), validatedFileMock1);
                 dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>());
                 fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
 
-                filePayloadApiSettingsServiceMock.Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+                filePayloadApiSettingsServiceMock
+                    .Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>(), validatedFileMock3);
                 dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>());
                 fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
             });
+        }
+
+        [Test]
+        public void GetFoldingMembers_WhenInvoked_GetsFoldingMembers()
+        {
+            FoldingUser[] actual = systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
+
+            Assert.That(actual.Length, Is.EqualTo(2));
+
+            Assert.That(actual[0].FriendlyName, Is.EqualTo("user1"));
+            Assert.That(actual[0].BitcoinAddress, Is.EqualTo("btc1"));
+            Assert.That(actual[0].PointsGained, Is.EqualTo(1));
+            Assert.That(actual[0].WorkUnitsGained, Is.EqualTo(1));
+
+            Assert.That(actual[1].FriendlyName, Is.EqualTo("user2"));
+            Assert.That(actual[1].BitcoinAddress, Is.EqualTo("btc2"));
+            Assert.That(actual[1].PointsGained, Is.EqualTo(2));
+            Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(2));
         }
 
         [Test]
