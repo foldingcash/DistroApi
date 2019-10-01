@@ -3,10 +3,10 @@
     using System;
     using System.Collections.Generic;
 
+    using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
 
     using StatsDownloadApi.Interfaces;
-    using StatsDownloadApi.Interfaces.DataTransfer;
 
     public class StatsDownloadApiDatabaseValidationProvider : IStatsDownloadApiDatabaseService
     {

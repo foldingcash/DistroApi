@@ -2,10 +2,8 @@
 {
     using StatsDownload.Core.Interfaces.DataTransfer;
 
-    using StatsDownloadApi.Interfaces.DataTransfer;
-
     public interface IFilePayloadApiSettingsService
     {
-        void SetFilePayloadApiSettings(FilePayload filePayload, ValidatedFile validatedFileForUpload);
+        void SetFilePayloadApiSettings(FilePayload filePayload);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Tests
+﻿namespace StatsDownload.Parsing.Tests
 {
     using System;
     using System.Linq;
@@ -12,16 +12,16 @@
     using StatsDownload.Parsing.Filters;
 
     [TestFixture]
-    public class TestWhitespaceNameUsersFilter
+    public class TestNoPaymentAddressUsersFilter
     {
         [SetUp]
         public void SetUp()
         {
             innerServiceMock = Substitute.For<IStatsFileParserService>();
 
-            settingsMock = Substitute.For<IWhitespaceNameUsersFilterSettings>();
+            settingsMock = Substitute.For<INoPaymentAddressUsersFilterSettings>();
 
-            systemUnderTest = new WhitespaceNameUsersFilter(innerServiceMock, settingsMock);
+            systemUnderTest = new NoPaymentAddressUsersFilter(innerServiceMock, settingsMock);
 
             downloadDateTime = DateTime.UtcNow;
         }
@@ -32,7 +32,7 @@
 
         private IStatsFileParserService innerServiceMock;
 
-        private IWhitespaceNameUsersFilterSettings settingsMock;
+        private INoPaymentAddressUsersFilterSettings settingsMock;
 
         private IStatsFileParserService systemUnderTest;
 
@@ -55,18 +55,13 @@
             settingsMock.Enabled.Returns(true);
 
             innerServiceMock.Parse(FilePayload).Returns(new ParseResults(downloadDateTime,
-                new[]
-                {
-                    new UserData(),
-                    new UserData(0, "", 0, 0, 0),
-                    new UserData(0, "\t", 0, 0, 0),
-                    new UserData(0, "name", 0, 0, 0)
-                }, new[] { new FailedUserData() }));
+                new[] { new UserData(), new UserData { BitcoinAddress = "addy" } },
+                new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse(FilePayload);
 
             Assert.That(actual.UsersData.Count(), Is.EqualTo(1));
-            Assert.That(actual.UsersData.Count(data => string.IsNullOrWhiteSpace(data.Name)), Is.EqualTo(0));
+            Assert.That(actual.UsersData.Count(data => string.IsNullOrWhiteSpace(data.BitcoinAddress)), Is.EqualTo(0));
         }
     }
 }

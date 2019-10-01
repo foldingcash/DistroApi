@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Tests
+﻿namespace StatsDownload.Parsing.Tests
 {
     using System;
 
@@ -6,7 +6,6 @@
 
     using NUnit.Framework;
 
-    using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Exceptions;

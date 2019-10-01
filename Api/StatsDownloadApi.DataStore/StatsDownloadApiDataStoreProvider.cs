@@ -78,8 +78,8 @@
         private ParseResults GetValidatedFile(ValidatedFile validatedFile)
         {
             var filePayload = new FilePayload();
-            filePayloadApiSettingsService.SetFilePayloadApiSettings(filePayload, validatedFile);
-            dataStoreService.DownloadFile(filePayload);
+            filePayloadApiSettingsService.SetFilePayloadApiSettings(filePayload);
+            dataStoreService.DownloadFile(filePayload, validatedFile);
             return fileValidationService.ValidateFile(filePayload);
         }
 

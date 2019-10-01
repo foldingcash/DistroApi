@@ -8,6 +8,7 @@
 
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Parsing;
 
     [TestFixture]
     public class TestDownloadSettingsValidatorProvider

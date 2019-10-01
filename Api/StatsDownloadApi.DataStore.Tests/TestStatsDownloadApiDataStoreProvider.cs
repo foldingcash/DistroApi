@@ -89,13 +89,13 @@ namespace StatsDownloadApi.DataStore.Tests
                 databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
 
                 filePayloadApiSettingsServiceMock
-                    .Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>(), validatedFileMock1);
-                dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>());
+                    .Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+                dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock1);
                 fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
 
                 filePayloadApiSettingsServiceMock
-                    .Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>(), validatedFileMock3);
-                dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>());
+                    .Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+                dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock3);
                 fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
             });
         }

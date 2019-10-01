@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Tests
+﻿namespace StatsDownload.Parsing.Tests
 {
     using System;
     using System.Linq;
@@ -12,16 +12,16 @@
     using StatsDownload.Parsing.Filters;
 
     [TestFixture]
-    public class TestGoogleUsersFilter
+    public class TestZeroPointUsersFilter
     {
         [SetUp]
         public void SetUp()
         {
             innerServiceMock = Substitute.For<IStatsFileParserService>();
 
-            settingsMock = Substitute.For<IGoogleUsersFilterSettings>();
+            settingsMock = Substitute.For<IZeroPointUsersFilterSettings>();
 
-            systemUnderTest = new GoogleUsersFilter(innerServiceMock, settingsMock);
+            systemUnderTest = new ZeroPointUsersFilter(innerServiceMock, settingsMock);
 
             downloadDateTime = DateTime.UtcNow;
         }
@@ -32,7 +32,7 @@
 
         private IStatsFileParserService innerServiceMock;
 
-        private IGoogleUsersFilterSettings settingsMock;
+        private IZeroPointUsersFilterSettings settingsMock;
 
         private IStatsFileParserService systemUnderTest;
 
@@ -55,23 +55,12 @@
             settingsMock.Enabled.Returns(true);
 
             innerServiceMock.Parse(FilePayload).Returns(new ParseResults(downloadDateTime,
-                new[]
-                {
-                    new UserData(),
-                    new UserData(0, "user", 0, 0, 0),
-                    new UserData(0, "GOOGLE", 0, 0, 0),
-                    new UserData(0, "Google", 0, 0, 0),
-                    new UserData(0, "google", 0, 0, 0),
-                    new UserData(0, "google123456", 0, 0, 0)
-                }, new[] { new FailedUserData() }));
+                new[] { new UserData(), new UserData(0, null, 1, 0, 0) },
+                new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse(FilePayload);
 
-            Assert.That(actual.UsersData.Count(), Is.EqualTo(2));
-            Assert.That(
-                actual.UsersData.Count(data =>
-                    data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ?? false),
-                Is.EqualTo(0));
+            Assert.That(actual.UsersData.Count(data => data.TotalPoints == 0), Is.EqualTo(0));
         }
     }
 }

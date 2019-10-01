@@ -19,7 +19,7 @@
             this.fileService = fileService;
         }
 
-        public void DownloadFile(FilePayload filePayload)
+        public void DownloadFile(FilePayload filePayload, ValidatedFile validatedFileMock1)
         {
             fileService.CopyFile(filePayload.UploadPath, filePayload.DownloadFilePath);
         }

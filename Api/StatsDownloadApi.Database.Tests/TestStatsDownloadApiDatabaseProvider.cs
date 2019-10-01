@@ -11,12 +11,12 @@
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Database.Tests;
 
     using StatsDownloadApi.Interfaces;
-    using StatsDownloadApi.Interfaces.DataTransfer;
 
     using Constants = StatsDownloadApi.Database.Constants;
 
