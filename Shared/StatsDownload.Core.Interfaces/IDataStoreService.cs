@@ -4,7 +4,7 @@
 
     public interface IDataStoreService
     {
-        void DownloadFile(FilePayload filePayload, ValidatedFile validatedFileMock1);
+        void DownloadFile(FilePayload filePayload, ValidatedFile validatedFile);
 
         bool IsAvailable();
 

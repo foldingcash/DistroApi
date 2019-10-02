@@ -1,10 +1,16 @@
 ﻿namespace StatsDownloadApi.WebApi
 {
+    using System.IO;
+    using System.Reflection;
+
     using Microsoft.Extensions.Configuration;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Email;
 
-    public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IEmailSettingsService
+    public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IEmailSettingsService,
+                                                    IDownloadSettingsService, IDataStoreSettings,
+                                                    IStatsFileDateTimeFormatsAndOffsetSettings
     {
         private readonly IConfiguration configuration;
 
@@ -13,11 +19,23 @@
             this.configuration = configuration;
         }
 
+        public string DataStoreType => GetAppSetting("DataStoreType");
+
+        public string UploadDirectory => GetAppSetting("UploadDirectory");
+
+        public string GetAcceptAnySslCert()
+        {
+            return GetAppSetting("AcceptAnySslCert");
+        }
+
         public int? GetCommandTimeout()
         {
             string commandTimeoutString = GetAppSetting("DbCommandTimeout");
             if (int.TryParse(commandTimeoutString, out int commandTimeoutValue))
+            {
                 return commandTimeoutValue;
+            }
+
             return null;
         }
 
@@ -31,6 +49,22 @@
             return GetAppSetting("DatabaseType");
         }
 
+        public string GetDownloadDirectory()
+        {
+            return GetAppSetting("DownloadDirectory")
+                   ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        }
+
+        public string GetDownloadTimeout()
+        {
+            return GetAppSetting("DownloadTimeoutSeconds");
+        }
+
+        public string GetDownloadUri()
+        {
+            return GetAppSetting("DownloadUri");
+        }
+
         public string GetFromAddress()
         {
             return GetAppSetting("FromAddress");
@@ -39,6 +73,11 @@
         public string GetFromDisplayName()
         {
             return GetAppSetting("DisplayName");
+        }
+
+        public string GetMinimumWaitTimeInHours()
+        {
+            return GetAppSetting("MinimumWaitTimeInHours");
         }
 
         public string GetPassword()
@@ -59,6 +98,11 @@
         public string GetSmtpHost()
         {
             return GetAppSetting("SmtpHost");
+        }
+
+        public string GetStatsFileTimeZoneAndOffsetSettings()
+        {
+            return GetAppSetting("StatsFileTimeZoneAndOffset");
         }
 
         private string GetAppSetting(string name)

@@ -19,9 +19,9 @@
             this.fileService = fileService;
         }
 
-        public void DownloadFile(FilePayload filePayload, ValidatedFile validatedFileMock1)
+        public void DownloadFile(FilePayload filePayload, ValidatedFile validatedFile)
         {
-            fileService.CopyFile(filePayload.UploadPath, filePayload.DownloadFilePath);
+            fileService.CopyFile(validatedFile.FilePath, filePayload.DownloadFilePath);
         }
 
         public bool IsAvailable()

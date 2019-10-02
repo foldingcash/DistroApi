@@ -63,6 +63,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Parsing", "..
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{8BAB7679-CD10-474A-ABF2-438A7E2D4DE9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.SharpZipLib", "..\Shared\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj", "{6A165606-402B-4F78-AB20-FC8D5F8D20BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +159,10 @@ Global
 		{E69907F2-CA26-43F1-AB82-2E5A9D8A7015}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E69907F2-CA26-43F1-AB82-2E5A9D8A7015}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E69907F2-CA26-43F1-AB82-2E5A9D8A7015}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A165606-402B-4F78-AB20-FC8D5F8D20BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A165606-402B-4F78-AB20-FC8D5F8D20BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A165606-402B-4F78-AB20-FC8D5F8D20BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A165606-402B-4F78-AB20-FC8D5F8D20BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -181,6 +187,7 @@ Global
 		{50D2D442-F3E5-45A3-9D26-622582BA8F4F} = {DA6DC0B9-25C3-4037-86E8-DEB86B026AD3}
 		{747FD8C9-0C27-4179-B145-2D997584D182} = {DA6DC0B9-25C3-4037-86E8-DEB86B026AD3}
 		{E69907F2-CA26-43F1-AB82-2E5A9D8A7015} = {8BAB7679-CD10-474A-ABF2-438A7E2D4DE9}
+		{6A165606-402B-4F78-AB20-FC8D5F8D20BE} = {8BAB7679-CD10-474A-ABF2-438A7E2D4DE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8E2BE45E-58C3-4886-A037-A5C5DF4A9F59}

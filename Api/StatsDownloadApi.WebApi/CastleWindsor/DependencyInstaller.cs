@@ -6,31 +6,38 @@
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
-    using Core;
-    using Database;
-    using Interfaces;
+
     using NLog;
-    using NLog.Config;
     using NLog.Web;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Database;
     using StatsDownload.Database.CastleWindsor;
     using StatsDownload.Database.Wrappers;
+    using StatsDownload.DataStore;
     using StatsDownload.Email;
     using StatsDownload.Logging;
+    using StatsDownload.Parsing;
+    using StatsDownload.SharpZipLib;
     using StatsDownload.Wrappers;
+
+    using StatsDownloadApi.Core;
+    using StatsDownloadApi.Database;
+    using StatsDownloadApi.DataStore;
+    using StatsDownloadApi.Interfaces;
 
     public class DependencyInstaller : IWindsorInstaller
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(Component.For<ILogger>()
-                                        .Instance(CreateLogger()));
+            container.Register(Component.For<ILogger>().Instance(CreateLogger()));
 
             container.Register(
-                Component.For<IDatabaseConnectionSettingsService, IEmailSettingsService>()
-                         .ImplementedBy<StatsDownloadApiSettingsProvider>(),
+                Component
+                    .For<IDatabaseConnectionSettingsService, IEmailSettingsService, IDownloadSettingsService,
+                        IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
+                    .ImplementedBy<StatsDownloadApiSettingsProvider>(),
                 Component.For<IApplicationLoggingService>().ImplementedBy<StatsDownloadApiLoggingProvider>(),
                 Component.For<IStatsDownloadApiEmailService>().ImplementedBy<StatsDownloadApiEmailProvider>());
 
@@ -46,12 +53,29 @@
                     selector.SelectedWith<DatabaseFactoryComponentSelector>()),
                 Component.For<IStatsDownloadApiTokenDistributionService>()
                          .ImplementedBy<StandardTokenDistributionProvider>(),
-                Component
-                    .For<IStatsDownloadDatabaseService>()
-                    .ImplementedBy<StatsDownloadDatabaseProvider>(),
+                Component.For<IStatsDownloadDatabaseService>().ImplementedBy<StatsDownloadDatabaseProvider>(),
+                Component.For<IStatsDownloadApiDatabaseService>()
+                         .ImplementedBy<StatsDownloadApiDatabaseValidationProvider>(),
                 Component.For<IStatsDownloadApiDatabaseService>().ImplementedBy<StatsDownloadApiDatabaseProvider>(),
-                Component.For<IStatsDownloadApiService>().ImplementedBy<StatsDownloadApiProvider>()
-            );
+                Component.For<IStatsDownloadApiService>().ImplementedBy<StatsDownloadApiProvider>(),
+                Component.For<IStatsDownloadApiDataStoreService>().ImplementedBy<StatsDownloadApiDataStoreProvider>(),
+                Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
+                Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DataStoreFactoryComponentSelector>(),
+                Component.For<IDataStoreServiceFactory>().AsFactory(selector =>
+                    selector.SelectedWith<DataStoreFactoryComponentSelector>()),
+                Component.For<IFileService>().ImplementedBy<FileProvider>(),
+                Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>(),
+                Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
+                Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
+                Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
+                Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
+                Component.For<IStatsFileDateTimeFormatsAndOffsetService>()
+                         .ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>(),
+                Component.For<IFilePayloadApiSettingsService>().ImplementedBy<FilePayloadApiSettingsProvider>(),
+                Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
+                Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
+                Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>());
         }
 
         private ILogger CreateLogger()

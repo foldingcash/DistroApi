@@ -86,6 +86,9 @@
                 Component.For<IWebClient>().ImplementedBy<WebClientWrapper>().LifestyleTransient(),
                 Component.For<IWebClientFactory>().AsFactory(),
                 Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
+                Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DataStoreFactoryComponentSelector>(),
+                Component.For<IDataStoreServiceFactory>().AsFactory(selector =>
+                    selector.SelectedWith<DataStoreFactoryComponentSelector>()),
                 Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>());
         }
     }
