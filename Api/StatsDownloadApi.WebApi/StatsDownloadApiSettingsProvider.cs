@@ -10,7 +10,7 @@
 
     public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IEmailSettingsService,
                                                     IDownloadSettingsService, IDataStoreSettings,
-                                                    IStatsFileDateTimeFormatsAndOffsetSettings
+                                                    IStatsFileDateTimeFormatsAndOffsetSettings, INoPaymentAddressUsersFilterSettings
     {
         private readonly IConfiguration configuration;
 
@@ -108,6 +108,14 @@
         private string GetAppSetting(string name)
         {
             return configuration.GetSection("AppSettings").GetValue<string>(name);
+        }
+
+        bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolAppSetting("EnableNoPaymentAddressUsersFilter");
+
+        private bool GetBoolAppSetting(string appSettingName)
+        {
+            bool.TryParse(GetAppSetting(appSettingName), out bool value);
+            return value;
         }
     }
 }

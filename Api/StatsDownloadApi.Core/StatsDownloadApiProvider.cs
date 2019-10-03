@@ -52,7 +52,7 @@
                 loggingService.LogMethodFinished();
                 return new GetDistroResponse(errors);
             }
-            
+
             IList<FoldingUser> foldingMembers = GetFoldingMembers(startDate, endDate);
             IList<DistroUser> distro = GetDistro(amount, foldingMembers);
 
@@ -83,7 +83,7 @@
                 startDateTime = startDateTime.Date.AddHours(12);
                 endDateTime = endDateTime.Date.AddHours(36);
             }
-            
+
             IList<Member> members = statsDownloadApiDataStoreService.GetMembers(startDateTime, endDateTime);
 
             var memberStatsResponse = new GetMemberStatsResponse(members);
@@ -104,7 +104,7 @@
                 loggingService.LogMethodFinished();
                 return new GetTeamsResponse(errors);
             }
-            
+
             IList<Team> teams = statsDownloadApiDataStoreService.GetTeams();
 
             var teamsResponse = new GetTeamsResponse(teams);

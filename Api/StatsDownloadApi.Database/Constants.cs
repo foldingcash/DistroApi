@@ -12,9 +12,14 @@
                 $"{StatsDownloadConstants.StatsDownloadDatabase.DatabaseSchema}{StatsDownloadConstants.StatsDownloadDatabase.SchemaSeparator}[GetMembers]";
             public static readonly string GetTeamsProcedureName =
                 $"{StatsDownloadConstants.StatsDownloadDatabase.DatabaseSchema}{StatsDownloadConstants.StatsDownloadDatabase.SchemaSeparator}[GetTeams]";
+            public static readonly string ValidatedFilesViewName =
+                $"{StatsDownloadConstants.StatsDownloadDatabase.DatabaseSchema}{StatsDownloadConstants.StatsDownloadDatabase.SchemaSeparator}[ValidatedFiles]";
             public static readonly string[] ApiObjects =
             {
-                GetFoldingMembersProcedureName, GetMembersProcedureName, GetTeamsProcedureName
+                //GetFoldingMembersProcedureName,
+                //GetMembersProcedureName, GetTeamsProcedureName
+                GetValidatedFilesProcedureName,
+                ValidatedFilesViewName
             };
 
             public static string GetValidatedFilesProcedureName =>

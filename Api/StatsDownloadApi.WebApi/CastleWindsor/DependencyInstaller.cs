@@ -19,6 +19,7 @@
     using StatsDownload.Email;
     using StatsDownload.Logging;
     using StatsDownload.Parsing;
+    using StatsDownload.Parsing.Filters;
     using StatsDownload.SharpZipLib;
     using StatsDownload.Wrappers;
 
@@ -36,7 +37,7 @@
             container.Register(
                 Component
                     .For<IDatabaseConnectionSettingsService, IEmailSettingsService, IDownloadSettingsService,
-                        IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
+                        IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>().Forward<INoPaymentAddressUsersFilterSettings>()
                     .ImplementedBy<StatsDownloadApiSettingsProvider>(),
                 Component.For<IApplicationLoggingService>().ImplementedBy<StatsDownloadApiLoggingProvider>(),
                 Component.For<IStatsDownloadApiEmailService>().ImplementedBy<StatsDownloadApiEmailProvider>());
@@ -67,6 +68,7 @@
                 Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<NoPaymentAddressUsersFilter>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
                 Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
                 Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
