@@ -8,16 +8,10 @@ DEL /Q ".\Files\x64\*"
 CD..
 CD StatsDownload.FileDownload.Console
 
---TODO: Fix the self contained publishing
---dotnet publish -c Release --self-contained -r win-x64
---COPY /Y "bin\Release\netcoreapp2.2\win-x64\publish\*" "..\StatsDownloadSetup\Files\x64"
---dotnet publish -c Release --self-contained -r win-x86
---COPY /Y "bin\Release\netcoreapp2.2\win-x86\publish\*" "..\StatsDownloadSetup\Files\x86"
-
 dotnet publish -c Release
-COPY /Y "bin\Release\netcoreapp2.2\publish\*" "..\StatsDownloadSetup\Files\x64"
+XCOPY "bin\Release\netcoreapp2.2\publish" "..\StatsDownloadSetup\Files\x64" /e
 dotnet publish -c Release
-COPY /Y "bin\Release\netcoreapp2.2\publish\*" "..\StatsDownloadSetup\Files\x86"
+XCOPY "bin\Release\netcoreapp2.2\publish" "..\StatsDownloadSetup\Files\x86" /e
 
 CD..
 CD StatsDownloadSetup
