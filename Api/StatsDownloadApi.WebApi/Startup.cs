@@ -31,10 +31,13 @@
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddLazyCache();
+
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             });
+
             WindsorContainer.Instance.Register(Component.For<IConfiguration>().Instance(Configuration));
         }
     }

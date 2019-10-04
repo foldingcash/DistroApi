@@ -8,6 +8,7 @@ namespace StatsDownloadApi.DataStore.Tests
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Logging;
 
     using StatsDownloadApi.Interfaces;
     using StatsDownloadApi.Interfaces.DataTransfer;
@@ -56,9 +57,13 @@ namespace StatsDownloadApi.DataStore.Tests
 
             filePayloadApiSettingsServiceMock = Substitute.For<IFilePayloadApiSettingsService>();
 
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
             systemUnderTest = new StatsDownloadApiDataStoreProvider(dataStoreServiceMock, databaseServiceMock,
-                fileValidationServiceMock, filePayloadApiSettingsServiceMock);
+                fileValidationServiceMock, filePayloadApiSettingsServiceMock, loggingServiceMock);
         }
+
+        private ILoggingService loggingServiceMock;
 
         private IStatsDownloadApiDatabaseService databaseServiceMock;
 

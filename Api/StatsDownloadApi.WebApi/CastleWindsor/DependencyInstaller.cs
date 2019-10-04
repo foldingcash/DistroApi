@@ -59,6 +59,8 @@
                          .ImplementedBy<StatsDownloadApiDatabaseValidationProvider>(),
                 Component.For<IStatsDownloadApiDatabaseService>().ImplementedBy<StatsDownloadApiDatabaseProvider>(),
                 Component.For<IStatsDownloadApiService>().ImplementedBy<StatsDownloadApiProvider>(),
+                Component.For<IStatsDownloadApiDataStoreService>()
+                         .ImplementedBy<StatsDownloadApiDataStoreCacheProvider>(),
                 Component.For<IStatsDownloadApiDataStoreService>().ImplementedBy<StatsDownloadApiDataStoreProvider>(),
                 Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
                 Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DataStoreFactoryComponentSelector>(),
