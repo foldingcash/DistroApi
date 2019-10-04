@@ -1,12 +1,19 @@
 ﻿namespace StatsDownloadApi.WebApi
 {
-    using Castle.MicroKernel.Registration;
-    using CastleWindsor;
+    using System;
+
+    using Castle.Windsor.MsDependencyInjection;
+
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+
     using Newtonsoft.Json;
+
+    using StatsDownloadApi.WebApi.CastleWindsor;
+
+    using ApiWindsorContainer = StatsDownloadApi.WebApi.CastleWindsor.WindsorContainer;
 
     public class Startup
     {
@@ -29,16 +36,21 @@
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            //services.AddLazyCache();
-
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             });
 
-            WindsorContainer.Instance.Register(Component.For<IConfiguration>().Instance(Configuration));
+            services.AddOptions();
+            services.AddLazyCache();
+            services.AddSingleton(Configuration);
+
+            IServiceProvider provider =
+                WindsorRegistrationHelper.CreateServiceProvider(ApiWindsorContainer.Instance, services);
+            DependencyRegistration.Register();
+            return provider;
         }
     }
 }

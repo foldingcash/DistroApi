@@ -21,12 +21,8 @@
 
         public static void Main(string[] args)
         {
-            DependencyRegistration.Register();
-
             BuildWebHost(args).Run();
-
             WindsorContainer.Dispose();
-
             LogManager.Shutdown();
         }
     }

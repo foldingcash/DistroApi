@@ -7,6 +7,11 @@
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
 
+    using LazyCache;
+    using LazyCache.Providers;
+
+    using Microsoft.Extensions.Caching.Memory;
+
     using NLog;
     using NLog.Web;
 
