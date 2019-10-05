@@ -49,7 +49,7 @@
 
             IServiceProvider provider =
                 WindsorRegistrationHelper.CreateServiceProvider(ApiWindsorContainer.Instance, services);
-            DependencyRegistration.Register();
+            DependencyRegistration.Register(); // This registration must come after the provider creation
             return provider;
         }
     }

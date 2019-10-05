@@ -12,4 +12,13 @@
     <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="LazyCache">
+      <HintPath>..\..\..\..\..\..\.nuget\packages\lazycache\2.0.1\lib\netstandard2.0\LazyCache.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>..\..\..\..\..\..\.nuget\packages\microsoft.extensions.logging.abstractions\2.2.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

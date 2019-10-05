@@ -63,12 +63,12 @@
         private FoldingUser[] AggregateParseResults(ParseResults firstFileResults, ParseResults lastFileResults)
         {
             loggingService.LogMethodInvoked();
-            var length = lastFileResults.UsersData.Count();
+            int length = lastFileResults.UsersData.Count();
             var foldingUsers = new List<FoldingUser>(length);
-            
+
             foreach (UserData userData in lastFileResults.UsersData)
             {
-                var previous = firstFileResults.UsersData.FirstOrDefault(user => user.Name == userData.Name);
+                UserData previous = firstFileResults.UsersData.FirstOrDefault(user => user.Name == userData.Name);
                 if (previous is UserData)
                 {
                     foldingUsers.Add(new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
