@@ -3,5 +3,7 @@
     public interface IAzureDataStoreSettingsService
     {
         string ConnectionString { get; }
+
+        string ContainerName { get; }
     }
 }
