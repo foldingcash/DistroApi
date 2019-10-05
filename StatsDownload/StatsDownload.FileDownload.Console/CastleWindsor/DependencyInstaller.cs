@@ -85,6 +85,7 @@
                 Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>(),
                 Component.For<IWebClient>().ImplementedBy<WebClientWrapper>().LifestyleTransient(),
                 Component.For<IWebClientFactory>().AsFactory(),
+                Component.For<IDataStoreService>().ImplementedBy<AzureDataStoreProvider>(),
                 Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
                 Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),

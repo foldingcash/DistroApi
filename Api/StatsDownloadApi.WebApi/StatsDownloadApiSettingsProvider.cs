@@ -10,7 +10,8 @@
 
     public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IEmailSettingsService,
                                                     IDownloadSettingsService, IDataStoreSettings,
-                                                    IStatsFileDateTimeFormatsAndOffsetSettings, INoPaymentAddressUsersFilterSettings
+                                                    IStatsFileDateTimeFormatsAndOffsetSettings,
+                                                    INoPaymentAddressUsersFilterSettings, IAzureDataStoreSettingsService
     {
         private readonly IConfiguration configuration;
 
@@ -19,7 +20,13 @@
             this.configuration = configuration;
         }
 
+        public string ConnectionString => GetAppSetting("FoldingCoin.Storage");
+
+        public string ContainerName => GetAppSetting("AzureDataStore.ContainerName");
+
         public string DataStoreType => GetAppSetting("DataStoreType");
+
+        bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolAppSetting("EnableNoPaymentAddressUsersFilter");
 
         public string UploadDirectory => GetAppSetting("UploadDirectory");
 
@@ -109,8 +116,6 @@
         {
             return configuration.GetSection("AppSettings").GetValue<string>(name);
         }
-
-        bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolAppSetting("EnableNoPaymentAddressUsersFilter");
 
         private bool GetBoolAppSetting(string appSettingName)
         {
