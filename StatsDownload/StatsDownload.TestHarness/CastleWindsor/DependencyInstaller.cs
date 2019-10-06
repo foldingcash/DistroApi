@@ -32,7 +32,7 @@
                     .ImplementedBy<TestHarnessSettingsProvider>()
                     .Forward<IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
                         IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings>()
-                    .Forward<IStatsFileDateTimeFormatsAndOffsetSettings, IDataStoreSettings>(),
+                    .Forward<IStatsFileDateTimeFormatsAndOffsetSettings, IDataStoreSettings, IAzureDataStoreSettingsService>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),
@@ -85,11 +85,13 @@
                 Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>(),
                 Component.For<IWebClient>().ImplementedBy<WebClientWrapper>().LifestyleTransient(),
                 Component.For<IWebClientFactory>().AsFactory(),
+                Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>());
+
+            container.Register(Component.For<IDataStoreService>().ImplementedBy<AzureDataStoreProvider>(),
                 Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
                 Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DataStoreFactoryComponentSelector>(),
                 Component.For<IDataStoreServiceFactory>().AsFactory(selector =>
-                    selector.SelectedWith<DataStoreFactoryComponentSelector>()),
-                Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>());
+                    selector.SelectedWith<DataStoreFactoryComponentSelector>()));
         }
     }
 }
