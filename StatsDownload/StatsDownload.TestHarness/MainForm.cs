@@ -40,6 +40,10 @@
             LoggingTextBox.AppendText(message);
         }
 
+        private void CompressButton_Click(object sender, EventArgs e)
+        {
+        }
+
         private void CreateFileDownloadServiceAndPerformAction(Action<IFileDownloadService> fileDownloadServiceAction)
         {
             IFileDownloadService fileDownloadService = null;
@@ -55,27 +59,16 @@
             }
         }
 
-        private void CreateFileUploadServiceAndPerformAction(Action<IStatsUploadService> fileUploadServiceAction)
-        {
-            IStatsUploadService fileUploadService = null;
-
-            try
-            {
-                fileUploadService = WindsorContainer.Instance.Resolve<IStatsUploadService>();
-                fileUploadServiceAction?.Invoke(fileUploadService);
-            }
-            finally
-            {
-                WindsorContainer.Instance.Release(fileUploadService);
-            }
-        }
-
         private void CreateSeparationInLog()
         {
             if (LoggingTextBox.Text.Length != 0)
             {
                 Log(new string('-', 100));
             }
+        }
+
+        private void DecompressButton_Click(object sender, EventArgs e)
+        {
         }
 
         private void EnableGui(bool enable)
@@ -191,8 +184,6 @@
 
                     Log($"File imported. '{filesRemaining}' remaining files to be imported");
                 }
-
-                CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFiles(); });
 
                 ConfigurationManager.RefreshSection("appSettings");
             });
