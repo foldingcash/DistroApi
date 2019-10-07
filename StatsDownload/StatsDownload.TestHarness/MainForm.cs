@@ -250,22 +250,76 @@
                     return;
                 }
 
-                ConfigurationManager.AppSettings["FileCompressionDisabled"] = "true";
                 ConfigurationManager.AppSettings["DisableMinimumWaitTime"] = "true";
 
                 int filesRemaining = importFiles.Length;
 
                 Log($"'{filesRemaining}' files are to be imported");
 
-                foreach (string importFile in importFiles)
+                IFileCompressionService fileCompressionService = null;
+
+                try
                 {
-                    ConfigurationManager.AppSettings["DownloadUri"] = importFile;
+                    fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
 
-                    CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); });
+                    foreach (string importFile in importFiles)
+                    {
+                        string compressedFile = $"{importFile}.bz2";
 
-                    filesRemaining--;
+                        fileCompressionService.CompressFile(importFile, compressedFile);
 
-                    Log($"File imported. '{filesRemaining}' remaining files to be imported");
+                        ConfigurationManager.AppSettings["DownloadUri"] = compressedFile;
+
+                        CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); });
+
+                        filesRemaining--;
+
+                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
+                    }
+                }
+                finally
+                {
+                    WindsorContainer.Instance.Release(fileCompressionService);
+                }
+
+                ConfigurationManager.RefreshSection("appSettings");
+
+                // TODO: Refactor dup code
+                importFiles = Directory.GetFiles(importDirectory, "*.bz2", SearchOption.TopDirectoryOnly);
+
+                if (importFiles.Length == 0)
+                {
+                    Log(
+                        $"There are no text files in the top directory, provide a directory with files to import and try again. Directory: '{importDirectory}'");
+                    return;
+                }
+
+                ConfigurationManager.AppSettings["DisableMinimumWaitTime"] = "true";
+
+                filesRemaining = importFiles.Length;
+
+                Log($"'{filesRemaining}' files are to be imported");
+
+                fileCompressionService = null;
+
+                try
+                {
+                    fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
+
+                    foreach (string importFile in importFiles)
+                    {
+                        ConfigurationManager.AppSettings["DownloadUri"] = importFile;
+
+                        CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); });
+
+                        filesRemaining--;
+
+                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
+                    }
+                }
+                finally
+                {
+                    WindsorContainer.Instance.Release(fileCompressionService);
                 }
 
                 ConfigurationManager.RefreshSection("appSettings");
