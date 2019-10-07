@@ -40,19 +40,27 @@
         {
             loggingService.LogMethodInvoked();
             ParseResults[] parsedFiles = GetValidatedFiles(startDate, endDate);
-            FoldingUser[] results = AggregateParseResults(parsedFiles.First(), parsedFiles.Last());
+            FoldingUser[] foldingUsers = GetFoldingUsers(parsedFiles.First(), parsedFiles.Last());
             loggingService.LogMethodFinished();
-            return results;
+            return foldingUsers;
         }
 
-        public Member[] GetMembers(DateTime minValue, DateTime endDate)
+        public Member[] GetMembers(DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            loggingService.LogMethodInvoked();
+            ParseResults[] parsedFiles = GetValidatedFiles(startDate, endDate);
+            Member[] members = GetMembers(parsedFiles.First(), parsedFiles.Last());
+            loggingService.LogMethodFinished();
+            return members;
         }
 
         public Team[] GetTeams()
         {
-            throw new NotImplementedException();
+            loggingService.LogMethodInvoked();
+            ParseResults[] parsedFiles = GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
+            Team[] teams = GetTeams(parsedFiles.Last());
+            loggingService.LogMethodFinished();
+            return teams;
         }
 
         public bool IsAvailable()
@@ -60,7 +68,7 @@
             return dataStoreService.IsAvailable();
         }
 
-        private FoldingUser[] AggregateParseResults(ParseResults firstFileResults, ParseResults lastFileResults)
+        private FoldingUser[] GetFoldingUsers(ParseResults firstFileResults, ParseResults lastFileResults)
         {
             loggingService.LogMethodInvoked();
             int length = lastFileResults.UsersData.Count();
@@ -86,6 +94,55 @@
             return foldingUsers.ToArray();
         }
 
+        private Member[] GetMembers(ParseResults firstFileResults, ParseResults lastFileResults)
+        {
+            loggingService.LogMethodInvoked();
+            var members = new List<Member>(lastFileResults.UsersData.Count());
+
+            foreach (UserData lastUserData in lastFileResults.UsersData)
+            {
+                UserData firstUserData =
+                    firstFileResults.UsersData.FirstOrDefault(user => user.Name == lastUserData.Name);
+
+                if (firstUserData == default(UserData))
+                {
+                    members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress,
+                        lastUserData.TeamNumber, 0, 0, lastUserData.TotalPoints, lastUserData.TotalWorkUnits));
+                    continue;
+                }
+
+                members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress,
+                    lastUserData.TeamNumber, firstUserData.TotalPoints, firstUserData.TotalWorkUnits,
+                    lastUserData.TotalPoints - firstUserData.TotalPoints,
+                    lastUserData.TotalWorkUnits - firstUserData.TotalWorkUnits));
+            }
+
+            loggingService.LogMethodFinished();
+            return members.ToArray();
+        }
+
+        private Team[] GetTeams(ParseResults lastFileResults)
+        {
+            loggingService.LogMethodInvoked();
+            var teams = new List<Team>();
+
+            foreach (UserData userData in lastFileResults.UsersData)
+            {
+                long teamNumber = userData.TeamNumber;
+
+                if (teams.Any(team => team.TeamNumber == teamNumber))
+                {
+                    continue;
+                }
+
+                // TODO: Get the team name
+                teams.Add(new Team(teamNumber, ""));
+            }
+
+            loggingService.LogMethodFinished();
+            return teams.ToArray();
+        }
+
         private ParseResults GetValidatedFile(ValidatedFile validatedFile)
         {
             loggingService.LogMethodInvoked();
@@ -101,10 +158,8 @@
         {
             loggingService.LogMethodInvoked();
             IList<ValidatedFile> validatedFiles = databaseService.GetValidatedFiles(startDate, endDate);
-            ParseResults[] results =
-            {
-                GetValidatedFile(validatedFiles.First()), GetValidatedFile(validatedFiles.Last())
-            };
+            IOrderedEnumerable<ValidatedFile> orderedFiles = validatedFiles.OrderBy(file => file.DownloadDateTime);
+            ParseResults[] results = { GetValidatedFile(orderedFiles.First()), GetValidatedFile(orderedFiles.Last()) };
             loggingService.LogMethodFinished();
             return results;
         }

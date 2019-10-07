@@ -8,7 +8,7 @@
     {
         FoldingUser[] GetFoldingMembers(DateTime startDate, DateTime endDate);
 
-        Member[] GetMembers(DateTime minValue, DateTime endDate);
+        Member[] GetMembers(DateTime startDate, DateTime endDate);
 
         Team[] GetTeams();
 

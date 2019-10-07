@@ -1,6 +1,7 @@
 ﻿namespace StatsDownloadApi.DataStore
 {
     using System;
+    using System.Runtime.CompilerServices;
 
     using LazyCache;
 
@@ -25,27 +26,31 @@
 
         public FoldingUser[] GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
-            return cache.GetOrAdd($"{nameof(GetFoldingMembers)}-{startDate}-{endDate}",
-                () => innerService.GetFoldingMembers(startDate, endDate),
-                DateTimeOffset.Now.AddHours(cacheDurationInHours));
+            return GetOrAdd(() => innerService.GetFoldingMembers(startDate, endDate),
+                DateTimeOffset.Now.AddHours(cacheDurationInHours), $"{startDate}-{endDate}");
         }
 
         public Member[] GetMembers(DateTime startDate, DateTime endDate)
         {
-            return cache.GetOrAdd($"{nameof(GetMembers)}-{startDate}-{endDate}",
-                () => innerService.GetMembers(startDate, endDate), DateTimeOffset.Now.AddHours(cacheDurationInHours));
+            return GetOrAdd(() => innerService.GetMembers(startDate, endDate),
+                DateTimeOffset.Now.AddHours(cacheDurationInHours), $"{startDate}-{endDate}");
         }
 
         public Team[] GetTeams()
         {
-            return cache.GetOrAdd($"{nameof(GetTeams)}", () => innerService.GetTeams(),
-                DateTimeOffset.Now.AddHours(cacheDurationInHours));
+            return GetOrAdd(() => innerService.GetTeams(), DateTimeOffset.Now.AddHours(cacheDurationInHours));
         }
 
         public bool IsAvailable()
         {
-            return cache.GetOrAdd(nameof(IsAvailable), () => innerService.IsAvailable(),
+            return GetOrAdd(() => innerService.IsAvailable(),
                 DateTimeOffset.Now.AddMinutes(minimalCacheDurationInMinutes));
+        }
+
+        private T GetOrAdd<T>(Func<T> func, DateTimeOffset addHours, string key = null,
+                              [CallerMemberName] string method = null)
+        {
+            return cache.GetOrAdd($"{method}-{key}", func, addHours);
         }
     }
 }

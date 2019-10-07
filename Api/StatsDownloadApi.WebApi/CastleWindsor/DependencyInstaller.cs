@@ -7,11 +7,6 @@
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
 
-    using LazyCache;
-    using LazyCache.Providers;
-
-    using Microsoft.Extensions.Caching.Memory;
-
     using NLog;
     using NLog.Web;
 
@@ -42,8 +37,8 @@
             container.Register(
                 Component
                     .For<IDatabaseConnectionSettingsService, IEmailSettingsService, IDownloadSettingsService,
-                        IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>().Forward<INoPaymentAddressUsersFilterSettings>()
-                    .ImplementedBy<StatsDownloadApiSettingsProvider>(),
+                        IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
+                    .Forward<INoPaymentAddressUsersFilterSettings>().ImplementedBy<StatsDownloadApiSettingsProvider>(),
                 Component.For<IApplicationLoggingService>().ImplementedBy<StatsDownloadApiLoggingProvider>(),
                 Component.For<IStatsDownloadApiEmailService>().ImplementedBy<StatsDownloadApiEmailProvider>());
 
@@ -61,6 +56,8 @@
                          .ImplementedBy<StandardTokenDistributionProvider>(),
                 Component.For<IStatsDownloadDatabaseService>().ImplementedBy<StatsDownloadDatabaseProvider>(),
                 Component.For<IStatsDownloadApiDatabaseService>()
+                         .ImplementedBy<StatsDownloadApiDatabaseCacheProvider>(),
+                Component.For<IStatsDownloadApiDatabaseService>()
                          .ImplementedBy<StatsDownloadApiDatabaseValidationProvider>(),
                 Component.For<IStatsDownloadApiDatabaseService>().ImplementedBy<StatsDownloadApiDatabaseProvider>(),
                 Component.For<IStatsDownloadApiService>().ImplementedBy<StatsDownloadApiProvider>(),
@@ -76,16 +73,17 @@
                 Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
-                Component.For<IStatsFileParserService>().ImplementedBy<NoPaymentAddressUsersFilter>(),
-                Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
-                Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
-                Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
-                Component.For<IStatsFileDateTimeFormatsAndOffsetService>()
-                         .ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>(),
                 Component.For<IFilePayloadApiSettingsService>().ImplementedBy<FilePayloadApiSettingsProvider>(),
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
                 Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>());
+
+            container.Register(Component.For<IStatsFileParserService>().ImplementedBy<NoPaymentAddressUsersFilter>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
+                Component.For<IAdditionalUserDataParserService>().ImplementedBy<AdditionalUserDataParserProvider>(),
+                Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
+                Component.For<IStatsFileDateTimeFormatsAndOffsetService>()
+                         .ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>());
         }
 
         private ILogger CreateLogger()
