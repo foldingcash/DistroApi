@@ -40,8 +40,49 @@
             LoggingTextBox.AppendText(message);
         }
 
-        private void CompressButton_Click(object sender, EventArgs e)
+        private async void CompressButton_Click(object sender, EventArgs e)
         {
+            await RunActionAsync(() =>
+            {
+                string compressDirectory = CompressDirectoryTextBox.Text;
+
+                if (!Directory.Exists(compressDirectory))
+                {
+                    Log(
+                        $"The directory does not exist, provide a new directory and try again. Directory: '{compressDirectory}'");
+                    return;
+                }
+
+                string[] importFiles = Directory.GetFiles(compressDirectory, "*.txt", SearchOption.TopDirectoryOnly);
+
+                if (importFiles.Length == 0)
+                {
+                    Log(
+                        $"There are no text files in the top directory, provide a directory with files to compress and try again. Directory: '{compressDirectory}'");
+                    return;
+                }
+
+                int filesRemaining = importFiles.Length;
+
+                IFileCompressionService fileCompressionService = null;
+                try
+                {
+                    fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
+
+                    Log($"'{filesRemaining}' files are to be imported");
+
+                    foreach (string importFile in importFiles)
+                    {
+                        fileCompressionService.CompressFile(importFile, $"{importFile}.bz2");
+                        filesRemaining--;
+                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
+                    }
+                }
+                finally
+                {
+                    WindsorContainer.Instance.Release(fileCompressionService);
+                }
+            });
         }
 
         private void CreateFileDownloadServiceAndPerformAction(Action<IFileDownloadService> fileDownloadServiceAction)
@@ -67,8 +108,50 @@
             }
         }
 
-        private void DecompressButton_Click(object sender, EventArgs e)
+        private async void DecompressButton_Click(object sender, EventArgs e)
         {
+            await RunActionAsync(() =>
+            {
+                string decompressDirectory = DecompressDirectoryTextBox.Text;
+
+                if (!Directory.Exists(decompressDirectory))
+                {
+                    Log(
+                        $"The directory does not exist, provide a new directory and try again. Directory: '{decompressDirectory}'");
+                    return;
+                }
+
+                string[] importFiles = Directory.GetFiles(decompressDirectory, "*.bz2", SearchOption.TopDirectoryOnly);
+
+                if (importFiles.Length == 0)
+                {
+                    Log(
+                        $"There are no text files in the top directory, provide a directory with files to decompress and try again. Directory: '{decompressDirectory}'");
+                    return;
+                }
+
+                int filesRemaining = importFiles.Length;
+
+                IFileCompressionService fileCompressionService = null;
+                try
+                {
+                    fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
+
+                    Log($"'{filesRemaining}' files are to be imported");
+
+                    foreach (string importFile in importFiles)
+                    {
+                        fileCompressionService.DecompressFile(importFile,
+                            importFile.Substring(importFile.Length - 4, 4));
+                        filesRemaining--;
+                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
+                    }
+                }
+                finally
+                {
+                    WindsorContainer.Instance.Release(fileCompressionService);
+                }
+            });
         }
 
         private void EnableGui(bool enable)
