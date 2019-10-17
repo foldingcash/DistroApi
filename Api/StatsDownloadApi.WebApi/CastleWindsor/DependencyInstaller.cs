@@ -38,7 +38,7 @@
                 Component
                     .For<IDatabaseConnectionSettingsService, IEmailSettingsService, IDownloadSettingsService,
                         IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
-                    .Forward<INoPaymentAddressUsersFilterSettings>().ImplementedBy<StatsDownloadApiSettingsProvider>(),
+                    .Forward<INoPaymentAddressUsersFilterSettings, IAzureDataStoreSettingsService>().ImplementedBy<StatsDownloadApiSettingsProvider>(),
                 Component.For<IApplicationLoggingService>().ImplementedBy<StatsDownloadApiLoggingProvider>(),
                 Component.For<IStatsDownloadApiEmailService>().ImplementedBy<StatsDownloadApiEmailProvider>());
 

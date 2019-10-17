@@ -1,8 +1,10 @@
 ﻿namespace StatsDownloadApi.WebApi.Controllers
 {
     using System;
-    using Interfaces;
+
     using Microsoft.AspNetCore.Mvc;
+
+    using StatsDownloadApi.Interfaces;
 
     [Produces("application/json")]
     [Route("v1/[controller]")]

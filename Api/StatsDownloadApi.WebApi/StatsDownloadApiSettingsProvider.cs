@@ -48,7 +48,7 @@
 
         public string GetConnectionString()
         {
-            return configuration.GetConnectionString("FoldingCoin");
+            return configuration.GetConnectionString("FoldingCoin.Database");
         }
 
         public string GetDatabaseType()
