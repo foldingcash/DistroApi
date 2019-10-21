@@ -15,7 +15,7 @@
         public ApiResponse Get()
         {
             DateTime today = DateTime.Today;
-            return InvokeApiService(apiService => apiService.GetMemberStats(today.AddDays(-2), today));
+            return InvokeApiService(apiService => apiService.GetMemberStats(DateTime.MinValue, today.AddDays(-1)));
         }
     }
 }
