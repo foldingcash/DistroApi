@@ -3,9 +3,10 @@
     using System;
     using System.Data;
     using System.Data.Common;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
-    using Core.Interfaces.Enums;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public class StatsDownloadDatabaseParameterProvider : IStatsDownloadDatabaseParameterService
     {
@@ -30,7 +31,7 @@
         }
 
         public DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnection,
-            ParameterDirection direction)
+                                                     ParameterDirection direction)
         {
             DbParameter downloadIdParameter = CreateDownloadIdParameter(databaseConnection);
             downloadIdParameter.Direction = direction;
@@ -38,7 +39,7 @@
         }
 
         public DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection,
-            FileDownloadResult fileDownloadResult)
+                                                       FileDownloadResult fileDownloadResult)
         {
             FilePayload filePayload = fileDownloadResult.FilePayload;
             string message = errorMessageService.GetErrorMessage(fileDownloadResult.FailedReason, filePayload,
@@ -47,7 +48,7 @@
         }
 
         public DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection,
-            StatsUploadResult statsUploadResult)
+                                                       StatsUploadResult statsUploadResult)
         {
             string message =
                 errorMessageService.GetErrorMessage(statsUploadResult.FailedReason, StatsDownloadService.StatsUpload);
@@ -56,8 +57,7 @@
 
         public DbParameter CreateRejectionReasonParameter(IDatabaseConnectionService databaseConnection)
         {
-            return databaseConnection.CreateParameter("@RejectionReason",
-                DbType.String, ParameterDirection.Input);
+            return databaseConnection.CreateParameter("@RejectionReason", DbType.String, ParameterDirection.Input);
         }
 
         private DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnection, string message)

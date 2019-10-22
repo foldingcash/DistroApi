@@ -2,9 +2,11 @@
 {
     using System.Data;
     using System.Data.Common;
-    using Core.Interfaces;
+
     using NSubstitute;
     using NSubstitute.Core;
+
+    using StatsDownload.Core.Interfaces;
 
     public static class DatabaseProviderTestingHelper
     {
@@ -20,15 +22,13 @@
         }
 
         public static void SetUpDatabaseConnectionServiceReturns(
-            IDatabaseConnectionService databaseConnectionServiceMock,
-            ParameterDirection parameterDirection)
+            IDatabaseConnectionService databaseConnectionServiceMock, ParameterDirection parameterDirection)
         {
-            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
-                parameterDirection).Returns(CreateParameterMock);
+            databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(), parameterDirection)
+                                         .Returns(CreateParameterMock);
 
             databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
-                                             parameterDirection, Arg.Any<int>())
-                                         .Returns(CreateParameterMockWithSize);
+                parameterDirection, Arg.Any<int>()).Returns(CreateParameterMockWithSize);
         }
 
         private static DbParameter CreateParameterMock(CallInfo info)

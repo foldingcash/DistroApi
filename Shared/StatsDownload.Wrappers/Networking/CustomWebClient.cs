@@ -31,7 +31,7 @@
         }
 
         private bool ServerCertificateValidateCallback(object sender, X509Certificate certificate, X509Chain chain,
-            SslPolicyErrors errors)
+                                                       SslPolicyErrors errors)
         {
             return SslPolicyOverride?.Invoke(certificate, chain, errors) ?? errors == SslPolicyErrors.None;
         }

@@ -6,7 +6,7 @@
     public class ParseResults
     {
         public ParseResults(DateTime downloadDateTime, IEnumerable<UserData> usersData,
-            IEnumerable<FailedUserData> failedUsersData)
+                            IEnumerable<FailedUserData> failedUsersData)
         {
             DownloadDateTime = downloadDateTime;
             UsersData = usersData;

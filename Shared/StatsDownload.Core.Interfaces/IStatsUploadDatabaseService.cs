@@ -3,13 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.Data.Common;
-    using DataTransfer;
-    using Enums;
+
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     public interface IStatsUploadDatabaseService
     {
         void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
-            IList<FailedUserData> failedUsers);
+                      IList<FailedUserData> failedUsers);
 
         void Commit(DbTransaction transaction);
 

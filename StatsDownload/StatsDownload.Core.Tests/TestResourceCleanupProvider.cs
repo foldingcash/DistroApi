@@ -1,13 +1,16 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Implementations;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
-    using Interfaces.Logging;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestResourceCleanupProvider
@@ -94,7 +97,7 @@
         }
 
         private IResourceCleanupService NewResourceCleanupProvider(IFileService fileService,
-            ILoggingService loggingService)
+                                                                   ILoggingService loggingService)
         {
             return new ResourceCleanupProvider(fileService, loggingService);
         }

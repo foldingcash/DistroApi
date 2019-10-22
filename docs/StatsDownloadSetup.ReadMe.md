@@ -29,3 +29,10 @@ If the .NET Core version has changed, then update the batch script that is haves
 3. Load StatsDownloadSetup solution
 4. Publish StatsDownloadSetup solution
 	* Update target as needed e.g. Windows x86, Windows x64
+
+## Getting SHA256 Hash
+
+### Windows 10 Using Powershell
+
+1. Use Get-FileHash Command
+	* Ex. PS C:\Setups> Get-FileHash StatsDownload-x64.msi -ALGO SHA256

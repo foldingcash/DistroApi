@@ -1,9 +1,11 @@
 ﻿namespace StatsDownload.FileServer.TestHarness.CastleWindsor
 {
     using System.Reflection;
+
     using Castle.MicroKernel.Registration;
     using Castle.Windsor.Installer;
-    using Extensions;
+
+    using StatsDownload.Extensions;
 
     internal static class DependencyRegistration
     {

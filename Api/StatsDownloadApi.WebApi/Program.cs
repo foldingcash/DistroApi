@@ -6,7 +6,6 @@
     using Microsoft.Extensions.Logging;
     using NLog;
     using NLog.Web;
-    using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
     public class Program
     {
@@ -16,19 +15,14 @@
                    .ConfigureLogging(logger =>
                    {
                        logger.ClearProviders();
-                       logger.SetMinimumLevel(LogLevel.Trace);
                    })
                    .UseNLog()
                    .Build();
 
         public static void Main(string[] args)
         {
-            DependencyRegistration.Register();
-
             BuildWebHost(args).Run();
-
             WindsorContainer.Dispose();
-
             LogManager.Shutdown();
         }
     }

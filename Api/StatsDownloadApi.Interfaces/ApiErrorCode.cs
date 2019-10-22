@@ -21,6 +21,7 @@
         NegativeAmount = 1070,
 
         DatabaseUnavailable = 8000,
+        DataStoreUnavailable = 8001,
 
         DatabaseMissingRequiredObjects = 8005,
 

@@ -3,11 +3,14 @@
     using System;
     using System.Data;
     using System.Data.Common;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
-    using Core.Interfaces.Enums;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
 
     [TestFixture]
     public class TestStatsDownloadDatabaseParameterProvider
@@ -32,9 +35,7 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewStatsDownloadDatabaseParameterProvider(null));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadDatabaseParameterProvider(null));
         }
 
         [TestCase(ParameterDirection.Input)]
@@ -73,8 +74,7 @@
             CreateErrorMessageParameter_WhenInvokedWithFileDownloadResult_CreatesFileDownloadResultErrorMessageParameter()
         {
             var filePayload = new FilePayload();
-            var fileDownloadResult =
-                new FileDownloadResult(FailedReason.FileDownloadFailedDecompression, filePayload);
+            var fileDownloadResult = new FileDownloadResult(FailedReason.FileDownloadFailedDecompression, filePayload);
 
             errorMessageServiceMock
                 .GetErrorMessage(fileDownloadResult.FailedReason, filePayload, StatsDownloadService.FileDownload)

@@ -3,15 +3,21 @@
     using System.Configuration;
     using System.IO;
     using System.Reflection;
-    using Core.Interfaces;
-    using Email;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Email;
 
     /// <summary>
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
     /// </summary>
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-        IEmailSettingsService
+                                                       IEmailSettingsService, IDataStoreSettings,
+                                                       IStatsFileDateTimeFormatsAndOffsetSettings
     {
+        public string DataStoreType => ConfigurationManager.AppSettings["DataStoreType"];
+
+        public string UploadDirectory => ConfigurationManager.AppSettings["UploadDirectory"];
+
         public string GetAcceptAnySslCert()
         {
             return ConfigurationManager.AppSettings["AcceptAnySslCert"];
@@ -20,15 +26,17 @@
         public int? GetCommandTimeout()
         {
             string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
-            int commandTimeoutValue;
-            if (int.TryParse(commandTimeoutString, out commandTimeoutValue))
+            if (int.TryParse(commandTimeoutString, out int commandTimeoutValue))
+            {
                 return commandTimeoutValue;
+            }
+
             return null;
         }
 
         public string GetConnectionString()
         {
-            return ConfigurationManager.ConnectionStrings["FoldingCoin"]?.ConnectionString;
+            return ConfigurationManager.ConnectionStrings["FoldingCoin.Database"]?.ConnectionString;
         }
 
         public string GetDatabaseType()
@@ -85,6 +93,11 @@
         public string GetSmtpHost()
         {
             return ConfigurationManager.AppSettings["SmtpHost"];
+        }
+
+        public string GetStatsFileTimeZoneAndOffsetSettings()
+        {
+            return ConfigurationManager.AppSettings["StatsFileTimeZoneAndOffset"];
         }
     }
 }

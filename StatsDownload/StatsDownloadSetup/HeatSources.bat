@@ -7,17 +7,11 @@ DEL /Q ".\Files\x64\*"
 
 CD..
 CD StatsDownload.FileDownload.Console
-dotnet publish -c Release --self-contained -r win-x64
-COPY /Y "bin\Release\netcoreapp2.1\win-x64\publish\*" "..\StatsDownloadSetup\Files\x64"
-dotnet publish -c Release --self-contained -r win-x86
-COPY /Y "bin\Release\netcoreapp2.1\win-x86\publish\*" "..\StatsDownloadSetup\Files\x86"
 
-CD..
-CD StatsDownload.StatsUpload.Console
-dotnet publish -c Release --self-contained -r win-x64
-COPY /Y "bin\Release\netcoreapp2.1\win-x64\publish\*" "..\StatsDownloadSetup\Files\x64"
-dotnet publish -c Release --self-contained -r win-x86
-COPY /Y "bin\Release\netcoreapp2.1\win-x86\publish\*" "..\StatsDownloadSetup\Files\x86"
+dotnet publish -c Release
+XCOPY "bin\Release\netcoreapp2.2\publish" "..\StatsDownloadSetup\Files\x64" /e
+dotnet publish -c Release
+XCOPY "bin\Release\netcoreapp2.2\publish" "..\StatsDownloadSetup\Files\x86" /e
 
 CD..
 CD StatsDownloadSetup

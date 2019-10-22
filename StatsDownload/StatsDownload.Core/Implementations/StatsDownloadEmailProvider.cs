@@ -2,10 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
-    using Email;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Email;
 
     public class StatsDownloadEmailProvider : IStatsDownloadEmailService
     {
@@ -23,14 +24,13 @@
         private readonly IErrorMessageService errorMessageService;
 
         public StatsDownloadEmailProvider(IEmailService emailService, IErrorMessageService errorMessageService,
-            IEmailSettingsService emailSettingsService)
+                                          IEmailSettingsService emailSettingsService)
         {
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             this.errorMessageService =
                 errorMessageService ?? throw new ArgumentNullException(nameof(errorMessageService));
-            this.emailSettingsService = emailSettingsService ??
-                                        throw new ArgumentNullException(
-                                            nameof(emailSettingsService));
+            this.emailSettingsService =
+                emailSettingsService ?? throw new ArgumentNullException(nameof(emailSettingsService));
         }
 
         public void SendEmail(FileDownloadResult fileDownloadResult)

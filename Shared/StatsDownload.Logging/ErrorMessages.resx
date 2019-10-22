@@ -120,6 +120,9 @@
   <data name="BitcoinAddressExceedsMaxSize" xml:space="preserve">
     <value>There was a problem with the user's data. The user '{0}' has a bitcoin address length of '{1}' and exceeded the max bitcoin address length. The user should shorten their bitcoin address. You should contact your technical advisor to review the logs and rejected users.</value>
   </data>
+  <data name="DataStoreUnavailable" xml:space="preserve">
+    <value>There was a problem downloading the file payload. There was a problem connecting to the data store. The data store is unavailable, ensure the data store is available and configured correctly and try again.</value>
+  </data>
   <data name="DefaultDatabaseUnavailable" xml:space="preserve">
     <value>There was a problem connecting to the database. The database is unavailable, ensure the database is available and configured correctly and try again.</value>
   </data>
@@ -182,6 +185,9 @@
   </data>
   <data name="StatsUploadUnexpectedException" xml:space="preserve">
     <value>There was a problem uploading the file payload. There was an unexpected exception. Check the log for more information.</value>
+  </data>
+  <data name="UnexpectedValidationException" xml:space="preserve">
+    <value>There was a problem validating the file. There was an unexpected exception while validating. Check the log for more information.</value>
   </data>
   <data name="UserDataUnexpectedFormat" xml:space="preserve">
     <value>There was a problem parsing a user from the stats file. The user '{0}' was in an unexpected format. You should contact your technical advisor to review the logs and rejected users.</value>

@@ -1,8 +1,9 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System.Linq;
-    using Core.Interfaces;
-    using Core.Interfaces.DataTransfer;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class TestHarnessOneHundredUsersFilter : IStatsFileParserService
     {
@@ -11,21 +12,22 @@
         private readonly ITestHarnessSettingsService settingsService;
 
         public TestHarnessOneHundredUsersFilter(IStatsFileParserService innerService,
-            ITestHarnessSettingsService settingsService)
+                                                ITestHarnessSettingsService settingsService)
         {
             this.innerService = innerService;
             this.settingsService = settingsService;
         }
 
-        public ParseResults Parse(string fileData)
+        public ParseResults Parse(FilePayload filePayload)
         {
+            ParseResults results = innerService.Parse(filePayload);
+
             if (settingsService.IsOneHundredUsersFilterEnabled())
             {
-                ParseResults results = innerService.Parse(fileData);
                 return new ParseResults(results.DownloadDateTime, results.UsersData.Take(100), results.FailedUsersData);
             }
 
-            return innerService.Parse(fileData);
+            return results;
         }
     }
 }

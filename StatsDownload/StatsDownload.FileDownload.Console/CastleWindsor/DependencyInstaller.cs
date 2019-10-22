@@ -1,36 +1,55 @@
 ﻿namespace StatsDownload.FileDownload.Console.CastleWindsor
 {
+    using System;
+
     using Castle.Facilities.TypedFactory;
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
-    using Core.Implementations;
-    using Core.Interfaces;
-    using Core.Interfaces.Logging;
-    using Core.Interfaces.Networking;
-    using Database;
-    using Database.CastleWindsor;
-    using Database.Wrappers;
-    using Email;
-    using Logging;
+
     using NLog;
-    using SharpZipLib;
-    using Wrappers;
-    using Wrappers.Networking;
+    using NLog.Config;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Core.Interfaces.Networking;
+    using StatsDownload.Database;
+    using StatsDownload.Database.CastleWindsor;
+    using StatsDownload.Database.Wrappers;
+    using StatsDownload.DataStore;
+    using StatsDownload.Email;
+    using StatsDownload.Logging;
+    using StatsDownload.Parsing;
+    using StatsDownload.SharpZipLib;
+    using StatsDownload.Wrappers;
+    using StatsDownload.Wrappers.Networking;
 
     public class DependencyInstaller : IWindsorInstaller
     {
+        private ILogger CreateLogger()
+        {
+            try
+            {
+                return LogManager.LoadConfiguration(LoggerSettings.ConfigFile).GetCurrentClassLogger();
+            }
+            catch (Exception)
+            {
+                return LogManager.CreateNullLogger();
+            }
+        }
+
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Component.For<ILogger>()
-                                        .Instance(LogManager
-                                                  .LoadConfiguration("nlog.filedownload.config")
-                                                  .GetCurrentClassLogger()));
+                                        .Instance(CreateLogger()));
 
             container.Register(
                 Component.For<IApplicationLoggingService>().ImplementedBy<FileDownloadConsoleLoggingProvider>(),
-                Component.For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService>()
-                         .ImplementedBy<FileDownloadConsoleSettingsProvider>());
+                Component
+                    .For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService,
+                        IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
+                    .ImplementedBy<FileDownloadConsoleSettingsProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
@@ -43,7 +62,6 @@
                 Component.For<IFileReaderService>().ImplementedBy<FileReaderProvider>(),
                 Component.For<IStatsDownloadDatabaseParameterService>()
                          .ImplementedBy<StatsDownloadDatabaseParameterProvider>(),
-                Component.For<IDatabaseConnectionService>().ImplementedBy<MySqlDatabaseConnectionProvider>(),
                 Component.For<IDatabaseConnectionService>().ImplementedBy<MicrosoftSqlDatabaseConnectionProvider>()
                          .IsDefault(),
                 Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DatabaseFactoryComponentSelector>(),
@@ -66,7 +84,16 @@
                 Component.For<IEmailService>().ImplementedBy<EmailProvider>(),
                 Component.For<IFilePayloadUploadService>().ImplementedBy<FilePayloadUploadProvider>(),
                 Component.For<IWebClient>().ImplementedBy<WebClientWrapper>().LifestyleTransient(),
-                Component.For<IWebClientFactory>().AsFactory());
+                Component.For<IWebClientFactory>().AsFactory(),
+                Component.For<IDataStoreService>().ImplementedBy<AzureDataStoreProvider>(),
+                Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
+                Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>(),
+                Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),
+                Component.For<IStatsFileDateTimeFormatsAndOffsetService>()
+                         .ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>(),
+                Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DataStoreFactoryComponentSelector>(),
+                Component.For<IDataStoreServiceFactory>().AsFactory(selector =>
+                    selector.SelectedWith<DataStoreFactoryComponentSelector>()));
         }
     }
 }

@@ -3,11 +3,14 @@
     using System;
     using System.Data;
     using System.Data.Common;
-    using Core.Interfaces;
-    using Core.Interfaces.Enums;
-    using Core.Interfaces.Logging;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestStatsDownloadDatabaseProvider
@@ -68,16 +71,13 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewFileDownloadDatabaseProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                    NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock,
-                        databaseConnectionServiceFactoryMock, null));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFileDownloadDatabaseProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock,
+                    databaseConnectionServiceFactoryMock, null));
         }
 
         [Test]
@@ -230,8 +230,7 @@
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService)
         {
             return new StatsDownloadDatabaseProvider(databaseConnectionSettingsService,
-                databaseConnectionServiceFactory,
-                loggingService);
+                databaseConnectionServiceFactory, loggingService);
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿namespace StatsDownload.Core.Implementations
 {
     using System;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Logging;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Logging;
 
     public class SecureFilePayloadProvider : ISecureFilePayloadService
     {
@@ -11,12 +12,7 @@
 
         public SecureFilePayloadProvider(ILoggingService loggingService)
         {
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            this.loggingService = loggingService;
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public void DisableSecureFilePayload(FilePayload filePayload)

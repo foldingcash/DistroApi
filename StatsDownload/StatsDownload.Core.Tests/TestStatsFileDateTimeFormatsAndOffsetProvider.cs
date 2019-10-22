@@ -1,10 +1,14 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
-    using Implementations;
-    using Interfaces;
+
     using NSubstitute;
+
     using NUnit.Framework;
+
+    using StatsDownload.Core.Implementations;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Parsing;
 
     [TestFixture]
     public class TestStatsFileDateTimeFormatsAndOffsetProvider
@@ -25,16 +29,12 @@
         {
             ("ddd MMM  d HH:mm:ss GMT yyyy", 0),
             ("ddd MMM dd HH:mm:ss GMT yyyy", 0),
-
             ("ddd MMM  d HH:mm:ss CDT yyyy", -5),
             ("ddd MMM dd HH:mm:ss CDT yyyy", -5),
-
             ("ddd MMM  d HH:mm:ss CST yyyy", -6),
             ("ddd MMM dd HH:mm:ss CST yyyy", -6),
-
             ("ddd MMM  d HH:mm:ss PDT yyyy", -7),
             ("ddd MMM dd HH:mm:ss PDT yyyy", -7),
-
             ("ddd MMM  d HH:mm:ss PST yyyy", -8),
             ("ddd MMM dd HH:mm:ss PST yyyy", -8)
         };
@@ -46,8 +46,7 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-                NewStatsFileDateTimeFormatsAndOffsetProvider(null));
+            Assert.Throws<ArgumentNullException>(() => NewStatsFileDateTimeFormatsAndOffsetProvider(null));
         }
 
         [Test]
@@ -61,8 +60,7 @@
         [TestCase("malformed")]
         public void GetStatsFileDateTimeZoneAndOffset_WhenMalformedSettings_ReturnsDateTimeFormats(string settings)
         {
-            statsFileDateTimeFormatsAndOffsetSettingsMock
-                .GetStatsFileTimeZoneAndOffsetSettings().Returns(settings);
+            statsFileDateTimeFormatsAndOffsetSettingsMock.GetStatsFileTimeZoneAndOffsetSettings().Returns(settings);
 
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
@@ -73,8 +71,7 @@
         [TestCase("")]
         public void GetStatsFileDateTimeZoneAndOffset_WhenSettingsEmpty_ReturnsDateTimeFormats(string settings)
         {
-            statsFileDateTimeFormatsAndOffsetSettingsMock
-                .GetStatsFileTimeZoneAndOffsetSettings().Returns(settings);
+            statsFileDateTimeFormatsAndOffsetSettingsMock.GetStatsFileTimeZoneAndOffsetSettings().Returns(settings);
 
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
@@ -86,15 +83,16 @@
         {
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
-            CollectionAssert.IsSupersetOf(actual, new[]
-            {
-                ("ddd MMM  d HH:mm:ss ZONE1 yyyy", -1),
-                ("ddd MMM dd HH:mm:ss ZONE1 yyyy", -1),
-                ("ddd MMM  d HH:mm:ss ZONE2 yyyy", 0),
-                ("ddd MMM dd HH:mm:ss ZONE2 yyyy", 0),
-                ("ddd MMM  d HH:mm:ss ZONE3 yyyy", 1),
-                ("ddd MMM dd HH:mm:ss ZONE3 yyyy", 1)
-            });
+            CollectionAssert.IsSupersetOf(actual,
+                new[]
+                {
+                    ("ddd MMM  d HH:mm:ss ZONE1 yyyy", -1),
+                    ("ddd MMM dd HH:mm:ss ZONE1 yyyy", -1),
+                    ("ddd MMM  d HH:mm:ss ZONE2 yyyy", 0),
+                    ("ddd MMM dd HH:mm:ss ZONE2 yyyy", 0),
+                    ("ddd MMM  d HH:mm:ss ZONE3 yyyy", 1),
+                    ("ddd MMM dd HH:mm:ss ZONE3 yyyy", 1)
+                });
         }
 
         private IStatsFileDateTimeFormatsAndOffsetService NewStatsFileDateTimeFormatsAndOffsetProvider(

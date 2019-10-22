@@ -1,7 +1,9 @@
 ﻿namespace StatsDownloadApi.WebApi
 {
     using System;
+
     using NLog;
+
     using StatsDownload.Core.Interfaces.Logging;
 
     public class StatsDownloadApiLoggingProvider : IApplicationLoggingService
@@ -21,6 +23,11 @@
         public void LogVerbose(string message)
         {
             logger.Trace(message);
+        }
+
+        public void LogInformation(string message)
+        {
+            logger.Info(message);
         }
     }
 }

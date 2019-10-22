@@ -2,27 +2,27 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-    <Version>1.2.0</Version>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Version>2.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Castle.Core" Version="4.3.1" />
-    <PackageReference Include="Castle.Windsor" Version="4.1.1" />
-    <PackageReference Include="NLog" Version="4.5.10" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.3.0" />
+    <PackageReference Include="Castle.Core" Version="4.4.0" />
+    <PackageReference Include="Castle.Windsor" Version="5.0.1" />
+    <PackageReference Include="NLog" Version="4.6.7" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.5.4" />
     <PackageReference Include="SharpZipLib.NETStandard" Version="1.0.7" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.6.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\StatsDownload.Database.CastleWindsor\StatsDownload.Database.CastleWindsor.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Database\StatsDownload.Database.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Logging\StatsDownload.Logging.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Wrappers\StatsDownload.Wrappers.csproj" />
     <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj" />
-    <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
-    using DataTransfer;
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public interface IFileReaderService
     {

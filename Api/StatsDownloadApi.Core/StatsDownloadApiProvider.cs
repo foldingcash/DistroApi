@@ -2,11 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Core.Interfaces.Logging;
+
+    using StatsDownloadApi.Interfaces;
+    using StatsDownloadApi.Interfaces.DataTransfer;
 
     public class StatsDownloadApiProvider : IStatsDownloadApiService
     {
@@ -16,20 +18,27 @@
 
         private readonly IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService;
 
+        private readonly IStatsDownloadApiDataStoreService statsDownloadApiDataStoreService;
+
         private readonly IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService;
 
         public StatsDownloadApiProvider(IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
-            IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService,
-            IDateTimeService dateTimeService, ILoggingService loggingService)
+                                        IStatsDownloadApiTokenDistributionService
+                                            statsDownloadApiTokenDistributionService, IDateTimeService dateTimeService,
+                                        ILoggingService loggingService,
+                                        IStatsDownloadApiDataStoreService statsDownloadApiDataStoreService)
         {
-            this.statsDownloadApiDatabaseService = statsDownloadApiDatabaseService ??
-                                                   throw new ArgumentNullException(
+            this.statsDownloadApiDatabaseService = statsDownloadApiDatabaseService
+                                                   ?? throw new ArgumentNullException(
                                                        nameof(statsDownloadApiDatabaseService));
-            this.statsDownloadApiTokenDistributionService = statsDownloadApiTokenDistributionService ??
-                                                            throw new ArgumentNullException(
+            this.statsDownloadApiTokenDistributionService = statsDownloadApiTokenDistributionService
+                                                            ?? throw new ArgumentNullException(
                                                                 nameof(statsDownloadApiTokenDistributionService));
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            this.statsDownloadApiDataStoreService = statsDownloadApiDataStoreService
+                                                    ?? throw new ArgumentNullException(
+                                                        nameof(statsDownloadApiDataStoreService));
         }
 
         public GetDistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount)
@@ -75,9 +84,7 @@
                 endDateTime = endDateTime.Date.AddHours(36);
             }
 
-            IList<Member> members =
-                statsDownloadApiDatabaseService.GetMembers(startDateTime,
-                    endDateTime);
+            IList<Member> members = statsDownloadApiDataStoreService.GetMembers(startDateTime, endDateTime);
 
             var memberStatsResponse = new GetMemberStatsResponse(members);
 
@@ -98,7 +105,7 @@
                 return new GetTeamsResponse(errors);
             }
 
-            IList<Team> teams = statsDownloadApiDatabaseService.GetTeams();
+            IList<Team> teams = statsDownloadApiDataStoreService.GetTeams();
 
             var teamsResponse = new GetTeamsResponse(teams);
 
@@ -114,7 +121,7 @@
 
         private IList<FoldingUser> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
         {
-            return statsDownloadApiDatabaseService.GetFoldingMembers(startDate.GetValueOrDefault(),
+            return statsDownloadApiDataStoreService.GetFoldingMembers(startDate.GetValueOrDefault(),
                 endDate.GetValueOrDefault());
         }
 
@@ -123,26 +130,26 @@
             ValidateStartDate(startDate, errors);
             ValidateEndDate(endDate, errors);
             ValidateDateRange(startDate, endDate, errors);
-            ValidateDatabaseIsAvailable(errors);
+            ValidateApiIsAvailable(errors);
 
             return errors.Count > 0;
         }
 
         private bool IsNotPreparedToGetTeams(IList<ApiError> errors)
         {
-            ValidateDatabaseIsAvailable(errors);
+            ValidateApiIsAvailable(errors);
 
             return errors.Count > 0;
         }
 
         private bool IsNotPreparedToRunDistro(DateTime? startDate, DateTime? endDate, int? amount,
-            IList<ApiError> errors)
+                                              IList<ApiError> errors)
         {
             ValidateStartDate(startDate, errors);
             ValidateEndDate(endDate, errors);
             ValidateDateRange(startDate, endDate, errors);
             ValidateAmount(amount, errors);
-            ValidateDatabaseIsAvailable(errors);
+            ValidateApiIsAvailable(errors);
 
             return errors.Count > 0;
         }
@@ -166,6 +173,12 @@
             }
         }
 
+        private void ValidateApiIsAvailable(IList<ApiError> errors)
+        {
+            ValidateDatabaseIsAvailable(errors);
+            ValidateDataStoreIsAvailable(errors);
+        }
+
         private void ValidateDatabaseIsAvailable(IList<ApiError> errors)
         {
             (bool isAvailable, DatabaseFailedReason reason) = statsDownloadApiDatabaseService.IsAvailable();
@@ -183,8 +196,15 @@
             }
         }
 
-        private void ValidateDate(DateTime? date, IList<ApiError> errors, ApiError noDate,
-            ApiError dateUnsearchable)
+        private void ValidateDataStoreIsAvailable(IList<ApiError> errors)
+        {
+            if (!statsDownloadApiDataStoreService.IsAvailable())
+            {
+                errors.Add(Constants.ApiErrors.DataStoreUnavailable);
+            }
+        }
+
+        private void ValidateDate(DateTime? date, IList<ApiError> errors, ApiError noDate, ApiError dateUnsearchable)
         {
             if (date == null)
             {
@@ -213,8 +233,7 @@
 
         private void ValidateStartDate(DateTime? startDate, IList<ApiError> errors)
         {
-            ValidateDate(startDate, errors, Constants.ApiErrors.NoStartDate,
-                Constants.ApiErrors.StartDateUnsearchable);
+            ValidateDate(startDate, errors, Constants.ApiErrors.NoStartDate, Constants.ApiErrors.StartDateUnsearchable);
         }
     }
 }

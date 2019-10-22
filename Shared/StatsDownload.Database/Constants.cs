@@ -13,24 +13,29 @@
 
             public static readonly string FileDownloadFinishedProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[FileDownloadFinished]";
-
+            public static readonly string FileDownloadStartedProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[FileDownloadStarted]";
             public static readonly string GetLastFileDownloadDateTimeSqlFunction =
                 $"{DatabaseSchema}{SchemaSeparator}[GetLastFileDownloadDateTime]";
-
-            public static readonly string NewFileDownloadStartedProcedureName =
-                $"{DatabaseSchema}{SchemaSeparator}[NewFileDownloadStarted]";
-
             public static readonly string UpdateToLatestStoredProcedureName =
                 $"{DatabaseSchema}{SchemaSeparator}[UpdateToLatest]";
-
             public static readonly string[] FileDownloadObjects =
             {
                 UpdateToLatestStoredProcedureName,
                 GetLastFileDownloadDateTimeSqlFunction,
-                NewFileDownloadStartedProcedureName,
+                FileDownloadStartedProcedureName,
                 FileDownloadFinishedProcedureName,
                 FileDownloadErrorProcedureName
             };
+
+            public static readonly string FileValidatedProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[FileValidated]";
+
+            public static readonly string FileValidationErrorProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[FileValidationError]";
+
+            public static readonly string FileValidationStartedProcedureName =
+                $"{DatabaseSchema}{SchemaSeparator}[FileValidationStarted]";
 
             public static readonly string GetLastFileDownloadDateTimeSql =
                 $"SELECT {GetLastFileDownloadDateTimeSqlFunction}()";
@@ -56,7 +61,6 @@
 
             public static string GetDownloadsReadyForUploadSqlView =
                 $"{DatabaseSchema}{SchemaSeparator}[DownloadsReadyForUpload]";
-
             public static readonly string GetDownloadsReadyForUploadSql =
                 $"SELECT DownloadId FROM {GetDownloadsReadyForUploadSqlView}";
 

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>2.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Castle.Windsor" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="LazyCache">
+      <HintPath>..\..\..\..\..\..\.nuget\packages\lazycache\2.0.1\lib\netstandard2.0\LazyCache.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>..\..\..\..\..\..\.nuget\packages\microsoft.extensions.logging.abstractions\2.2.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\windowsazure.storage\8.1.4\lib\netstandard1.3\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

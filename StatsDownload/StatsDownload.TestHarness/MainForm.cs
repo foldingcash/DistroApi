@@ -7,9 +7,11 @@
     using System.IO;
     using System.Threading.Tasks;
     using System.Windows.Forms;
+
     using Castle.MicroKernel.Registration;
-    using CastleWindsor;
-    using Core.Interfaces;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.TestHarness.CastleWindsor;
 
     public partial class MainForm : Form
     {
@@ -38,6 +40,51 @@
             LoggingTextBox.AppendText(message);
         }
 
+        private async void CompressButton_Click(object sender, EventArgs e)
+        {
+            await RunActionAsync(() =>
+            {
+                string compressDirectory = CompressDirectoryTextBox.Text;
+
+                if (!Directory.Exists(compressDirectory))
+                {
+                    Log(
+                        $"The directory does not exist, provide a new directory and try again. Directory: '{compressDirectory}'");
+                    return;
+                }
+
+                string[] importFiles = Directory.GetFiles(compressDirectory, "*.txt", SearchOption.TopDirectoryOnly);
+
+                if (importFiles.Length == 0)
+                {
+                    Log(
+                        $"There are no text files in the top directory, provide a directory with files to compress and try again. Directory: '{compressDirectory}'");
+                    return;
+                }
+
+                int filesRemaining = importFiles.Length;
+
+                IFileCompressionService fileCompressionService = null;
+                try
+                {
+                    fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
+
+                    Log($"'{filesRemaining}' files are to be imported");
+
+                    foreach (string importFile in importFiles)
+                    {
+                        fileCompressionService.CompressFile(importFile, $"{importFile}.bz2");
+                        filesRemaining--;
+                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
+                    }
+                }
+                finally
+                {
+                    WindsorContainer.Instance.Release(fileCompressionService);
+                }
+            });
+        }
+
         private void CreateFileDownloadServiceAndPerformAction(Action<IFileDownloadService> fileDownloadServiceAction)
         {
             IFileDownloadService fileDownloadService = null;
@@ -53,21 +100,6 @@
             }
         }
 
-        private void CreateFileUploadServiceAndPerformAction(Action<IStatsUploadService> fileUploadServiceAction)
-        {
-            IStatsUploadService fileUploadService = null;
-
-            try
-            {
-                fileUploadService = WindsorContainer.Instance.Resolve<IStatsUploadService>();
-                fileUploadServiceAction?.Invoke(fileUploadService);
-            }
-            finally
-            {
-                WindsorContainer.Instance.Release(fileUploadService);
-            }
-        }
-
         private void CreateSeparationInLog()
         {
             if (LoggingTextBox.Text.Length != 0)
@@ -76,10 +108,55 @@
             }
         }
 
+        private async void DecompressButton_Click(object sender, EventArgs e)
+        {
+            await RunActionAsync(() =>
+            {
+                string decompressDirectory = DecompressDirectoryTextBox.Text;
+
+                if (!Directory.Exists(decompressDirectory))
+                {
+                    Log(
+                        $"The directory does not exist, provide a new directory and try again. Directory: '{decompressDirectory}'");
+                    return;
+                }
+
+                string[] importFiles = Directory.GetFiles(decompressDirectory, "*.bz2", SearchOption.TopDirectoryOnly);
+
+                if (importFiles.Length == 0)
+                {
+                    Log(
+                        $"There are no text files in the top directory, provide a directory with files to decompress and try again. Directory: '{decompressDirectory}'");
+                    return;
+                }
+
+                int filesRemaining = importFiles.Length;
+
+                IFileCompressionService fileCompressionService = null;
+                try
+                {
+                    fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
+
+                    Log($"'{filesRemaining}' files are to be imported");
+
+                    foreach (string importFile in importFiles)
+                    {
+                        fileCompressionService.DecompressFile(importFile,
+                            importFile.Substring(importFile.Length - 4, 4));
+                        filesRemaining--;
+                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
+                    }
+                }
+                finally
+                {
+                    WindsorContainer.Instance.Release(fileCompressionService);
+                }
+            });
+        }
+
         private void EnableGui(bool enable)
         {
             FileDownloadButton.Enabled = enable;
-            UploadStatsButton.Enabled = enable;
 
             TestEmailButton.Enabled = enable;
 
@@ -94,26 +171,25 @@
 
         private async void ExportButton_Click(object sender, EventArgs e)
         {
-            await
-                RunActionAsync(
-                    () =>
-                    {
-                        if (ExportAllRadioButton.Checked)
-                        {
-                            MassExport(files => files);
-                        }
-                        else if (ExportSubsetRadioButton.Checked)
-                        {
-                            MassExport(SelectSubsetOfExportFiles);
-                        }
-                    });
+            await RunActionAsync(() =>
+            {
+                if (ExportAllRadioButton.Checked)
+                {
+                    MassExport(files => files);
+                }
+                else if (ExportSubsetRadioButton.Checked)
+                {
+                    MassExport(SelectSubsetOfExportFiles);
+                }
+            });
         }
 
         private async void FileDownloadButton_Click(object sender, EventArgs e)
         {
-            await
-                RunActionAsync(
-                    () => { CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); }); });
+            await RunActionAsync(() =>
+            {
+                CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); });
+            });
         }
 
         private (int fileId, string fileName)[] GetAllFiles()
@@ -129,8 +205,7 @@
                 databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
                 {
                     using (DbDataReader fileReader =
-                        service.ExecuteReader(
-                            "SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
+                        service.ExecuteReader("SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
                     {
                         if (!fileReader.HasRows)
                         {
@@ -140,7 +215,7 @@
                         while (fileReader.Read())
                         {
                             downloads.Add((fileReader.GetInt32(0),
-                                $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                                              $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
                         }
                     }
                 });
@@ -175,25 +250,77 @@
                     return;
                 }
 
-                ConfigurationManager.AppSettings["FileCompressionDisabled"] = "true";
                 ConfigurationManager.AppSettings["DisableMinimumWaitTime"] = "true";
 
                 int filesRemaining = importFiles.Length;
 
                 Log($"'{filesRemaining}' files are to be imported");
 
-                foreach (string importFile in importFiles)
+                IFileCompressionService fileCompressionService = null;
+
+                try
                 {
-                    ConfigurationManager.AppSettings["DownloadUri"] = importFile;
+                    fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
 
-                    CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); });
+                    foreach (string importFile in importFiles)
+                    {
+                        string compressedFile = $"{importFile}.bz2";
 
-                    filesRemaining--;
+                        fileCompressionService.CompressFile(importFile, compressedFile);
 
-                    Log($"File imported. '{filesRemaining}' remaining files to be imported");
+                        ConfigurationManager.AppSettings["DownloadUri"] = compressedFile;
+
+                        CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); });
+
+                        filesRemaining--;
+
+                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
+                    }
+                }
+                finally
+                {
+                    WindsorContainer.Instance.Release(fileCompressionService);
                 }
 
-                CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFiles(); });
+                ConfigurationManager.RefreshSection("appSettings");
+
+                // TODO: Refactor dup code
+                importFiles = Directory.GetFiles(importDirectory, "*.bz2", SearchOption.TopDirectoryOnly);
+
+                if (importFiles.Length == 0)
+                {
+                    Log(
+                        $"There are no text files in the top directory, provide a directory with files to import and try again. Directory: '{importDirectory}'");
+                    return;
+                }
+
+                ConfigurationManager.AppSettings["DisableMinimumWaitTime"] = "true";
+
+                filesRemaining = importFiles.Length;
+
+                Log($"'{filesRemaining}' files are to be imported");
+
+                fileCompressionService = null;
+
+                try
+                {
+                    fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
+
+                    foreach (string importFile in importFiles)
+                    {
+                        ConfigurationManager.AppSettings["DownloadUri"] = importFile;
+
+                        CreateFileDownloadServiceAndPerformAction(service => { service.DownloadStatsFile(); });
+
+                        filesRemaining--;
+
+                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
+                    }
+                }
+                finally
+                {
+                    WindsorContainer.Instance.Release(fileCompressionService);
+                }
 
                 ConfigurationManager.RefreshSection("appSettings");
             });
@@ -303,13 +430,6 @@
                     WindsorContainer.Instance.Release(emailService);
                 }
             });
-        }
-
-        private async void UploadStatsButton_Click(object sender, EventArgs e)
-        {
-            await
-                RunActionAsync(
-                    () => { CreateFileUploadServiceAndPerformAction(service => { service.UploadStatsFiles(); }); });
         }
     }
 }

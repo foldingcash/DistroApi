@@ -2,22 +2,23 @@
 {
     using System.Data;
     using System.Data.Common;
-    using DataTransfer;
+
+    using StatsDownload.Core.Interfaces.DataTransfer;
 
     public interface IStatsDownloadDatabaseParameterService
     {
         DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnectionService,
-            ParameterDirection direction);
+                                              ParameterDirection direction);
 
         DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnectionService);
 
         DbParameter CreateDownloadIdParameter(IDatabaseConnectionService databaseConnectionService, int downloadId);
 
         DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnectionService,
-            FileDownloadResult fileDownloadResult);
+                                                FileDownloadResult fileDownloadResult);
 
         DbParameter CreateErrorMessageParameter(IDatabaseConnectionService databaseConnectionService,
-            StatsUploadResult statsUploadResult);
+                                                StatsUploadResult statsUploadResult);
 
         DbParameter CreateRejectionReasonParameter(IDatabaseConnectionService databaseConnectionService);
     }

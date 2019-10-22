@@ -29,7 +29,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.2.0.0</ApplicationVersion>
+    <ApplicationVersion>2.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -54,24 +54,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.4.3.1\lib\net45\Castle.Core.dll</HintPath>
+      <HintPath>..\packages\Castle.Core.4.4.0\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Castle.Windsor, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Windsor.4.1.1\lib\net45\Castle.Windsor.dll</HintPath>
+    <Reference Include="Castle.Windsor, Version=5.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Windsor.5.0.1\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.0.7.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.NETStandard.1.0.7\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Data.Edm, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.8.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SqlClient, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SqlClient.4.5.1\lib\net461\System.Data.SqlClient.dll</HintPath>
+    <Reference Include="System.Data.SqlClient, Version=4.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SqlClient.4.7.0\lib\net461\System.Data.SqlClient.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -155,6 +159,10 @@
       <Project>{ECE601B0-D016-4F2F-B511-EC353B4C9E6C}</Project>
       <Name>StatsDownload.Database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Shared\StatsDownload.DataStore\StatsDownload.DataStore.csproj">
+      <Project>{F557F680-BF8E-4492-B099-480999F928A1}</Project>
+      <Name>StatsDownload.DataStore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Shared\StatsDownload.Email\StatsDownload.Email.csproj">
       <Project>{EE8E9FF2-9826-41C2-9219-04B446EBBEA2}</Project>
       <Name>StatsDownload.Email</Name>
@@ -167,6 +175,14 @@
       <Project>{B28ED1BF-ECA6-4334-998B-A7674D509DC6}</Project>
       <Name>StatsDownload.Logging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Shared\StatsDownload.Parsing\StatsDownload.Parsing.csproj">
+      <Project>{77BB08E3-FD87-4E4D-AEC3-916DC6CEFAB2}</Project>
+      <Name>StatsDownload.Parsing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Shared\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj">
+      <Project>{d628cc2e-dc8c-4259-b455-ae5f6a0290e4}</Project>
+      <Name>StatsDownload.SharpZipLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Shared\StatsDownload.Wrappers\StatsDownload.Wrappers.csproj">
       <Project>{E449C9B2-F60D-457D-B2F7-A31058513C88}</Project>
       <Name>StatsDownload.Wrappers</Name>
@@ -174,10 +190,6 @@
     <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj">
       <Project>{9C2C5AA3-9E2C-4A2F-97E3-081633B83F6D}</Project>
       <Name>StatsDownload.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj">
-      <Project>{C37684C9-D044-4D42-B10F-3D670A95293E}</Project>
-      <Name>StatsDownload.SharpZipLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -2,13 +2,16 @@
 {
     using System;
     using System.Net;
-    using Exceptions;
-    using Interfaces;
-    using Interfaces.DataTransfer;
-    using Interfaces.Enums;
+
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Enums;
+    using StatsDownload.Core.Interfaces.Exceptions;
 
     public class FileDownloadProvider : IFileDownloadService
     {
+        private readonly IDataStoreService dataStoreService;
+
         private readonly IDateTimeService dateTimeService;
 
         private readonly IDownloadService downloadService;
@@ -28,17 +31,15 @@
         private readonly IResourceCleanupService resourceCleanupService;
 
         public FileDownloadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
-            IFileDownloadLoggingService loggingService, IDownloadService downloadService,
-            IFilePayloadSettingsService filePayloadSettingsService,
-            IResourceCleanupService resourceCleanupService,
-            IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
-            IDateTimeService dateTimeService, IFilePayloadUploadService filePayloadUploadService,
-            IFileDownloadEmailService fileDownloadEmailService)
+                                    IFileDownloadLoggingService loggingService, IDownloadService downloadService,
+                                    IFilePayloadSettingsService filePayloadSettingsService,
+                                    IResourceCleanupService resourceCleanupService,
+                                    IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
+                                    IDateTimeService dateTimeService,
+                                    IFilePayloadUploadService filePayloadUploadService,
+                                    IFileDownloadEmailService fileDownloadEmailService,
+                                    IDataStoreServiceFactory dataStoreServiceFactory)
         {
-            ValidateCtorArgs(fileDownloadDatabaseService, loggingService, downloadService, filePayloadSettingsService,
-                resourceCleanupService, fileDownloadMinimumWaitTimeService, dateTimeService, filePayloadUploadService,
-                fileDownloadEmailService);
-
             this.fileDownloadDatabaseService = fileDownloadDatabaseService;
             this.loggingService = loggingService;
             this.downloadService = downloadService;
@@ -48,6 +49,10 @@
             this.dateTimeService = dateTimeService;
             this.filePayloadUploadService = filePayloadUploadService;
             this.fileDownloadEmailService = fileDownloadEmailService;
+
+            dataStoreService = dataStoreServiceFactory?.Create();
+
+            ValidateCtorArgs();
         }
 
         public FileDownloadResult DownloadStatsFile()
@@ -58,10 +63,9 @@
             {
                 LogMethodInvoked(nameof(DownloadStatsFile));
 
-                if (DatabaseUnavailable(out FailedReason failedReason))
+                if (DatabaseUnavailable(out FailedReason failedReason) || DataStoreUnavailable(out failedReason))
                 {
-                    FileDownloadResult failedResult =
-                        NewFailedFileDownloadResult(failedReason, filePayload);
+                    FileDownloadResult failedResult = NewFailedFileDownloadResult(failedReason, filePayload);
                     LogResult(failedResult);
                     SendEmail(failedResult);
                     return failedResult;
@@ -69,7 +73,7 @@
 
                 UpdateToLatest();
                 LogVerbose($"Stats file download started: {DateTimeNow()}");
-                NewFileDownloadStarted(filePayload);
+                FileDownloadStarted(filePayload);
 
                 if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
                 {
@@ -98,6 +102,13 @@
             return !isAvailable;
         }
 
+        private bool DataStoreUnavailable(out FailedReason failedReason)
+        {
+            var isAvailable = dataStoreService.IsAvailable();
+            failedReason = isAvailable ? FailedReason.None : FailedReason.DataStoreUnavailable;
+            return !dataStoreService.IsAvailable();
+        }
+
         private DateTime DateTimeNow()
         {
             return dateTimeService.DateTimeNow();
@@ -111,6 +122,11 @@
         private void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
             fileDownloadDatabaseService.FileDownloadError(fileDownloadResult);
+        }
+
+        private void FileDownloadStarted(FilePayload filePayload)
+        {
+            fileDownloadDatabaseService.FileDownloadStarted(filePayload);
         }
 
         private FileDownloadResult HandleDownloadNotReadyToRun(FailedReason failedReason, FilePayload filePayload)
@@ -127,7 +143,7 @@
             FileDownloadResult exceptionResult = NewFailedFileDownloadResult(exception, filePayload);
             LogResult(exceptionResult);
             LogException(exception);
-            FileDownloadError(exceptionResult);
+            UpdateToError(exceptionResult);
             Cleanup(exceptionResult);
             SendEmail(exceptionResult);
             return exceptionResult;
@@ -141,6 +157,13 @@
             Cleanup(successResult);
             LogResult(successResult);
             return successResult;
+        }
+
+        private bool IsFileDownloadError(FileDownloadResult exceptionResult)
+        {
+            return exceptionResult.FailedReason != FailedReason.FileDownloadFailedDecompression
+                   && exceptionResult.FailedReason != FailedReason.InvalidStatsFileUpload
+                   && exceptionResult.FailedReason != FailedReason.UnexpectedValidationException;
         }
 
         private bool IsFileDownloadNotReadyToRun(FilePayload filePayload, out FailedReason failedReason)
@@ -193,8 +216,8 @@
                 return NewFailedFileDownloadResult(FailedReason.FileDownloadTimeout, filePayload);
             }
 
-            if (webException?.Status == WebExceptionStatus.ConnectFailure ||
-                webException?.Status == WebExceptionStatus.ProtocolError)
+            if (webException?.Status == WebExceptionStatus.ConnectFailure
+                || webException?.Status == WebExceptionStatus.ProtocolError)
             {
                 return NewFailedFileDownloadResult(FailedReason.FileDownloadNotFound, filePayload);
             }
@@ -209,17 +232,22 @@
                 return NewFailedFileDownloadResult(FailedReason.RequiredSettingsInvalid, filePayload);
             }
 
+            if (exception is InvalidStatsFileException)
+            {
+                return NewFailedFileDownloadResult(FailedReason.InvalidStatsFileUpload, filePayload);
+            }
+
+            if (exception is UnexpectedValidationException)
+            {
+                return NewFailedFileDownloadResult(FailedReason.UnexpectedValidationException, filePayload);
+            }
+
             return NewFailedFileDownloadResult(FailedReason.UnexpectedException, filePayload);
         }
 
         private FileDownloadResult NewFailedFileDownloadResult(FailedReason failedReason, FilePayload filePayload)
         {
             return new FileDownloadResult(failedReason, filePayload);
-        }
-
-        private void NewFileDownloadStarted(FilePayload filePayload)
-        {
-            fileDownloadDatabaseService.NewFileDownloadStarted(filePayload);
         }
 
         private FilePayload NewStatsPayload()
@@ -242,6 +270,18 @@
             filePayloadSettingsService.SetFilePayloadDownloadDetails(filePayload);
         }
 
+        private void UpdateToError(FileDownloadResult exceptionResult)
+        {
+            if (IsFileDownloadError(exceptionResult))
+            {
+                fileDownloadDatabaseService.FileDownloadError(exceptionResult);
+            }
+            else
+            {
+                fileDownloadDatabaseService.FileValidationError(exceptionResult);
+            }
+        }
+
         private void UpdateToLatest()
         {
             fileDownloadDatabaseService.UpdateToLatest();
@@ -252,14 +292,7 @@
             filePayloadUploadService.UploadFile(filePayload);
         }
 
-        private void ValidateCtorArgs(IFileDownloadDatabaseService fileDownloadDatabaseService,
-            IFileDownloadLoggingService loggingService, IDownloadService downloadService,
-            IFilePayloadSettingsService filePayloadSettingsService,
-            IResourceCleanupService resourceCleanupService,
-            IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
-            IDateTimeService dateTimeService,
-            IFilePayloadUploadService filePayloadUploadService,
-            IFileDownloadEmailService fileDownloadEmailService)
+        private void ValidateCtorArgs()
         {
             if (fileDownloadDatabaseService == null)
             {
@@ -304,6 +337,11 @@
             if (fileDownloadEmailService == null)
             {
                 throw new ArgumentNullException(nameof(fileDownloadEmailService));
+            }
+
+            if (dataStoreService == null)
+            {
+                throw new ArgumentNullException(nameof(dataStoreService));
             }
         }
     }

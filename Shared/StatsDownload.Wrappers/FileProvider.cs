@@ -1,7 +1,8 @@
 ﻿namespace StatsDownload.Wrappers
 {
     using System.IO;
-    using Core.Interfaces;
+
+    using StatsDownload.Core.Interfaces;
 
     public class FileProvider : IFileService
     {
