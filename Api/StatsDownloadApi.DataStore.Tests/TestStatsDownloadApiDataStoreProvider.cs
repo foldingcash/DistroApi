@@ -47,6 +47,9 @@ namespace StatsDownloadApi.DataStore.Tests
 
             dataStoreServiceMock = Substitute.For<IDataStoreService>();
 
+            var dataStoreServiceFactoryMock = Substitute.For<IDataStoreServiceFactory>();
+            dataStoreServiceFactoryMock.Create().Returns(dataStoreServiceMock);
+
             databaseServiceMock = Substitute.For<IStatsDownloadApiDatabaseService>();
             databaseServiceMock.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue).Returns(validatedFiles);
 
@@ -59,7 +62,7 @@ namespace StatsDownloadApi.DataStore.Tests
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
-            systemUnderTest = new StatsDownloadApiDataStoreProvider(dataStoreServiceMock, databaseServiceMock,
+            systemUnderTest = new StatsDownloadApiDataStoreProvider(dataStoreServiceFactoryMock, databaseServiceMock,
                 fileValidationServiceMock, filePayloadApiSettingsServiceMock, loggingServiceMock);
         }
 

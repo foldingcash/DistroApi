@@ -66,9 +66,6 @@
                 Component.For<IStatsDownloadApiDataStoreService>().ImplementedBy<StatsDownloadApiDataStoreProvider>(),
                 Component.For<IDataStoreService>().ImplementedBy<AzureDataStoreProvider>(),
                 Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
-                Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DataStoreFactoryComponentSelector>(),
-                Component.For<IDataStoreServiceFactory>().AsFactory(selector =>
-                    selector.SelectedWith<DataStoreFactoryComponentSelector>()),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
                 Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>(),
                 Component.For<IFileCompressionService>().ImplementedBy<Bz2CompressionProvider>(),
@@ -76,7 +73,10 @@
                 Component.For<IFilePayloadApiSettingsService>().ImplementedBy<FilePayloadApiSettingsProvider>(),
                 Component.For<IFilePayloadSettingsService>().ImplementedBy<FilePayloadSettingsProvider>(),
                 Component.For<IDownloadSettingsValidatorService>().ImplementedBy<DownloadSettingsValidatorProvider>(),
-                Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>());
+                Component.For<IDirectoryService>().ImplementedBy<DirectoryProvider>(),
+                Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DataStoreFactoryComponentSelector>(),
+                Component.For<IDataStoreServiceFactory>().AsFactory(selector =>
+                    selector.SelectedWith<DataStoreFactoryComponentSelector>()));
 
             container.Register(Component.For<IStatsFileParserService>().ImplementedBy<NoPaymentAddressUsersFilter>(),
                 Component.For<IStatsFileParserService>().ImplementedBy<StatsFileParserProvider>(),

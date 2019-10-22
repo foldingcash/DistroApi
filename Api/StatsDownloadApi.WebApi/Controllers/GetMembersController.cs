@@ -14,8 +14,9 @@
         [HttpGet]
         public ApiResponse Get()
         {
-            DateTime today = DateTime.Today;
-            return InvokeApiService(apiService => apiService.GetMemberStats(DateTime.MinValue, today.AddDays(-1)));
+            var fahStartDate = new DateTime(2000, 10, 3);
+            DateTime yesterday = DateTime.Today.AddDays(-1);
+            return InvokeApiService(apiService => apiService.GetMemberStats(fahStartDate, yesterday));
         }
     }
 }

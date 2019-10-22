@@ -23,13 +23,14 @@
 
         private readonly ILoggingService loggingService;
 
-        public StatsDownloadApiDataStoreProvider(IDataStoreService dataStoreService,
+        public StatsDownloadApiDataStoreProvider(IDataStoreServiceFactory dataStoreServiceFactory,
                                                  IStatsDownloadApiDatabaseService databaseService,
                                                  IFileValidationService fileValidationService,
                                                  IFilePayloadApiSettingsService filePayloadApiSettingsService,
                                                  ILoggingService loggingService)
         {
-            this.dataStoreService = dataStoreService;
+            dataStoreService = dataStoreServiceFactory.Create();
+
             this.databaseService = databaseService;
             this.fileValidationService = fileValidationService;
             this.filePayloadApiSettingsService = filePayloadApiSettingsService;
