@@ -14,5 +14,14 @@
         {
             return InvokeApiService(apiService => apiService.GetDistro(startDate, endDate, amount));
         }
+
+        [HttpGet("Next")]
+        public ApiResponse GetNextDistro()
+        {
+            var startDate = new DateTime(2000, 10, 3);
+            var endDate = DateTime.Today.AddDays(-1);
+            var amount = 100000;
+            return InvokeApiService(apiService => apiService.GetDistro(startDate, endDate, amount));
+        }
     }
 }
