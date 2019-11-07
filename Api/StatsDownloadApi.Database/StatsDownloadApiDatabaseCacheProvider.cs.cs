@@ -19,8 +19,6 @@
 
         private readonly IStatsDownloadApiDatabaseService innerService;
 
-        private readonly int minimalCacheDurationInMinutes = 5;
-
         public StatsDownloadApiDatabaseCacheProvider(IStatsDownloadApiDatabaseService innerService, IAppCache cache)
         {
             this.innerService = innerService;
@@ -35,8 +33,7 @@
 
         public (bool isAvailable, DatabaseFailedReason reason) IsAvailable()
         {
-            return GetOrAdd(() => innerService.IsAvailable(),
-                DateTimeOffset.Now.AddMinutes(minimalCacheDurationInMinutes));
+            return innerService.IsAvailable();
         }
 
         private T GetOrAdd<T>(Func<T> func, DateTimeOffset addHours, string key = null,
