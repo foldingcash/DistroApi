@@ -17,6 +17,11 @@
             this.settingsService = settingsService;
         }
 
+        public void CompressFile(string filePath, string compressedFilePath)
+        {
+            innerService.CompressFile(filePath, compressedFilePath);
+        }
+
         public void DecompressFile(string downloadFilePath, string decompressedDownloadFilePath)
         {
             if (settingsService.IsFileCompressionDisabled())
