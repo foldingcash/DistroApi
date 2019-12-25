@@ -21,7 +21,7 @@
 
         public void DownloadFile(FilePayload filePayload, ValidatedFile validatedFile)
         {
-            fileService.CopyFile(validatedFile.FilePath, filePayload.DownloadFilePath);
+            fileService.CopyFile(validatedFile.FilePath, filePayload.UploadPath);
         }
 
         public bool IsAvailable()

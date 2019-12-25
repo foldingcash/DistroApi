@@ -8,8 +8,7 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-
-    using Newtonsoft.Json;
+    using Microsoft.Extensions.Hosting;
 
     using StatsDownloadApi.WebApi.CastleWindsor;
 
@@ -25,23 +24,26 @@
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
+            app.UseRouting();
+            app.UseEndpoints(builder => builder.MapControllers());
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().AddJsonOptions(options =>
+            services.AddMvc();
+            services.AddControllers().AddJsonOptions(options =>
             {
-                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                options.JsonSerializerOptions.IgnoreNullValues = true;
             });
+            services.AddControllersWithViews();
 
             services.AddOptions();
             services.AddLazyCache();

@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.DataStore.Tests
 {
+    using System;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -18,6 +20,8 @@
                                   DownloadFilePath = "\\DownloadDirectory\\Source.ext",
                                   UploadPath = "\\UploadDirectory\\Target.ext"
                               };
+
+            validatedFileMock = new ValidatedFile(0, DateTime.UtcNow, "\\ValidatedFilePath\\Source.ext");
 
             dataStoreSettingsMock = Substitute.For<IDataStoreSettings>();
 
@@ -40,12 +44,14 @@
 
         private IDataStoreService systemUnderTest;
 
+        private ValidatedFile validatedFileMock;
+
         [Test]
         public void DownloadFile_WhenInvoked_CopysFile()
         {
-            systemUnderTest.UploadFile(filePayloadMock);
+            systemUnderTest.DownloadFile(filePayloadMock, validatedFileMock);
 
-            fileServiceMock.Received(1).CopyFile("\\UploadDirectory\\Target.exe", "\\DownloadDirectory\\Source.ext");
+            fileServiceMock.Received(1).CopyFile("\\ValidatedFilePath\\Source.ext", "\\UploadDirectory\\Target.ext");
         }
 
         [TestCase(true)]
