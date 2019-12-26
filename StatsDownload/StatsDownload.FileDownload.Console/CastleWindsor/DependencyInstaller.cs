@@ -49,7 +49,7 @@
                 Component
                     .For<IDatabaseConnectionSettingsService, IDownloadSettingsService, IEmailSettingsService,
                         IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
-                    .ImplementedBy<FileDownloadConsoleSettingsProvider>());
+                    .ImplementedBy<FileDownloadConsoleSettingsProvider>().Forward<IAzureDataStoreSettingsService>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),

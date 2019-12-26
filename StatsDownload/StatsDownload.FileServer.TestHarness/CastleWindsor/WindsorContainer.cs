@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.FileServer.TestHarness
+﻿namespace StatsDownload.FileServer.TestHarness.CastleWindsor
 {
     using Castle.Facilities.WcfIntegration;
     using Castle.Windsor;

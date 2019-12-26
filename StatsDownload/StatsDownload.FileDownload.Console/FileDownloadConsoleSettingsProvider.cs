@@ -12,20 +12,25 @@
     /// </summary>
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
                                                        IEmailSettingsService, IDataStoreSettings,
-                                                       IStatsFileDateTimeFormatsAndOffsetSettings
+                                                       IStatsFileDateTimeFormatsAndOffsetSettings,
+                                                       IAzureDataStoreSettingsService
     {
-        public string DataStoreType => ConfigurationManager.AppSettings["DataStoreType"];
+        public string ConnectionString => GetAppSetting("FoldingCoin.DataStore");
 
-        public string UploadDirectory => ConfigurationManager.AppSettings["UploadDirectory"];
+        public string ContainerName => GetAppSetting("AzureDataStore.ContainerName");
+
+        public string DataStoreType => GetAppSetting("DataStoreType");
+
+        public string UploadDirectory => GetAppSetting("UploadDirectory");
 
         public string GetAcceptAnySslCert()
         {
-            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
+            return GetAppSetting("AcceptAnySslCert");
         }
 
         public int? GetCommandTimeout()
         {
-            string commandTimeoutString = ConfigurationManager.AppSettings["DbCommandTimeout"];
+            string commandTimeoutString = GetAppSetting("DbCommandTimeout");
             if (int.TryParse(commandTimeoutString, out int commandTimeoutValue))
             {
                 return commandTimeoutValue;
@@ -36,68 +41,78 @@
 
         public string GetConnectionString()
         {
-            return ConfigurationManager.ConnectionStrings["FoldingCoin.Database"]?.ConnectionString;
+            return GetConnectionString("FoldingCoin.Database");
         }
 
         public string GetDatabaseType()
         {
-            return ConfigurationManager.AppSettings["DatabaseType"];
+            return GetAppSetting("DatabaseType");
         }
 
         public string GetDownloadDirectory()
         {
-            return ConfigurationManager.AppSettings["DownloadDirectory"]
+            return GetAppSetting("DownloadDirectory")
                    ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         }
 
         public string GetDownloadTimeout()
         {
-            return ConfigurationManager.AppSettings["DownloadTimeoutSeconds"];
+            return GetAppSetting("DownloadTimeoutSeconds");
         }
 
         public string GetDownloadUri()
         {
-            return ConfigurationManager.AppSettings["DownloadUri"];
+            return GetAppSetting("DownloadUri");
         }
 
         public string GetFromAddress()
         {
-            return ConfigurationManager.AppSettings["FromAddress"];
+            return GetAppSetting("FromAddress");
         }
 
         public string GetFromDisplayName()
         {
-            return ConfigurationManager.AppSettings["DisplayName"];
+            return GetAppSetting("DisplayName");
         }
 
         public string GetMinimumWaitTimeInHours()
         {
-            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
+            return GetAppSetting("MinimumWaitTimeInHours");
         }
 
         public string GetPassword()
         {
-            return ConfigurationManager.AppSettings["Password"];
+            return GetAppSetting("Password");
         }
 
         public string GetPort()
         {
-            return ConfigurationManager.AppSettings["Port"];
+            return GetAppSetting("Port");
         }
 
         public string GetReceivers()
         {
-            return ConfigurationManager.AppSettings["Receivers"];
+            return GetAppSetting("Receivers");
         }
 
         public string GetSmtpHost()
         {
-            return ConfigurationManager.AppSettings["SmtpHost"];
+            return GetAppSetting("SmtpHost");
         }
 
         public string GetStatsFileTimeZoneAndOffsetSettings()
         {
-            return ConfigurationManager.AppSettings["StatsFileTimeZoneAndOffset"];
+            return GetAppSetting("StatsFileTimeZoneAndOffset");
+        }
+
+        private string GetAppSetting(string key)
+        {
+            return ConfigurationManager.AppSettings[key];
+        }
+
+        private string GetConnectionString(string key)
+        {
+            return ConfigurationManager.ConnectionStrings[key]?.ConnectionString;
         }
     }
 }
