@@ -6,17 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LazyCache" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\StatsDownloadApi.Interfaces\StatsDownloadApi.Interfaces.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="LazyCache">
-      <HintPath>..\..\..\..\..\..\.nuget\packages\lazycache\2.0.1\lib\netstandard2.0\LazyCache.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
