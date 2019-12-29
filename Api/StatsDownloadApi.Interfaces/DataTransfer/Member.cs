@@ -3,8 +3,7 @@
     public class Member
     {
         public Member(string userName, string friendlyName, string bitcoinAddress, long teamNumber, long startPoints,
-            long startWorkUnits,
-            long pointsGained, long workUnitsGained)
+                      long startWorkUnits, long pointsGained, long workUnitsGained)
         {
             UserName = userName;
             FriendlyName = friendlyName;

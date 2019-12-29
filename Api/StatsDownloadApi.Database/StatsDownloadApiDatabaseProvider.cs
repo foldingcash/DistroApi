@@ -28,6 +28,39 @@
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
+        public IList<ValidatedFile> GetValidatedFiles(DateTime startDate, DateTime endDate)
+        {
+            loggingService.LogMethodInvoked();
+
+            var validatedFiles = new List<ValidatedFile>();
+            statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
+            {
+                DbParameter startDateParameter =
+                    service.CreateParameter("@StartDate", DbType.Date, ParameterDirection.Input);
+                DbParameter endDateParameter =
+                    service.CreateParameter("@EndDate", DbType.Date, ParameterDirection.Input);
+
+                startDateParameter.Value = startDate;
+                endDateParameter.Value = endDate;
+
+                var dataTable = new DataTable();
+                service.ExecuteStoredProcedure(Constants.StatsDownloadApiDatabase.GetValidatedFilesProcedureName,
+                    new[] { startDateParameter, endDateParameter }, dataTable);
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    validatedFiles.Add(new ValidatedFile((row["DownloadId"] as int?).GetValueOrDefault(),
+                        (row["DownloadDateTime"] as DateTime?).GetValueOrDefault(), row["FilePath"] as string));
+                }
+            });
+            return validatedFiles;
+        }
+
+        public (bool isAvailable, DatabaseFailedReason reason) IsAvailable()
+        {
+            return statsDownloadDatabaseService.IsAvailable(Constants.StatsDownloadApiDatabase.ApiObjects);
+        }
+
         public IList<FoldingUser> GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
             loggingService.LogMethodInvoked();
@@ -105,39 +138,6 @@
                 }
             });
             return users;
-        }
-
-        public IList<ValidatedFile> GetValidatedFiles(DateTime startDate, DateTime endDate)
-        {
-            loggingService.LogMethodInvoked();
-
-            var validatedFiles = new List<ValidatedFile>();
-            statsDownloadDatabaseService.CreateDatabaseConnectionAndExecuteAction(service =>
-            {
-                DbParameter startDateParameter =
-                    service.CreateParameter("@StartDate", DbType.Date, ParameterDirection.Input);
-                DbParameter endDateParameter =
-                    service.CreateParameter("@EndDate", DbType.Date, ParameterDirection.Input);
-
-                startDateParameter.Value = startDate;
-                endDateParameter.Value = endDate;
-
-                var dataTable = new DataTable();
-                service.ExecuteStoredProcedure(Constants.StatsDownloadApiDatabase.GetValidatedFilesProcedureName,
-                    new[] { startDateParameter, endDateParameter }, dataTable);
-
-                foreach (DataRow row in dataTable.Rows)
-                {
-                    validatedFiles.Add(new ValidatedFile((row["DownloadId"] as int?).GetValueOrDefault(),
-                        (row["DownloadDateTime"] as DateTime?).GetValueOrDefault(), row["FilePath"] as string));
-                }
-            });
-            return validatedFiles;
-        }
-
-        public (bool isAvailable, DatabaseFailedReason reason) IsAvailable()
-        {
-            return statsDownloadDatabaseService.IsAvailable(Constants.StatsDownloadApiDatabase.ApiObjects);
         }
     }
 }

@@ -1,6 +1,7 @@
 namespace StatsDownloadApi.DataStore.Tests
 {
     using System;
+    using System.Threading.Tasks;
 
     using NSubstitute;
 
@@ -66,8 +67,6 @@ namespace StatsDownloadApi.DataStore.Tests
                 fileValidationServiceMock, filePayloadApiSettingsServiceMock, loggingServiceMock);
         }
 
-        private ILoggingService loggingServiceMock;
-
         private IStatsDownloadApiDatabaseService databaseServiceMock;
 
         private IDataStoreService dataStoreServiceMock;
@@ -75,6 +74,8 @@ namespace StatsDownloadApi.DataStore.Tests
         private IFilePayloadApiSettingsService filePayloadApiSettingsServiceMock;
 
         private IFileValidationService fileValidationServiceMock;
+
+        private ILoggingService loggingServiceMock;
 
         private IStatsDownloadApiDataStoreService systemUnderTest;
 
@@ -96,13 +97,11 @@ namespace StatsDownloadApi.DataStore.Tests
             {
                 databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
 
-                filePayloadApiSettingsServiceMock
-                    .Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+                filePayloadApiSettingsServiceMock.Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
                 dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock1);
                 fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
 
-                filePayloadApiSettingsServiceMock
-                    .Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+                filePayloadApiSettingsServiceMock.Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
                 dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock3);
                 fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
             });
@@ -138,11 +137,11 @@ namespace StatsDownloadApi.DataStore.Tests
 
         [TestCase(true)]
         [TestCase(false)]
-        public void IsAvailable_WhenInvoked_DefersToDataStore(bool expected)
+        public async Task IsAvailable_WhenInvoked_DefersToDataStore(bool expected)
         {
             dataStoreServiceMock.IsAvailable().Returns(expected);
 
-            bool actual = systemUnderTest.IsAvailable();
+            bool actual = await systemUnderTest.IsAvailable();
 
             Assert.That(actual, Is.EqualTo(expected));
         }

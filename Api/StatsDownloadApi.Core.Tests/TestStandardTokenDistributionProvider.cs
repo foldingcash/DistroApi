@@ -1,9 +1,11 @@
 ﻿namespace StatsDownloadApi.Core.Tests
 {
     using System.Collections.Generic;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
     using NUnit.Framework;
+
+    using StatsDownloadApi.Interfaces;
+    using StatsDownloadApi.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestStandardTokenDistributionProvider

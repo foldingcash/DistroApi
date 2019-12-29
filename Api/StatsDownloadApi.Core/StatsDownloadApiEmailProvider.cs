@@ -1,8 +1,10 @@
 ﻿namespace StatsDownloadApi.Core
 {
     using System;
-    using Interfaces;
+
     using StatsDownload.Email;
+
+    using StatsDownloadApi.Interfaces;
 
     public class StatsDownloadApiEmailProvider : IStatsDownloadApiEmailService
     {
@@ -21,8 +23,7 @@
         {
             string subject = GetSubject(EmailMessages.UnhandledExceptionHeader);
 
-            emailService.SendEmail(subject,
-                string.Format(EmailMessages.UnhandledExceptionBody, exception.Message));
+            emailService.SendEmail(subject, string.Format(EmailMessages.UnhandledExceptionBody, exception.Message));
         }
 
         private string GetSubject(string baseSubject)

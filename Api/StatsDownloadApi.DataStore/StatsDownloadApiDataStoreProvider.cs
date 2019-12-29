@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
@@ -64,7 +65,7 @@
             return teams;
         }
 
-        public bool IsAvailable()
+        public Task<bool> IsAvailable()
         {
             return dataStoreService.IsAvailable();
         }

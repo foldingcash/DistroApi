@@ -3,8 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Interfaces;
-    using Interfaces.DataTransfer;
+
+    using StatsDownloadApi.Interfaces;
+    using StatsDownloadApi.Interfaces.DataTransfer;
 
     public class StandardTokenDistributionProvider : IStatsDownloadApiTokenDistributionService
     {
@@ -55,8 +56,8 @@
 
         private decimal GetRewardAmount(int amount, long totalPoints, long pointsGained)
         {
-            decimal rawAmount = Convert.ToDecimal(pointsGained) / Convert.ToDecimal(totalPoints) *
-                                Convert.ToDecimal(amount);
+            decimal rawAmount = Convert.ToDecimal(pointsGained) / Convert.ToDecimal(totalPoints)
+                                * Convert.ToDecimal(amount);
 
             return Round(rawAmount, MaxPrecision);
         }
@@ -67,10 +68,10 @@
         }
 
         private DistroUser NewDistroUser(int amount, long totalPoints, string bitcoinAddress, long pointsGained,
-            long workUnitsGained)
+                                         long workUnitsGained)
         {
-            return new DistroUser(bitcoinAddress, pointsGained,
-                workUnitsGained, GetRewardAmount(amount, totalPoints, pointsGained));
+            return new DistroUser(bitcoinAddress, pointsGained, workUnitsGained,
+                GetRewardAmount(amount, totalPoints, pointsGained));
         }
     }
 }

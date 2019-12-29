@@ -1,7 +1,8 @@
 ﻿namespace StatsDownloadApi.Interfaces
 {
     using System.Collections.Generic;
-    using DataTransfer;
+
+    using StatsDownloadApi.Interfaces.DataTransfer;
 
     public interface IStatsDownloadApiTokenDistributionService
     {

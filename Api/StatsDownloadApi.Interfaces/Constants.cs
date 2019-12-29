@@ -11,6 +11,9 @@
             public static ApiError DatabaseUnavailable =>
                 new ApiError(ApiErrorCode.DatabaseUnavailable, ErrorMessages.DatabaseUnavailableMessage);
 
+            public static ApiError DataStoreUnavailable =>
+                new ApiError(ApiErrorCode.DataStoreUnavailable, ErrorMessages.DataStoreUnavailableMessage);
+
             public static ApiError EndDateUnsearchable =>
                 new ApiError(ApiErrorCode.EndDateUnsearchable, ErrorMessages.EndDateUnsearchableMessage);
 
@@ -34,8 +37,6 @@
                 new ApiError(ApiErrorCode.UnexpectedException, ErrorMessages.UnexpectedExceptionMessage);
 
             public static ApiError ZeroAmount => new ApiError(ApiErrorCode.ZeroAmount, ErrorMessages.ZeroAmountMessage);
-
-            public static ApiError DataStoreUnavailable =>new ApiError(ApiErrorCode.DataStoreUnavailable, ErrorMessages.DataStoreUnavailableMessage);
         }
 
         public static class ErrorMessages
