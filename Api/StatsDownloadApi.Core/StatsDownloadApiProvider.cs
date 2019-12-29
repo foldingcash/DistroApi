@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
@@ -41,13 +42,15 @@
                                                         nameof(statsDownloadApiDataStoreService));
         }
 
-        public GetDistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount)
+        public async Task<GetDistroResponse> GetDistro(DateTime? startDate, DateTime? endDate, int? amount)
         {
             loggingService.LogMethodInvoked();
 
             IList<ApiError> errors = new List<ApiError>();
 
-            if (IsNotPreparedToRunDistro(startDate, endDate, amount, errors))
+            bool isNotPreparedToRun = await IsNotPreparedToRunDistro(startDate, endDate, amount, errors);
+
+            if (isNotPreparedToRun)
             {
                 loggingService.LogMethodFinished();
                 return new GetDistroResponse(errors);
@@ -63,13 +66,15 @@
             return distroResponse;
         }
 
-        public GetMemberStatsResponse GetMemberStats(DateTime? startDate, DateTime? endDate)
+        public async Task<GetMemberStatsResponse> GetMemberStats(DateTime? startDate, DateTime? endDate)
         {
             loggingService.LogMethodInvoked();
 
             IList<ApiError> errors = new List<ApiError>();
 
-            if (IsNotPreparedToGetMemberStats(startDate, endDate, errors))
+            bool isNotPreparedToRun = await IsNotPreparedToGetMemberStats(startDate, endDate, errors);
+
+            if (isNotPreparedToRun)
             {
                 loggingService.LogMethodFinished();
                 return new GetMemberStatsResponse(errors);
@@ -93,13 +98,15 @@
             return memberStatsResponse;
         }
 
-        public GetTeamsResponse GetTeams()
+        public async Task<GetTeamsResponse> GetTeams()
         {
             loggingService.LogMethodInvoked();
 
             var errors = new List<ApiError>();
 
-            if (IsNotPreparedToGetTeams(errors))
+            bool isNotPreparedToRun = await IsNotPreparedToGetTeams(errors);
+
+            if (isNotPreparedToRun)
             {
                 loggingService.LogMethodFinished();
                 return new GetTeamsResponse(errors);
@@ -125,31 +132,32 @@
                 endDate.GetValueOrDefault());
         }
 
-        private bool IsNotPreparedToGetMemberStats(DateTime? startDate, DateTime? endDate, IList<ApiError> errors)
+        private async Task<bool> IsNotPreparedToGetMemberStats(DateTime? startDate, DateTime? endDate,
+                                                               IList<ApiError> errors)
         {
             ValidateStartDate(startDate, errors);
             ValidateEndDate(endDate, errors);
             ValidateDateRange(startDate, endDate, errors);
-            ValidateApiIsAvailable(errors);
+            await ValidateApiIsAvailable(errors);
 
             return errors.Count > 0;
         }
 
-        private bool IsNotPreparedToGetTeams(IList<ApiError> errors)
+        private async Task<bool> IsNotPreparedToGetTeams(IList<ApiError> errors)
         {
-            ValidateApiIsAvailable(errors);
+            await ValidateApiIsAvailable(errors);
 
             return errors.Count > 0;
         }
 
-        private bool IsNotPreparedToRunDistro(DateTime? startDate, DateTime? endDate, int? amount,
-                                              IList<ApiError> errors)
+        private async Task<bool> IsNotPreparedToRunDistro(DateTime? startDate, DateTime? endDate, int? amount,
+                                                          IList<ApiError> errors)
         {
             ValidateStartDate(startDate, errors);
             ValidateEndDate(endDate, errors);
             ValidateDateRange(startDate, endDate, errors);
             ValidateAmount(amount, errors);
-            ValidateApiIsAvailable(errors);
+            await ValidateApiIsAvailable(errors);
 
             return errors.Count > 0;
         }
@@ -173,10 +181,10 @@
             }
         }
 
-        private void ValidateApiIsAvailable(IList<ApiError> errors)
+        private async Task ValidateApiIsAvailable(IList<ApiError> errors)
         {
             ValidateDatabaseIsAvailable(errors);
-            ValidateDataStoreIsAvailable(errors);
+            await ValidateDataStoreIsAvailable(errors);
         }
 
         private void ValidateDatabaseIsAvailable(IList<ApiError> errors)
@@ -196,9 +204,11 @@
             }
         }
 
-        private void ValidateDataStoreIsAvailable(IList<ApiError> errors)
+        private async Task ValidateDataStoreIsAvailable(IList<ApiError> errors)
         {
-            if (!statsDownloadApiDataStoreService.IsAvailable())
+            bool isAvailable = await statsDownloadApiDataStoreService.IsAvailable();
+
+            if (!isAvailable)
             {
                 errors.Add(Constants.ApiErrors.DataStoreUnavailable);
             }

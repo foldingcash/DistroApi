@@ -1,7 +1,10 @@
 ﻿namespace StatsDownloadApi.WebApi.Controllers
 {
-    using Interfaces;
+    using System.Threading.Tasks;
+
     using Microsoft.AspNetCore.Mvc;
+
+    using StatsDownloadApi.Interfaces;
 
     [Produces("application/json")]
     [Route("v1/[controller]")]
@@ -9,9 +12,9 @@
     public class GetTeamsController : ApiControllerBase
     {
         [HttpGet]
-        public ApiResponse Get()
+        public async Task<ApiResponse> Get()
         {
-            return InvokeApiService(apiService => apiService.GetTeams());
+            return await InvokeApiService(apiService => apiService.GetTeams());
         }
     }
 }

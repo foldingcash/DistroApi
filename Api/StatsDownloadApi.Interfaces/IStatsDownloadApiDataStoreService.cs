@@ -1,6 +1,7 @@
 ﻿namespace StatsDownloadApi.Interfaces
 {
     using System;
+    using System.Threading.Tasks;
 
     using StatsDownloadApi.Interfaces.DataTransfer;
 
@@ -12,6 +13,6 @@
 
         Team[] GetTeams();
 
-        bool IsAvailable();
+        Task<bool> IsAvailable();
     }
 }

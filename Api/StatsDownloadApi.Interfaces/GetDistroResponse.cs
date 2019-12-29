@@ -2,7 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using DataTransfer;
+
+    using StatsDownloadApi.Interfaces.DataTransfer;
 
     public class GetDistroResponse : ApiResponse
     {
@@ -11,7 +12,8 @@
             Distro = distro;
         }
 
-        public GetDistroResponse(IList<ApiError> errors) : base(errors)
+        public GetDistroResponse(IList<ApiError> errors)
+            : base(errors)
         {
         }
 

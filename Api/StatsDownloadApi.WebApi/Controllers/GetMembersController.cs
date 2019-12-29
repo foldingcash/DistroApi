@@ -1,6 +1,7 @@
 ﻿namespace StatsDownloadApi.WebApi.Controllers
 {
     using System;
+    using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +13,11 @@
     public class GetMembersController : ApiControllerBase
     {
         [HttpGet]
-        public ApiResponse Get()
+        public async Task<ApiResponse> Get()
         {
             var fahStartDate = new DateTime(2000, 10, 3);
             DateTime yesterday = DateTime.Today.AddDays(-1);
-            return InvokeApiService(apiService => apiService.GetMemberStats(fahStartDate, yesterday));
+            return await InvokeApiService(apiService => apiService.GetMemberStats(fahStartDate, yesterday));
         }
     }
 }

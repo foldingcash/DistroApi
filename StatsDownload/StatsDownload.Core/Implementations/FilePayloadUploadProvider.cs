@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.Core.Implementations
 {
     using System;
+    using System.Threading.Tasks;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
@@ -27,9 +28,9 @@
                                ?? throw new ArgumentNullException(nameof(dataStoreService));
         }
 
-        public void UploadFile(FilePayload filePayload)
+        public async Task UploadFile(FilePayload filePayload)
         {
-            dataStoreService.UploadFile(filePayload);
+            await dataStoreService.UploadFile(filePayload);
             fileDownloadDatabaseService.FileDownloadFinished(filePayload);
 
             try

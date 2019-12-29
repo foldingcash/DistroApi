@@ -46,7 +46,7 @@
         public void FileDownloadStarted(FilePayload filePayload)
         {
             loggingService.LogMethodInvoked();
-            int downloadId = default(int);
+            int downloadId = default;
             CreateDatabaseConnectionAndExecuteAction(service => { downloadId = FileDownloadStarted(service); });
             filePayload.DownloadId = downloadId;
         }
@@ -72,7 +72,7 @@
         public DateTime GetLastFileDownloadDateTime()
         {
             loggingService.LogMethodInvoked();
-            DateTime lastFileDownloadDateTime = default(DateTime);
+            DateTime lastFileDownloadDateTime = default;
             CreateDatabaseConnectionAndExecuteAction(service =>
             {
                 lastFileDownloadDateTime = GetLastFileDownloadDateTime(service);
@@ -227,7 +227,7 @@
         private DateTime GetLastFileDownloadDateTime(IDatabaseConnectionService databaseConnection)
         {
             return databaseConnection.ExecuteScalar(Constants.FileDownloadDatabase.GetLastFileDownloadDateTimeSql) as
-                       DateTime? ?? default(DateTime);
+                       DateTime? ?? default;
         }
 
         private void LogVerbose(string message)

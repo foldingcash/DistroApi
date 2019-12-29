@@ -6,7 +6,6 @@
     {
         public ValidatedFile()
         {
-
         }
 
         public ValidatedFile(int downloadId, DateTime downloadDateTime, string filePath)

@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.DataStore.Tests
 {
     using System;
+    using System.Threading.Tasks;
 
     using NSubstitute;
 
@@ -47,28 +48,28 @@
         private ValidatedFile validatedFileMock;
 
         [Test]
-        public void DownloadFile_WhenInvoked_CopysFile()
+        public async Task DownloadFile_WhenInvoked_CopysFile()
         {
-            systemUnderTest.DownloadFile(filePayloadMock, validatedFileMock);
+            await systemUnderTest.DownloadFile(filePayloadMock, validatedFileMock);
 
             fileServiceMock.Received(1).CopyFile("\\ValidatedFilePath\\Source.ext", "\\UploadDirectory\\Target.ext");
         }
 
         [TestCase(true)]
         [TestCase(false)]
-        public void IsAvailable_WhenInvoked_CheckForAccessToUploadDirectory(bool expected)
+        public async Task IsAvailable_WhenInvoked_CheckForAccessToUploadDirectory(bool expected)
         {
             directoryServiceMock.Exists("C:\\Path").Returns(expected);
 
-            bool actual = systemUnderTest.IsAvailable();
+            bool actual = await systemUnderTest.IsAvailable();
 
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        public void UploadFile_WhenInvoked_CopysDownloadFile()
+        public async Task UploadFile_WhenInvoked_CopysDownloadFile()
         {
-            systemUnderTest.UploadFile(filePayloadMock);
+            await systemUnderTest.UploadFile(filePayloadMock);
 
             fileServiceMock.Received(1).CopyFile("\\DownloadDirectory\\Source.ext", "\\UploadDirectory\\Target.ext");
         }

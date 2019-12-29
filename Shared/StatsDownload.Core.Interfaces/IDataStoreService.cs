@@ -1,13 +1,15 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
+    using System.Threading.Tasks;
+
     using StatsDownload.Core.Interfaces.DataTransfer;
 
     public interface IDataStoreService
     {
-        void DownloadFile(FilePayload filePayload, ValidatedFile validatedFile);
+        Task DownloadFile(FilePayload filePayload, ValidatedFile validatedFile);
 
-        bool IsAvailable();
+        Task<bool> IsAvailable();
 
-        void UploadFile(FilePayload filePayload);
+        Task UploadFile(FilePayload filePayload);
     }
 }

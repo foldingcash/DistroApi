@@ -18,8 +18,7 @@
             {
                 //GetFoldingMembersProcedureName,
                 //GetMembersProcedureName, GetTeamsProcedureName
-                GetValidatedFilesProcedureName,
-                ValidatedFilesViewName
+                GetValidatedFilesProcedureName, ValidatedFilesViewName
             };
 
             public static string GetValidatedFilesProcedureName =>

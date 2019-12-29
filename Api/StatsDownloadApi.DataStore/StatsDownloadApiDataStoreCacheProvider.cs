@@ -2,6 +2,7 @@
 {
     using System;
     using System.Runtime.CompilerServices;
+    using System.Threading.Tasks;
 
     using LazyCache;
 
@@ -39,7 +40,7 @@
             return GetOrAdd(() => innerService.GetTeams(), DateTimeOffset.Now.AddHours(cacheDurationInHours));
         }
 
-        public bool IsAvailable()
+        public Task<bool> IsAvailable()
         {
             return innerService.IsAvailable();
         }

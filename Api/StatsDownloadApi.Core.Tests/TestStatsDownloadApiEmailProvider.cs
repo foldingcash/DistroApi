@@ -1,11 +1,15 @@
 ﻿namespace StatsDownloadApi.Core.Tests
 {
     using System;
-    using Interfaces;
+
     using NSubstitute;
     using NSubstitute.ClearExtensions;
+
     using NUnit.Framework;
+
     using StatsDownload.Email;
+
+    using StatsDownloadApi.Interfaces;
 
     [TestFixture]
     public class TestStatsDownloadApiEmailProvider
@@ -32,8 +36,7 @@
         {
             Assert.Throws<ArgumentNullException>(() =>
                 NewStatsDownloadApiEmailProvider(null, emailSettingsServiceMock));
-            Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiEmailProvider(emailServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiEmailProvider(emailServiceMock, null));
         }
 
         [TestCase(null)]
@@ -65,7 +68,8 @@
         }
 
         private IStatsDownloadApiEmailService NewStatsDownloadApiEmailProvider(IEmailService emailService,
-            IEmailSettingsService emailSettingsService)
+                                                                               IEmailSettingsService
+                                                                                   emailSettingsService)
         {
             return new StatsDownloadApiEmailProvider(emailService, emailSettingsService);
         }

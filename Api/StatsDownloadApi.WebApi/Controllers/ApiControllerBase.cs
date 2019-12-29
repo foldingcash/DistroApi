@@ -1,21 +1,26 @@
 ﻿namespace StatsDownloadApi.WebApi.Controllers
 {
     using System;
-    using CastleWindsor;
-    using Interfaces;
+    using System.Threading.Tasks;
+
     using Microsoft.AspNetCore.Mvc;
+
     using StatsDownload.Core.Interfaces.Logging;
+
+    using StatsDownloadApi.Interfaces;
+    using StatsDownloadApi.WebApi.CastleWindsor;
 
     public abstract class ApiControllerBase : Controller
     {
-        protected ApiResponse InvokeApiService<T>(Func<IStatsDownloadApiService, T> invokeApiServiceFunc)
+        protected async Task<ApiResponse> InvokeApiService<T>(
+            Func<IStatsDownloadApiService, Task<T>> invokeApiServiceFunc)
             where T : ApiResponse
         {
             IStatsDownloadApiService apiService = null;
             try
             {
                 apiService = WindsorContainer.Instance.Resolve<IStatsDownloadApiService>();
-                return invokeApiServiceFunc?.Invoke(apiService);
+                return await invokeApiServiceFunc?.Invoke(apiService);
             }
             catch (Exception exception)
             {

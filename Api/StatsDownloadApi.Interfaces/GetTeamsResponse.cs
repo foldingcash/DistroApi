@@ -1,7 +1,8 @@
 ﻿namespace StatsDownloadApi.Interfaces
 {
     using System.Collections.Generic;
-    using DataTransfer;
+
+    using StatsDownloadApi.Interfaces.DataTransfer;
 
     public class GetTeamsResponse : ApiResponse
     {
@@ -10,7 +11,8 @@
             Teams = teams;
         }
 
-        public GetTeamsResponse(IList<ApiError> errors) : base(errors)
+        public GetTeamsResponse(IList<ApiError> errors)
+            : base(errors)
         {
         }
 

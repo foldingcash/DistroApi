@@ -6,7 +6,6 @@
 
     using NUnit.Framework;
 
-    using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Parsing;
 

@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Threading.Tasks;
 
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
@@ -12,9 +13,9 @@
 
     public class AzureDataStoreProvider : IDataStoreService
     {
-        private readonly IAzureDataStoreSettingsService settingsService;
+        private readonly ILoggingService logger;
 
-        private ILoggingService logger;
+        private readonly IAzureDataStoreSettingsService settingsService;
 
         public AzureDataStoreProvider(ILoggingService logger, IAzureDataStoreSettingsService settingsService)
         {
@@ -22,45 +23,82 @@
             this.settingsService = settingsService;
         }
 
-        public void DownloadFile(FilePayload filePayload, ValidatedFile validatedFile)
+        public async Task DownloadFile(FilePayload filePayload, ValidatedFile validatedFile)
         {
-            GetContainerAndExecute(async container =>
+            await GetContainerAndExecute(async container =>
             {
                 CloudBlockBlob cloudBlockBlob = container.GetBlockBlobReference(validatedFile.FilePath);
-
                 await cloudBlockBlob.DownloadToFileAsync(filePayload.DownloadFilePath, FileMode.CreateNew);
+                return true;
             });
         }
 
-        public bool IsAvailable()
+        public async Task<bool> IsAvailable()
         {
-            var isAvailable = false;
-            GetContainerAndExecute(async container => { isAvailable = await container.CreateIfNotExistsAsync(); });
+            return await GetContainerAndExecute(async container =>
+            {
+                bool isAvailable = await container.ExistsAsync();
 
-            return isAvailable;
+                if (!isAvailable)
+                {
+                    isAvailable = await container.CreateIfNotExistsAsync();
+                }
+
+                return isAvailable;
+            });
         }
 
-        public void UploadFile(FilePayload filePayload)
+        public async Task UploadFile(FilePayload filePayload)
         {
-            GetContainerAndExecute(async container =>
+            await GetContainerAndExecute(async container =>
             {
                 CloudBlockBlob cloudBlockBlob = container.GetBlockBlobReference(filePayload.UploadPath);
                 await cloudBlockBlob.UploadFromFileAsync(filePayload.DownloadFilePath);
+                return true;
             });
         }
 
-        private void GetContainerAndExecute(Action<CloudBlobContainer> action)
+        private async Task<T> GetContainerAndExecute<T>(Func<CloudBlobContainer, Task<T>> func)
         {
             string storageConnectionString = settingsService.ConnectionString;
+            CloudStorageAccount storageAccount;
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+            try
+            {
+                logger.LogVerbose("Attempting to parse storage connection string");
+                storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+            }
+            catch (Exception)
+            {
+                logger.LogVerbose($"Failed to parse storage connection string: {storageConnectionString}");
+                throw;
+            }
 
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+            CloudBlobContainer cloudBlobContainer;
 
-            CloudBlobContainer cloudBlobContainer =
-                cloudBlobClient.GetContainerReference(settingsService.ContainerName);
+            try
+            {
+                logger.LogVerbose($"Attempting to get container reference: {settingsService.ContainerName}");
+                CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
-            action(cloudBlobContainer);
+                cloudBlobContainer = cloudBlobClient.GetContainerReference(settingsService.ContainerName);
+                logger.LogVerbose("Successfully retrieved container reference");
+            }
+            catch (Exception)
+            {
+                logger.LogVerbose($"Failed to get container reference: {settingsService.ContainerName}");
+                throw;
+            }
+
+            try
+            {
+                return await func(cloudBlobContainer);
+            }
+            catch (Exception)
+            {
+                logger.LogVerbose("Failed to execute func");
+                throw;
+            }
         }
     }
 }

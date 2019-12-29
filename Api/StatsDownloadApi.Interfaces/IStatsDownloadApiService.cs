@@ -1,13 +1,14 @@
 ﻿namespace StatsDownloadApi.Interfaces
 {
     using System;
+    using System.Threading.Tasks;
 
     public interface IStatsDownloadApiService
     {
-        GetDistroResponse GetDistro(DateTime? startDate, DateTime? endDate, int? amount);
+        Task<GetDistroResponse> GetDistro(DateTime? startDate, DateTime? endDate, int? amount);
 
-        GetMemberStatsResponse GetMemberStats(DateTime? startDate, DateTime? endDate);
+        Task<GetMemberStatsResponse> GetMemberStats(DateTime? startDate, DateTime? endDate);
 
-        GetTeamsResponse GetTeams();
+        Task<GetTeamsResponse> GetTeams();
     }
 }
