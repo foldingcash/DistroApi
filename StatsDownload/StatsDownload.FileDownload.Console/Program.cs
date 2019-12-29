@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.FileDownload.Console
 {
     using System;
+    using System.Threading.Tasks;
 
     using NLog;
 
@@ -10,7 +11,7 @@
 
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             IFileDownloadService service = null;
 
@@ -18,7 +19,7 @@
             {
                 DependencyRegistration.Register();
                 service = WindsorContainer.Instance.Resolve<IFileDownloadService>();
-                FileDownloadResult results = service.DownloadStatsFile();
+                FileDownloadResult results = await service.DownloadStatsFile();
                 Environment.Exit(results.Success ? 0 : -1);
             }
             catch (Exception ex)

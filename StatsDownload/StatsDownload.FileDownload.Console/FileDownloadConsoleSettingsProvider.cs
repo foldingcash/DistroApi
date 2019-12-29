@@ -15,7 +15,7 @@
                                                        IStatsFileDateTimeFormatsAndOffsetSettings,
                                                        IAzureDataStoreSettingsService
     {
-        public string ConnectionString => GetConnectionString("FoldingCoin.DataStore");
+        public string ConnectionString => GetConnectionString("FoldingCoin.Storage");
 
         public string ContainerName => GetAppSetting("AzureDataStore.ContainerName");
 

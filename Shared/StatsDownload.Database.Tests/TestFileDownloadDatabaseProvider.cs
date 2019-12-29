@@ -112,7 +112,7 @@
         {
             fileDownloadResult = new FileDownloadResult(FailedReason.UnexpectedException, filePayload);
 
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             databaseConnectionServiceMock
                 .When(service =>
@@ -159,7 +159,7 @@
         [Test]
         public void FileDownloadFinished_WhenInvoked_ParametersAreProvided()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             databaseConnectionServiceMock
                 .When(service =>
@@ -203,7 +203,7 @@
         [Test]
         public void FileDownloadStarted_WhenInvoked_ParametersAreProvided()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             databaseConnectionServiceMock
                 .When(service =>
@@ -249,7 +249,7 @@
         [Test]
         public void FileValidated_WhenInvoked_ParametersAreProvided()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             databaseConnectionServiceMock
                 .When(service =>
@@ -283,7 +283,7 @@
         {
             fileDownloadResult = new FileDownloadResult(FailedReason.UnexpectedValidationException, filePayload);
 
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             databaseConnectionServiceMock
                 .When(service =>
@@ -330,7 +330,7 @@
         [Test]
         public void FileValidationStarted_WhenInvoked_ParametersAreProvided()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             databaseConnectionServiceMock
                 .When(service =>

@@ -64,7 +64,7 @@
         public IEnumerable<int> GetDownloadsReadyForUpload()
         {
             loggingService.LogMethodInvoked();
-            List<int> downloadsReadyForUpload = default(List<int>);
+            List<int> downloadsReadyForUpload = default;
             CreateDatabaseConnectionAndExecuteAction(service =>
                 downloadsReadyForUpload = GetDownloadsReadyForUpload(service));
             return downloadsReadyForUpload;
@@ -73,7 +73,7 @@
         public string GetFileData(int downloadId)
         {
             loggingService.LogMethodInvoked();
-            string fileData = default(string);
+            string fileData = default;
             CreateDatabaseConnectionAndExecuteAction(service => fileData = GetFileData(service, downloadId));
             return fileData;
         }

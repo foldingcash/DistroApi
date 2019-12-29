@@ -42,7 +42,8 @@
             string connectionString = GetConnectionString();
             int? commandTimeout = GetCommandTimeout();
             EnsureValidConnectionString(connectionString);
-            IDatabaseConnectionService databaseConnection = CreateDatabaseConnection(loggingService, connectionString, commandTimeout);
+            IDatabaseConnectionService databaseConnection =
+                CreateDatabaseConnection(loggingService, connectionString, commandTimeout);
             EnsureDatabaseConnectionOpened(databaseConnection);
             action?.Invoke(databaseConnection);
         }
@@ -103,7 +104,8 @@
             transaction?.Rollback();
         }
 
-        private IDatabaseConnectionService CreateDatabaseConnection(ILoggingService logger, string connectionString, int? commandTimeout)
+        private IDatabaseConnectionService CreateDatabaseConnection(ILoggingService logger, string connectionString,
+                                                                    int? commandTimeout)
         {
             return databaseConnectionServiceFactory.Create(logger, connectionString, commandTimeout);
         }

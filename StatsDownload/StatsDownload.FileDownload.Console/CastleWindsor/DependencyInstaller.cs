@@ -8,7 +8,6 @@
     using Castle.Windsor;
 
     using NLog;
-    using NLog.Config;
 
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
@@ -27,22 +26,9 @@
 
     public class DependencyInstaller : IWindsorInstaller
     {
-        private ILogger CreateLogger()
-        {
-            try
-            {
-                return LogManager.LoadConfiguration(LoggerSettings.ConfigFile).GetCurrentClassLogger();
-            }
-            catch (Exception)
-            {
-                return LogManager.CreateNullLogger();
-            }
-        }
-
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(Component.For<ILogger>()
-                                        .Instance(CreateLogger()));
+            container.Register(Component.For<ILogger>().Instance(CreateLogger()));
 
             container.Register(
                 Component.For<IApplicationLoggingService>().ImplementedBy<FileDownloadConsoleLoggingProvider>(),
@@ -94,6 +80,18 @@
                 Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DataStoreFactoryComponentSelector>(),
                 Component.For<IDataStoreServiceFactory>().AsFactory(selector =>
                     selector.SelectedWith<DataStoreFactoryComponentSelector>()));
+        }
+
+        private ILogger CreateLogger()
+        {
+            try
+            {
+                return LogManager.LoadConfiguration(LoggerSettings.ConfigFile).GetCurrentClassLogger();
+            }
+            catch (Exception)
+            {
+                return LogManager.CreateNullLogger();
+            }
         }
     }
 }

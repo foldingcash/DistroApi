@@ -132,7 +132,7 @@
         [Test]
         public void AddUsers_WhenBitcoinAddressExceedsSize_UserIsRejected()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
@@ -153,7 +153,7 @@
         [Test]
         public void AddUsers_WhenFahNameExceedsSize_UserIsRejected()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
@@ -178,7 +178,7 @@
         [Test]
         public void AddUsers_WhenFriendlyNameExceedsSize_UserIsRejected()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
@@ -227,7 +227,7 @@
         [Test]
         public void AddUsers_WhenInvoked_AddUserDataParametersAreProvided()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
@@ -292,7 +292,7 @@
             var failedUserData = new FailedUserData(10, "", RejectionReason.UnexpectedFormat, new UserData());
             errorMessageServiceMock.GetErrorMessage(failedUserData).Returns("RejectionReason");
 
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
@@ -377,7 +377,7 @@
         [Test]
         public void AddUsers_WhenInvoked_UsesAddUserDataStoredProcedure()
         {
-            DbCommand command = default(DbCommand);
+            DbCommand command = default;
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[] { dbCommand => command = dbCommand });
 
             var transactionMock = Substitute.For<DbTransaction>();
@@ -392,7 +392,7 @@
         [Test]
         public void AddUsers_WhenInvoked_UsesAddUserRejectionStoredProcedure()
         {
-            DbCommand command = default(DbCommand);
+            DbCommand command = default;
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
                                                        {
                                                            null, null, dbCommand => command = dbCommand
@@ -410,7 +410,7 @@
         [Test]
         public void AddUsers_WhenInvoked_UsesRebuildsIndicesStoredProcedure()
         {
-            DbCommand command = default(DbCommand);
+            DbCommand command = default;
             SetUpDatabaseConnectionCreateDbCommandMock(new Action<DbCommand>[]
                                                        {
                                                            null, dbCommand => command = dbCommand, null
@@ -428,7 +428,7 @@
         [Test]
         public void AddUsers_WhenNullBitcoinAddress_ParameterIsDBNull()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
 
@@ -445,7 +445,7 @@
         [Test]
         public void AddUsers_WhenNullFriendlyName_ParameterIsDBNull()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { parameters => { actualParameters = parameters; } });
 
@@ -567,7 +567,7 @@
         [Test]
         public void GetFileData_WhenInvoked_ParametersAreProvided()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             databaseConnectionServiceMock
                 .When(service =>
@@ -643,7 +643,7 @@
         {
             var transaction = Substitute.For<DbTransaction>();
 
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             databaseConnectionServiceMock
                 .When(service => service.ExecuteStoredProcedure(transaction, "[FoldingCoin].[StartStatsUpload]",
@@ -684,7 +684,7 @@
         [Test]
         public void StatsUploadError_WhenInvoked_ParametersAreProvided()
         {
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             databaseConnectionServiceMock
                 .When(service =>
@@ -722,7 +722,7 @@
         {
             var transaction = Substitute.For<DbTransaction>();
 
-            List<DbParameter> actualParameters = default(List<DbParameter>);
+            List<DbParameter> actualParameters = default;
 
             databaseConnectionServiceMock
                 .When(service => service.ExecuteStoredProcedure(transaction, "[FoldingCoin].[StatsUploadFinished]",

@@ -14,7 +14,8 @@
         public FileDownloadMinimumWaitTimeProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
                                                    IDateTimeService dateTimeService)
         {
-            this.fileDownloadDatabaseService = fileDownloadDatabaseService ?? throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
+            this.fileDownloadDatabaseService = fileDownloadDatabaseService
+                                               ?? throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
         }
 

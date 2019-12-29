@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.DataStore
 {
+    using System.Threading.Tasks;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
@@ -19,20 +21,20 @@
             this.fileService = fileService;
         }
 
-        public void DownloadFile(FilePayload filePayload, ValidatedFile validatedFile)
+        public Task DownloadFile(FilePayload filePayload, ValidatedFile validatedFile)
         {
-            fileService.CopyFile(validatedFile.FilePath, filePayload.UploadPath);
+            return Task.Run(() => fileService.CopyFile(validatedFile.FilePath, filePayload.UploadPath));
         }
 
-        public bool IsAvailable()
+        public Task<bool> IsAvailable()
         {
             string uploadDirectory = settings.UploadDirectory;
-            return directoryService.Exists(uploadDirectory);
+            return Task.FromResult(directoryService.Exists(uploadDirectory));
         }
 
-        public void UploadFile(FilePayload filePayload)
+        public Task UploadFile(FilePayload filePayload)
         {
-            fileService.CopyFile(filePayload.DownloadFilePath, filePayload.UploadPath);
+            return Task.Run(() => fileService.CopyFile(filePayload.DownloadFilePath, filePayload.UploadPath));
         }
     }
 }

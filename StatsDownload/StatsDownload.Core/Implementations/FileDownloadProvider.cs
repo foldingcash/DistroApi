@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net;
+    using System.Threading.Tasks;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
@@ -55,7 +56,7 @@
             ValidateCtorArgs();
         }
 
-        public FileDownloadResult DownloadStatsFile()
+        public async Task<FileDownloadResult> DownloadStatsFile()
         {
             FilePayload filePayload = NewStatsPayload();
 
@@ -63,7 +64,11 @@
             {
                 LogMethodInvoked(nameof(DownloadStatsFile));
 
-                if (DatabaseUnavailable(out FailedReason failedReason) || DataStoreUnavailable(out failedReason))
+                (bool isAvailable, FailedReason failedReason) result = await IsDataStoreAvailable();
+                bool dataStoreUnavailable = !result.isAvailable;
+                FailedReason failedReason = result.failedReason;
+
+                if (dataStoreUnavailable || DatabaseUnavailable(out failedReason))
                 {
                     FileDownloadResult failedResult = NewFailedFileDownloadResult(failedReason, filePayload);
                     LogResult(failedResult);
@@ -82,7 +87,7 @@
 
                 SetDownloadFileDetails(filePayload);
                 DownloadFile(filePayload);
-                return HandleSuccessAndUpload(filePayload);
+                return await HandleSuccessAndUpload(filePayload);
             }
             catch (Exception exception)
             {
@@ -100,13 +105,6 @@
             (bool isAvailable, FailedReason reason) = fileDownloadDatabaseService.IsAvailable();
             failedReason = reason;
             return !isAvailable;
-        }
-
-        private bool DataStoreUnavailable(out FailedReason failedReason)
-        {
-            var isAvailable = dataStoreService.IsAvailable();
-            failedReason = isAvailable ? FailedReason.None : FailedReason.DataStoreUnavailable;
-            return !dataStoreService.IsAvailable();
         }
 
         private DateTime DateTimeNow()
@@ -149,14 +147,21 @@
             return exceptionResult;
         }
 
-        private FileDownloadResult HandleSuccessAndUpload(FilePayload filePayload)
+        private async Task<FileDownloadResult> HandleSuccessAndUpload(FilePayload filePayload)
         {
             LogVerbose($"Stats file download completed: {DateTimeNow()}");
-            UploadFile(filePayload);
+            await UploadFile(filePayload);
             FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
             Cleanup(successResult);
             LogResult(successResult);
             return successResult;
+        }
+
+        private async Task<(bool isAvailable, FailedReason failedReason)> IsDataStoreAvailable()
+        {
+            bool isAvailable = await dataStoreService.IsAvailable();
+            FailedReason failedReason = isAvailable ? FailedReason.None : FailedReason.DataStoreUnavailable;
+            return (isAvailable, failedReason);
         }
 
         private bool IsFileDownloadError(FileDownloadResult exceptionResult)
@@ -287,9 +292,9 @@
             fileDownloadDatabaseService.UpdateToLatest();
         }
 
-        private void UploadFile(FilePayload filePayload)
+        private async Task UploadFile(FilePayload filePayload)
         {
-            filePayloadUploadService.UploadFile(filePayload);
+            await filePayloadUploadService.UploadFile(filePayload);
         }
 
         private void ValidateCtorArgs()

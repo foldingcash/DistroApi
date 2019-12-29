@@ -24,7 +24,8 @@
 
             databaseConnectionServiceMock = Substitute.For<IDatabaseConnectionService>();
             databaseConnectionServiceFactoryMock = Substitute.For<IDatabaseConnectionServiceFactory>();
-            databaseConnectionServiceFactoryMock.Create(loggingServiceMock, "connectionString", 42).Returns(databaseConnectionServiceMock);
+            databaseConnectionServiceFactoryMock
+                .Create(loggingServiceMock, "connectionString", 42).Returns(databaseConnectionServiceMock);
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 

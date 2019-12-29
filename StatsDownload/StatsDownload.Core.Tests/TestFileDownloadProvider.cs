@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net;
+    using System.Threading.Tasks;
 
     using NSubstitute;
 
@@ -126,11 +127,11 @@
         }
 
         [Test]
-        public void DownloadFile_WhenDatabaseIsNotAvailable_ReturnsDatabaseUnavailableResult()
+        public async Task DownloadFile_WhenDatabaseIsNotAvailable_ReturnsDatabaseUnavailableResult()
         {
             SetUpWhenDatabaseIsNotAvailable();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DatabaseUnavailable));
@@ -138,21 +139,21 @@
         }
 
         [Test]
-        public void DownloadFile_WhenDatabaseIsNotAvailable_SendsEmail()
+        public async Task DownloadFile_WhenDatabaseIsNotAvailable_SendsEmail()
         {
             SetUpWhenDatabaseIsNotAvailable();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
         }
 
         [Test]
-        public void DownloadFile_WhenDataStoreIsNotAvailable_ReturnsDatabaseUnavailableResult()
+        public async Task DownloadFile_WhenDataStoreIsNotAvailable_ReturnsDatabaseUnavailableResult()
         {
             SetUpWhenDataStoreIsNotAvailable();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.DataStoreUnavailable));
@@ -160,11 +161,11 @@
         }
 
         [Test]
-        public void DownloadFile_WhenDataStoreIsNotAvailable_SendsEmail()
+        public async Task DownloadFile_WhenDataStoreIsNotAvailable_SendsEmail()
         {
             SetUpWhenDataStoreIsNotAvailable();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
         }
@@ -196,11 +197,11 @@
         }
 
         [Test]
-        public void DownloadFile_WhenExceptionThrown_ReturnsFailedResultUnexpectedException()
+        public async Task DownloadFile_WhenExceptionThrown_ReturnsFailedResultUnexpectedException()
         {
             SetUpWhenExceptionThrown();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
@@ -208,21 +209,21 @@
         }
 
         [Test]
-        public void DownloadFile_WhenExceptionThrown_SendsEmail()
+        public async Task DownloadFile_WhenExceptionThrown_SendsEmail()
         {
             SetUpWhenExceptionThrown();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
         }
 
         [Test]
-        public void DownloadFile_WhenFileDownloadConnectFailure_ReturnsFailedResultFileDownloadNotFound()
+        public async Task DownloadFile_WhenFileDownloadConnectFailure_ReturnsFailedResultFileDownloadNotFound()
         {
             SetUpFileDownloadConnectFailure();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadNotFound));
@@ -230,12 +231,12 @@
         }
 
         [Test]
-        public void DownloadFile_WhenFileDownloadFailedDecompressions_ReturnsFileDownloadFailedDecompression()
+        public async Task DownloadFile_WhenFileDownloadFailedDecompressions_ReturnsFileDownloadFailedDecompression()
         {
             fileDownloadDatabaseServiceMock.When(mock => mock.IsAvailable())
                                            .Do(info => throw new FileDownloadFailedDecompressionException());
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadFailedDecompression));
@@ -257,21 +258,21 @@
         }
 
         [Test]
-        public void DownloadFile_WhenFileDownloadFails_ResourceCleanupInvoked()
+        public async Task DownloadFile_WhenFileDownloadFails_ResourceCleanupInvoked()
         {
             SetUpFileDownloadFails();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             resourceCleanupServiceMock.Received().Cleanup(actual);
         }
 
         [Test]
-        public void DownloadFile_WhenFileDownloadFails_ReturnsFailedResultUnexpectedException()
+        public async Task DownloadFile_WhenFileDownloadFails_ReturnsFailedResultUnexpectedException()
         {
             SetUpFileDownloadFails();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.UnexpectedException));
@@ -279,21 +280,21 @@
         }
 
         [Test]
-        public void DownloadFile_WhenFileDownloadFails_SendsEmail()
+        public async Task DownloadFile_WhenFileDownloadFails_SendsEmail()
         {
             SetUpFileDownloadFails();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
         }
 
         [Test]
-        public void DownloadFile_WhenFileDownloadProtocolError_ReturnsFailedResultFileDownloadNotFound()
+        public async Task DownloadFile_WhenFileDownloadProtocolError_ReturnsFailedResultFileDownloadNotFound()
         {
             SetUpFileDownloadProtocolError();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadNotFound));
@@ -301,11 +302,11 @@
         }
 
         [Test]
-        public void DownloadFile_WhenFileDownloadSettingsInvalid_ReturnsFailedReasonRequiredSettingsInvalid()
+        public async Task DownloadFile_WhenFileDownloadSettingsInvalid_ReturnsFailedReasonRequiredSettingsInvalid()
         {
             SetUpFileDownloadSettingsInvalid();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.RequiredSettingsInvalid));
@@ -347,11 +348,11 @@
         }
 
         [Test]
-        public void DownloadFile_WhenFileDownloadTimeout_ReturnsFailedResultFileDownloadTimeout()
+        public async Task DownloadFile_WhenFileDownloadTimeout_ReturnsFailedResultFileDownloadTimeout()
         {
             SetUpFileDownloadTimeout();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.FileDownloadTimeout));
@@ -359,11 +360,11 @@
         }
 
         [Test]
-        public void DownloadFile_WhenFileDownloadTimeout_SendsEmail()
+        public async Task DownloadFile_WhenFileDownloadTimeout_SendsEmail()
         {
             SetUpFileDownloadTimeout();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
         }
@@ -381,9 +382,9 @@
         }
 
         [Test]
-        public void DownloadFile_WhenInvoked_ResultIsSuccessAndContainsDownloadData()
+        public async Task DownloadFile_WhenInvoked_ResultIsSuccessAndContainsDownloadData()
         {
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.FilePayload, Is.InstanceOf<FilePayload>());
@@ -394,7 +395,7 @@
         {
             InvokeDownloadFile();
 
-            Received.InOrder(() =>
+            Received.InOrder(async () =>
             {
                 loggingServiceMock.LogVerbose("DownloadStatsFile Invoked");
                 fileDownloadDatabaseServiceMock.IsAvailable();
@@ -407,7 +408,7 @@
                 downloadServiceMock.DownloadFile(Arg.Any<FilePayload>());
                 dateTimeServiceMock.DateTimeNow();
                 loggingServiceMock.LogVerbose($"Stats file download completed: {dateTime}");
-                filePayloadUploadServiceMock.UploadFile(Arg.Any<FilePayload>());
+                await filePayloadUploadServiceMock.UploadFile(Arg.Any<FilePayload>());
                 resourceCleanupServiceMock.Cleanup(Arg.Any<FileDownloadResult>());
                 loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
             });
@@ -424,11 +425,11 @@
         }
 
         [Test]
-        public void DownloadFile_WhenMinimumWaitTimeNotMet_ReturnsFailedResultMinimumWaitTimeNotMet()
+        public async Task DownloadFile_WhenMinimumWaitTimeNotMet_ReturnsFailedResultMinimumWaitTimeNotMet()
         {
             SetUpWhenMinimumWaitTimeNotMet();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.FailedReason, Is.EqualTo(FailedReason.MinimumWaitTimeNotMet));
@@ -436,11 +437,11 @@
         }
 
         [Test]
-        public void DownloadFile_WhenMinimumWaitTimeNotMet_SendsEmail()
+        public async Task DownloadFile_WhenMinimumWaitTimeNotMet_SendsEmail()
         {
             SetUpWhenMinimumWaitTimeNotMet();
 
-            FileDownloadResult actual = InvokeDownloadFile();
+            FileDownloadResult actual = await InvokeDownloadFile();
 
             fileDownloadEmailServiceMock.Received().SendEmail(actual);
         }
@@ -455,7 +456,7 @@
             fileDownloadDatabaseServiceMock.Received().FileDownloadError(Arg.Any<FileDownloadResult>());
         }
 
-        private FileDownloadResult InvokeDownloadFile()
+        private Task<FileDownloadResult> InvokeDownloadFile()
         {
             return systemUnderTest.DownloadStatsFile();
         }

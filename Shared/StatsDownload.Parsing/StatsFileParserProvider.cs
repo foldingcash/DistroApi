@@ -105,7 +105,7 @@
             string rawDateTime = GetDateTimeLine(fileLines);
 
             var parsed = false;
-            downloadDateTime = default(DateTime);
+            downloadDateTime = default;
 
             foreach ((string format, int hourOffset) in statsFileDateTimeFormatsAndOffsetService
                 .GetStatsFileDateTimeFormatsAndOffset())
