@@ -167,6 +167,14 @@
 
             ImportDirectoryTextBox.Enabled = enable;
             ImportButton.Enabled = enable;
+
+            CompressDirectoryTextBox.Enabled = enable;
+            CompressButton.Enabled = enable;
+
+            DecompressDirectoryTextBox.Enabled = enable;
+            DecompressButton.Enabled = enable;
+
+            ControlBox = enable;
         }
 
         private async void ExportButton_Click(object sender, EventArgs e)
