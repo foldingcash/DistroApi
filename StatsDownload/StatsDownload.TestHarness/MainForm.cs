@@ -50,7 +50,7 @@
                 {
                     Log(
                         $"The directory does not exist, provide a new directory and try again. Directory: '{compressDirectory}'");
-                    return;
+                    return Task.CompletedTask;
                 }
 
                 string[] importFiles = Directory.GetFiles(compressDirectory, "*.txt", SearchOption.TopDirectoryOnly);
@@ -59,7 +59,7 @@
                 {
                     Log(
                         $"There are no text files in the top directory, provide a directory with files to compress and try again. Directory: '{compressDirectory}'");
-                    return;
+                    return Task.CompletedTask;
                 }
 
                 int filesRemaining = importFiles.Length;
@@ -82,6 +82,8 @@
                 {
                     WindsorContainer.Instance.Release(fileCompressionService);
                 }
+
+                return Task.CompletedTask;
             });
         }
 
@@ -120,7 +122,7 @@
                 {
                     Log(
                         $"The directory does not exist, provide a new directory and try again. Directory: '{decompressDirectory}'");
-                    return;
+                    return Task.CompletedTask;
                 }
 
                 string[] importFiles = Directory.GetFiles(decompressDirectory, "*.bz2", SearchOption.TopDirectoryOnly);
@@ -129,7 +131,7 @@
                 {
                     Log(
                         $"There are no text files in the top directory, provide a directory with files to decompress and try again. Directory: '{decompressDirectory}'");
-                    return;
+                    return Task.CompletedTask;
                 }
 
                 int filesRemaining = importFiles.Length;
@@ -153,6 +155,8 @@
                 {
                     WindsorContainer.Instance.Release(fileCompressionService);
                 }
+
+                return Task.CompletedTask;
             });
         }
 
@@ -191,6 +195,8 @@
                 {
                     MassExport(SelectSubsetOfExportFiles);
                 }
+
+                return Task.CompletedTask;
             });
         }
 
@@ -380,12 +386,12 @@
             }
         }
 
-        private async Task RunActionAsync(Action action)
+        private async Task RunActionAsync(Func<Task> action)
         {
             try
             {
                 EnableGui(false);
-                await Task.Run(action);
+                await action();
             }
             catch (Exception exception)
             {
@@ -439,6 +445,8 @@
                 {
                     WindsorContainer.Instance.Release(emailService);
                 }
+
+                return Task.CompletedTask;
             });
         }
     }
