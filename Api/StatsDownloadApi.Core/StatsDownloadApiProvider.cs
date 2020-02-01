@@ -56,14 +56,12 @@
                 return new GetDistroResponse(errors);
             }
 
-            IList<FoldingUser> foldingMembers = GetFoldingMembers(startDate, endDate);
-            IList<DistroUser> distro = GetDistro(amount, foldingMembers);
-
-            var distroResponse = new GetDistroResponse(distro);
+            IList<FoldingUser> foldingMembers = await GetFoldingMembers(startDate, endDate);
+            GetDistroResponse response = GetDistro(amount, foldingMembers);
 
             loggingService.LogMethodFinished();
 
-            return distroResponse;
+            return response;
         }
 
         public async Task<GetMemberStatsResponse> GetMemberStats(DateTime? startDate, DateTime? endDate)
@@ -89,7 +87,7 @@
                 endDateTime = endDateTime.Date.AddHours(36);
             }
 
-            IList<Member> members = statsDownloadApiDataStoreService.GetMembers(startDateTime, endDateTime);
+            IList<Member> members = await statsDownloadApiDataStoreService.GetMembers(startDateTime, endDateTime);
 
             var memberStatsResponse = new GetMemberStatsResponse(members);
 
@@ -112,7 +110,7 @@
                 return new GetTeamsResponse(errors);
             }
 
-            IList<Team> teams = statsDownloadApiDataStoreService.GetTeams();
+            IList<Team> teams = await statsDownloadApiDataStoreService.GetTeams();
 
             var teamsResponse = new GetTeamsResponse(teams);
 
@@ -121,15 +119,28 @@
             return teamsResponse;
         }
 
-        private IList<DistroUser> GetDistro(int? amount, IList<FoldingUser> foldingUsers)
+        private GetDistroResponse GetDistro(int? amount, IList<FoldingUser> foldingUsers)
         {
-            return statsDownloadApiTokenDistributionService.GetDistro(amount.GetValueOrDefault(), foldingUsers);
+            try
+            {
+                IList<DistroUser> distro =
+                    statsDownloadApiTokenDistributionService.GetDistro(amount.GetValueOrDefault(), foldingUsers);
+                return new GetDistroResponse(distro);
+            }
+            catch (InvalidDistributionState invalidDistributionState)
+            {
+                return new GetDistroResponse(new List<ApiError>
+                                             {
+                                                 new ApiError(ApiErrorCode.InvalidDistributionState,
+                                                     invalidDistributionState.Message)
+                                             });
+            }
         }
 
-        private IList<FoldingUser> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
+        private async Task<IList<FoldingUser>> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
         {
-            return statsDownloadApiDataStoreService.GetFoldingMembers(startDate.GetValueOrDefault(),
-                endDate.GetValueOrDefault());
+            return await statsDownloadApiDataStoreService.GetFoldingMembers(startDate.GetValueOrDefault(),
+                       endDate.GetValueOrDefault());
         }
 
         private async Task<bool> IsNotPreparedToGetMemberStats(DateTime? startDate, DateTime? endDate,

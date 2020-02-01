@@ -5,15 +5,13 @@
 
     using Microsoft.AspNetCore.Mvc;
 
-    using StatsDownloadApi.Interfaces;
-
     [Produces("application/json")]
     [Route("v1/[controller]")]
     [ApiExplorerSettings(IgnoreApi = false, GroupName = nameof(GetMembersController))]
     public class GetMembersController : ApiControllerBase
     {
         [HttpGet]
-        public async Task<ApiResponse> Get()
+        public async Task<IActionResult> Get()
         {
             var fahStartDate = new DateTime(2000, 10, 3);
             DateTime yesterday = DateTime.Today.AddDays(-1);

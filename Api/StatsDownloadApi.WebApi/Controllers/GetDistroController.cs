@@ -1,11 +1,10 @@
 ﻿namespace StatsDownloadApi.WebApi.Controllers
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
-
-    using StatsDownloadApi.Interfaces;
 
     [Produces("application/json")]
     [Route("v1/[controller]")]
@@ -13,18 +12,19 @@
     public class GetDistroController : ApiControllerBase
     {
         [HttpGet]
-        public async Task<ApiResponse> Get(DateTime? startDate, DateTime? endDate, int? amount)
+        public async Task<IActionResult> Get(DateTime? startDate, DateTime? endDate, int? amount,
+                                             CancellationToken cancellationToken = default)
         {
-            return await InvokeApiService(apiService => apiService.GetDistro(startDate, endDate, amount));
+            return await InvokeApiService(async apiService => await apiService.GetDistro(startDate, endDate, amount));
         }
 
-        [HttpGet("Next")]
-        public async Task<ApiResponse> GetNextDistro()
+        [HttpGet("All")]
+        public IActionResult GetAllDistro(CancellationToken cancellationToken = default)
         {
             var startDate = new DateTime(2000, 10, 3);
             DateTime endDate = DateTime.Today.AddDays(-1);
             var amount = 100000;
-            return await InvokeApiService(apiService => apiService.GetDistro(startDate, endDate, amount));
+            return RedirectToAction(nameof(Get), new { startDate, endDate, amount });
         }
     }
 }
