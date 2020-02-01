@@ -20,7 +20,7 @@
             this.configuration = configuration;
         }
 
-        public string ConnectionString => configuration.GetValue<string>("ConnectionStrings:FoldingCoin.Storage");
+        public string ConnectionString => configuration.GetConnectionString("FoldingCoin.Storage");
 
         public string ContainerName => GetAppSetting("AzureDataStore.ContainerName");
 
@@ -48,7 +48,7 @@
 
         public string GetConnectionString()
         {
-            return configuration.GetValue<string>("ConnectionStrings:FoldingCoin.Database");
+            return configuration.GetConnectionString("FoldingCoin.Database");
         }
 
         public string GetDatabaseType()
