@@ -11,17 +11,17 @@
 
     public class Program
     {
-        public static IWebHost BuildWebHost(string[] args)
-        {
-            return WebHost.CreateDefaultBuilder(args).UseStartup<Startup>()
-                          .ConfigureLogging(logger => { logger.ClearProviders(); }).UseNLog().Build();
-        }
-
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
             WindsorContainer.Dispose();
             LogManager.Shutdown();
+        }
+
+        private static IWebHost BuildWebHost(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args).UseStartup<Startup>()
+                          .ConfigureLogging(logger => { logger.ClearProviders(); }).UseNLog().Build();
         }
     }
 }
