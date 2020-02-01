@@ -108,9 +108,9 @@ namespace StatsDownloadApi.DataStore.Tests
         }
 
         [Test]
-        public void GetFoldingMembers_WhenInvoked_GetsFoldingMembers()
+        public async Task GetFoldingMembers_WhenInvoked_GetsFoldingMembers()
         {
-            FoldingUser[] actual = systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
+            FoldingUser[] actual = await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
 
             Assert.That(actual.Length, Is.EqualTo(2));
 

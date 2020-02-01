@@ -1,6 +1,7 @@
 ﻿namespace StatsDownloadApi.WebApi.Controllers
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@
 
     public abstract class ApiControllerBase : Controller
     {
-        protected async Task<ApiResponse> InvokeApiService<T>(
+        protected async Task<IActionResult> InvokeApiService<T>(
             Func<IStatsDownloadApiService, Task<T>> invokeApiServiceFunc)
             where T : ApiResponse
         {
@@ -20,13 +21,27 @@
             try
             {
                 apiService = WindsorContainer.Instance.Resolve<IStatsDownloadApiService>();
-                return await invokeApiServiceFunc?.Invoke(apiService);
+                T result = await invokeApiServiceFunc?.Invoke(apiService);
+
+                if (result.Success)
+                {
+                    return new OkObjectResult(result);
+                }
+
+                bool isMinorIssue = result.Errors.Any(error => error.ErrorCode <= ApiErrorCode.MinorIssuesMax);
+
+                if (isMinorIssue)
+                {
+                    return new BadRequestObjectResult(result);
+                }
+
+                return new ServerErrorObjectResult(result);
             }
             catch (Exception exception)
             {
                 TryLoggingUnhandledException(exception);
                 TrySendingUnhandledExceptionEmail(exception);
-                return new ApiResponse(new[] { Constants.ApiErrors.UnexpectedException });
+                return new ServerErrorObjectResult(new ApiResponse(new[] { Constants.ApiErrors.UnexpectedException }));
             }
             finally
             {

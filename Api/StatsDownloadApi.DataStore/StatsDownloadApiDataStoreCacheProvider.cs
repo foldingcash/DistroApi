@@ -23,32 +23,33 @@
             this.cache = cache;
         }
 
-        public FoldingUser[] GetFoldingMembers(DateTime startDate, DateTime endDate)
+        public Task<FoldingUser[]> GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
-            return GetOrAdd(() => innerService.GetFoldingMembers(startDate, endDate),
+            return GetOrAdd(async () => await innerService.GetFoldingMembers(startDate, endDate),
                 DateTimeOffset.Now.AddHours(cacheDurationInHours), $"{startDate}-{endDate}");
         }
 
-        public Member[] GetMembers(DateTime startDate, DateTime endDate)
+        public Task<Member[]> GetMembers(DateTime startDate, DateTime endDate)
         {
-            return GetOrAdd(() => innerService.GetMembers(startDate, endDate),
+            return GetOrAdd(async () => await innerService.GetMembers(startDate, endDate),
                 DateTimeOffset.Now.AddHours(cacheDurationInHours), $"{startDate}-{endDate}");
         }
 
-        public Team[] GetTeams()
+        public Task<Team[]> GetTeams()
         {
-            return GetOrAdd(() => innerService.GetTeams(), DateTimeOffset.Now.AddHours(cacheDurationInHours));
+            return GetOrAdd(async () => await innerService.GetTeams(),
+                DateTimeOffset.Now.AddHours(cacheDurationInHours));
         }
 
-        public Task<bool> IsAvailable()
+        public async Task<bool> IsAvailable()
         {
-            return innerService.IsAvailable();
+            return await innerService.IsAvailable();
         }
 
-        private T GetOrAdd<T>(Func<T> func, DateTimeOffset addHours, string key = null,
-                              [CallerMemberName] string method = null)
+        private async Task<T> GetOrAdd<T>(Func<Task<T>> func, DateTimeOffset addHours, string key = null,
+                                          [CallerMemberName] string method = null)
         {
-            return cache.GetOrAdd($"{method}-{key}", func, addHours);
+            return await cache.GetOrAdd($"{method}-{key}", func, addHours);
         }
     }
 }

@@ -486,14 +486,14 @@
             Assert.That(actual.TeamCount, Is.EqualTo(2));
         }
 
-        private Task<GetDistroResponse> InvokeGetDistro()
+        private async Task<GetDistroResponse> InvokeGetDistro()
         {
-            return InvokeGetDistro(startDateMock, endDateMock, amountMock);
+            return await InvokeGetDistro(startDateMock, endDateMock, amountMock);
         }
 
-        private Task<GetDistroResponse> InvokeGetDistro(DateTime? startDate, DateTime? endDate, int? amount)
+        private async Task<GetDistroResponse> InvokeGetDistro(DateTime? startDate, DateTime? endDate, int? amount)
         {
-            return systemUnderTest.GetDistro(startDate, endDate, amount);
+            return await systemUnderTest.GetDistro(startDate, endDate, amount);
         }
 
         private Task<GetMemberStatsResponse> InvokeGetMemberStats(DateTime? startDate, DateTime? endDate)

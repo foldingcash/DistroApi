@@ -38,28 +38,28 @@
             this.loggingService = loggingService;
         }
 
-        public FoldingUser[] GetFoldingMembers(DateTime startDate, DateTime endDate)
+        public async Task<FoldingUser[]> GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
             loggingService.LogMethodInvoked();
-            ParseResults[] parsedFiles = GetValidatedFiles(startDate, endDate);
+            ParseResults[] parsedFiles = await GetValidatedFiles(startDate, endDate);
             FoldingUser[] foldingUsers = GetFoldingUsers(parsedFiles.First(), parsedFiles.Last());
             loggingService.LogMethodFinished();
             return foldingUsers;
         }
 
-        public Member[] GetMembers(DateTime startDate, DateTime endDate)
+        public async Task<Member[]> GetMembers(DateTime startDate, DateTime endDate)
         {
             loggingService.LogMethodInvoked();
-            ParseResults[] parsedFiles = GetValidatedFiles(startDate, endDate);
+            ParseResults[] parsedFiles = await GetValidatedFiles(startDate, endDate);
             Member[] members = GetMembers(parsedFiles.First(), parsedFiles.Last());
             loggingService.LogMethodFinished();
             return members;
         }
 
-        public Team[] GetTeams()
+        public async Task<Team[]> GetTeams()
         {
             loggingService.LogMethodInvoked();
-            ParseResults[] parsedFiles = GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
+            ParseResults[] parsedFiles = await GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
             Team[] teams = GetTeams(parsedFiles.Last());
             loggingService.LogMethodFinished();
             return teams;
@@ -78,12 +78,27 @@
 
             foreach (UserData userData in lastFileResults.UsersData)
             {
-                UserData previous = firstFileResults.UsersData.FirstOrDefault(user => user.Name == userData.Name);
+                UserData previous = firstFileResults.UsersData.FirstOrDefault(user =>
+                    user.Name == userData.Name
+                    && user.TeamNumber == userData.TeamNumber);
                 if (previous is UserData)
                 {
-                    foldingUsers.Add(new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
-                        userData.TotalPoints - previous.TotalPoints,
-                        userData.TotalWorkUnits - previous.TotalWorkUnits));
+                    var user = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
+                        userData.TotalPoints - previous.TotalPoints, userData.TotalWorkUnits - previous.TotalWorkUnits);
+
+                    if (user.PointsGained < 0)
+                    {
+                        throw new InvalidDistributionState(
+                            "Negative points earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
+                    }
+
+                    if (user.WorkUnitsGained < 0)
+                    {
+                        throw new InvalidDistributionState(
+                            "Negative work units earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
+                    }
+
+                    foldingUsers.Add(user);
                 }
                 else
                 {
@@ -145,23 +160,31 @@
             return teams.ToArray();
         }
 
-        private ParseResults GetValidatedFile(ValidatedFile validatedFile)
+        private async Task<ParseResults> GetValidatedFile(ValidatedFile validatedFile)
         {
             loggingService.LogMethodInvoked();
             var filePayload = new FilePayload();
             filePayloadApiSettingsService.SetFilePayloadApiSettings(filePayload);
-            dataStoreService.DownloadFile(filePayload, validatedFile);
+            await dataStoreService.DownloadFile(filePayload, validatedFile);
             ParseResults results = fileValidationService.ValidateFile(filePayload);
             loggingService.LogMethodFinished();
             return results;
         }
 
-        private ParseResults[] GetValidatedFiles(DateTime startDate, DateTime endDate)
+        private async Task<ParseResults[]> GetValidatedFiles(DateTime startDate, DateTime endDate)
         {
             loggingService.LogMethodInvoked();
             IList<ValidatedFile> validatedFiles = databaseService.GetValidatedFiles(startDate, endDate);
             IOrderedEnumerable<ValidatedFile> orderedFiles = validatedFiles.OrderBy(file => file.DownloadDateTime);
-            ParseResults[] results = { GetValidatedFile(orderedFiles.First()), GetValidatedFile(orderedFiles.Last()) };
+            ValidatedFile firstFile = orderedFiles.First();
+            ValidatedFile lastFile = orderedFiles.Last();
+            loggingService.LogVerbose(
+                $"First File: DownloadId={firstFile.DownloadId} DownloadDateTime={firstFile.DownloadDateTime}");
+            loggingService.LogVerbose(
+                $"Last File: DownloadId={lastFile.DownloadId} DownloadDateTime={lastFile.DownloadDateTime}");
+            Task<ParseResults> firstResultTask = GetValidatedFile(firstFile);
+            Task<ParseResults> lastResultTask = GetValidatedFile(lastFile);
+            ParseResults[] results = await Task.WhenAll(firstResultTask, lastResultTask);
             loggingService.LogMethodFinished();
             return results;
         }

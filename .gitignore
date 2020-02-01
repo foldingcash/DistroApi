@@ -246,3 +246,4 @@ ModelManifest.xml
 *.pubxml
 /StatsDownload/StatsDownloadSetup/Files-x64.wxs
 /StatsDownload/StatsDownloadSetup/Files-x86.wxs
+/Api/StatsDownloadApi.WebApi/.config/dotnet-tools.json

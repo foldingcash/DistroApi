@@ -20,6 +20,10 @@
 
         NegativeAmount = 1070,
 
+        MinorIssuesMax = 1999,
+
+        InvalidDistributionState = 4000,
+
         DatabaseUnavailable = 8000,
 
         DataStoreUnavailable = 8001,

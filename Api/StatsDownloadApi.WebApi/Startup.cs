@@ -1,6 +1,7 @@
 ﻿namespace StatsDownloadApi.WebApi
 {
     using System;
+    using System.Diagnostics;
 
     using Castle.Windsor.MsDependencyInjection;
 
@@ -9,6 +10,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
     using StatsDownloadApi.WebApi.CastleWindsor;
 
@@ -16,9 +18,12 @@
 
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILogger<Startup> logger;
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            this.logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -26,6 +31,9 @@
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            logger.LogTrace("PID: {PID} Environment: {environment}", Process.GetCurrentProcess().Id,
+                env.EnvironmentName);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
