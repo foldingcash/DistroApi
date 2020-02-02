@@ -38,13 +38,15 @@
             this.loggingService = loggingService;
         }
 
-        public async Task<FoldingUser[]> GetFoldingMembers(DateTime startDate, DateTime endDate)
+        public async Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
             loggingService.LogMethodInvoked();
             ParseResults[] parsedFiles = await GetValidatedFiles(startDate, endDate);
-            FoldingUser[] foldingUsers = GetFoldingUsers(parsedFiles.First(), parsedFiles.Last());
+            ParseResults first = parsedFiles.First();
+            ParseResults last = parsedFiles.Last();
+            FoldingUser[] foldingUsers = GetFoldingUsers(first, last);
             loggingService.LogMethodFinished();
-            return foldingUsers;
+            return new FoldingUsersResult(foldingUsers, first.DownloadDateTime, last.DownloadDateTime);
         }
 
         public async Task<Member[]> GetMembers(DateTime startDate, DateTime endDate)

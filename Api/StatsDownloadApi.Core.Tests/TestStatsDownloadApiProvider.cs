@@ -150,7 +150,8 @@
         public async Task GetDistro_WhenInvoked_LogsMethodInvoked()
         {
             var foldingUsers = new FoldingUser[0];
-            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
+            var resultMock = new FoldingUsersResult(foldingUsers, startDateMock, endDateMock);
+            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(resultMock);
 
             await systemUnderTest.GetDistro(startDateMock, endDateMock, amountMock);
 
@@ -167,7 +168,8 @@
         {
             var foldingUsers = new FoldingUser[0];
             var distro = new[] { new DistroUser(null, 1, 2, 0.12345678m), new DistroUser(null, 3, 4, 100m) };
-            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
+            var resultMock = new FoldingUsersResult(foldingUsers, startDateMock, endDateMock);
+            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(resultMock);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);
 
             GetDistroResponse actual = await InvokeGetDistro();
@@ -388,7 +390,7 @@
 
             await systemUnderTest.GetMemberStats(dateTime, dateTime);
 
-            statsDownloadApiDataStoreServiceMock.Received().GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
+            await statsDownloadApiDataStoreServiceMock.Received().GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
         }
 
         [Test]

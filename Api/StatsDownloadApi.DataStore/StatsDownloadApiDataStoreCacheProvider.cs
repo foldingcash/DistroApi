@@ -23,7 +23,7 @@
             this.cache = cache;
         }
 
-        public Task<FoldingUser[]> GetFoldingMembers(DateTime startDate, DateTime endDate)
+        public Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
             return GetOrAdd(async () => await innerService.GetFoldingMembers(startDate, endDate),
                 DateTimeOffset.Now.AddHours(cacheDurationInHours), $"{startDate}-{endDate}");

@@ -56,8 +56,8 @@
                 return new GetDistroResponse(errors);
             }
 
-            IList<FoldingUser> foldingMembers = await GetFoldingMembers(startDate, endDate);
-            GetDistroResponse response = GetDistro(amount, foldingMembers);
+            FoldingUsersResult result = await GetFoldingMembers(startDate, endDate);
+            GetDistroResponse response = GetDistro(amount, result);
 
             loggingService.LogMethodFinished();
 
@@ -119,13 +119,14 @@
             return teamsResponse;
         }
 
-        private GetDistroResponse GetDistro(int? amount, IList<FoldingUser> foldingUsers)
+        private GetDistroResponse GetDistro(int? amount, FoldingUsersResult foldingUsersResult)
         {
             try
             {
+                FoldingUser[] foldingUsers = foldingUsersResult.FoldingUsers;
                 IList<DistroUser> distro =
                     statsDownloadApiTokenDistributionService.GetDistro(amount.GetValueOrDefault(), foldingUsers);
-                return new GetDistroResponse(distro);
+                return new GetDistroResponse(distro, foldingUsersResult.StartDateTime, foldingUsersResult.EndDateTime);
             }
             catch (InvalidDistributionState invalidDistributionState)
             {
@@ -137,7 +138,7 @@
             }
         }
 
-        private async Task<IList<FoldingUser>> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
+        private async Task<FoldingUsersResult> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
         {
             return await statsDownloadApiDataStoreService.GetFoldingMembers(startDate.GetValueOrDefault(),
                        endDate.GetValueOrDefault());
