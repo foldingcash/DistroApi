@@ -56,6 +56,8 @@
 
         private decimal GetRewardAmount(int amount, long totalPoints, long pointsGained)
         {
+            // TODO: Check the total points, don't divide by zero
+            // TODO: Return a error response when the total points would be zero
             decimal rawAmount = Convert.ToDecimal(pointsGained) / Convert.ToDecimal(totalPoints)
                                 * Convert.ToDecimal(amount);
 
