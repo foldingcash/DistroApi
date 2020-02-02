@@ -26,8 +26,8 @@ BEGIN
 	DECLARE @StartDateTime DATETIME;
 	DECLARE @EndDateTime DATETIME;
 
-	--This is converted to add 12 hours because of FLDC specific implementation needs
-	SET @StartDateTime = DATEADD(HOUR, 12, CONVERT(DATETIME, @StartDate));
+	--This is converted to alter the hours because of FLDC specific implementation needs
+	SET @StartDateTime = DATEADD(HOUR, 11, CONVERT(DATETIME, @StartDate));
 	SET @EndDateTime = DATEADD(DAY, 1, DATEADD(HOUR, 12, CONVERT(DATETIME, @EndDate)));
 
 	SELECT 
