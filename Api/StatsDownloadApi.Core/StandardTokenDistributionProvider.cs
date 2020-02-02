@@ -56,8 +56,12 @@
 
         private decimal GetRewardAmount(int amount, long totalPoints, long pointsGained)
         {
-            // TODO: Check the total points, don't divide by zero
-            // TODO: Return a error response when the total points would be zero
+            if (totalPoints == 0)
+            {
+                throw new InvalidDistributionState(
+                    "The total points earned was zero. A distribution cannot happen when zero points are earned because the distribution would be zero. Enter a new start date and/or end date and try again. If the error continues or you think this is incorrect, then contact your support team with this response.");
+            }
+
             decimal rawAmount = Convert.ToDecimal(pointsGained) / Convert.ToDecimal(totalPoints)
                                 * Convert.ToDecimal(amount);
 
