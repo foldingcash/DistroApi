@@ -29,7 +29,9 @@ The stats API is used to expose the stats, users, and team data from the stats d
 1. WebApi
 	* This is an API meant to provide services to various web applications
 
-## [Using the API](StatsDownloadApi.UsingTheApi.md)
+## Using the API
+
+[Additional documentation on using the API](StatsDownloadApi.UsingTheApi.md)
 	
 ## Running the tests
 

@@ -32,6 +32,8 @@ If the .NET Core version has changed, then update the batch script that is haves
 
 ## Getting SHA256 Hash
 
+Instructions to get the SHA256 hash to communicate to others the expected value
+
 ### Windows 10 Using Powershell
 
 1. Use Get-FileHash Command

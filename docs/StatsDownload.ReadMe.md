@@ -39,7 +39,7 @@ dotnet StatsDownload.FileDownload.Console.dll >> Log.txt
 5. [Upload Settings](SettingsConfiguration.md#stats-upload-settings)
 6. [Test Settings](SettingsConfiguration.md#test-harness-only-settings)
 
-***Update Settings***
+***TODO: Update Settings***
 
 ### Applications
 
