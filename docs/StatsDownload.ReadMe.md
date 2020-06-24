@@ -15,10 +15,10 @@ The stats downloader is used to download the stats data on a scheduled basis.
 
 1. Install using latest available installation package
 2. [Update applications configuration file](SettingsConfiguration.md)
-3. Navigate to FLDCDotNet/Database
+3. Navigate to FoldingCash/Database
 	1. Run the schema script to create a database (update path to database)
 	2. Run the stored procedure script against the database
-4. Create a task for each application
+4. Create a task for the application
 	1. [Search for Task Scheduler](InstallPics/Windows_SearchTask.PNG)
 	2. [Create Task](InstallPics/Windows_CreateTask.PNG)
 	3. [Sample Task Properties](InstallPics/Windows_TaskProperties.PNG)
@@ -28,9 +28,6 @@ The stats downloader is used to download the stats data on a scheduled basis.
 
 ```
 dotnet StatsDownload.FileDownload.Console.dll >> Log.txt
-```
-```
-dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 ```
 
 ### Settings
@@ -42,6 +39,8 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 5. [Upload Settings](SettingsConfiguration.md#stats-upload-settings)
 6. [Test Settings](SettingsConfiguration.md#test-harness-only-settings)
 
+***Update Settings***
+
 ### Applications
 
 1. StatsDownload.TestHarness
@@ -50,8 +49,6 @@ dotnet StatsDownload.StatsUpload.Console.dll >> Log.txt
 	* This is a WCF application meant to provide a test server for the file download i.e. for mocking Stanford's server
 3. StatsDownload.FileDownload.Console
 	* This is a console application meant to be executed via command line or task scheduler and will execute only the file download portion of the stats download process
-4. StatsDownload.StatsUpload.Console
-	* This is a console application meant to be executed via command line or task scheduler and will execute only the stats upload portion of the stats download process
 	
 ## Errors
 
@@ -105,12 +102,19 @@ nunit-console {path-to-assembly}
 
 ### App Hardware Requirements
 
-* HDD 120GB+
+* SSD 120GB+
 * i5 Intel / Ryzen 5 AMD
 * 16 GB
 
 ### DB Hardware Requirements
 
 * SSD 120GB+
-* i5 Intel / Ryzen 5 AMD
-* 16 GB
+* i3 Intel / Ryzen 3 AMD
+* 8 GB
+
+### File Hardware Requirements
+
+* HDD 500GB+
+* Processor?
+* RAM?
+* Internet? Yes
