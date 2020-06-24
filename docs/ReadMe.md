@@ -1,4 +1,4 @@
-# FLDCDotNet
+# Folding Cash Distribution API
 
 ## Getting Started
 
