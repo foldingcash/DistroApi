@@ -1,4 +1,4 @@
-# Folding Cash Distribution API
+# FoldingCash Distribution API
 
 ## Getting Started
 
@@ -14,7 +14,7 @@ This is a C# implementation for downloading FAH statistics on a scheduled basis,
 ## Solutions
 
 1. [StatsDownload](StatsDownload.ReadMe.md)
-	* The downloader interfaces with the StatsDownload database to upload the database with user statistics
+	* The downloader interfaces with the StatsDownload database
 2. [StatsDownloadSetup](StatsDownloadSetup.ReadMe.md)
 	* The downloader setup creates an installation package for Windows
 3. [StatsDownloadApi](StatsDownloadApi.ReadMe.md)
