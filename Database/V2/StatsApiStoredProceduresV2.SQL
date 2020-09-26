@@ -1,25 +1,25 @@
-IF OBJECT_ID('FoldingCoin.ValidatedFiles') IS NOT NULL
+IF OBJECT_ID('FoldingCash.ValidatedFiles') IS NOT NULL
 	BEGIN
-		DROP VIEW [FoldingCoin].[ValidatedFiles];
+		DROP VIEW [FoldingCash].[ValidatedFiles];
 	END
 GO
 
-CREATE VIEW [FoldingCoin].[ValidatedFiles]
+CREATE VIEW [FoldingCash].[ValidatedFiles]
 AS
-	SELECT D.DownloadId, D.DownloadDateTime, F.FilePath FROM [FoldingCoin].[Downloads] D
-	INNER JOIN [FoldingCoin].[Files] F ON D.FileId = F.FileId
-	WHERE StatusId = FoldingCoin.GetFileValidatedStatusId();
+	SELECT D.DownloadId, D.DownloadDateTime, F.FilePath FROM [FoldingCash].[Downloads] D
+	INNER JOIN [FoldingCash].[Files] F ON D.FileId = F.FileId
+	WHERE StatusId = FoldingCash.GetFileValidatedStatusId();
 GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.GetValidatedFiles') IS NOT NULL
+IF OBJECT_ID('FoldingCash.GetValidatedFiles') IS NOT NULL
 	BEGIN
-		DROP PROCEDURE [FoldingCoin].[GetValidatedFiles];
+		DROP PROCEDURE [FoldingCash].[GetValidatedFiles];
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[GetValidatedFiles] @StartDate DATE,
+CREATE PROCEDURE [FoldingCash].[GetValidatedFiles] @StartDate DATE,
 	@EndDate DATE
 AS
 BEGIN
@@ -34,7 +34,7 @@ BEGIN
 		DownloadId, 
 		DownloadDateTime, 
 		FilePath 
-	FROM [FoldingCoin].[ValidatedFiles] 
+	FROM [FoldingCash].[ValidatedFiles] 
 	WHERE 
 		DownloadDateTime >= @StartDateTime 
 	AND 

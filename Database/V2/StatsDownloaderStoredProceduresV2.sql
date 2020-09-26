@@ -1,47 +1,47 @@
-IF OBJECT_ID('FoldingCoin.UpdateToLatest') IS NOT NULL
+IF OBJECT_ID('FoldingCash.UpdateToLatest') IS NOT NULL
 	BEGIN
-		DROP PROCEDURE [FoldingCoin].[UpdateToLatest];
+		DROP PROCEDURE [FoldingCash].[UpdateToLatest];
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[UpdateToLatest]
+CREATE PROCEDURE [FoldingCash].[UpdateToLatest]
 AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRANSACTION
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD STARTED') = 0
+			IF (SELECT COUNT(1) FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE DOWNLOAD STARTED') = 0
 				BEGIN
-					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					INSERT INTO [FoldingCash].[Statuses] ([Status],StatusDescription)
 					VALUES ('FILE DOWNLOAD STARTED', 'The stats file download service has started.');
 				END
 
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD FINISHED') = 0
+			IF (SELECT COUNT(1) FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE DOWNLOAD FINISHED') = 0
 				BEGIN
-					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					INSERT INTO [FoldingCash].[Statuses] ([Status],StatusDescription)
 					VALUES ('FILE DOWNLOAD FINISHED', 'The stats file download has finished.');
 				END
 
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD ERROR') = 0
+			IF (SELECT COUNT(1) FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE DOWNLOAD ERROR') = 0
 				BEGIN
-					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					INSERT INTO [FoldingCash].[Statuses] ([Status],StatusDescription)
 					VALUES ('FILE DOWNLOAD ERROR', 'There was an error during the file download process.');
 				END
 
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE VALIDATION STARTED') = 0
+			IF (SELECT COUNT(1) FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE VALIDATION STARTED') = 0
 				BEGIN
-					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					INSERT INTO [FoldingCash].[Statuses] ([Status],StatusDescription)
 					VALUES ('FILE VALIDATION STARTED', 'The validation of the file has started.');
 				END
 
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE VALIDATED')  = 0
+			IF (SELECT COUNT(1) FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE VALIDATED')  = 0
 				BEGIN
-					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					INSERT INTO [FoldingCash].[Statuses] ([Status],StatusDescription)
 					VALUES ('FILE VALIDATED', 'The file has been validated of any issues.');
 				END
 
-			IF (SELECT COUNT(1) FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE VALIDATION ERROR') = 0
+			IF (SELECT COUNT(1) FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE VALIDATION ERROR') = 0
 				BEGIN
-					INSERT INTO [FoldingCoin].[Statuses] ([Status],StatusDescription)
+					INSERT INTO [FoldingCash].[Statuses] ([Status],StatusDescription)
 					VALUES ('FILE VALIDATION ERROR', 'There was an error during the file validation process.');
 				END
 		COMMIT
@@ -55,18 +55,18 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.GetFileDownloadStartedStatusId') IS NOT NULL
+IF OBJECT_ID('FoldingCash.GetFileDownloadStartedStatusId') IS NOT NULL
 BEGIN
-	DROP FUNCTION [FoldingCoin].[GetFileDownloadStartedStatusId];
+	DROP FUNCTION [FoldingCash].[GetFileDownloadStartedStatusId];
 END
 GO
 
-CREATE FUNCTION [FoldingCoin].[GetFileDownloadStartedStatusId] () RETURNS INT
+CREATE FUNCTION [FoldingCash].[GetFileDownloadStartedStatusId] () RETURNS INT
 AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD STARTED';
+	SELECT @StatusId = StatusId FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE DOWNLOAD STARTED';
 	
 	RETURN @StatusId;
 END
@@ -74,18 +74,18 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.GetFileDownloadFinishedStatusId') IS NOT NULL
+IF OBJECT_ID('FoldingCash.GetFileDownloadFinishedStatusId') IS NOT NULL
 BEGIN
-	DROP FUNCTION [FoldingCoin].[GetFileDownloadFinishedStatusId];
+	DROP FUNCTION [FoldingCash].[GetFileDownloadFinishedStatusId];
 END
 GO
 
-CREATE FUNCTION [FoldingCoin].[GetFileDownloadFinishedStatusId] () RETURNS INT
+CREATE FUNCTION [FoldingCash].[GetFileDownloadFinishedStatusId] () RETURNS INT
 AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD FINISHED';
+	SELECT @StatusId = StatusId FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE DOWNLOAD FINISHED';
 				 
 	RETURN @StatusId;
 END
@@ -93,18 +93,18 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.GetFileDownloadErrorStatusId') IS NOT NULL
+IF OBJECT_ID('FoldingCash.GetFileDownloadErrorStatusId') IS NOT NULL
 BEGIN
-	DROP FUNCTION [FoldingCoin].[GetFileDownloadErrorStatusId];
+	DROP FUNCTION [FoldingCash].[GetFileDownloadErrorStatusId];
 END
 GO
 
-CREATE FUNCTION [FoldingCoin].[GetFileDownloadErrorStatusId] () RETURNS INT
+CREATE FUNCTION [FoldingCash].[GetFileDownloadErrorStatusId] () RETURNS INT
 AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE DOWNLOAD ERROR';
+	SELECT @StatusId = StatusId FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE DOWNLOAD ERROR';
 				 
 	RETURN @StatusId;
 END
@@ -112,18 +112,18 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.GetFileValidationStartedStatusId') IS NOT NULL
+IF OBJECT_ID('FoldingCash.GetFileValidationStartedStatusId') IS NOT NULL
 BEGIN
-	DROP FUNCTION [FoldingCoin].[GetFileValidationStartedStatusId];
+	DROP FUNCTION [FoldingCash].[GetFileValidationStartedStatusId];
 END
 GO
 
-CREATE FUNCTION [FoldingCoin].[GetFileValidationStartedStatusId] () RETURNS INT
+CREATE FUNCTION [FoldingCash].[GetFileValidationStartedStatusId] () RETURNS INT
 AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE VALIDATION STARTED';
+	SELECT @StatusId = StatusId FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE VALIDATION STARTED';
 				 
 	RETURN @StatusId;
 END
@@ -131,18 +131,18 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.GetFileValidatedStatusId') IS NOT NULL
+IF OBJECT_ID('FoldingCash.GetFileValidatedStatusId') IS NOT NULL
 BEGIN
-	DROP FUNCTION [FoldingCoin].[GetFileValidatedStatusId];
+	DROP FUNCTION [FoldingCash].[GetFileValidatedStatusId];
 END
 GO
 
-CREATE FUNCTION [FoldingCoin].[GetFileValidatedStatusId] () RETURNS INT
+CREATE FUNCTION [FoldingCash].[GetFileValidatedStatusId] () RETURNS INT
 AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE VALIDATED';
+	SELECT @StatusId = StatusId FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE VALIDATED';
 				 
 	RETURN @StatusId;
 END
@@ -150,18 +150,18 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.GetFileValidationErrorStatusId') IS NOT NULL
+IF OBJECT_ID('FoldingCash.GetFileValidationErrorStatusId') IS NOT NULL
 BEGIN
-	DROP FUNCTION [FoldingCoin].[GetFileValidationErrorStatusId];
+	DROP FUNCTION [FoldingCash].[GetFileValidationErrorStatusId];
 END
 GO
 
-CREATE FUNCTION [FoldingCoin].[GetFileValidationErrorStatusId] () RETURNS INT
+CREATE FUNCTION [FoldingCash].[GetFileValidationErrorStatusId] () RETURNS INT
 AS
 BEGIN
 	DECLARE @StatusId INT;
 	
-	SELECT @StatusId = StatusId FROM [FoldingCoin].[Statuses] WHERE [Status] = 'FILE VALIDATION ERROR';
+	SELECT @StatusId = StatusId FROM [FoldingCash].[Statuses] WHERE [Status] = 'FILE VALIDATION ERROR';
 				 
 	RETURN @StatusId;
 END
@@ -169,21 +169,21 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.GetLastFileDownloadDateTime') IS NOT NULL
+IF OBJECT_ID('FoldingCash.GetLastFileDownloadDateTime') IS NOT NULL
 BEGIN
-	DROP FUNCTION [FoldingCoin].[GetLastFileDownloadDateTime];
+	DROP FUNCTION [FoldingCash].[GetLastFileDownloadDateTime];
 END
 GO
 
-CREATE FUNCTION [FoldingCoin].[GetLastFileDownloadDateTime] () RETURNS DATETIME
+CREATE FUNCTION [FoldingCash].[GetLastFileDownloadDateTime] () RETURNS DATETIME
 AS
 BEGIN
 	DECLARE @DownloadDateTime DATETIME;
 	
-	SELECT TOP (1) @DownloadDateTime = DownloadDateTime	FROM [FoldingCoin].[Downloads]
-	WHERE StatusId <> FoldingCoin.GetFileDownloadStartedStatusId()
-	AND StatusId <> FoldingCoin.GetFileDownloadErrorStatusId()
-	AND StatusId <> FoldingCoin.GetFileValidationErrorStatusId()
+	SELECT TOP (1) @DownloadDateTime = DownloadDateTime	FROM [FoldingCash].[Downloads]
+	WHERE StatusId <> FoldingCash.GetFileDownloadStartedStatusId()
+	AND StatusId <> FoldingCash.GetFileDownloadErrorStatusId()
+	AND StatusId <> FoldingCash.GetFileValidationErrorStatusId()
 	ORDER BY DownloadDateTime DESC;
 
 	RETURN @DownloadDateTime;
@@ -192,25 +192,25 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.FileDownloadStarted') IS NOT NULL
+IF OBJECT_ID('FoldingCash.FileDownloadStarted') IS NOT NULL
 BEGIN
-	DROP PROCEDURE [FoldingCoin].[FileDownloadStarted];
+	DROP PROCEDURE [FoldingCash].[FileDownloadStarted];
 END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[FileDownloadStarted] @DownloadId INT OUTPUT
+CREATE PROCEDURE [FoldingCash].[FileDownloadStarted] @DownloadId INT OUTPUT
 AS
 BEGIN
 	DECLARE @FileDownloadStartedStatusId INT;
 
 	BEGIN TRY
 		BEGIN TRANSACTION
-			SELECT @FileDownloadStartedStatusId = [FoldingCoin].[GetFileDownloadStartedStatusId]();
+			SELECT @FileDownloadStartedStatusId = [FoldingCash].[GetFileDownloadStartedStatusId]();
 	
-			INSERT INTO [FoldingCoin].[Downloads] (StatusId, FileId, DownloadDateTime)
+			INSERT INTO [FoldingCash].[Downloads] (StatusId, FileId, DownloadDateTime)
 			VALUES (@FileDownloadStartedStatusId, NULL, GETUTCDATE());
 	
-			SELECT TOP 1 @DownloadId = @@Identity FROM [FoldingCoin].[Downloads];
+			SELECT TOP 1 @DownloadId = @@Identity FROM [FoldingCash].[Downloads];
 		COMMIT
 	END TRY
 	BEGIN CATCH
@@ -222,13 +222,13 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.FileDownloadFinished') IS NOT NULL
+IF OBJECT_ID('FoldingCash.FileDownloadFinished') IS NOT NULL
 	BEGIN
-		DROP PROCEDURE [FoldingCoin].[FileDownloadFinished];
+		DROP PROCEDURE [FoldingCash].[FileDownloadFinished];
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[FileDownloadFinished] 
+CREATE PROCEDURE [FoldingCash].[FileDownloadFinished] 
 	 @DownloadId INT
 	,@FilePath NVARCHAR(250)
 	,@FileName NVARCHAR(50)
@@ -239,16 +239,16 @@ BEGIN
 
 	BEGIN TRY
 		BEGIN TRANSACTION
-			INSERT INTO [FoldingCoin].[Files] ([FilePath], [FileName], [FileExtension])
+			INSERT INTO [FoldingCash].[Files] ([FilePath], [FileName], [FileExtension])
 			VALUES (@FilePath, @FileName, @FileExtension);
 
-			SELECT TOP 1 @FileId = @@Identity FROM [FoldingCoin].[Files];
+			SELECT TOP 1 @FileId = @@Identity FROM [FoldingCash].[Files];
 
 			DECLARE @FileDownloadFinishedStatusId INT;
 
-			UPDATE [FoldingCoin].[Downloads] SET
+			UPDATE [FoldingCash].[Downloads] SET
 					 FileId = @FileId
-					,StatusId = FoldingCoin.GetFileDownloadFinishedStatusId()
+					,StatusId = FoldingCash.GetFileDownloadFinishedStatusId()
 			WHERE DownloadId = @DownloadId;
 		COMMIT
 	END TRY
@@ -261,26 +261,26 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.FileDownloadError') IS NOT NULL
+IF OBJECT_ID('FoldingCash.FileDownloadError') IS NOT NULL
 	BEGIN
-		DROP PROCEDURE [FoldingCoin].[FileDownloadError];
+		DROP PROCEDURE [FoldingCash].[FileDownloadError];
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[FileDownloadError] @DownloadId INT ,@ErrorMessage NVARCHAR(500)
+CREATE PROCEDURE [FoldingCash].[FileDownloadError] @DownloadId INT ,@ErrorMessage NVARCHAR(500)
 AS
 BEGIN
 	DECLARE @FileDownloadErrorStatusId INT;
 
 	BEGIN TRY
 		BEGIN TRANSACTION
-			SELECT @FileDownloadErrorStatusId = [FoldingCoin].GetFileDownloadErrorStatusId();
+			SELECT @FileDownloadErrorStatusId = [FoldingCash].GetFileDownloadErrorStatusId();
 
-			UPDATE [FoldingCoin].[Downloads] 
+			UPDATE [FoldingCash].[Downloads] 
 			SET StatusId = @FileDownloadErrorStatusId
 			WHERE DownloadId = @DownloadId;
 
-			INSERT INTO [FoldingCoin].[Rejections] (DownloadId, Reason)
+			INSERT INTO [FoldingCash].[Rejections] (DownloadId, Reason)
 			VALUES (@DownloadId, @ErrorMessage);
 		COMMIT
 	END TRY
@@ -293,22 +293,22 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.FileValidationStarted') IS NOT NULL
+IF OBJECT_ID('FoldingCash.FileValidationStarted') IS NOT NULL
 	BEGIN
-		DROP PROCEDURE [FoldingCoin].[FileValidationStarted];
+		DROP PROCEDURE [FoldingCash].[FileValidationStarted];
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[FileValidationStarted] @DownloadId INT
+CREATE PROCEDURE [FoldingCash].[FileValidationStarted] @DownloadId INT
 AS
 BEGIN
 	DECLARE @FileValidationStartedStatusId INT;
 
 	BEGIN TRY
 		BEGIN TRANSACTION
-			SELECT @FileValidationStartedStatusId = [FoldingCoin].GetFileValidationStartedStatusId();
+			SELECT @FileValidationStartedStatusId = [FoldingCash].GetFileValidationStartedStatusId();
 
-			UPDATE [FoldingCoin].[Downloads] 
+			UPDATE [FoldingCash].[Downloads] 
 			SET StatusId = @FileValidationStartedStatusId
 			WHERE DownloadId = @DownloadId;
 		COMMIT
@@ -322,13 +322,13 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.FileValidated') IS NOT NULL
+IF OBJECT_ID('FoldingCash.FileValidated') IS NOT NULL
 	BEGIN
-		DROP PROCEDURE [FoldingCoin].[FileValidated];
+		DROP PROCEDURE [FoldingCash].[FileValidated];
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[FileValidated]
+CREATE PROCEDURE [FoldingCash].[FileValidated]
 	@DownloadId INT
 	,@FileUtcDateTime DATETIME
 	,@FilePath NVARCHAR(250)
@@ -341,14 +341,14 @@ BEGIN
 
 	BEGIN TRY
 		BEGIN TRANSACTION
-			SELECT @FileValidatedStatusId = [FoldingCoin].GetFileValidatedStatusId();
-			SELECT @FileId = FileId FROM [FoldingCoin].[Files];
+			SELECT @FileValidatedStatusId = [FoldingCash].GetFileValidatedStatusId();
+			SELECT @FileId = FileId FROM [FoldingCash].[Files];
 
-			UPDATE [FoldingCoin].[Downloads] 
+			UPDATE [FoldingCash].[Downloads] 
 			SET StatusId = @FileValidatedStatusId, DownloadDateTime = @FileUtcDateTime
 			WHERE DownloadId = @DownloadId;
 
-			UPDATE [FoldingCoin].[Files]
+			UPDATE [FoldingCash].[Files]
 			SET FilePath = @FilePath, [FileName] = @FileName, FileExtension = @FileExtension
 			WHERE FileId = @FileId;
 		COMMIT
@@ -362,13 +362,13 @@ GO
 
 -----------------------------------------------------------------
 
-IF OBJECT_ID('FoldingCoin.FileValidationError') IS NOT NULL
+IF OBJECT_ID('FoldingCash.FileValidationError') IS NOT NULL
 	BEGIN
-		DROP PROCEDURE [FoldingCoin].[FileValidationError];
+		DROP PROCEDURE [FoldingCash].[FileValidationError];
 	END
 GO
 
-CREATE PROCEDURE [FoldingCoin].[FileValidationError] 
+CREATE PROCEDURE [FoldingCash].[FileValidationError] 
 	@DownloadId INT 
 	,@ErrorMessage NVARCHAR(500)
 AS
@@ -377,13 +377,13 @@ BEGIN
 
 	BEGIN TRY
 		BEGIN TRANSACTION
-			SELECT @FileValidationErrorStatusId = [FoldingCoin].GetFileValidationErrorStatusId();
+			SELECT @FileValidationErrorStatusId = [FoldingCash].GetFileValidationErrorStatusId();
 
-			UPDATE [FoldingCoin].[Downloads] 
+			UPDATE [FoldingCash].[Downloads] 
 			SET StatusId = @FileValidationErrorStatusId
 			WHERE DownloadId = @DownloadId;
 
-			INSERT INTO [FoldingCoin].[Rejections] (DownloadId, Reason)
+			INSERT INTO [FoldingCash].[Rejections] (DownloadId, Reason)
 			VALUES (@DownloadId, @ErrorMessage);
 		COMMIT
 	END TRY
