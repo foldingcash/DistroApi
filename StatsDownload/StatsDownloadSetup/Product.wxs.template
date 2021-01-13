@@ -12,8 +12,8 @@
     <?define FileSource = "$(var.ProjectDir)\Files\x86" ?>  
   <?endif ?>  
 
-  <Product Id="*" Name="FoldingCoin Stats Downloader $(var.Platform)" Language="1033" Version="1.2.0"
-           Manufacturer="FoldingCoin, Inc." UpgradeCode="61d25c2a-d1e3-4661-9c2a-cbb65bb7be5c">
+  <Product Id="*" Name="FoldingCash Stats Downloader $(var.Platform)" Language="1033" Version="1.2.0"
+           Manufacturer="FoldingCash" UpgradeCode="61d25c2a-d1e3-4661-9c2a-cbb65bb7be5c">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
@@ -25,14 +25,14 @@
     -->
 
     <!-- Define icons (ID should not be longer than 18 chars and must end with ".exe") -->
-    <Icon Id="Icon.exe" SourceFile="images\fldc.ico" />
+    <Icon Id="Icon.exe" SourceFile="images\icon.ico" />
     <!-- Set properties for add/remove programs -->
     <Property Id="ARPPRODUCTICON" Value="Icon.exe" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
-    <Feature Id="ProductFeature" Title="FoldingCoin Stats Downloader" Level="1">
+    <Feature Id="ProductFeature" Title="FoldingCash Stats Downloader" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
     </Feature>
 
@@ -43,7 +43,7 @@
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="$(var.PlatformProgramFilesFolder)">
-        <Directory Id="INSTALLFOLDER" Name="FoldingCoin Stats Downloader" />
+        <Directory Id="INSTALLFOLDER" Name="FoldingCash Stats Downloader" />
       </Directory>
     </Directory>
   </Fragment>

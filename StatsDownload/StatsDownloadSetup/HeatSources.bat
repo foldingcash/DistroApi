@@ -9,9 +9,9 @@ CD..
 CD StatsDownload.FileDownload.Console
 
 dotnet publish -c Release
-XCOPY "bin\Release\netcoreapp2.2\publish" "..\StatsDownloadSetup\Files\x64" /e
+XCOPY "bin\Release\netcoreapp3.1\publish" "..\StatsDownloadSetup\Files\x64" /e
 dotnet publish -c Release
-XCOPY "bin\Release\netcoreapp2.2\publish" "..\StatsDownloadSetup\Files\x86" /e
+XCOPY "bin\Release\netcoreapp3.1\publish" "..\StatsDownloadSetup\Files\x86" /e
 
 CD..
 CD StatsDownloadSetup

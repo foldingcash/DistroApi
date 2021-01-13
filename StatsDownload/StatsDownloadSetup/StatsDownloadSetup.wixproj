@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HeatSources.bat" />
-    <Content Include="images\fldc.ico" />
+    <Content Include="images\icon.ico" />
     <Content Include="License.rtf" />
     <Content Include="Product.wxs.template" />
     <Content Include="WxsMerger.exe" />
