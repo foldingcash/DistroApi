@@ -80,7 +80,7 @@
 
         [Test]
         public void
-            UploadFile_WhenUnexpectedValidationExceptionThrown_ThrownUnexpectedValidationExceptionWithInnerException()
+            UploadFile_WhenUnexpectedValidationExceptionThrown_ThrowsUnexpectedValidationExceptionWithInnerException()
         {
             var expected = new Exception();
             fileValidationServiceMock.When(mock => mock.ValidateFile(Arg.Any<FilePayload>())).Throw(expected);

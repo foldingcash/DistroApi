@@ -53,10 +53,10 @@
       <HintPath>..\..\..\..\..\nuget\Castle.Core.4.4.1\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Facilities.WcfIntegration, Version=5.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\nuget\Castle.WcfIntegrationFacility.5.0.1\lib\net45\Castle.Facilities.WcfIntegration.dll</HintPath>
+      <HintPath>..\..\..\..\..\nuget\Castle.WcfIntegrationFacility.5.1.1\lib\net45\Castle.Facilities.WcfIntegration.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Windsor, Version=5.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\nuget\Castle.Windsor.5.0.1\lib\net45\Castle.Windsor.dll</HintPath>
+      <HintPath>..\..\..\..\..\nuget\Castle.Windsor.5.1.1\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
