@@ -36,11 +36,11 @@ namespace StatsDownloadApi.DataStore.Tests
 
             var followingUsersData = new[]
                                      {
-                                         new UserData(1, "user1", 2, 2, 2)
+                                         new UserData(1, "user1", 2, 2, 1)
                                          {
                                              BitcoinAddress = "btc1", FriendlyName = "user1"
                                          },
-                                         new UserData(2, "user2", 4, 4, 4)
+                                         new UserData(2, "user2", 4, 4, 2)
                                          {
                                              BitcoinAddress = "btc2", FriendlyName = "user2"
                                          }
