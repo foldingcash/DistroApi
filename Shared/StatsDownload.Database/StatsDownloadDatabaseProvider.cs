@@ -52,7 +52,10 @@
         {
             loggingService.LogMethodInvoked();
             DbTransaction transaction = null;
-            CreateDatabaseConnectionAndExecuteAction(service => { transaction = CreateTransaction(service); });
+            CreateDatabaseConnectionAndExecuteAction(service =>
+            {
+                transaction = CreateTransaction(service);
+            });
             return transaction;
         }
 

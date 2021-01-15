@@ -3,6 +3,7 @@
     using System;
     using System.Data;
     using System.Data.Common;
+    using System.Threading.Tasks;
 
     using NSubstitute;
 
@@ -18,6 +19,8 @@
         [SetUp]
         public void SetUp()
         {
+            loggingServiceMock = Substitute.For<ILoggingService>();
+
             databaseConnectionSettingsServiceMock = Substitute.For<IDatabaseConnectionSettingsService>();
             databaseConnectionSettingsServiceMock.GetConnectionString().Returns("connectionString");
             databaseConnectionSettingsServiceMock.GetCommandTimeout().Returns(42);
@@ -26,8 +29,6 @@
             databaseConnectionServiceFactoryMock = Substitute.For<IDatabaseConnectionServiceFactory>();
             databaseConnectionServiceFactoryMock
                 .Create(loggingServiceMock, "connectionString", 42).Returns(databaseConnectionServiceMock);
-
-            loggingServiceMock = Substitute.For<ILoggingService>();
 
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
