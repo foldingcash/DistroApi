@@ -26,13 +26,13 @@
 
             statsDownloadDatabaseServiceMock = Substitute.For<IStatsDownloadDatabaseService>();
             statsDownloadDatabaseServiceMock.When(service =>
-                service.CreateDatabaseConnectionAndExecuteAction(
-                    Arg.Any<Action<IDatabaseConnectionService>>())).Do(callInfo =>
-            {
-                var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
+                service.CreateDatabaseConnectionAndExecuteAction(Arg.Any<Action<IDatabaseConnectionService>>())).Do(
+                callInfo =>
+                {
+                    var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
 
-                service.Invoke(databaseConnectionServiceMock);
-            });
+                    service.Invoke(databaseConnectionServiceMock);
+                });
 
             statsDownloadDatabaseParameterServiceMock = Substitute.For<IStatsDownloadDatabaseParameterService>();
 
@@ -137,8 +137,7 @@
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
             errorMessageServiceMock.GetErrorMessage(Arg.Is<FailedUserData>(failedUser =>
-                                       failedUser.RejectionReason == RejectionReason.BitcoinAddressExceedsMaxSize))
-                                   .Returns("btc");
+                failedUser.RejectionReason == RejectionReason.BitcoinAddressExceedsMaxSize)).Returns("btc");
 
             InvokeAddUsers(users: new List<UserData>
                                   {
@@ -157,9 +156,8 @@
             SetUpDatabaseConnectionCreateDbCommandMock(null,
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
-            errorMessageServiceMock
-                .GetErrorMessage(Arg.Is<FailedUserData>(failedUser =>
-                    failedUser.RejectionReason == RejectionReason.FahNameExceedsMaxSize)).Returns("name");
+            errorMessageServiceMock.GetErrorMessage(Arg.Is<FailedUserData>(failedUser =>
+                failedUser.RejectionReason == RejectionReason.FahNameExceedsMaxSize)).Returns("name");
 
             InvokeAddUsers(users: new List<UserData> { new UserData(0, new string(' ', 151), 10, 100, 1000) });
 
@@ -183,8 +181,7 @@
                 new Action<List<DbParameter>>[] { null, parameters => { actualParameters = parameters; } });
 
             errorMessageServiceMock.GetErrorMessage(Arg.Is<FailedUserData>(failedUser =>
-                                       failedUser.RejectionReason == RejectionReason.FriendlyNameExceedsMaxSize))
-                                   .Returns("friendly");
+                failedUser.RejectionReason == RejectionReason.FriendlyNameExceedsMaxSize)).Returns("friendly");
 
             InvokeAddUsers(users: new List<UserData>
                                   {
@@ -342,9 +339,7 @@
 
             var users = new UserData[2501];
             for (var index = 0; index < users.Length; index++)
-            {
                 users[index] = new UserData();
-            }
 
             InvokeAddUsers(users: users);
 
@@ -615,6 +610,8 @@
 
         [TestCase(true, DatabaseFailedReason.None, FailedReason.None)]
         [TestCase(false, DatabaseFailedReason.DatabaseUnavailable, FailedReason.DatabaseUnavailable)]
+        [TestCase(false, DatabaseFailedReason.DatabaseMissingRequiredObjects,
+            FailedReason.DatabaseMissingRequiredObjects)]
         public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expectedIsAvailable,
                                                                         DatabaseFailedReason failedReason,
                                                                         FailedReason expectedReason)
@@ -626,6 +623,17 @@
 
             Assert.That(actual.isAvailable, Is.EqualTo(expectedIsAvailable));
             Assert.That(actual.reason, Is.EqualTo(expectedReason));
+        }
+
+        [Test]
+        public void IsAvailable_WhenInvokedAndUnsupportedDatabaseFailedReasonReturned_ThrowsException()
+        {
+            statsDownloadDatabaseServiceMock.IsAvailable(Constants.StatsUploadDatabase.StatsUploadObjects)
+                                            .Returns((false,
+                                                         (DatabaseFailedReason)Enum.ToObject(
+                                                             typeof (DatabaseFailedReason), -1)));
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => InvokeIsAvailable());
         }
 
         [Test]
