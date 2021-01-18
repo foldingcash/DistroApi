@@ -19,6 +19,13 @@
         private IStatsDownloadApiTokenDistributionService systemUnderTest;
 
         [Test]
+        public void GetDistro_WhenDistributionHasNoReward_ThrowsException()
+        {
+            Assert.Throws<InvalidDistributionStateException>(() =>
+                systemUnderTest.GetDistro(1, new[] { new FoldingUser("friendlyName1", "address1", 0, 0) }));
+        }
+
+        [Test]
         public void GetDistro_WhenInvoked_CombinesDistroUsersByAddress()
         {
             IList<DistroUser> actual = systemUnderTest.GetDistro(1,
