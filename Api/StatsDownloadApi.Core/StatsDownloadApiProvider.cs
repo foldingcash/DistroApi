@@ -128,7 +128,7 @@
                     statsDownloadApiTokenDistributionService.GetDistro(amount.GetValueOrDefault(), foldingUsers);
                 return new GetDistroResponse(distro, foldingUsersResult.StartDateTime, foldingUsersResult.EndDateTime);
             }
-            catch (InvalidDistributionState invalidDistributionState)
+            catch (InvalidDistributionStateException invalidDistributionState)
             {
                 return new GetDistroResponse(new List<ApiError>
                                              {

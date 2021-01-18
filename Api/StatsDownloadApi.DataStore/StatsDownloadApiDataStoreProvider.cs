@@ -90,13 +90,13 @@
 
                     if (user.PointsGained < 0)
                     {
-                        throw new InvalidDistributionState(
+                        throw new InvalidDistributionStateException(
                             "Negative points earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
                     }
 
                     if (user.WorkUnitsGained < 0)
                     {
-                        throw new InvalidDistributionState(
+                        throw new InvalidDistributionStateException(
                             "Negative work units earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
                     }
 

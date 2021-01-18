@@ -58,7 +58,7 @@
         {
             if (totalPoints == 0)
             {
-                throw new InvalidDistributionState(
+                throw new InvalidDistributionStateException(
                     "The total points earned was zero. A distribution cannot happen when zero points are earned because the distribution would be zero. Enter a new start date and/or end date and try again. If the error continues or you think this is incorrect, then contact your support team with this response.");
             }
 

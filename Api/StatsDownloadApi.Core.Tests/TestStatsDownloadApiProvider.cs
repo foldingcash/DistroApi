@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
 
     using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
 
     using NUnit.Framework;
 
@@ -77,8 +78,8 @@
         [Test]
         public async Task GetDistro_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetDistroResponse actual = await InvokeGetDistro();
 
@@ -91,8 +92,8 @@
         [Test]
         public async Task GetDistro_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
 
             GetDistroResponse actual = await InvokeGetDistro();
 
@@ -131,8 +132,8 @@
         [Test]
         public async Task GetDistro_WhenErrorsOccurs_ReturnsErrorResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetDistroResponse actual = await InvokeGetDistro(null, null, amountMock);
 
@@ -144,6 +145,26 @@
             Assert.That(actual.TotalPoints, Is.Null);
             Assert.That(actual.TotalWorkUnits, Is.Null);
             Assert.That(actual.TotalDistro, Is.Null);
+        }
+
+        [Test]
+        public async Task
+            GetDistro_WhenInvalidDistributionStateExceptionThrown_ReturnsInvalidDistributionStateResponse()
+        {
+            var exception = new InvalidDistributionStateException("invalid state");
+
+            var foldingUsers = new FoldingUser[0];
+            var resultMock = new FoldingUsersResult(foldingUsers, startDateMock, endDateMock);
+            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(resultMock);
+            statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers)
+                                                        .ThrowsForAnyArgs(exception);
+
+            GetDistroResponse actual = await InvokeGetDistro();
+
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.InvalidDistributionState));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo("invalid state"));
         }
 
         [Test]
@@ -265,8 +286,8 @@
         [Test]
         public async Task GetMemberStats_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetMemberStatsResponse actual = await InvokeGetMemberStats();
 
@@ -280,8 +301,8 @@
         public async Task
             GetMemberStats_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
 
             GetMemberStatsResponse actual = await InvokeGetMemberStats();
 
@@ -320,8 +341,8 @@
         [Test]
         public async Task GetMemberStats_WhenErrorsOccurs_ReturnsErrorsResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetMemberStatsResponse actual = await InvokeGetMemberStats(null, null);
 
@@ -390,7 +411,8 @@
 
             await systemUnderTest.GetMemberStats(dateTime, dateTime);
 
-            await statsDownloadApiDataStoreServiceMock.Received().GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
+            await statsDownloadApiDataStoreServiceMock.Received()
+                                                      .GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
         }
 
         [Test]
@@ -419,8 +441,8 @@
         [Test]
         public async Task GetTeams_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetTeamsResponse actual = await InvokeGetTeams();
 
@@ -433,8 +455,8 @@
         [Test]
         public async Task GetTeams_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
 
             GetTeamsResponse actual = await InvokeGetTeams();
 
