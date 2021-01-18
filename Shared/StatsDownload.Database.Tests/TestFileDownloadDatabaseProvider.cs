@@ -25,13 +25,13 @@
 
             statsDownloadDatabaseServiceMock = Substitute.For<IStatsDownloadDatabaseService>();
             statsDownloadDatabaseServiceMock.When(service =>
-                service.CreateDatabaseConnectionAndExecuteAction(
-                    Arg.Any<Action<IDatabaseConnectionService>>())).Do(callInfo =>
-            {
-                var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
+                service.CreateDatabaseConnectionAndExecuteAction(Arg.Any<Action<IDatabaseConnectionService>>())).Do(
+                callInfo =>
+                {
+                    var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
 
-                service.Invoke(databaseConnectionServiceMock);
-            });
+                    service.Invoke(databaseConnectionServiceMock);
+                });
 
             statsDownloadDatabaseParameterServiceMock = Substitute.For<IStatsDownloadDatabaseParameterService>();
 
@@ -214,8 +214,9 @@
 
             Assert.That(actualParameters.Count, Is.EqualTo(1));
             Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
-            statsDownloadDatabaseParameterServiceMock
-                .Received().CreateDownloadIdParameter(databaseConnectionServiceMock, ParameterDirection.Output);
+            statsDownloadDatabaseParameterServiceMock.Received()
+                                                     .CreateDownloadIdParameter(databaseConnectionServiceMock,
+                                                         ParameterDirection.Output);
         }
 
         [Test]
@@ -380,6 +381,8 @@
 
         [TestCase(true, DatabaseFailedReason.None, FailedReason.None)]
         [TestCase(false, DatabaseFailedReason.DatabaseUnavailable, FailedReason.DatabaseUnavailable)]
+        [TestCase(false, DatabaseFailedReason.DatabaseMissingRequiredObjects,
+            FailedReason.DatabaseMissingRequiredObjects)]
         public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expectedIsAvailable,
                                                                         DatabaseFailedReason failedReason,
                                                                         FailedReason expectedReason)
@@ -391,6 +394,17 @@
 
             Assert.That(actual.isAvailable, Is.EqualTo(expectedIsAvailable));
             Assert.That(actual.reason, Is.EqualTo(expectedReason));
+        }
+
+        [Test]
+        public void IsAvailable_WhenInvokedAndUnsupportedDatabaseFailedReasonReturned_ThrowsException()
+        {
+            statsDownloadDatabaseServiceMock.IsAvailable(Constants.FileDownloadDatabase.FileDownloadObjects)
+                                            .Returns((false,
+                                                         (DatabaseFailedReason)Enum.ToObject(
+                                                             typeof (DatabaseFailedReason), -1)));
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => InvokeIsAvailable());
         }
 
         [Test]
