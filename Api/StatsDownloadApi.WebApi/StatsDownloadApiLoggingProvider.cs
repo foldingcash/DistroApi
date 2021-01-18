@@ -2,7 +2,7 @@
 {
     using System;
 
-    using NLog;
+    using Microsoft.Extensions.Logging;
 
     using StatsDownload.Core.Interfaces.Logging;
 
@@ -17,17 +17,17 @@
 
         public void LogError(string message)
         {
-            logger.Error(message);
+            logger.LogError(message);
         }
 
         public void LogVerbose(string message)
         {
-            logger.Trace(message);
+            logger.LogTrace(message);
         }
 
         public void LogInformation(string message)
         {
-            logger.Info(message);
+            logger.LogInformation(message);
         }
     }
 }
