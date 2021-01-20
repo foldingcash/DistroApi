@@ -28,7 +28,6 @@
                     .AddSingleton<IDownloadSettingsService, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IDataStoreSettings, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IStatsFileDateTimeFormatsAndOffsetSettings, FileDownloadConsoleSettingsProvider>()
-                    .AddSingleton<IAzureDataStoreSettingsService, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IDateTimeService, DateTimeProvider>().AddSingleton<IFileService, FileProvider>()
                     .AddSingleton<IDirectoryService, DirectoryProvider>()
                     .AddSingleton<IResourceCleanupService, ResourceCleanupProvider>()

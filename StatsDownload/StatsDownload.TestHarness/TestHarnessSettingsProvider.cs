@@ -13,13 +13,8 @@
                                                ITestHarnessSettingsService, IZeroPointUsersFilterSettings,
                                                IGoogleUsersFilterSettings, IWhitespaceNameUsersFilterSettings,
                                                INoPaymentAddressUsersFilterSettings, ITestHarnessStatsDownloadSettings,
-                                               IStatsFileDateTimeFormatsAndOffsetSettings, IDataStoreSettings,
-                                               IAzureDataStoreSettingsService
+                                               IStatsFileDateTimeFormatsAndOffsetSettings, IDataStoreSettings
     {
-        public string ConnectionString =>
-            ConfigurationManager.ConnectionStrings["FoldingCoin.Storage"].ConnectionString;
-
-        public string ContainerName => ConfigurationManager.AppSettings["AzureDataStore.ContainerName"];
 
         public string DataStoreType => ConfigurationManager.AppSettings["DataStoreType"];
 

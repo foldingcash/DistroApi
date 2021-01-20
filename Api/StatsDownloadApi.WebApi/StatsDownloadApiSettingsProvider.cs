@@ -9,7 +9,7 @@
 
     public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
                                                     IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings,
-                                                    INoPaymentAddressUsersFilterSettings, IAzureDataStoreSettingsService
+                                                    INoPaymentAddressUsersFilterSettings
     {
         private readonly IConfiguration configuration;
 
@@ -17,11 +17,7 @@
         {
             this.configuration = configuration;
         }
-
-        public string ConnectionString => configuration.GetConnectionString("FoldingCoin.Storage");
-
-        public string ContainerName => GetAppSetting("AzureDataStore.ContainerName");
-
+        
         public string DataStoreType => GetAppSetting("DataStoreType");
 
         bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolAppSetting("EnableNoPaymentAddressUsersFilter");

@@ -10,13 +10,8 @@
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
     /// </summary>
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-                                                       IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings,
-                                                       IAzureDataStoreSettingsService
+                                                       IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings
     {
-        public string ConnectionString => GetConnectionString("FoldingCoin.Storage");
-
-        public string ContainerName => GetAppSetting("AzureDataStore.ContainerName");
-
         public string DataStoreType => GetAppSetting("DataStoreType");
 
         public string UploadDirectory => GetAppSetting("UploadDirectory");
