@@ -32,16 +32,16 @@
             downloadDateTime = DateTime.UtcNow;
         }
 
-        private FilterSettings filterSettings;
-
-        private IOptions<FilterSettings> filterSettingsOptionsMock;
-
         private DateTime downloadDateTime;
 
         private readonly FilePayload FilePayload = new FilePayload { DecompressedDownloadFileData = "fileData" };
 
+        private FilterSettings filterSettings;
+
+        private IOptions<FilterSettings> filterSettingsOptionsMock;
+
         private IStatsFileParserService innerServiceMock;
-        
+
         private IStatsFileParserService systemUnderTest;
 
         [Test]
@@ -78,8 +78,7 @@
             Assert.That(actual.UsersData.Count(), Is.EqualTo(2));
             Assert.That(
                 actual.UsersData.Count(data =>
-                    data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ?? false),
-                Is.EqualTo(0));
+                    data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ?? false), Is.EqualTo(0));
         }
     }
 }

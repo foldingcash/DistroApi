@@ -69,8 +69,8 @@
 
             Received.InOrder(() =>
             {
-                fileCompressionServiceMock
-                    .Received(1).DecompressFile("DownloadFilePath", "DecompressedDownloadFilePath");
+                fileCompressionServiceMock.Received(1)
+                                          .DecompressFile("DownloadFilePath", "DecompressedDownloadFilePath");
                 fileReaderServiceMock.Received(1).ReadFile(filePayloadMock);
                 statsFileParserServiceMock.Parse(filePayloadMock);
             });

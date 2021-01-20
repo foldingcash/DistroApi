@@ -48,9 +48,9 @@
             ("ddd MMM dd HH:mm:ss PST yyyy", -8)
         };
 
-        private IOptions<DateTimeFormatsSettings> dateTimeFormatsSettingsOptionsMock;
-
         private DateTimeFormatsSettings dateTimeFormatsSettings;
+
+        private IOptions<DateTimeFormatsSettings> dateTimeFormatsSettingsOptionsMock;
 
         private IStatsFileDateTimeFormatsAndOffsetService systemUnderTest;
 

@@ -52,7 +52,7 @@
 
         private void LogCertificate(X509Certificate certificate, SslPolicyErrors policyErrors)
         {
-            string message =
+            var message =
                 $"SSL Certificate from Server.{Environment.NewLine}Details - Issuer: '{certificate.Issuer}' Subject: '{certificate.Subject}' Error Code: {policyErrors}";
 
             if (policyErrors == SslPolicyErrors.None)

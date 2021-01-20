@@ -282,7 +282,7 @@
 
                         foreach (string importFile in importFiles)
                         {
-                            string compressedFile = $"{importFile}.bz2";
+                            var compressedFile = $"{importFile}.bz2";
 
                             fileCompressionService.CompressFile(importFile, compressedFile);
 

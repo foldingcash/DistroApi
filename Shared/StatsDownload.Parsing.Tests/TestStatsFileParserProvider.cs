@@ -22,8 +22,8 @@
             additionalUserDataParserServiceMock = Substitute.For<IAdditionalUserDataParserService>();
 
             statsFileDateTimeFormatsAndOffsetServiceMock = Substitute.For<IStatsFileDateTimeFormatsAndOffsetService>();
-            statsFileDateTimeFormatsAndOffsetServiceMock
-                .GetStatsFileDateTimeFormatsAndOffset().Returns(dateTimeFormatsAndOffset);
+            statsFileDateTimeFormatsAndOffsetServiceMock.GetStatsFileDateTimeFormatsAndOffset()
+                                                        .Returns(dateTimeFormatsAndOffset);
 
             systemUnderTest = NewStatsFileParserProvider(additionalUserDataParserServiceMock,
                 statsFileDateTimeFormatsAndOffsetServiceMock);

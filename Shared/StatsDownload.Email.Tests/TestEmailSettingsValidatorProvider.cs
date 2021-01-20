@@ -87,18 +87,17 @@
                 systemUnderTest.ParseReceivers(new[] { unsafeReceivers, unsafeReceivers }));
         }
 
-        [Test]
-        public void ParseReceivers_WhenInvokedWithNull_ThrowsEmailArgumentException()
-        {
-            Assert.Throws<EmailArgumentException>(() =>
-                systemUnderTest.ParseReceivers(null));
-        }
-
         [TestCase(0)]
         [TestCase(1)]
         public void ParseReceivers_WhenInvokedWithNoReceiver_ThrowsEmailArgumentException(int arrayLength)
         {
             Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParseReceivers(new string[arrayLength]));
+        }
+
+        [Test]
+        public void ParseReceivers_WhenInvokedWithNull_ThrowsEmailArgumentException()
+        {
+            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParseReceivers(null));
         }
 
         [Test]

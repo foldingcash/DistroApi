@@ -81,8 +81,7 @@
             foreach (UserData userData in lastFileResults.UsersData)
             {
                 UserData previous = firstFileResults.UsersData.FirstOrDefault(user =>
-                    user.Name == userData.Name
-                    && user.TeamNumber == userData.TeamNumber);
+                    user.Name == userData.Name && user.TeamNumber == userData.TeamNumber);
                 if (previous is UserData)
                 {
                     var user = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,

@@ -238,8 +238,8 @@
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)
         {
             int numberOfRowsEffected =
-                databaseConnection.ExecuteStoredProcedure(Constants
-                                                          .FileDownloadDatabase.UpdateToLatestStoredProcedureName);
+                databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase
+                                                                   .UpdateToLatestStoredProcedureName);
 
             LogVerbose($"'{numberOfRowsEffected}' rows were effected");
         }

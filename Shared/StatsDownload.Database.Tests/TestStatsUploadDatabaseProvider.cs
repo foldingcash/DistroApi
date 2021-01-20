@@ -339,7 +339,9 @@
 
             var users = new UserData[2501];
             for (var index = 0; index < users.Length; index++)
+            {
                 users[index] = new UserData();
+            }
 
             InvokeAddUsers(users: users);
 

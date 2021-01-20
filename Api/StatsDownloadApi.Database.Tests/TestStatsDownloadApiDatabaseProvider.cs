@@ -30,13 +30,13 @@
 
             statsDownloadDatabaseServiceMock = Substitute.For<IStatsDownloadDatabaseService>();
             statsDownloadDatabaseServiceMock.When(service =>
-                service.CreateDatabaseConnectionAndExecuteAction(
-                    Arg.Any<Action<IDatabaseConnectionService>>())).Do(callInfo =>
-            {
-                var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
+                service.CreateDatabaseConnectionAndExecuteAction(Arg.Any<Action<IDatabaseConnectionService>>())).Do(
+                callInfo =>
+                {
+                    var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
 
-                service.Invoke(databaseConnectionServiceMock);
-            });
+                    service.Invoke(databaseConnectionServiceMock);
+                });
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
@@ -65,27 +65,25 @@
         public void GetValidatedFiles_WhenInvoked_GetsValidatedFiles()
         {
             databaseConnectionServiceMock.When(service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[GetValidatedFiles]",
-                    Arg.Any<IEnumerable<DbParameter>>(), Arg.Any<DataTable>())).Do(
-                callInfo =>
-                {
-                    var dataTable = callInfo.Arg<DataTable>();
-                    dataTable.Columns.Add(new DataColumn("DownloadId", typeof (int)));
-                    dataTable.Columns.Add(new DataColumn("DownloadDateTime",
-                        typeof (DateTime)));
-                    dataTable.Columns.Add(new DataColumn("FilePath", typeof (string)));
-                    DataRow user1 = dataTable.NewRow();
-                    dataTable.Rows.Add(user1);
-                    user1["DownloadId"] = 1;
-                    user1["DownloadDateTime"] = DateTime.Today.AddMinutes(1);
-                    user1["FilePath"] = "FilePath1";
-                    DataRow user2 = dataTable.NewRow();
-                    dataTable.Rows.Add(user2);
-                    user2["DownloadId"] = 2;
-                    user2["DownloadDateTime"] = DateTime.Today.AddMinutes(2);
-                    user2["FilePath"] = "FilePath2";
-                    dataTable.AcceptChanges();
-                });
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetValidatedFiles]", Arg.Any<IEnumerable<DbParameter>>(),
+                    Arg.Any<DataTable>())).Do(callInfo =>
+            {
+                var dataTable = callInfo.Arg<DataTable>();
+                dataTable.Columns.Add(new DataColumn("DownloadId", typeof (int)));
+                dataTable.Columns.Add(new DataColumn("DownloadDateTime", typeof (DateTime)));
+                dataTable.Columns.Add(new DataColumn("FilePath", typeof (string)));
+                DataRow user1 = dataTable.NewRow();
+                dataTable.Rows.Add(user1);
+                user1["DownloadId"] = 1;
+                user1["DownloadDateTime"] = DateTime.Today.AddMinutes(1);
+                user1["FilePath"] = "FilePath1";
+                DataRow user2 = dataTable.NewRow();
+                dataTable.Rows.Add(user2);
+                user2["DownloadId"] = 2;
+                user2["DownloadDateTime"] = DateTime.Today.AddMinutes(2);
+                user2["FilePath"] = "FilePath2";
+                dataTable.AcceptChanges();
+            });
 
             IList<ValidatedFile> actual = systemUnderTest.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
 
@@ -104,12 +102,11 @@
             IEnumerable<DbParameter> actualParameters = null;
 
             databaseConnectionServiceMock.When(service =>
-                                             service.ExecuteStoredProcedure("[FoldingCoin].[GetValidatedFiles]",
-                                                 Arg.Any<IEnumerable<DbParameter>>(), Arg.Any<DataTable>()))
-                                         .Do(callInfo =>
-                                         {
-                                             actualParameters = callInfo.Arg<IEnumerable<DbParameter>>();
-                                         });
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetValidatedFiles]", Arg.Any<IEnumerable<DbParameter>>(),
+                    Arg.Any<DataTable>())).Do(callInfo =>
+            {
+                actualParameters = callInfo.Arg<IEnumerable<DbParameter>>();
+            });
 
             systemUnderTest.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
 

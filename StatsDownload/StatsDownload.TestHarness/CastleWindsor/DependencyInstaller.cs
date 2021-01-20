@@ -26,10 +26,8 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Component.For<IApplicationLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
-                Component
-                    .For<ITestHarnessSettingsService,
-                        ITestHarnessStatsDownloadSettings>()
-                    .ImplementedBy<TestHarnessSettingsProvider>(),
+                Component.For<ITestHarnessSettingsService, ITestHarnessStatsDownloadSettings>()
+                         .ImplementedBy<TestHarnessSettingsProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),

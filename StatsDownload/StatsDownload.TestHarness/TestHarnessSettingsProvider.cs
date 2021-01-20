@@ -1,10 +1,6 @@
 ﻿namespace StatsDownload.TestHarness
 {
     using System.Configuration;
-    using System.IO;
-    using System.Reflection;
-
-    using StatsDownload.Core.Interfaces;
 
     /// <summary>
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
@@ -12,7 +8,7 @@
     public class TestHarnessSettingsProvider : ITestHarnessSettingsService, ITestHarnessStatsDownloadSettings
     {
         bool ITestHarnessStatsDownloadSettings.Enabled => GetBoolConfig("EnableSqlExceptionDuringAddUsersTest");
-        
+
         public bool IsFileCompressionDisabled()
         {
             return GetBoolConfig("FileCompressionDisabled");
