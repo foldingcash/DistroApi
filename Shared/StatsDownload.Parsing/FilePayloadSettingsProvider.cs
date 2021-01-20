@@ -16,21 +16,21 @@
 
         private readonly IDateTimeService dateTimeService;
 
-        private readonly IDownloadSettingsService downloadSettingsService;
+        private readonly DownloadSettings downloadSettings;
 
         private readonly IDownloadSettingsValidatorService downloadSettingsValidatorService;
 
         private readonly ILoggingService loggingService;
 
         public FilePayloadSettingsProvider(IDateTimeService dateTimeService,
-                                           IDownloadSettingsService downloadSettingsService,
+                                           IOptions<DownloadSettings> downloadSettings,
                                            IDownloadSettingsValidatorService downloadSettingsValidatorService,
                                            ILoggingService loggingService,
                                            IOptions<DataStoreSettings> dataStoreSettings)
         {
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
-            this.downloadSettingsService = downloadSettingsService
-                                           ?? throw new ArgumentNullException(nameof(downloadSettingsService));
+            this.downloadSettings = downloadSettings?.Value
+                                    ?? throw new ArgumentNullException(nameof(downloadSettings));
             this.downloadSettingsValidatorService = downloadSettingsValidatorService
                                                     ?? throw new ArgumentNullException(
                                                         nameof(downloadSettingsValidatorService));
@@ -57,14 +57,9 @@
             return dateTimeService.DateTimeNow();
         }
 
-        private string GetAcceptAnySslCert()
-        {
-            return downloadSettingsService.GetAcceptAnySslCert();
-        }
-
         private string GetDownloadDirectory()
         {
-            string downloadDirectory = downloadSettingsService.GetDownloadDirectory();
+            string downloadDirectory = downloadSettings.DownloadDirectory;
 
             if (!downloadSettingsValidatorService.IsValidDownloadDirectory(downloadDirectory))
             {
@@ -82,21 +77,6 @@
         private string GetDownloadFileNameWithExtension(DateTime dateTime)
         {
             return $"{dateTime.ToFileTime()}.{Constants.FilePayload.FileName}.{Constants.FilePayload.FileExtension}";
-        }
-
-        private string GetDownloadTimeout()
-        {
-            return downloadSettingsService.GetDownloadTimeout();
-        }
-
-        private string GetDownloadUri()
-        {
-            return downloadSettingsService.GetDownloadUri();
-        }
-
-        private string GetMinimumWaitTimeInHours()
-        {
-            return downloadSettingsService.GetMinimumWaitTimeInHours();
         }
 
         private string GetUploadDirectory()
@@ -123,10 +103,10 @@
 
         private void SetDownloadDetails(FilePayload filePayload)
         {
-            string downloadTimeout = GetDownloadTimeout();
-            string unsafeDownloadUri = GetDownloadUri();
-            string unsafeAcceptAnySslCert = GetAcceptAnySslCert();
-            string unsafeMinimumWaitTimeInHours = GetMinimumWaitTimeInHours();
+            int downloadTimeout = downloadSettings.DownloadTimeout;
+            string unsafeDownloadUri = downloadSettings.DownloadUri;
+            bool acceptAnySslCert = downloadSettings.AcceptAnySslCert;
+            int configuredMinimumWaitTimeInHours = downloadSettings.MinimumWaitTimeInHours;
 
             if (!TryParseDownloadUri(unsafeDownloadUri, out Uri downloadUri))
             {
@@ -139,14 +119,7 @@
                 loggingService.LogVerbose("The download timeout configuration was invalid, using the default value.");
             }
 
-            if (!TryParseAcceptAnySslCert(unsafeAcceptAnySslCert, out bool acceptAnySslCert))
-            {
-                acceptAnySslCert = false;
-                loggingService.LogVerbose(
-                    "The accept any SSL cert configuration was invalid, using the default value.");
-            }
-
-            if (!TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan))
+            if (!TryParseMinimumWaitTimeSpan(configuredMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan))
             {
                 minimumWaitTimeSpan = MinimumWait.TimeSpan;
                 loggingService.LogVerbose("The minimum wait time configuration was invalid, using the default value.");
@@ -180,26 +153,20 @@
                 $"{now.ToFileTime()}.{Constants.FilePayload.FileName}.{Constants.FilePayload.FileExtension}");
         }
 
-        private bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
-        {
-            return downloadSettingsValidatorService.TryParseAcceptAnySslCert(unsafeAcceptAnySslCert,
-                out acceptAnySslCert);
-        }
-
         private bool TryParseDownloadUri(string unsafeDownloadUri, out Uri downloadUri)
         {
             return downloadSettingsValidatorService.TryParseDownloadUri(unsafeDownloadUri, out downloadUri);
         }
 
-        private bool TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
+        private bool TryParseMinimumWaitTimeSpan(int minimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
         {
-            return downloadSettingsValidatorService.TryParseMinimumWaitTimeSpan(unsafeMinimumWaitTimeInHours,
+            return downloadSettingsValidatorService.TryParseMinimumWaitTimeSpan(minimumWaitTimeInHours,
                 out minimumWaitTimeSpan);
         }
 
-        private bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)
+        private bool TryParseTimeout(int timeout, out int timeoutInSeconds)
         {
-            return downloadSettingsValidatorService.TryParseTimeout(unsafeTimeout, out timeoutInSeconds);
+            return downloadSettingsValidatorService.TryParseTimeout(timeout, out timeoutInSeconds);
         }
     }
 }

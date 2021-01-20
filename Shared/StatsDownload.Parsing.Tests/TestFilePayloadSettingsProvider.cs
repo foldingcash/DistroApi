@@ -26,36 +26,32 @@
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
             dateTimeServiceMock.DateTimeNow().Returns(dateTime);
 
-            downloadSettingsServiceMock = Substitute.For<IDownloadSettingsService>();
-            downloadSettingsServiceMock.GetDownloadUri().Returns("DownloadUri");
-            downloadSettingsServiceMock.GetDownloadTimeout().Returns("DownloadTimeoutSeconds");
-            downloadSettingsServiceMock.GetDownloadDirectory().Returns("DownloadDirectory");
-            downloadSettingsServiceMock.GetAcceptAnySslCert().Returns("AcceptAnySslCert");
-            downloadSettingsServiceMock.GetMinimumWaitTimeInHours().Returns("MinimumWaitTimeInHours");
+            downloadSettings = new DownloadSettings
+                               {
+                                   DownloadUri = "DownloadUri",
+                                   DownloadTimeout = 100,
+                                   DownloadDirectory = "DownloadDirectory",
+                                   AcceptAnySslCert = true,
+                                   MinimumWaitTimeInHours = 200
+                               };
+            downloadSettingsOptionsMock = Substitute.For<IOptions<DownloadSettings>>();
+            downloadSettingsOptionsMock.Value.Returns(downloadSettings);
 
             downloadSettingsValidatorServiceMock = Substitute.For<IDownloadSettingsValidatorService>();
 
             int timeout;
-            downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout).Returns(
-                callInfo =>
-                {
-                    callInfo[1] = 123;
-                    return true;
-                });
-            bool acceptAnySslCert;
-            downloadSettingsValidatorServiceMock.TryParseAcceptAnySslCert("AcceptAnySslCert", out acceptAnySslCert)
-                                                .Returns(callInfo =>
-                                                {
-                                                    callInfo[1] = true;
-                                                    return true;
-                                                });
-            TimeSpan minimumWaitTimeSpan;
-            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan("MinimumWaitTimeInHours",
-                out minimumWaitTimeSpan).Returns(callInfo =>
+            downloadSettingsValidatorServiceMock.TryParseTimeout(100, out timeout).Returns(callInfo =>
             {
-                callInfo[1] = timeSpan;
+                callInfo[1] = 123;
                 return true;
             });
+            TimeSpan minimumWaitTimeSpan;
+            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan(200, out minimumWaitTimeSpan).Returns(
+                callInfo =>
+                {
+                    callInfo[1] = timeSpan;
+                    return true;
+                });
             Uri downloadUri;
             downloadSettingsValidatorServiceMock.TryParseDownloadUri("DownloadUri", out downloadUri).Returns(callInfo =>
             {
@@ -71,7 +67,7 @@
             dataStoreSettingsOptionsMock = Substitute.For<IOptions<DataStoreSettings>>();
             dataStoreSettingsOptionsMock.Value.Returns(dataStoreSettings);
 
-            systemUnderTest = NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock,
+            systemUnderTest = NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsOptionsMock,
                 downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsOptionsMock);
         }
 
@@ -83,7 +79,9 @@
 
         private IDateTimeService dateTimeServiceMock;
 
-        private IDownloadSettingsService downloadSettingsServiceMock;
+        private DownloadSettings downloadSettings;
+
+        private IOptions<DownloadSettings> downloadSettingsOptionsMock;
 
         private IDownloadSettingsValidatorService downloadSettingsValidatorServiceMock;
 
@@ -98,16 +96,16 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(null, downloadSettingsServiceMock,
+            Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(null, downloadSettingsOptionsMock,
                 downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock, null,
                 downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
-                downloadSettingsServiceMock, null, loggingServiceMock, dataStoreSettingsOptionsMock));
+                downloadSettingsOptionsMock, null, loggingServiceMock, dataStoreSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
-                downloadSettingsServiceMock, downloadSettingsValidatorServiceMock, null, dataStoreSettingsOptionsMock));
+                downloadSettingsOptionsMock, downloadSettingsValidatorServiceMock, null, dataStoreSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
-                downloadSettingsServiceMock, downloadSettingsValidatorServiceMock, loggingServiceMock, null));
+                downloadSettingsOptionsMock, downloadSettingsValidatorServiceMock, loggingServiceMock, null));
         }
 
         [Test]
@@ -124,28 +122,10 @@
         }
 
         [Test]
-        public void SetFilePayloadDownloadDetails_WhenInvalidAcceptAnySslCert_ReturnsDefault()
-        {
-            bool acceptAnySslCert;
-            downloadSettingsValidatorServiceMock.TryParseAcceptAnySslCert("AcceptAnySslCert", out acceptAnySslCert)
-                                                .Returns(callInfo => false);
-
-            var filePayload = new FilePayload();
-
-            InvokeSetFilePayloadDownloadDetails(filePayload);
-
-            Assert.That(filePayload.AcceptAnySslCert, Is.False);
-            loggingServiceMock.Received()
-                              .LogVerbose(
-                                  "The accept any SSL cert configuration was invalid, using the default value.");
-        }
-
-        [Test]
         public void SetFilePayloadDownloadDetails_WhenInvalidDownloadTimeoutSeconds_ReturnsDefault()
         {
             int timeout;
-            downloadSettingsValidatorServiceMock.TryParseTimeout("DownloadTimeoutSeconds", out timeout)
-                                                .Returns(callInfo => false);
+            downloadSettingsValidatorServiceMock.TryParseTimeout(100, out timeout).Returns(callInfo => false);
 
             var filePayload = new FilePayload();
 
@@ -174,8 +154,8 @@
         public void SetFilePayloadDownloadDetails_WhenInvalidMinimumWaitTimeInHours_ReturnsDefault()
         {
             TimeSpan minimumWaitTimeSpan;
-            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan("MinimumWaitTimeInHours",
-                out minimumWaitTimeSpan).Returns(callInfo => false);
+            downloadSettingsValidatorServiceMock.TryParseMinimumWaitTimeSpan(200, out minimumWaitTimeSpan)
+                                                .Returns(callInfo => false);
 
             var filePayload = new FilePayload();
 
@@ -257,15 +237,15 @@
         }
 
         private IFilePayloadSettingsService NewFilePayloadSettingsProvider(IDateTimeService dateTimeService,
-                                                                           IDownloadSettingsService
-                                                                               downloadSettingsService,
+                                                                           IOptions<DownloadSettings>
+                                                                               downloadSettingsOptions,
                                                                            IDownloadSettingsValidatorService
                                                                                downloadSettingsValidatorService,
                                                                            ILoggingService loggingService,
                                                                            IOptions<DataStoreSettings>
                                                                                dataStoreSettingsOptions)
         {
-            return new FilePayloadSettingsProvider(dateTimeService, downloadSettingsService,
+            return new FilePayloadSettingsProvider(dateTimeService, downloadSettingsOptions,
                 downloadSettingsValidatorService, loggingService, dataStoreSettingsOptions);
         }
     }

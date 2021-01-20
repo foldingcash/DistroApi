@@ -9,8 +9,7 @@
     /// <summary>
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
     /// </summary>
-    public class TestHarnessSettingsProvider : IDownloadSettingsService,
-                                               ITestHarnessSettingsService, IZeroPointUsersFilterSettings,
+    public class TestHarnessSettingsProvider : ITestHarnessSettingsService, IZeroPointUsersFilterSettings,
                                                IGoogleUsersFilterSettings, IWhitespaceNameUsersFilterSettings,
                                                ITestHarnessStatsDownloadSettings
     {
@@ -21,33 +20,7 @@
         bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
 
         bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
-
-        public string GetAcceptAnySslCert()
-        {
-            return ConfigurationManager.AppSettings["AcceptAnySslCert"];
-        }
-
-        public string GetDownloadDirectory()
-        {
-            return ConfigurationManager.AppSettings["DownloadDirectory"]
-                   ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        }
-
-        public string GetDownloadTimeout()
-        {
-            return ConfigurationManager.AppSettings["DownloadTimeoutSeconds"];
-        }
-
-        public string GetDownloadUri()
-        {
-            return ConfigurationManager.AppSettings["DownloadUri"];
-        }
-
-        public string GetMinimumWaitTimeInHours()
-        {
-            return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
-        }
-
+        
         public bool IsFileCompressionDisabled()
         {
             return GetBoolConfig("FileCompressionDisabled");

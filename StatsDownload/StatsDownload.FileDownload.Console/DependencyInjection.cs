@@ -24,7 +24,6 @@
         public static void ConfigureThisApp(this IServiceCollection services)
         {
             services.AddSingleton<IApplicationLoggingService, FileDownloadConsoleLoggingProvider>()
-                    .AddSingleton<IDownloadSettingsService, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IDateTimeService, DateTimeProvider>().AddSingleton<IFileService, FileProvider>()
                     .AddSingleton<IDirectoryService, DirectoryProvider>()
                     .AddSingleton<IResourceCleanupService, ResourceCleanupProvider>()

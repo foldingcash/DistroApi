@@ -29,11 +29,7 @@
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(
-                Component
-                    .For<IDownloadSettingsService>()                      
-                    .ImplementedBy<StatsDownloadApiSettingsProvider>(),
-                Component.For<IApplicationLoggingService>().ImplementedBy<StatsDownloadApiLoggingProvider>(),
+            container.Register(Component.For<IApplicationLoggingService>().ImplementedBy<StatsDownloadApiLoggingProvider>(),
                 Component.For<IStatsDownloadApiEmailService>().ImplementedBy<StatsDownloadApiEmailProvider>());
 
             container.Register(Component.For<IDateTimeService>().ImplementedBy<DateTimeProvider>(),

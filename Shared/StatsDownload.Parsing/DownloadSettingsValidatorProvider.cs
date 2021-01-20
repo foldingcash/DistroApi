@@ -18,41 +18,33 @@
             return directoryService.Exists(unsafeDownloadDirectory);
         }
 
-        public bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
-        {
-            return bool.TryParse(unsafeAcceptAnySslCert, out acceptAnySslCert);
-        }
+        //public bool TryParseAcceptAnySslCert(string unsafeAcceptAnySslCert, out bool acceptAnySslCert)
+        //{
+        //    return bool.TryParse(unsafeAcceptAnySslCert, out acceptAnySslCert);
+        //}
 
         public bool TryParseDownloadUri(string unsafeDownloadUri, out Uri downloadUri)
         {
             return Uri.TryCreate(unsafeDownloadUri, UriKind.RelativeOrAbsolute, out downloadUri);
         }
 
-        public bool TryParseMinimumWaitTimeSpan(string unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
+        public bool TryParseMinimumWaitTimeSpan(int unsafeMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan)
         {
-            int minimumWaitTimeInHours;
-            if (int.TryParse(unsafeMinimumWaitTimeInHours, out minimumWaitTimeInHours))
+            int minimumWaitTimeInHours = unsafeMinimumWaitTimeInHours;
+            if (minimumWaitTimeInHours >= Constants.Download.MinimumWaitTimeInHours
+                && minimumWaitTimeInHours <= Constants.Download.MaximumWaitTimeInHours)
             {
-                if (minimumWaitTimeInHours >= Constants.Download.MinimumWaitTimeInHours
-                    && minimumWaitTimeInHours <= Constants.Download.MaximumWaitTimeInHours)
-                {
-                    minimumWaitTimeSpan = new TimeSpan(minimumWaitTimeInHours, 0, 0);
-                    return true;
-                }
+                minimumWaitTimeSpan = new TimeSpan(minimumWaitTimeInHours, 0, 0);
+                return true;
             }
 
             minimumWaitTimeSpan = TimeSpan.Zero;
             return false;
         }
 
-        public bool TryParseTimeout(string unsafeTimeout, out int timeoutInSeconds)
+        public bool TryParseTimeout(int timeout, out int timeoutInSeconds)
         {
-            bool parsed = int.TryParse(unsafeTimeout, out timeoutInSeconds);
-
-            if (!parsed)
-            {
-                return false;
-            }
+            timeoutInSeconds = timeout;
 
             if (timeoutInSeconds < Constants.Download.MinimumTimeout
                 || timeoutInSeconds > Constants.Download.MaximumTimeout)
