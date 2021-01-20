@@ -88,8 +88,7 @@
                 Component.For<IWebClientFactory>().AsFactory(),
                 Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>());
 
-            container.Register(Component.For<IDataStoreService>().ImplementedBy<AzureDataStoreProvider>(),
-                Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
+            container.Register(Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
                 Component.For<ITypedFactoryComponentSelector>().ImplementedBy<DataStoreFactoryComponentSelector>(),
                 Component.For<IDataStoreServiceFactory>().AsFactory(selector =>
                     selector.SelectedWith<DataStoreFactoryComponentSelector>()));

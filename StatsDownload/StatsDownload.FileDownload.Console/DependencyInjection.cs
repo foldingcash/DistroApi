@@ -62,7 +62,6 @@
                     .AddSingleton<IFilePayloadUploadService, FilePayloadUploadProvider>()
                     .AddTransient<IWebClient, WebClientWrapper>().AddSingleton<IWebClientFactory>()
                     //.AsFactory()
-                    .AddSingleton<IDataStoreService, AzureDataStoreProvider>()
                     .AddSingleton<IDataStoreService, UncDataStoreProvider>()
                     .AddSingleton<IFileValidationService, FileValidationProvider>()
                     .AddSingleton<IStatsFileParserService, StatsFileParserProvider>()

@@ -60,7 +60,6 @@
                 Component.For<IStatsDownloadApiDataStoreService>()
                          .ImplementedBy<StatsDownloadApiDataStoreCacheProvider>(),
                 Component.For<IStatsDownloadApiDataStoreService>().ImplementedBy<StatsDownloadApiDataStoreProvider>(),
-                Component.For<IDataStoreService>().ImplementedBy<AzureDataStoreProvider>(),
                 Component.For<IDataStoreService>().ImplementedBy<UncDataStoreProvider>(),
                 Component.For<IFileService>().ImplementedBy<FileProvider>(),
                 Component.For<IFileValidationService>().ImplementedBy<FileValidationProvider>(),
