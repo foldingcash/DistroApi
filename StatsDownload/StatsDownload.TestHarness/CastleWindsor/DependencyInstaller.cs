@@ -30,7 +30,7 @@
                     .For<ITestHarnessSettingsService,
                         ITestHarnessStatsDownloadSettings>()
                     .ImplementedBy<TestHarnessSettingsProvider>()
-                    .Forward<IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings>(),
+                    .Forward<IGoogleUsersFilterSettings>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),
