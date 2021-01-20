@@ -10,7 +10,7 @@
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
     /// </summary>
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-                                                       IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings
+                                                       IDataStoreSettings
     {
         public string DataStoreType => GetAppSetting("DataStoreType");
 
@@ -62,12 +62,7 @@
         {
             return GetAppSetting("MinimumWaitTimeInHours");
         }
-
-        public string GetStatsFileTimeZoneAndOffsetSettings()
-        {
-            return GetAppSetting("StatsFileTimeZoneAndOffset");
-        }
-
+        
         private string GetAppSetting(string key)
         {
             return ConfigurationManager.AppSettings[key];

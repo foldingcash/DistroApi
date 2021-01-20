@@ -12,8 +12,7 @@
     public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
                                                ITestHarnessSettingsService, IZeroPointUsersFilterSettings,
                                                IGoogleUsersFilterSettings, IWhitespaceNameUsersFilterSettings,
-                                               ITestHarnessStatsDownloadSettings,
-                                               IStatsFileDateTimeFormatsAndOffsetSettings, IDataStoreSettings
+                                               ITestHarnessStatsDownloadSettings, IDataStoreSettings
     {
 
         public string DataStoreType => ConfigurationManager.AppSettings["DataStoreType"];

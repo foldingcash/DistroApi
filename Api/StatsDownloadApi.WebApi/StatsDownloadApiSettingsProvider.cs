@@ -8,7 +8,7 @@
     using StatsDownload.Core.Interfaces;
 
     public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-                                                    IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings
+                                                    IDataStoreSettings
     {
         private readonly IConfiguration configuration;
 
@@ -68,20 +68,9 @@
             return GetAppSetting("MinimumWaitTimeInHours");
         }
 
-        public string GetStatsFileTimeZoneAndOffsetSettings()
-        {
-            return GetAppSetting("StatsFileTimeZoneAndOffset");
-        }
-
         private string GetAppSetting(string name)
         {
             return configuration.GetSection("AppSettings").GetValue<string>(name);
-        }
-
-        private bool GetBoolAppSetting(string appSettingName)
-        {
-            bool.TryParse(GetAppSetting(appSettingName), out bool value);
-            return value;
         }
     }
 }
