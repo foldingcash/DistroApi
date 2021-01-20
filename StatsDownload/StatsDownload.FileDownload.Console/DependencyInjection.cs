@@ -26,7 +26,6 @@
             services.AddSingleton<IApplicationLoggingService, FileDownloadConsoleLoggingProvider>()
                     .AddSingleton<IDatabaseConnectionSettingsService, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IDownloadSettingsService, FileDownloadConsoleSettingsProvider>()
-                    .AddSingleton<IEmailSettingsService, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IDataStoreSettings, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IStatsFileDateTimeFormatsAndOffsetSettings, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IAzureDataStoreSettingsService, FileDownloadConsoleSettingsProvider>()

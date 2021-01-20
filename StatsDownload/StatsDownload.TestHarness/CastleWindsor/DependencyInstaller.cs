@@ -28,7 +28,7 @@
             container.Register(Component.For<IApplicationLoggingService>().ImplementedBy<TestHarnessLoggingProvider>(),
                 Component
                     .For<IDatabaseConnectionSettingsService, IDownloadSettingsService, ITestHarnessSettingsService,
-                        IEmailSettingsService, ITestHarnessStatsDownloadSettings>()
+                        ITestHarnessStatsDownloadSettings>()
                     .ImplementedBy<TestHarnessSettingsProvider>()
                     .Forward<IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
                         IWhitespaceNameUsersFilterSettings, INoPaymentAddressUsersFilterSettings>()

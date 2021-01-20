@@ -5,14 +5,12 @@
     using System.Reflection;
 
     using StatsDownload.Core.Interfaces;
-    using StatsDownload.Email;
 
     /// <summary>
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
     /// </summary>
     public class FileDownloadConsoleSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-                                                       IEmailSettingsService, IDataStoreSettings,
-                                                       IStatsFileDateTimeFormatsAndOffsetSettings,
+                                                       IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings,
                                                        IAzureDataStoreSettingsService
     {
         public string ConnectionString => GetConnectionString("FoldingCoin.Storage");
@@ -65,39 +63,9 @@
             return GetAppSetting("DownloadUri");
         }
 
-        public string GetFromAddress()
-        {
-            return GetAppSetting("FromAddress");
-        }
-
-        public string GetFromDisplayName()
-        {
-            return GetAppSetting("DisplayName");
-        }
-
         public string GetMinimumWaitTimeInHours()
         {
             return GetAppSetting("MinimumWaitTimeInHours");
-        }
-
-        public string GetPassword()
-        {
-            return GetAppSetting("Password");
-        }
-
-        public string GetPort()
-        {
-            return GetAppSetting("Port");
-        }
-
-        public string GetReceivers()
-        {
-            return GetAppSetting("Receivers");
-        }
-
-        public string GetSmtpHost()
-        {
-            return GetAppSetting("SmtpHost");
         }
 
         public string GetStatsFileTimeZoneAndOffsetSettings()

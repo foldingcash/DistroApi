@@ -6,11 +6,9 @@
     using Microsoft.Extensions.Configuration;
 
     using StatsDownload.Core.Interfaces;
-    using StatsDownload.Email;
 
-    public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IEmailSettingsService,
-                                                    IDownloadSettingsService, IDataStoreSettings,
-                                                    IStatsFileDateTimeFormatsAndOffsetSettings,
+    public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
+                                                    IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings,
                                                     INoPaymentAddressUsersFilterSettings, IAzureDataStoreSettingsService
     {
         private readonly IConfiguration configuration;
@@ -72,39 +70,9 @@
             return GetAppSetting("DownloadUri");
         }
 
-        public string GetFromAddress()
-        {
-            return GetAppSetting("FromAddress");
-        }
-
-        public string GetFromDisplayName()
-        {
-            return GetAppSetting("DisplayName");
-        }
-
         public string GetMinimumWaitTimeInHours()
         {
             return GetAppSetting("MinimumWaitTimeInHours");
-        }
-
-        public string GetPassword()
-        {
-            return GetAppSetting("Password");
-        }
-
-        public string GetPort()
-        {
-            return GetAppSetting("Port");
-        }
-
-        public string GetReceivers()
-        {
-            return GetAppSetting("Receivers");
-        }
-
-        public string GetSmtpHost()
-        {
-            return GetAppSetting("SmtpHost");
         }
 
         public string GetStatsFileTimeZoneAndOffsetSettings()

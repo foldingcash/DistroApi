@@ -31,7 +31,7 @@
         {
             container.Register(
                 Component
-                    .For<IDatabaseConnectionSettingsService, IEmailSettingsService, IDownloadSettingsService,
+                    .For<IDatabaseConnectionSettingsService, IDownloadSettingsService,
                         IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
                     .Forward<INoPaymentAddressUsersFilterSettings, IAzureDataStoreSettingsService>()
                     .ImplementedBy<StatsDownloadApiSettingsProvider>(),
