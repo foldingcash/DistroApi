@@ -62,25 +62,17 @@
             Assert.That(actual, Is.EqualTo(unsafePassword));
         }
 
-        [TestCase("-1")]
-        [TestCase("0")]
-        [TestCase("65536")]
-        public void ParsePort_WhenInvokedWithInvalidIntPort_ThrowsEmailArgumentException(string unsafePort)
+        [TestCase(-1)]
+        [TestCase(0)]
+        [TestCase(65536)]
+        public void ParsePort_WhenInvokedWithInvalidIntPort_ThrowsEmailArgumentException(int unsafePort)
         {
             Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParsePort(unsafePort));
         }
 
-        [TestCase("NaN")]
-        [TestCase(null)]
-        [TestCase("")]
-        public void ParsePort_WhenInvokedWithInvalidPort_ThrowsEmailArgumentException(string unsafePort)
-        {
-            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParsePort(unsafePort));
-        }
-
-        [TestCase("1", 1)]
-        [TestCase("65535", 65535)]
-        public void ParsePort_WhenInvokedWithValidPort_ReturnsParsedPort(string unsafePort, int expected)
+        [TestCase(1, 1)]
+        [TestCase(65535, 65535)]
+        public void ParsePort_WhenInvokedWithValidPort_ReturnsParsedPort(int unsafePort, int expected)
         {
             int actual = systemUnderTest.ParsePort(unsafePort);
 
@@ -91,14 +83,28 @@
         [TestCase("")]
         public void ParseReceivers_WhenInvokedWithInvalidReceiver_ThrowsEmailArgumentException(string unsafeReceivers)
         {
-            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParseReceivers(unsafeReceivers));
+            Assert.Throws<EmailArgumentException>(() =>
+                systemUnderTest.ParseReceivers(new[] { unsafeReceivers, unsafeReceivers }));
         }
 
-        [TestCase("user@domain.tld")]
-        [TestCase("user@domain.tld;")]
-        public void ParseReceivers_WhenInvokedWithOneReceiver_ReturnsReceiver(string unsafeReceivers)
+        [Test]
+        public void ParseReceivers_WhenInvokedWithNull_ThrowsEmailArgumentException()
         {
-            IEnumerable<string> actual = systemUnderTest.ParseReceivers(unsafeReceivers);
+            Assert.Throws<EmailArgumentException>(() =>
+                systemUnderTest.ParseReceivers(null));
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        public void ParseReceivers_WhenInvokedWithNoReceiver_ThrowsEmailArgumentException(int arrayLength)
+        {
+            Assert.Throws<EmailArgumentException>(() => systemUnderTest.ParseReceivers(new string[arrayLength]));
+        }
+
+        [Test]
+        public void ParseReceivers_WhenInvokedWithOneReceiver_ReturnsReceiver()
+        {
+            IEnumerable<string> actual = systemUnderTest.ParseReceivers(new[] { "user@domain.tld" });
 
             Assert.That(actual, Is.Not.Null);
             Assert.That(actual.Count(), Is.EqualTo(1));
@@ -108,10 +114,20 @@
         [Test]
         public void ParseReceivers_WhenInvokedWithReceivers_ReturnsReceivers()
         {
-            IEnumerable<string> actual = systemUnderTest.ParseReceivers("user@domain.tld;user@domain.tld;");
+            IEnumerable<string> actual = systemUnderTest.ParseReceivers(new[] { "user@domain.tld", "user@domain.tld" });
 
             Assert.That(actual, Is.Not.Null);
             Assert.That(actual.Count(), Is.EqualTo(2));
+            Assert.That(actual.First(), Is.EqualTo("user@domain.tld"));
+        }
+
+        [Test]
+        public void ParseReceivers_WhenInvokedWithSomeEmptyReceivers_FiltersOutEmptyReceivers()
+        {
+            IEnumerable<string> actual = systemUnderTest.ParseReceivers(new[] { "", "user@domain.tld", null });
+
+            Assert.That(actual, Is.Not.Null);
+            Assert.That(actual.Count(), Is.EqualTo(1));
             Assert.That(actual.First(), Is.EqualTo("user@domain.tld"));
         }
 

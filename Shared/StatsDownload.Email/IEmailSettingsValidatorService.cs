@@ -10,9 +10,9 @@
 
         string ParsePassword(string unsafePassword);
 
-        int ParsePort(string unsafePort);
+        int ParsePort(int unsafePort);
 
-        IEnumerable<string> ParseReceivers(string unsafeReceivers);
+        IEnumerable<string> ParseReceivers(ICollection<string> unsafeReceivers);
 
         string ParseSmtpHost(string unsafeSmtpHost);
     }

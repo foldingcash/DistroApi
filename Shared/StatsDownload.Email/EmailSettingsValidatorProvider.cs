@@ -1,7 +1,7 @@
 ﻿namespace StatsDownload.Email
 {
-    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class EmailSettingsValidatorProvider : IEmailSettingsValidatorService
     {
@@ -35,30 +35,26 @@
             return unsafePassword;
         }
 
-        public int ParsePort(string unsafePort)
+        public int ParsePort(int unsafePort)
         {
-            int port;
-            if (!int.TryParse(unsafePort, out port))
-            {
-                throw new EmailArgumentException("An integer was not provided");
-            }
-
-            if (port < 1 || port > 65535)
+            if (unsafePort < 1 || unsafePort > 65535)
             {
                 throw new EmailArgumentException("The port should be between 1 and 65535, inclusive");
             }
 
-            return port;
+            return unsafePort;
         }
 
-        public IEnumerable<string> ParseReceivers(string unsafeReceivers)
+        public IEnumerable<string> ParseReceivers(ICollection<string> unsafeReceivers)
         {
-            if (string.IsNullOrWhiteSpace(unsafeReceivers))
+            IEnumerable<string> filtered = unsafeReceivers?.Where(receiver => !string.IsNullOrEmpty(receiver));
+
+            if (!filtered?.Any() ?? true)
             {
                 throw new EmailArgumentException("A receivers list was not provided");
             }
 
-            return unsafeReceivers.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            return filtered;
         }
 
         public string ParseSmtpHost(string unsafeSmtpHost)

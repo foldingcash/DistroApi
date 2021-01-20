@@ -7,27 +7,27 @@
     using System.Text;
     using System.Threading;
 
-    using StatsDownload.Core.Interfaces.Logging;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
 
     public class EmailProvider : IEmailService
     {
+        private readonly EmailSettings emailSettings;
+
         private readonly IEmailSettingsValidatorService emailSettingsValidatorService;
 
-        private readonly ILoggingService loggingService;
-
-        private readonly IEmailSettingsService settingsService;
+        private readonly ILogger logger;
 
         private readonly int WaitTimeInMillisecondsBeforeTryingSendAgain = 5000;
 
-        public EmailProvider(IEmailSettingsService settingsService,
-                             IEmailSettingsValidatorService emailSettingsValidatorService,
-                             ILoggingService loggingService)
+        public EmailProvider(ILogger<EmailProvider> logger, IOptions<EmailSettings> emailSettings,
+                             IEmailSettingsValidatorService emailSettingsValidatorService)
         {
-            this.settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            this.emailSettings = emailSettings?.Value ?? throw new ArgumentNullException(nameof(emailSettings));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.emailSettingsValidatorService = emailSettingsValidatorService
                                                  ?? throw new ArgumentNullException(
                                                      nameof(emailSettingsValidatorService));
-            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public EmailResult SendEmail(string subject, string body)
@@ -41,8 +41,7 @@
                 sb.AppendLine($"Body: {body}");
 
                 MailAddress fromAddress = NewMailAddress();
-
-                IEnumerable<string> receivers = ParseReceivers(settingsService.GetReceivers());
+                var receivers = ParseReceivers(emailSettings.Receivers);
 
                 using (SmtpClient smtpClient = NewSmtpClient(sb, fromAddress))
                 {
@@ -87,12 +86,12 @@
 
         private void LogException(Exception exception)
         {
-            loggingService.LogException(exception);
+            logger.LogError(exception, "An exception occurred");
         }
 
         private void LogVerbose(StringBuilder sb)
         {
-            loggingService.LogVerbose(sb.ToString());
+            logger.LogTrace(sb.ToString());
         }
 
         private EmailResult NewEmailResult()
@@ -107,8 +106,8 @@
 
         private MailAddress NewMailAddress()
         {
-            string fromAddress = ParseFromAddress(settingsService.GetFromAddress());
-            string displayName = ParseFromDisplayName(settingsService.GetFromDisplayName());
+            string fromAddress = ParseFromAddress(emailSettings.Address);
+            string displayName = ParseFromDisplayName(emailSettings.DisplayName);
 
             return NewMailAddress(fromAddress, displayName);
         }
@@ -135,9 +134,9 @@
 
         private SmtpClient NewSmtpClient(StringBuilder sb, MailAddress fromAddress)
         {
-            string host = ParseSmtpHost(settingsService.GetSmtpHost());
-            int port = ParsePort(settingsService.GetPort());
-            string password = ParsePassword(settingsService.GetPassword());
+            string host = ParseSmtpHost(emailSettings.Host);
+            int port = ParsePort(emailSettings.Port);
+            string password = ParsePassword(emailSettings.Password);
             ICredentialsByHost credentials = NewNetworkCredential(fromAddress.Address, password);
             var deliveryMethod = SmtpDeliveryMethod.Network;
             var enableSsl = true;
@@ -178,12 +177,12 @@
             return emailSettingsValidatorService.ParsePassword(unsafePassword);
         }
 
-        private int ParsePort(string unsafePort)
+        private int ParsePort(int unsafePort)
         {
             return emailSettingsValidatorService.ParsePort(unsafePort);
         }
 
-        private IEnumerable<string> ParseReceivers(string unsafeReceivers)
+        private IEnumerable<string> ParseReceivers(ICollection<string> unsafeReceivers)
         {
             return emailSettingsValidatorService.ParseReceivers(unsafeReceivers);
         }

@@ -7,9 +7,6 @@
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
 
-    using NLog;
-    using NLog.Web;
-
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Database;
@@ -32,8 +29,6 @@
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(Component.For<ILogger>().Instance(CreateLogger()));
-
             container.Register(
                 Component
                     .For<IDatabaseConnectionSettingsService, IEmailSettingsService, IDownloadSettingsService,
@@ -85,18 +80,6 @@
                 Component.For<IBitcoinAddressValidatorService>().ImplementedBy<BitcoinAddressValidatorProvider>(),
                 Component.For<IStatsFileDateTimeFormatsAndOffsetService>()
                          .ImplementedBy<StatsFileDateTimeFormatsAndOffsetProvider>());
-        }
-
-        private ILogger CreateLogger()
-        {
-            try
-            {
-                return NLogBuilder.ConfigureNLog("nlog.statsapi.config").GetCurrentClassLogger();
-            }
-            catch (Exception)
-            {
-                return LogManager.CreateNullLogger();
-            }
         }
     }
 }
