@@ -27,6 +27,7 @@
     <ProjectReference Include="..\..\Shared\StatsDownload.Database.CastleWindsor\StatsDownload.Database.CastleWindsor.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Database\StatsDownload.Database.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.DataStore\StatsDownload.DataStore.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.DependencyInjection\StatsDownload.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Email\StatsDownload.Email.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Extensions\StatsDownload.Extensions.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Logging\StatsDownload.Logging.csproj" />

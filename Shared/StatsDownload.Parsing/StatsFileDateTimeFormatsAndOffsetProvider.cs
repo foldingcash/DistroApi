@@ -11,12 +11,12 @@
 
     public class StatsFileDateTimeFormatsAndOffsetProvider : IStatsFileDateTimeFormatsAndOffsetService
     {
-        private readonly DateTimeFormatsSettings dateTimeFormatsSettings;
+        private readonly DateTimeSettings dateTimeSettings;
 
-        public StatsFileDateTimeFormatsAndOffsetProvider(IOptions<DateTimeFormatsSettings> dateTimeFormatsSettings)
+        public StatsFileDateTimeFormatsAndOffsetProvider(IOptions<DateTimeSettings> dateTimeSettings)
         {
-            this.dateTimeFormatsSettings = dateTimeFormatsSettings?.Value
-                                           ?? throw new ArgumentNullException(nameof(dateTimeFormatsSettings));
+            this.dateTimeSettings = dateTimeSettings?.Value
+                                           ?? throw new ArgumentNullException(nameof(dateTimeSettings));
         }
 
         public (string format, int hourOffset)[] GetStatsFileDateTimeFormatsAndOffset()
@@ -34,7 +34,7 @@
 
         private (string format, int hourOffset)[] GetConfiguredFormats()
         {
-            return GetFormats(dateTimeFormatsSettings.Formats);
+            return GetFormats(dateTimeSettings.Formats);
         }
 
         private (string format, int hourOffset)[] GetFormats(ICollection<DateTimeFormat> dateTimeFormats)

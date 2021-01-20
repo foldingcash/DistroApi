@@ -12,6 +12,8 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
+    using StatsDownload.DependencyInjection;
+
     using StatsDownloadApi.WebApi.CastleWindsor;
 
     using ApiWindsorContainer = StatsDownloadApi.WebApi.CastleWindsor.WindsorContainer;
@@ -56,6 +58,8 @@
             services.AddOptions();
             services.AddLazyCache();
             services.AddSingleton(Configuration);
+
+            services.ConfigureStatsDownload(Configuration);
 
             IServiceProvider provider =
                 WindsorRegistrationHelper.CreateServiceProvider(ApiWindsorContainer.Instance, services);

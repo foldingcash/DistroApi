@@ -18,7 +18,7 @@
         [SetUp]
         public void SetUp()
         {
-            dateTimeFormatsSettings = new DateTimeFormatsSettings
+            dateTimeSettings = new DateTimeSettings
                                       {
                                           Formats = new[]
                                                     {
@@ -28,10 +28,10 @@
                                                     }
                                       };
 
-            dateTimeFormatsSettingsOptionsMock = Substitute.For<IOptions<DateTimeFormatsSettings>>();
-            dateTimeFormatsSettingsOptionsMock.Value.Returns(dateTimeFormatsSettings);
+            dateTimeSettingsOptionsMock = Substitute.For<IOptions<DateTimeSettings>>();
+            dateTimeSettingsOptionsMock.Value.Returns(dateTimeSettings);
 
-            systemUnderTest = NewStatsFileDateTimeFormatsAndOffsetProvider(dateTimeFormatsSettingsOptionsMock);
+            systemUnderTest = NewStatsFileDateTimeFormatsAndOffsetProvider(dateTimeSettingsOptionsMock);
         }
 
         private readonly (string format, int hourOffset)[] dateTimeFormatsAndOffset =
@@ -48,9 +48,9 @@
             ("ddd MMM dd HH:mm:ss PST yyyy", -8)
         };
 
-        private DateTimeFormatsSettings dateTimeFormatsSettings;
+        private DateTimeSettings dateTimeSettings;
 
-        private IOptions<DateTimeFormatsSettings> dateTimeFormatsSettingsOptionsMock;
+        private IOptions<DateTimeSettings> dateTimeSettingsOptionsMock;
 
         private IStatsFileDateTimeFormatsAndOffsetService systemUnderTest;
 
@@ -71,7 +71,7 @@
         [Test]
         public void GetStatsFileDateTimeZoneAndOffset_WhenSettingsEmpty_ReturnsDateTimeFormats()
         {
-            dateTimeFormatsSettings.Formats = new DateTimeFormat[0];
+            dateTimeSettings.Formats = new DateTimeFormat[0];
 
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
@@ -81,7 +81,7 @@
         [Test]
         public void GetStatsFileDateTimeZoneAndOffset_WhenSettingsMissing_ReturnsDateTimeFormats()
         {
-            dateTimeFormatsSettings.Formats = null;
+            dateTimeSettings.Formats = null;
 
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
@@ -106,9 +106,9 @@
         }
 
         private IStatsFileDateTimeFormatsAndOffsetService NewStatsFileDateTimeFormatsAndOffsetProvider(
-            IOptions<DateTimeFormatsSettings> dateTimeFormatsOptions)
+            IOptions<DateTimeSettings> dateTimeSettingsOptions)
         {
-            return new StatsFileDateTimeFormatsAndOffsetProvider(dateTimeFormatsOptions);
+            return new StatsFileDateTimeFormatsAndOffsetProvider(dateTimeSettingsOptions);
         }
     }
 }

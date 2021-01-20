@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public class DateTimeFormatsSettings
+    public class DateTimeSettings
     {
         public ICollection<DateTimeFormat> Formats { get; set; }
     }
