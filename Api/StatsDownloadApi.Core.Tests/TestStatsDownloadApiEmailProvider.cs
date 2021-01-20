@@ -2,8 +2,9 @@
 {
     using System;
 
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
-    using NSubstitute.ClearExtensions;
 
     using NUnit.Framework;
 
@@ -19,15 +20,19 @@
         {
             emailServiceMock = Substitute.For<IEmailService>();
 
-            emailSettingsServiceMock = Substitute.For<IEmailSettingsService>();
-            emailSettingsServiceMock.GetFromDisplayName().Returns("DisplayName");
+            emailSettings = new EmailSettings { DisplayName = "DisplayName" };
 
-            systemUnderTest = NewStatsDownloadApiEmailProvider(emailServiceMock, emailSettingsServiceMock);
+            emailSettingsOptionsMock = Substitute.For<IOptions<EmailSettings>>();
+            emailSettingsOptionsMock.Value.Returns(emailSettings);
+
+            systemUnderTest = NewStatsDownloadApiEmailProvider(emailServiceMock, emailSettingsOptionsMock);
         }
 
         private IEmailService emailServiceMock;
 
-        private IEmailSettingsService emailSettingsServiceMock;
+        private EmailSettings emailSettings;
+
+        private IOptions<EmailSettings> emailSettingsOptionsMock;
 
         private IStatsDownloadApiEmailService systemUnderTest;
 
@@ -35,7 +40,7 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiEmailProvider(null, emailSettingsServiceMock));
+                NewStatsDownloadApiEmailProvider(null, emailSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiEmailProvider(emailServiceMock, null));
         }
 
@@ -45,8 +50,7 @@
         [TestCase("\n")]
         public void SendUnhandledExceptionEmail_WhenEmptyDisplayName_DoesNotPrependDisplayName(string displayName)
         {
-            emailSettingsServiceMock.ClearSubstitute();
-            emailSettingsServiceMock.GetFromDisplayName().Returns(displayName);
+            emailSettings.DisplayName = displayName;
 
             var exception = new Exception("test message");
 
@@ -68,10 +72,10 @@
         }
 
         private IStatsDownloadApiEmailService NewStatsDownloadApiEmailProvider(IEmailService emailService,
-                                                                               IEmailSettingsService
-                                                                                   emailSettingsService)
+                                                                               IOptions<EmailSettings>
+                                                                                   emailSettingsOptionsMock)
         {
-            return new StatsDownloadApiEmailProvider(emailService, emailSettingsService);
+            return new StatsDownloadApiEmailProvider(emailService, emailSettingsOptionsMock);
         }
     }
 }
