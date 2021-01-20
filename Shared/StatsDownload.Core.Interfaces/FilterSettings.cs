@@ -5,5 +5,7 @@
         public bool EnableNoPaymentAddressUsersFilter { get; set; }
 
         public bool EnableWhitespaceNameUsersFilter { get; set; }
+
+        public bool EnableZeroPointUsersFilter { get; set; }
     }
 }
