@@ -3,6 +3,8 @@
     using System;
     using System.Linq;
 
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -19,9 +21,12 @@
         {
             innerServiceMock = Substitute.For<IStatsFileParserService>();
 
-            settingsMock = Substitute.For<INoPaymentAddressUsersFilterSettings>();
+            filterSettings = new FilterSettings();
 
-            systemUnderTest = new NoPaymentAddressUsersFilter(innerServiceMock, settingsMock);
+            filterSettingsOptionsMock = Substitute.For<IOptions<FilterSettings>>();
+            filterSettingsOptionsMock.Value.Returns(filterSettings);
+
+            systemUnderTest = new NoPaymentAddressUsersFilter(innerServiceMock, filterSettingsOptionsMock);
 
             downloadDateTime = DateTime.UtcNow;
         }
@@ -30,16 +35,18 @@
 
         private readonly FilePayload FilePayload = new FilePayload { DecompressedDownloadFileData = "fileData" };
 
-        private IStatsFileParserService innerServiceMock;
+        private FilterSettings filterSettings;
 
-        private INoPaymentAddressUsersFilterSettings settingsMock;
+        private IOptions<FilterSettings> filterSettingsOptionsMock;
+
+        private IStatsFileParserService innerServiceMock;
 
         private IStatsFileParserService systemUnderTest;
 
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()
         {
-            settingsMock.Enabled.Returns(false);
+            filterSettings.NoPaymentAddressUsersEnabled = false;
 
             var expected = new ParseResults(downloadDateTime, null, null);
             innerServiceMock.Parse(FilePayload).Returns(expected);
@@ -52,11 +59,10 @@
         [Test]
         public void Parse_WhenInvoked_FiltersResults()
         {
-            settingsMock.Enabled.Returns(true);
+            filterSettings.NoPaymentAddressUsersEnabled = true;
 
             innerServiceMock.Parse(FilePayload).Returns(new ParseResults(downloadDateTime,
-                new[] { new UserData(), new UserData { BitcoinAddress = "addy" } },
-                new[] { new FailedUserData() }));
+                new[] { new UserData(), new UserData { BitcoinAddress = "addy" } }, new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse(FilePayload);
 

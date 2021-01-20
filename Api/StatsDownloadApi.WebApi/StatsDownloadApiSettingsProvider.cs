@@ -8,8 +8,7 @@
     using StatsDownload.Core.Interfaces;
 
     public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-                                                    IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings,
-                                                    INoPaymentAddressUsersFilterSettings
+                                                    IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings
     {
         private readonly IConfiguration configuration;
 
@@ -19,9 +18,7 @@
         }
         
         public string DataStoreType => GetAppSetting("DataStoreType");
-
-        bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolAppSetting("EnableNoPaymentAddressUsersFilter");
-
+        
         public string UploadDirectory => GetAppSetting("UploadDirectory");
 
         public string GetAcceptAnySslCert()

@@ -32,8 +32,7 @@
             container.Register(
                 Component
                     .For<IDatabaseConnectionSettingsService, IDownloadSettingsService,
-                        IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()
-                    .Forward<INoPaymentAddressUsersFilterSettings>()
+                        IDataStoreSettings, IStatsFileDateTimeFormatsAndOffsetSettings>()                      
                     .ImplementedBy<StatsDownloadApiSettingsProvider>(),
                 Component.For<IApplicationLoggingService>().ImplementedBy<StatsDownloadApiLoggingProvider>(),
                 Component.For<IStatsDownloadApiEmailService>().ImplementedBy<StatsDownloadApiEmailProvider>());

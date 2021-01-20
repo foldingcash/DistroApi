@@ -12,16 +12,14 @@
     public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
                                                ITestHarnessSettingsService, IZeroPointUsersFilterSettings,
                                                IGoogleUsersFilterSettings, IWhitespaceNameUsersFilterSettings,
-                                               INoPaymentAddressUsersFilterSettings, ITestHarnessStatsDownloadSettings,
+                                               ITestHarnessStatsDownloadSettings,
                                                IStatsFileDateTimeFormatsAndOffsetSettings, IDataStoreSettings
     {
 
         public string DataStoreType => ConfigurationManager.AppSettings["DataStoreType"];
 
         bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
-
-        bool INoPaymentAddressUsersFilterSettings.Enabled => GetBoolConfig("EnableNoPaymentAddressUsersFilter");
-
+        
         bool ITestHarnessStatsDownloadSettings.Enabled => GetBoolConfig("EnableSqlExceptionDuringAddUsersTest");
 
         bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
