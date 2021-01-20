@@ -7,7 +7,7 @@
 
     using StatsDownload.Core.Interfaces;
 
-    public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService
+    public class StatsDownloadApiSettingsProvider : IDownloadSettingsService
     {
         private readonly IConfiguration configuration;
 
@@ -20,28 +20,7 @@
         {
             return GetAppSetting("AcceptAnySslCert");
         }
-
-        public int? GetCommandTimeout()
-        {
-            string commandTimeoutString = GetAppSetting("DbCommandTimeout");
-            if (int.TryParse(commandTimeoutString, out int commandTimeoutValue))
-            {
-                return commandTimeoutValue;
-            }
-
-            return null;
-        }
-
-        public string GetConnectionString()
-        {
-            return configuration.GetConnectionString("FoldingCoin.Database");
-        }
-
-        public string GetDatabaseType()
-        {
-            return GetAppSetting("DatabaseType");
-        }
-
+        
         public string GetDownloadDirectory()
         {
             return GetAppSetting("DownloadDirectory")

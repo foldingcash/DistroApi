@@ -24,7 +24,6 @@
         public static void ConfigureThisApp(this IServiceCollection services)
         {
             services.AddSingleton<IApplicationLoggingService, FileDownloadConsoleLoggingProvider>()
-                    .AddSingleton<IDatabaseConnectionSettingsService, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IDownloadSettingsService, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IDateTimeService, DateTimeProvider>().AddSingleton<IFileService, FileProvider>()
                     .AddSingleton<IDirectoryService, DirectoryProvider>()
@@ -36,11 +35,8 @@
                     .AddSingleton<IFileReaderService, FileReaderProvider>()
                     .AddSingleton<IStatsDownloadDatabaseParameterService, StatsDownloadDatabaseParameterProvider>()
                     .AddSingleton<IDatabaseConnectionService, MicrosoftSqlDatabaseConnectionProvider>()
-                    /*.IsDefault()*/
                     .AddSingleton<ITypedFactoryComponentSelector, DatabaseFactoryComponentSelector>()
                     .AddSingleton<IDatabaseConnectionServiceFactory>()
-                    //.AsFactory(selector =>
-                    //    selector.SelectedWith<DatabaseFactoryComponentSelector>())
                     .AddSingleton<IStatsDownloadDatabaseService, StatsDownloadDatabaseProvider>()
                     .AddSingleton<IFileDownloadDatabaseService, FileDownloadDatabaseProvider>()
                     .AddSingleton<ISecureFilePayloadService, SecureFilePayloadProvider>()
@@ -57,14 +53,11 @@
                     .AddSingleton<IEmailService, EmailProvider>()
                     .AddSingleton<IFilePayloadUploadService, FilePayloadUploadProvider>()
                     .AddTransient<IWebClient, WebClientWrapper>().AddSingleton<IWebClientFactory>()
-                    //.AsFactory()
                     .AddSingleton<IDataStoreService, UncDataStoreProvider>()
                     .AddSingleton<IFileValidationService, FileValidationProvider>()
                     .AddSingleton<IStatsFileParserService, StatsFileParserProvider>()
                     .AddSingleton<IStatsFileDateTimeFormatsAndOffsetService, StatsFileDateTimeFormatsAndOffsetProvider
                     >().AddSingleton<IDataStoreServiceFactory>()
-                    //.AsFactory(selector =>
-                    //    selector.SelectedWith<DataStoreFactoryComponentSelector>()
                     .AddSingleton<ITypedFactoryComponentSelector, DataStoreFactoryComponentSelector>();
         }
     }

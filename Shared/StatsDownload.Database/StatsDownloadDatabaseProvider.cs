@@ -5,6 +5,8 @@
     using System.Data;
     using System.Data.Common;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Core.Interfaces.Logging;
@@ -15,17 +17,16 @@
 
         private readonly IDatabaseConnectionServiceFactory databaseConnectionServiceFactory;
 
-        private readonly IDatabaseConnectionSettingsService databaseConnectionSettingsService;
+        private readonly DatabaseSettings databaseSettings;
 
         private readonly ILoggingService loggingService;
 
-        public StatsDownloadDatabaseProvider(IDatabaseConnectionSettingsService databaseConnectionSettingsService,
+        public StatsDownloadDatabaseProvider(IOptions<DatabaseSettings> databaseSettings,
                                              IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
                                              ILoggingService loggingService)
         {
-            this.databaseConnectionSettingsService = databaseConnectionSettingsService
-                                                     ?? throw new ArgumentNullException(
-                                                         nameof(databaseConnectionSettingsService));
+            this.databaseSettings = databaseSettings?.Value
+                                    ?? throw new ArgumentNullException(nameof(databaseSettings));
             this.databaseConnectionServiceFactory = databaseConnectionServiceFactory
                                                     ?? throw new ArgumentNullException(
                                                         nameof(databaseConnectionServiceFactory));
@@ -39,8 +40,8 @@
 
         public void CreateDatabaseConnectionAndExecuteAction(Action<IDatabaseConnectionService> action)
         {
-            string connectionString = GetConnectionString();
-            int? commandTimeout = GetCommandTimeout();
+            string connectionString = databaseSettings.ConnectionString;
+            int? commandTimeout = databaseSettings.CommandTimeout;
             EnsureValidConnectionString(connectionString);
             IDatabaseConnectionService databaseConnection =
                 CreateDatabaseConnection(loggingService, connectionString, commandTimeout);
@@ -52,10 +53,7 @@
         {
             loggingService.LogMethodInvoked();
             DbTransaction transaction = null;
-            CreateDatabaseConnectionAndExecuteAction(service =>
-            {
-                transaction = CreateTransaction(service);
-            });
+            CreateDatabaseConnectionAndExecuteAction(service => { transaction = CreateTransaction(service); });
             return transaction;
         }
 
@@ -138,16 +136,6 @@
             {
                 throw new ArgumentException("Argument is empty", nameof(connectionString));
             }
-        }
-
-        private int? GetCommandTimeout()
-        {
-            return databaseConnectionSettingsService.GetCommandTimeout();
-        }
-
-        private string GetConnectionString()
-        {
-            return databaseConnectionSettingsService.GetConnectionString();
         }
 
         private void LogException(Exception exception)

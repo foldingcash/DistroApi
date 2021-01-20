@@ -5,21 +5,23 @@
 
     using Castle.Facilities.TypedFactory;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Database.Wrappers;
 
     public class DatabaseFactoryComponentSelector : DefaultTypedFactoryComponentSelector
     {
-        private readonly IDatabaseConnectionSettingsService settings;
+        private readonly DatabaseSettings settings;
 
-        public DatabaseFactoryComponentSelector(IDatabaseConnectionSettingsService settings)
+        public DatabaseFactoryComponentSelector(IOptions<DatabaseSettings> settings)
         {
-            this.settings = settings;
+            this.settings = settings.Value;
         }
 
         protected override string GetComponentName(MethodInfo method, object[] arguments)
         {
-            string databaseType = settings.GetDatabaseType();
+            string databaseType = settings.Type;
 
             if (string.Equals(databaseType, "MicrosoftSql", StringComparison.OrdinalIgnoreCase))
             {

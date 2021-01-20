@@ -3,7 +3,8 @@
     using System;
     using System.Data;
     using System.Data.Common;
-    using System.Threading.Tasks;
+
+    using Microsoft.Extensions.Options;
 
     using NSubstitute;
 
@@ -21,18 +22,17 @@
         {
             loggingServiceMock = Substitute.For<ILoggingService>();
 
-            databaseConnectionSettingsServiceMock = Substitute.For<IDatabaseConnectionSettingsService>();
-            databaseConnectionSettingsServiceMock.GetConnectionString().Returns("connectionString");
-            databaseConnectionSettingsServiceMock.GetCommandTimeout().Returns(42);
+            databaseSettings = new DatabaseSettings { ConnectionString = "connectionString", CommandTimeout = 42 };
+
+            databaseSettingsOptionsMock = Substitute.For<IOptions<DatabaseSettings>>();
+            databaseSettingsOptionsMock.Value.Returns(databaseSettings);
 
             databaseConnectionServiceMock = Substitute.For<IDatabaseConnectionService>();
             databaseConnectionServiceFactoryMock = Substitute.For<IDatabaseConnectionServiceFactory>();
-            databaseConnectionServiceFactoryMock
-                .Create(loggingServiceMock, "connectionString", 42).Returns(databaseConnectionServiceMock);
+            databaseConnectionServiceFactoryMock.Create(loggingServiceMock, "connectionString", 42)
+                                                .Returns(databaseConnectionServiceMock);
 
-            errorMessageServiceMock = Substitute.For<IErrorMessageService>();
-
-            systemUnderTest = NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock,
+            systemUnderTest = NewFileDownloadDatabaseProvider(databaseSettingsOptionsMock,
                 databaseConnectionServiceFactoryMock, loggingServiceMock);
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
@@ -50,11 +50,11 @@
 
         private IDatabaseConnectionService databaseConnectionServiceMock;
 
-        private IDatabaseConnectionSettingsService databaseConnectionSettingsServiceMock;
+        private DatabaseSettings databaseSettings;
+
+        private IOptions<DatabaseSettings> databaseSettingsOptionsMock;
 
         private DbDataReader dbDataReaderMock;
-
-        private IErrorMessageService errorMessageServiceMock;
 
         private ILoggingService loggingServiceMock;
 
@@ -76,10 +76,10 @@
             Assert.Throws<ArgumentNullException>(() =>
                 NewFileDownloadDatabaseProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock));
+                NewFileDownloadDatabaseProvider(databaseSettingsOptionsMock, null, loggingServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock,
-                    databaseConnectionServiceFactoryMock, null));
+                NewFileDownloadDatabaseProvider(databaseSettingsOptionsMock, databaseConnectionServiceFactoryMock,
+                    null));
         }
 
         [Test]
@@ -162,7 +162,7 @@
         [TestCase("")]
         public void IsAvailable_WhenInvalidConnectionString_ReturnsFalse(string connectionString)
         {
-            databaseConnectionSettingsServiceMock.GetConnectionString().Returns(connectionString);
+            databaseSettings.ConnectionString = connectionString;
 
             (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable();
 
@@ -197,8 +197,8 @@
 
             InvokeIsAvailable(new[] { "object1", "object2", "object3" });
 
-            loggingServiceMock
-                .Received().LogError("The required objects {'object1', 'object3'} are missing from the database.");
+            loggingServiceMock.Received()
+                              .LogError("The required objects {'object1', 'object3'} are missing from the database.");
         }
 
         [Test]
@@ -228,11 +228,11 @@
         }
 
         private IStatsDownloadDatabaseService NewFileDownloadDatabaseProvider(
-            IDatabaseConnectionSettingsService databaseConnectionSettingsService,
+            IOptions<DatabaseSettings> databaseSettingsOptions,
             IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService)
         {
-            return new StatsDownloadDatabaseProvider(databaseConnectionSettingsService,
-                databaseConnectionServiceFactory, loggingService);
+            return new StatsDownloadDatabaseProvider(databaseSettingsOptions, databaseConnectionServiceFactory,
+                loggingService);
         }
     }
 }

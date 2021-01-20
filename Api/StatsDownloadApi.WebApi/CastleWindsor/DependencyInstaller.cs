@@ -31,7 +31,7 @@
         {
             container.Register(
                 Component
-                    .For<IDatabaseConnectionSettingsService, IDownloadSettingsService>()                      
+                    .For<IDownloadSettingsService>()                      
                     .ImplementedBy<StatsDownloadApiSettingsProvider>(),
                 Component.For<IApplicationLoggingService>().ImplementedBy<StatsDownloadApiLoggingProvider>(),
                 Component.For<IStatsDownloadApiEmailService>().ImplementedBy<StatsDownloadApiEmailProvider>());
