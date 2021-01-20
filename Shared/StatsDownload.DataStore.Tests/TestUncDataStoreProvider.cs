@@ -3,6 +3,8 @@
     using System;
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -24,18 +26,21 @@
 
             validatedFileMock = new ValidatedFile(0, DateTime.UtcNow, "\\ValidatedFilePath\\Source.ext");
 
-            dataStoreSettingsMock = Substitute.For<IDataStoreSettings>();
-
-            dataStoreSettingsMock.UploadDirectory.Returns("C:\\Path");
+            dataStoreSettings = new DataStoreSettings { UploadDirectory = "C:\\Path" };
+            dataStoreSettingsOptionsMock = Substitute.For<IOptions<DataStoreSettings>>();
+            dataStoreSettingsOptionsMock.Value.Returns(dataStoreSettings);
 
             directoryServiceMock = Substitute.For<IDirectoryService>();
 
             fileServiceMock = Substitute.For<IFileService>();
 
-            systemUnderTest = new UncDataStoreProvider(dataStoreSettingsMock, directoryServiceMock, fileServiceMock);
+            systemUnderTest =
+                new UncDataStoreProvider(dataStoreSettingsOptionsMock, directoryServiceMock, fileServiceMock);
         }
 
-        private IDataStoreSettings dataStoreSettingsMock;
+        private DataStoreSettings dataStoreSettings;
+
+        private IOptions<DataStoreSettings> dataStoreSettingsOptionsMock;
 
         private IDirectoryService directoryServiceMock;
 

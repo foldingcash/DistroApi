@@ -31,8 +31,7 @@
                         ITestHarnessStatsDownloadSettings>()
                     .ImplementedBy<TestHarnessSettingsProvider>()
                     .Forward<IZeroPointUsersFilterSettings, IGoogleUsersFilterSettings,
-                        IWhitespaceNameUsersFilterSettings>()
-                    .Forward<IDataStoreSettings>(),
+                        IWhitespaceNameUsersFilterSettings>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),

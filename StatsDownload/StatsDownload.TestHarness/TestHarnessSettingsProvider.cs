@@ -12,20 +12,15 @@
     public class TestHarnessSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
                                                ITestHarnessSettingsService, IZeroPointUsersFilterSettings,
                                                IGoogleUsersFilterSettings, IWhitespaceNameUsersFilterSettings,
-                                               ITestHarnessStatsDownloadSettings, IDataStoreSettings
+                                               ITestHarnessStatsDownloadSettings
     {
-
-        public string DataStoreType => ConfigurationManager.AppSettings["DataStoreType"];
-
         bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
-        
+
         bool ITestHarnessStatsDownloadSettings.Enabled => GetBoolConfig("EnableSqlExceptionDuringAddUsersTest");
 
         bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
 
         bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
-
-        public string UploadDirectory => ConfigurationManager.AppSettings["UploadDirectory"];
 
         public string GetAcceptAnySslCert()
         {
@@ -74,11 +69,6 @@
             return ConfigurationManager.AppSettings["MinimumWaitTimeInHours"];
         }
 
-        public string GetStatsFileTimeZoneAndOffsetSettings()
-        {
-            return ConfigurationManager.AppSettings["StatsFileTimeZoneAndOffset"];
-        }
-
         public bool IsFileCompressionDisabled()
         {
             return GetBoolConfig("FileCompressionDisabled");
@@ -97,6 +87,11 @@
         public bool IsSecureFilePayloadDisabled()
         {
             return GetBoolConfig("DisableSecureFilePayload");
+        }
+
+        public string GetStatsFileTimeZoneAndOffsetSettings()
+        {
+            return ConfigurationManager.AppSettings["StatsFileTimeZoneAndOffset"];
         }
 
         private bool GetBoolConfig(string appSettingName)

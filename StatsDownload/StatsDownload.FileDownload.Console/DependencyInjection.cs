@@ -26,7 +26,6 @@
             services.AddSingleton<IApplicationLoggingService, FileDownloadConsoleLoggingProvider>()
                     .AddSingleton<IDatabaseConnectionSettingsService, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IDownloadSettingsService, FileDownloadConsoleSettingsProvider>()
-                    .AddSingleton<IDataStoreSettings, FileDownloadConsoleSettingsProvider>()
                     .AddSingleton<IDateTimeService, DateTimeProvider>().AddSingleton<IFileService, FileProvider>()
                     .AddSingleton<IDirectoryService, DirectoryProvider>()
                     .AddSingleton<IResourceCleanupService, ResourceCleanupProvider>()

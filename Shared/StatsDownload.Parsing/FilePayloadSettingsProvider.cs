@@ -3,6 +3,8 @@
     using System;
     using System.IO;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Exceptions;
@@ -10,7 +12,7 @@
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
     {
-        private readonly IDataStoreSettings dataStoreSettings;
+        private readonly DataStoreSettings dataStoreSettings;
 
         private readonly IDateTimeService dateTimeService;
 
@@ -23,7 +25,8 @@
         public FilePayloadSettingsProvider(IDateTimeService dateTimeService,
                                            IDownloadSettingsService downloadSettingsService,
                                            IDownloadSettingsValidatorService downloadSettingsValidatorService,
-                                           ILoggingService loggingService, IDataStoreSettings dataStoreSettings)
+                                           ILoggingService loggingService,
+                                           IOptions<DataStoreSettings> dataStoreSettings)
         {
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
             this.downloadSettingsService = downloadSettingsService
@@ -32,7 +35,8 @@
                                                     ?? throw new ArgumentNullException(
                                                         nameof(downloadSettingsValidatorService));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
-            this.dataStoreSettings = dataStoreSettings ?? throw new ArgumentNullException(nameof(dataStoreSettings));
+            this.dataStoreSettings =
+                dataStoreSettings?.Value ?? throw new ArgumentNullException(nameof(dataStoreSettings));
         }
 
         public void SetFilePayloadDownloadDetails(FilePayload filePayload)
@@ -108,7 +112,7 @@
         private void SetDecompressedDownloadFileDetails(FilePayload filePayload, DateTime dateTime,
                                                         string downloadDirectory)
         {
-            string decompressedFileName = $"{dateTime.ToFileTime()}.{Constants.FilePayload.DecompressedFileName}";
+            var decompressedFileName = $"{dateTime.ToFileTime()}.{Constants.FilePayload.DecompressedFileName}";
 
             filePayload.DecompressedDownloadDirectory = downloadDirectory;
             filePayload.DecompressedDownloadFileName = decompressedFileName;

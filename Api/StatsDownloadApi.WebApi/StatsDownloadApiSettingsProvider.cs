@@ -7,8 +7,7 @@
 
     using StatsDownload.Core.Interfaces;
 
-    public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService,
-                                                    IDataStoreSettings
+    public class StatsDownloadApiSettingsProvider : IDatabaseConnectionSettingsService, IDownloadSettingsService
     {
         private readonly IConfiguration configuration;
 
@@ -17,10 +16,6 @@
             this.configuration = configuration;
         }
         
-        public string DataStoreType => GetAppSetting("DataStoreType");
-        
-        public string UploadDirectory => GetAppSetting("UploadDirectory");
-
         public string GetAcceptAnySslCert()
         {
             return GetAppSetting("AcceptAnySslCert");

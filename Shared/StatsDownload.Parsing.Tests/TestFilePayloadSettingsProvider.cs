@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -64,14 +66,18 @@
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
-            dataStoreSettingsMock = Substitute.For<IDataStoreSettings>();
-            dataStoreSettingsMock.UploadDirectory.Returns("UploadDirectory");
+            dataStoreSettings = new DataStoreSettings { UploadDirectory = "UploadDirectory" };
+
+            dataStoreSettingsOptionsMock = Substitute.For<IOptions<DataStoreSettings>>();
+            dataStoreSettingsOptionsMock.Value.Returns(dataStoreSettings);
 
             systemUnderTest = NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsServiceMock,
-                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsMock);
+                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsOptionsMock);
         }
 
-        private IDataStoreSettings dataStoreSettingsMock;
+        private DataStoreSettings dataStoreSettings;
+
+        private IOptions<DataStoreSettings> dataStoreSettingsOptionsMock;
 
         private DateTime dateTime;
 
@@ -93,13 +99,13 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(null, downloadSettingsServiceMock,
-                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsMock));
+                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock, null,
-                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsMock));
+                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
-                downloadSettingsServiceMock, null, loggingServiceMock, dataStoreSettingsMock));
+                downloadSettingsServiceMock, null, loggingServiceMock, dataStoreSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
-                downloadSettingsServiceMock, downloadSettingsValidatorServiceMock, null, dataStoreSettingsMock));
+                downloadSettingsServiceMock, downloadSettingsValidatorServiceMock, null, dataStoreSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
                 downloadSettingsServiceMock, downloadSettingsValidatorServiceMock, loggingServiceMock, null));
         }
@@ -256,10 +262,11 @@
                                                                            IDownloadSettingsValidatorService
                                                                                downloadSettingsValidatorService,
                                                                            ILoggingService loggingService,
-                                                                           IDataStoreSettings dataStoreSettings)
+                                                                           IOptions<DataStoreSettings>
+                                                                               dataStoreSettingsOptions)
         {
             return new FilePayloadSettingsProvider(dateTimeService, downloadSettingsService,
-                downloadSettingsValidatorService, loggingService, dataStoreSettings);
+                downloadSettingsValidatorService, loggingService, dataStoreSettingsOptions);
         }
     }
 }

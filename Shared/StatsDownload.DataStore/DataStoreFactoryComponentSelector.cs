@@ -5,22 +5,24 @@
 
     using Castle.Facilities.TypedFactory;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
 
     public class DataStoreFactoryComponentSelector : DefaultTypedFactoryComponentSelector
     {
         private const string UncDataStoreType = "Unc";
 
-        private readonly IDataStoreSettings settings;
+        private readonly DataStoreSettings settings;
 
-        public DataStoreFactoryComponentSelector(IDataStoreSettings settings)
+        public DataStoreFactoryComponentSelector(IOptions<DataStoreSettings> settings)
         {
-            this.settings = settings;
+            this.settings = settings.Value;
         }
 
         protected override string GetComponentName(MethodInfo method, object[] arguments)
         {
-            string dataStoreType = settings.DataStoreType;
+            string dataStoreType = settings.Type;
 
             if (string.Equals(dataStoreType, UncDataStoreType, StringComparison.OrdinalIgnoreCase))
             {

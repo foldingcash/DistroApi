@@ -2,6 +2,8 @@
 {
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
@@ -11,12 +13,12 @@
 
         private readonly IFileService fileService;
 
-        private readonly IDataStoreSettings settings;
+        private readonly DataStoreSettings settings;
 
-        public UncDataStoreProvider(IDataStoreSettings settings, IDirectoryService directoryService,
+        public UncDataStoreProvider(IOptions<DataStoreSettings> settings, IDirectoryService directoryService,
                                     IFileService fileService)
         {
-            this.settings = settings;
+            this.settings = settings.Value;
             this.directoryService = directoryService;
             this.fileService = fileService;
         }
