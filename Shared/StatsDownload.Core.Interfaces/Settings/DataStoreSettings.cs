@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Interfaces
+﻿namespace StatsDownload.Core.Interfaces.Settings
 {
     public class DataStoreSettings
     {

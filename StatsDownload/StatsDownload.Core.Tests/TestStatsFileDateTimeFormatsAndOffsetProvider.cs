@@ -9,6 +9,7 @@
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Settings;
     using StatsDownload.Parsing;
 
     [TestFixture]

@@ -9,6 +9,7 @@
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Exceptions;
     using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Core.Interfaces.Settings;
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
     {

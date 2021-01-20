@@ -7,6 +7,7 @@
     using Microsoft.Extensions.Options;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Settings;
 
     public class StatsFileDateTimeFormatsAndOffsetProvider : IStatsFileDateTimeFormatsAndOffsetService
     {

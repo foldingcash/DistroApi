@@ -1,4 +1,4 @@
-﻿namespace StatsDownload.Core.Interfaces
+﻿namespace StatsDownload.Core.Interfaces.Settings
 {
     using System.Collections.Generic;
 

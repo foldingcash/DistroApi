@@ -7,6 +7,7 @@
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Settings;
 
     public class GoogleUsersFilter : IStatsFileParserService
     {

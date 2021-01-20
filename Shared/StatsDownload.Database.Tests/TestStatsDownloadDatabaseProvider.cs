@@ -13,6 +13,7 @@
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Core.Interfaces.Settings;
 
     [TestFixture]
     public class TestStatsDownloadDatabaseProvider

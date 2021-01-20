@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.Parsing
 {
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Settings;
 
     public static class Constants
     {
