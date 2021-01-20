@@ -29,8 +29,7 @@
                 Component
                     .For<ITestHarnessSettingsService,
                         ITestHarnessStatsDownloadSettings>()
-                    .ImplementedBy<TestHarnessSettingsProvider>()
-                    .Forward<IGoogleUsersFilterSettings>(),
+                    .ImplementedBy<TestHarnessSettingsProvider>(),
                 Component.For<IFileDownloadMinimumWaitTimeService>()
                          .ImplementedBy<TestHarnessMinimumWaitTimeProvider>(),
                 Component.For<ISecureFilePayloadService>().ImplementedBy<TestHarnessSecureHttpFilePayloadProvider>(),

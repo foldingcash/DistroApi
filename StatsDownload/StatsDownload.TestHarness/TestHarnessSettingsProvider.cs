@@ -9,12 +9,8 @@
     /// <summary>
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
     /// </summary>
-    public class TestHarnessSettingsProvider : ITestHarnessSettingsService,
-                                               IGoogleUsersFilterSettings,
-                                               ITestHarnessStatsDownloadSettings
+    public class TestHarnessSettingsProvider : ITestHarnessSettingsService, ITestHarnessStatsDownloadSettings
     {
-        bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
-
         bool ITestHarnessStatsDownloadSettings.Enabled => GetBoolConfig("EnableSqlExceptionDuringAddUsersTest");
         
         public bool IsFileCompressionDisabled()

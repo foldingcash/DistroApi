@@ -3,26 +3,28 @@
     using System;
     using System.Linq;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
     public class GoogleUsersFilter : IStatsFileParserService
     {
+        private readonly FilterSettings filterSettings;
+
         private readonly IStatsFileParserService innerService;
 
-        private readonly IGoogleUsersFilterSettings settings;
-
-        public GoogleUsersFilter(IStatsFileParserService innerService, IGoogleUsersFilterSettings settings)
+        public GoogleUsersFilter(IStatsFileParserService innerService, IOptions<FilterSettings> filterSettings)
         {
             this.innerService = innerService;
-            this.settings = settings;
+            this.filterSettings = filterSettings.Value;
         }
 
         public ParseResults Parse(FilePayload filePayload)
         {
             ParseResults results = innerService.Parse(filePayload);
 
-            if (settings.Enabled)
+            if (filterSettings.EnableGoogleUsersFilter)
             {
                 return new ParseResults(results.DownloadDateTime,
                     results.UsersData.Where(data =>
