@@ -10,14 +10,12 @@
     ///     These app setting names are NOT in with the rest of the constants because they should NEVER be used elsewhere.
     /// </summary>
     public class TestHarnessSettingsProvider : ITestHarnessSettingsService, IZeroPointUsersFilterSettings,
-                                               IGoogleUsersFilterSettings, IWhitespaceNameUsersFilterSettings,
+                                               IGoogleUsersFilterSettings,
                                                ITestHarnessStatsDownloadSettings
     {
         bool IGoogleUsersFilterSettings.Enabled => GetBoolConfig("EnableGoogleUsersFilter");
 
         bool ITestHarnessStatsDownloadSettings.Enabled => GetBoolConfig("EnableSqlExceptionDuringAddUsersTest");
-
-        bool IWhitespaceNameUsersFilterSettings.Enabled => GetBoolConfig("EnableWhitespaceNameUsersFilter");
 
         bool IZeroPointUsersFilterSettings.Enabled => GetBoolConfig("EnableZeroPointUsersFilter");
         

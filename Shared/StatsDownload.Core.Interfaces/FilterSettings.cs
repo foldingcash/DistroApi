@@ -2,6 +2,8 @@
 {
     public class FilterSettings
     {
-        public bool NoPaymentAddressUsersEnabled { get; set; }
+        public bool EnableNoPaymentAddressUsersFilter { get; set; }
+
+        public bool EnableWhitespaceNameUsersFilter { get; set; }
     }
 }

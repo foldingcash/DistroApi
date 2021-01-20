@@ -46,7 +46,7 @@
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()
         {
-            filterSettings.NoPaymentAddressUsersEnabled = false;
+            filterSettings.EnableNoPaymentAddressUsersFilter = false;
 
             var expected = new ParseResults(downloadDateTime, null, null);
             innerServiceMock.Parse(FilePayload).Returns(expected);
@@ -59,7 +59,7 @@
         [Test]
         public void Parse_WhenInvoked_FiltersResults()
         {
-            filterSettings.NoPaymentAddressUsersEnabled = true;
+            filterSettings.EnableNoPaymentAddressUsersFilter = true;
 
             innerServiceMock.Parse(FilePayload).Returns(new ParseResults(downloadDateTime,
                 new[] { new UserData(), new UserData { BitcoinAddress = "addy" } }, new[] { new FailedUserData() }));

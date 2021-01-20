@@ -24,7 +24,7 @@
         {
             ParseResults results = innerService.Parse(filePayload);
 
-            if (filterSettings.NoPaymentAddressUsersEnabled)
+            if (filterSettings.EnableNoPaymentAddressUsersFilter)
             {
                 return new ParseResults(results.DownloadDateTime,
                     results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.BitcoinAddress)),

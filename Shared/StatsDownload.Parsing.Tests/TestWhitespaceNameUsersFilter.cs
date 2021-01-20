@@ -3,6 +3,8 @@
     using System;
     using System.Linq;
 
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -19,9 +21,12 @@
         {
             innerServiceMock = Substitute.For<IStatsFileParserService>();
 
-            settingsMock = Substitute.For<IWhitespaceNameUsersFilterSettings>();
+            filterSettings = new FilterSettings();
 
-            systemUnderTest = new WhitespaceNameUsersFilter(innerServiceMock, settingsMock);
+            filterSettingsOptionsMock = Substitute.For<IOptions<FilterSettings>>();
+            filterSettingsOptionsMock.Value.Returns(filterSettings);
+
+            systemUnderTest = new WhitespaceNameUsersFilter(innerServiceMock, filterSettingsOptionsMock);
 
             downloadDateTime = DateTime.UtcNow;
         }
@@ -30,16 +35,18 @@
 
         private readonly FilePayload FilePayload = new FilePayload { DecompressedDownloadFileData = "fileData" };
 
-        private IStatsFileParserService innerServiceMock;
+        private FilterSettings filterSettings;
 
-        private IWhitespaceNameUsersFilterSettings settingsMock;
+        private IOptions<FilterSettings> filterSettingsOptionsMock;
+
+        private IStatsFileParserService innerServiceMock;
 
         private IStatsFileParserService systemUnderTest;
 
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()
         {
-            settingsMock.Enabled.Returns(false);
+            filterSettings.EnableWhitespaceNameUsersFilter = false;
 
             var expected = new ParseResults(downloadDateTime, null, null);
             innerServiceMock.Parse(FilePayload).Returns(expected);
@@ -52,7 +59,7 @@
         [Test]
         public void Parse_WhenInvoked_FiltersResults()
         {
-            settingsMock.Enabled.Returns(true);
+            filterSettings.EnableWhitespaceNameUsersFilter = true;
 
             innerServiceMock.Parse(FilePayload).Returns(new ParseResults(downloadDateTime,
                 new[]
