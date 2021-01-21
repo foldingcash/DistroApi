@@ -8,17 +8,23 @@
     using System.Threading.Tasks;
     using System.Windows.Forms;
 
-    using Castle.MicroKernel.Registration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
 
     using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.TestHarness.CastleWindsor;
 
     public partial class MainForm : Form
     {
-        public MainForm()
+        private readonly ILogger logger;
+
+        private readonly IServiceProvider serviceProvider;
+
+        public MainForm(ILogger<MainForm> logger, IServiceProvider serviceProvider)
         {
             InitializeComponent();
-            WindsorContainer.Instance.Register(Component.For<Action<string>>().Instance(Log));
+
+            this.logger = logger;
+            this.serviceProvider = serviceProvider;
         }
 
         internal void Log(string message)
@@ -64,23 +70,15 @@
 
                 int filesRemaining = importFiles.Length;
 
-                IFileCompressionService fileCompressionService = null;
-                try
-                {
-                    fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
+                var fileCompressionService = serviceProvider.GetRequiredService<IFileCompressionService>();
 
-                    Log($"'{filesRemaining}' files are to be imported");
+                Log($"'{filesRemaining}' files are to be imported");
 
-                    foreach (string importFile in importFiles)
-                    {
-                        fileCompressionService.CompressFile(importFile, $"{importFile}.bz2");
-                        filesRemaining--;
-                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
-                    }
-                }
-                finally
+                foreach (string importFile in importFiles)
                 {
-                    WindsorContainer.Instance.Release(fileCompressionService);
+                    fileCompressionService.CompressFile(importFile, $"{importFile}.bz2");
+                    filesRemaining--;
+                    Log($"File imported. '{filesRemaining}' remaining files to be imported");
                 }
 
                 return Task.CompletedTask;
@@ -90,18 +88,9 @@
         private async Task CreateFileDownloadServiceAndPerformAction(
             Func<IFileDownloadService, Task> fileDownloadServiceAction)
         {
-            IFileDownloadService fileDownloadService = null;
-
-            try
-            {
-                fileDownloadService = WindsorContainer.Instance.Resolve<IFileDownloadService>();
-                Task task = fileDownloadServiceAction?.Invoke(fileDownloadService) ?? Task.CompletedTask;
-                await task;
-            }
-            finally
-            {
-                WindsorContainer.Instance.Release(fileDownloadService);
-            }
+            var fileDownloadService = serviceProvider.GetRequiredService<IFileDownloadService>();
+            Task task = fileDownloadServiceAction?.Invoke(fileDownloadService) ?? Task.CompletedTask;
+            await task;
         }
 
         private void CreateSeparationInLog()
@@ -136,24 +125,15 @@
 
                 int filesRemaining = importFiles.Length;
 
-                IFileCompressionService fileCompressionService = null;
-                try
-                {
-                    fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
+                var fileCompressionService = serviceProvider.GetRequiredService<IFileCompressionService>();
 
-                    Log($"'{filesRemaining}' files are to be imported");
+                Log($"'{filesRemaining}' files are to be imported");
 
-                    foreach (string importFile in importFiles)
-                    {
-                        fileCompressionService.DecompressFile(importFile,
-                            importFile.Substring(importFile.Length - 4, 4));
-                        filesRemaining--;
-                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
-                    }
-                }
-                finally
+                foreach (string importFile in importFiles)
                 {
-                    WindsorContainer.Instance.Release(fileCompressionService);
+                    fileCompressionService.DecompressFile(importFile, importFile.Substring(importFile.Length - 4, 4));
+                    filesRemaining--;
+                    Log($"File imported. '{filesRemaining}' remaining files to be imported");
                 }
 
                 return Task.CompletedTask;
@@ -215,34 +195,24 @@
         {
             var downloads = new List<(int downloadId, string fileName)>();
 
-            IStatsDownloadDatabaseService databaseService = null;
+            var databaseService = serviceProvider.GetRequiredService<IStatsDownloadDatabaseService>();
 
-            try
+            databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
-                databaseService = WindsorContainer.Instance.Resolve<IStatsDownloadDatabaseService>();
-
-                databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
+                using (DbDataReader fileReader =
+                    service.ExecuteReader("SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
                 {
-                    using (DbDataReader fileReader =
-                        service.ExecuteReader("SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
+                    if (!fileReader.HasRows)
                     {
-                        if (!fileReader.HasRows)
-                        {
-                            return;
-                        }
-
-                        while (fileReader.Read())
-                        {
-                            downloads.Add((fileReader.GetInt32(0),
-                                              $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
-                        }
+                        return;
                     }
-                });
-            }
-            finally
-            {
-                WindsorContainer.Instance.Release(databaseService);
-            }
+
+                    while (fileReader.Read())
+                    {
+                        downloads.Add((fileReader.GetInt32(0), $"{fileReader.GetString(1)}{fileReader.GetString(2)}"));
+                    }
+                }
+            });
 
             return downloads.ToArray();
         }
@@ -274,33 +244,24 @@
 
                     Log($"'{filesRemaining}' files are to be imported");
 
-                    IFileCompressionService fileCompressionService = null;
+                    var fileCompressionService = serviceProvider.GetRequiredService<IFileCompressionService>();
 
-                    try
+                    foreach (string importFile in importFiles)
                     {
-                        fileCompressionService = WindsorContainer.Instance.Resolve<IFileCompressionService>();
+                        var compressedFile = $"{importFile}.bz2";
 
-                        foreach (string importFile in importFiles)
+                        fileCompressionService.CompressFile(importFile, compressedFile);
+
+                        ConfigurationManager.AppSettings["DownloadUri"] = compressedFile;
+
+                        await CreateFileDownloadServiceAndPerformAction(async service =>
                         {
-                            var compressedFile = $"{importFile}.bz2";
+                            await service.DownloadStatsFile();
+                        });
 
-                            fileCompressionService.CompressFile(importFile, compressedFile);
+                        filesRemaining--;
 
-                            ConfigurationManager.AppSettings["DownloadUri"] = compressedFile;
-
-                            await CreateFileDownloadServiceAndPerformAction(async service =>
-                            {
-                                await service.DownloadStatsFile();
-                            });
-
-                            filesRemaining--;
-
-                            Log($"File imported. '{filesRemaining}' remaining files to be imported");
-                        }
-                    }
-                    finally
-                    {
-                        WindsorContainer.Instance.Release(fileCompressionService);
+                        Log($"File imported. '{filesRemaining}' remaining files to be imported");
                     }
                 }
 
@@ -356,33 +317,24 @@
 
             (int fileId, string fileName)[] allFiles = GetAllFiles();
 
-            IStatsUploadDatabaseService service = null;
+            var service = serviceProvider.GetRequiredService<IStatsUploadDatabaseService>();
 
-            try
+            (int fileId, string fileName)[] subsetFiles = selectFilesFunction(allFiles);
+
+            int filesRemaining = subsetFiles.Length;
+
+            Log($"'{filesRemaining}' files are to be exported");
+
+            foreach ((int fileId, string fileName) in subsetFiles)
             {
-                service = WindsorContainer.Instance.Resolve<IStatsUploadDatabaseService>();
+                string path = Path.Combine(exportDirectory, fileName);
+                string fileData = service.GetFileData(fileId);
 
-                (int fileId, string fileName)[] subsetFiles = selectFilesFunction(allFiles);
+                File.WriteAllText(path, fileData);
 
-                int filesRemaining = subsetFiles.Length;
+                filesRemaining--;
 
-                Log($"'{filesRemaining}' files are to be exported");
-
-                foreach ((int fileId, string fileName) in subsetFiles)
-                {
-                    string path = Path.Combine(exportDirectory, fileName);
-                    string fileData = service.GetFileData(fileId);
-
-                    File.WriteAllText(path, fileData);
-
-                    filesRemaining--;
-
-                    Log($"File exported. '{filesRemaining}' remaining files to be exported");
-                }
-            }
-            finally
-            {
-                WindsorContainer.Instance.Release(service);
+                Log($"File exported. '{filesRemaining}' remaining files to be exported");
             }
         }
 
@@ -406,24 +358,15 @@
 
         private (int fileId, string fileName)[] SelectSubsetOfExportFiles((int fileId, string fileName)[] files)
         {
-            ISelectExportFilesProvider selectExportFilesForm = null;
+            var selectExportFilesForm = serviceProvider.GetRequiredService<ISelectExportFilesProvider>();
 
-            try
+            selectExportFilesForm.AddFilesToList(files);
+
+            DialogResult result = selectExportFilesForm.ShowDialog();
+
+            if (result == DialogResult.OK)
             {
-                selectExportFilesForm = WindsorContainer.Instance.Resolve<ISelectExportFilesProvider>();
-
-                selectExportFilesForm.AddFilesToList(files);
-
-                DialogResult result = selectExportFilesForm.ShowDialog();
-
-                if (result == DialogResult.OK)
-                {
-                    return selectExportFilesForm.GetSelectedFiles();
-                }
-            }
-            finally
-            {
-                WindsorContainer.Instance.Release(selectExportFilesForm);
+                return selectExportFilesForm.GetSelectedFiles();
             }
 
             return new (int, string)[0];
@@ -433,18 +376,9 @@
         {
             await RunActionAsync(() =>
             {
-                IStatsDownloadEmailService emailService = null;
+                var emailService = serviceProvider.GetRequiredService<IStatsDownloadEmailService>();
 
-                try
-                {
-                    emailService = WindsorContainer.Instance.Resolve<IStatsDownloadEmailService>();
-
-                    emailService.SendTestEmail();
-                }
-                finally
-                {
-                    WindsorContainer.Instance.Release(emailService);
-                }
+                emailService.SendTestEmail();
 
                 return Task.CompletedTask;
             });
