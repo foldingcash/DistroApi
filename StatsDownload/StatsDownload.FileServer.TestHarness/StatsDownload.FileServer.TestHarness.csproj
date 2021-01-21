@@ -106,16 +106,6 @@
     <Content Include="InstallingCertificateForSelfHostedService.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\StatsDownload.Extensions\StatsDownload.Extensions.csproj">
-      <Project>{7E3039C8-E356-4C20-93CC-2F395F82F11F}</Project>
-      <Name>StatsDownload.Extensions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StatsDownload.Core\StatsDownload.Core.csproj">
-      <Project>{9C2C5AA3-9E2C-4A2F-97E3-081633B83F6D}</Project>
-      <Name>StatsDownload.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.1">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.7.1 %28x86 and x64%29</ProductName>
