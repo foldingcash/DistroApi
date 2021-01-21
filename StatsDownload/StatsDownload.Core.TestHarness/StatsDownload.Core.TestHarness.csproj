@@ -8,12 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="Castle.Windsor" Version="5.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Database.CastleWindsor\StatsDownload.Database.CastleWindsor.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Database\StatsDownload.Database.csproj" />
+    <ProjectReference Include="..\..\Shared\StatsDownload.DependencyInjection\StatsDownload.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Email\StatsDownload.Email.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Logging\StatsDownload.Logging.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj" />
