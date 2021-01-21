@@ -12,8 +12,9 @@
     using Microsoft.Extensions.Logging;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Logging;
 
-    public partial class MainForm : Form
+    public partial class MainForm : Form, IApplicationLoggingService
     {
         private readonly ILogger logger;
 
@@ -25,6 +26,18 @@
 
             this.logger = logger;
             this.serviceProvider = serviceProvider;
+        }
+
+        public void LogError(string message)
+        {
+            Log(message);
+            logger.LogError(message);
+        }
+
+        public void LogVerbose(string message)
+        {
+            Log(message);
+            logger.LogTrace(message);
         }
 
         internal void Log(string message)

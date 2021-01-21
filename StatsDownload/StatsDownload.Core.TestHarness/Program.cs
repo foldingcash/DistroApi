@@ -24,7 +24,7 @@ namespace StatsDownload.Core.TestHarness
             {
                 services.AddStatsDownload(context.Configuration);
 
-                services.AddSingleton<IApplicationLoggingService, TestHarnessLoggingProvider>()
+                services.AddSingleton<IApplicationLoggingService, MainForm>()
                         .AddSingleton<IFileDownloadMinimumWaitTimeService, TestHarnessMinimumWaitTimeProvider>()
                         .AddSingleton<ISecureFilePayloadService, TestHarnessSecureHttpFilePayloadProvider>()
                         .AddSingleton<IStatsFileParserService, TestHarnessOneHundredUsersFilter>()
