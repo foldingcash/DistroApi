@@ -11,7 +11,7 @@
     using StatsDownload.Database;
     using StatsDownload.Database.Wrappers;
     using StatsDownload.DataStore;
-    using StatsDownload.Email;
+    using StatsDownload.Email.DependencyInjection;
     using StatsDownload.Logging;
     using StatsDownload.Parsing;
     using StatsDownload.Parsing.Filters;
@@ -24,7 +24,7 @@
         public static IServiceCollection AddStatsDownload(this IServiceCollection serviceCollection,
                                                           IConfiguration configuration)
         {
-            return serviceCollection.AddStatsDownloadSettings(configuration)
+            return serviceCollection.AddEmail(configuration).AddStatsDownloadSettings(configuration)
                                     .AddSingleton<IDateTimeService, DateTimeProvider>()
                                     .AddSingleton<IFileService, FileProvider>()
                                     .AddSingleton<IDirectoryService, DirectoryProvider>()
@@ -59,8 +59,6 @@
                                     .AddSingleton<IErrorMessageService, ErrorMessageProvider>()
                                     .AddSingleton<IStatsDownloadEmailService, StatsDownloadEmailProvider>()
                                     .AddSingleton<IFileDownloadEmailService, StatsDownloadEmailProvider>()
-                                    .AddSingleton<IEmailSettingsValidatorService, EmailSettingsValidatorProvider>()
-                                    .AddSingleton<IEmailService, EmailProvider>()
                                     .AddSingleton<IFilePayloadUploadService, FilePayloadUploadProvider>()
                                     .AddTransient<IWebClient, WebClientWrapper>()
                                     .AddSingleton<IFileValidationService, FileValidationProvider>()
@@ -72,7 +70,6 @@
         {
             return serviceCollection.AddOptions()
                                     .Configure<DatabaseSettings>(configuration.GetSection(nameof(DatabaseSettings)))
-                                    .Configure<EmailSettings>(configuration.GetSection(nameof(EmailSettings)))
                                     .Configure<FilterSettings>(configuration.GetSection(nameof(FilterSettings)))
                                     .Configure<DateTimeSettings>(configuration.GetSection(nameof(DateTimeSettings)))
                                     .Configure<DatabaseSettings>(configuration.GetSection(nameof(DatabaseSettings)))

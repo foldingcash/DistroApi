@@ -89,6 +89,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing Apps", "Testing App
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Core.TestHarness", "StatsDownload\StatsDownload.Core.TestHarness\StatsDownload.Core.TestHarness.csproj", "{F8199C3F-77B9-4AA7-AE16-2C8DED0FCCF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Email.DependencyInjection", "Shared\StatsDownload.Email.DependencyInjection\StatsDownload.Email.DependencyInjection.csproj", "{27EF2C09-7D04-424B-B35A-0FE37A564DDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -211,6 +213,10 @@ Global
 		{F8199C3F-77B9-4AA7-AE16-2C8DED0FCCF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8199C3F-77B9-4AA7-AE16-2C8DED0FCCF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8199C3F-77B9-4AA7-AE16-2C8DED0FCCF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27EF2C09-7D04-424B-B35A-0FE37A564DDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27EF2C09-7D04-424B-B35A-0FE37A564DDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27EF2C09-7D04-424B-B35A-0FE37A564DDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27EF2C09-7D04-424B-B35A-0FE37A564DDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -247,6 +253,7 @@ Global
 		{DCE60C3C-5904-43AC-B64B-9E8EAC2AE5E3} = {68C3DCF3-2117-4F39-91F3-F10C6F7ABCE3}
 		{7489CDEA-3C4C-42EB-B022-FC10272AC6C3} = {8BAB7679-CD10-474A-ABF2-438A7E2D4DE9}
 		{F8199C3F-77B9-4AA7-AE16-2C8DED0FCCF3} = {BE8BBF3D-51F2-4FAD-BD39-C97F3D423313}
+		{27EF2C09-7D04-424B-B35A-0FE37A564DDF} = {8BAB7679-CD10-474A-ABF2-438A7E2D4DE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8E2BE45E-58C3-4886-A037-A5C5DF4A9F59}
