@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core.TestHarness
 {
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
@@ -7,13 +9,13 @@
     {
         private readonly ISecureFilePayloadService secureFilePayloadService;
 
-        private readonly ITestHarnessSettingsService testHarnessSettingsService;
+        private readonly TestHarnessSettings settings;
 
         public TestHarnessSecureHttpFilePayloadProvider(ISecureFilePayloadService secureFilePayloadService,
-                                                        ITestHarnessSettingsService testHarnessSettingsService)
+                                                        IOptions<TestHarnessSettings> settings)
         {
             this.secureFilePayloadService = secureFilePayloadService;
-            this.testHarnessSettingsService = testHarnessSettingsService;
+            this.settings = settings.Value;
         }
 
         public void DisableSecureFilePayload(FilePayload filePayload)
@@ -23,7 +25,7 @@
 
         public void EnableSecureFilePayload(FilePayload filePayload)
         {
-            if (testHarnessSettingsService.IsSecureFilePayloadDisabled())
+            if (settings.DisableSecureFilePayload)
             {
                 return;
             }
@@ -33,8 +35,7 @@
 
         public bool IsSecureConnection(FilePayload filePayload)
         {
-            return testHarnessSettingsService.IsSecureFilePayloadDisabled()
-                   || secureFilePayloadService.IsSecureConnection(filePayload);
+            return settings.DisableSecureFilePayload || secureFilePayloadService.IsSecureConnection(filePayload);
         }
     }
 }

@@ -11,8 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\StatsDownload\StatsDownload.Core\StatsDownload.Core.csproj" />
     <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
+    <ProjectReference Include="..\StatsDownload.Database\StatsDownload.Database.csproj" />
     <ProjectReference Include="..\StatsDownload.Email\StatsDownload.Email.csproj" />
+    <ProjectReference Include="..\StatsDownload.Logging\StatsDownload.Logging.csproj" />
+    <ProjectReference Include="..\StatsDownload.SharpZipLib\StatsDownload.SharpZipLib.csproj" />
+    <ProjectReference Include="..\StatsDownload.Wrappers\StatsDownload.Wrappers.csproj" />
   </ItemGroup>
 
 </Project>

@@ -59,7 +59,7 @@
             services.AddLazyCache();
             services.AddSingleton(Configuration);
 
-            services.ConfigureStatsDownload(Configuration);
+            services.AddStatsDownloadSettings(Configuration);
 
             IServiceProvider provider =
                 WindsorRegistrationHelper.CreateServiceProvider(ApiWindsorContainer.Instance, services);

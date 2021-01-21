@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Core.TestHarness
 {
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
@@ -7,19 +9,19 @@
     {
         private readonly IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService;
 
-        private readonly ITestHarnessSettingsService testHarnessSettingsService;
+        private readonly TestHarnessSettings settings;
 
         public TestHarnessMinimumWaitTimeProvider(
             IFileDownloadMinimumWaitTimeService fileDownloadMinimumWaitTimeService,
-            ITestHarnessSettingsService testHarnessSettingsService)
+            IOptions<TestHarnessSettings> settings)
         {
             this.fileDownloadMinimumWaitTimeService = fileDownloadMinimumWaitTimeService;
-            this.testHarnessSettingsService = testHarnessSettingsService;
+            this.settings = settings.Value;
         }
 
         public bool IsMinimumWaitTimeMet(FilePayload filePayload)
         {
-            return testHarnessSettingsService.IsMinimumWaitTimeMetDisabled()
+            return settings.DisableMinimumWaitTime
                    || fileDownloadMinimumWaitTimeService.IsMinimumWaitTimeMet(filePayload);
         }
     }

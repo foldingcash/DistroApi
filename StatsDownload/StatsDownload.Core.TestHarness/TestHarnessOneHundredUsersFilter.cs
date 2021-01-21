@@ -2,6 +2,8 @@
 {
     using System.Linq;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
 
@@ -9,20 +11,20 @@
     {
         private readonly IStatsFileParserService innerService;
 
-        private readonly ITestHarnessSettingsService settingsService;
+        private readonly TestHarnessSettings settings;
 
         public TestHarnessOneHundredUsersFilter(IStatsFileParserService innerService,
-                                                ITestHarnessSettingsService settingsService)
+                                                IOptions<TestHarnessSettings> settings)
         {
             this.innerService = innerService;
-            this.settingsService = settingsService;
+            this.settings = settings.Value;
         }
 
         public ParseResults Parse(FilePayload filePayload)
         {
             ParseResults results = innerService.Parse(filePayload);
 
-            if (settingsService.IsOneHundredUsersFilterEnabled())
+            if (settings.EnableOneHundredUsersFilter)
             {
                 return new ParseResults(results.DownloadDateTime, results.UsersData.Take(100), results.FailedUsersData);
             }

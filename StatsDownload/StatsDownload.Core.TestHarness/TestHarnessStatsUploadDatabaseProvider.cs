@@ -6,6 +6,8 @@
     using System.Data.SqlTypes;
     using System.Linq;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
@@ -14,13 +16,13 @@
     {
         private readonly IStatsUploadDatabaseService innerService;
 
-        private readonly ITestHarnessStatsDownloadSettings settings;
+        private readonly TestHarnessSettings settings;
 
         public TestHarnessStatsUploadDatabaseProvider(IStatsUploadDatabaseService innerService,
-                                                      ITestHarnessStatsDownloadSettings settings)
+                                                      IOptions<TestHarnessSettings> settings)
         {
             this.innerService = innerService;
-            this.settings = settings;
+            this.settings = settings.Value;
         }
 
         public void AddUsers(DbTransaction transaction, int downloadId, IEnumerable<UserData> usersData,
@@ -78,7 +80,7 @@
         {
             for (var index = 0; index < usersData.Count(); index++)
             {
-                if (settings.Enabled && index == 2)
+                if (settings.EnableSqlExceptionDuringAddUsersTest && index == 2)
                 {
                     throw new SqlTypeException("Mocking an exception being thrown during the add users.");
                 }

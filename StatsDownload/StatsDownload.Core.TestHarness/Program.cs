@@ -6,7 +6,8 @@ namespace StatsDownload.Core.TestHarness
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 
-    using StatsDownload.Core.TestHarness.CastleWindsor;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.DependencyInjection;
 
     internal static class Program
@@ -17,17 +18,23 @@ namespace StatsDownload.Core.TestHarness
         [STAThread]
         private static void Main()
         {
-            IHostBuilder hostBuilder = Host.CreateDefaultBuilder().ConfigureServices((context, services) =>
-            {
-                services.ConfigureStatsDownload(context.Configuration);
+            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
 
-                services.AddSingleton<MainForm>();
+            hostBuilder.ConfigureServices((context, services) =>
+            {
+                services.AddStatsDownload(context.Configuration);
+
+                services.AddSingleton<IApplicationLoggingService, TestHarnessLoggingProvider>()
+                        .AddSingleton<IFileDownloadMinimumWaitTimeService, TestHarnessMinimumWaitTimeProvider>()
+                        .AddSingleton<ISecureFilePayloadService, TestHarnessSecureHttpFilePayloadProvider>()
+                        .AddSingleton<IStatsFileParserService, TestHarnessOneHundredUsersFilter>()
+                        .AddSingleton<IStatsUploadDatabaseService, TestHarnessStatsUploadDatabaseProvider>()
+                        .AddSingleton<IFileCompressionService, TestHarnessFileCompressionProvider>()
+                        .AddSingleton<ISelectExportFilesProvider, SelectExportFilesForm>().AddSingleton<MainForm>();
             });
 
             IHost host = hostBuilder.Build();
 
-            DependencyRegistration.Register();
-            Application.ApplicationExit += (sender, args) => WindsorContainer.Dispose();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
