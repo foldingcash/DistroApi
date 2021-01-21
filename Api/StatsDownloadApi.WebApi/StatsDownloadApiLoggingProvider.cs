@@ -10,7 +10,7 @@
     {
         private readonly ILogger logger;
 
-        public StatsDownloadApiLoggingProvider(ILogger logger)
+        public StatsDownloadApiLoggingProvider(ILogger<StatsDownloadApiLoggingProvider> logger)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -23,11 +23,6 @@
         public void LogVerbose(string message)
         {
             logger.LogTrace(message);
-        }
-
-        public void LogInformation(string message)
-        {
-            logger.LogInformation(message);
         }
     }
 }
