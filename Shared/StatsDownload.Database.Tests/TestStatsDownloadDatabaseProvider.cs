@@ -30,8 +30,7 @@
 
             databaseConnectionServiceMock = Substitute.For<IDatabaseConnectionService>();
             databaseConnectionServiceFactoryMock = Substitute.For<IDatabaseConnectionServiceFactory>();
-            databaseConnectionServiceFactoryMock.Create(loggingServiceMock, "connectionString", 42)
-                                                .Returns(databaseConnectionServiceMock);
+            databaseConnectionServiceFactoryMock.Create().Returns(databaseConnectionServiceMock);
 
             systemUnderTest = NewFileDownloadDatabaseProvider(databaseSettingsOptionsMock,
                 databaseConnectionServiceFactoryMock, loggingServiceMock);

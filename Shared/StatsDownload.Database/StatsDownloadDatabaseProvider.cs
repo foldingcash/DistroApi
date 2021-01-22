@@ -42,10 +42,8 @@
         public void CreateDatabaseConnectionAndExecuteAction(Action<IDatabaseConnectionService> action)
         {
             string connectionString = databaseSettings.ConnectionString;
-            int? commandTimeout = databaseSettings.CommandTimeout;
             EnsureValidConnectionString(connectionString);
-            IDatabaseConnectionService databaseConnection =
-                CreateDatabaseConnection(loggingService, connectionString, commandTimeout);
+            IDatabaseConnectionService databaseConnection = CreateDatabaseConnection();
             EnsureDatabaseConnectionOpened(databaseConnection);
             action?.Invoke(databaseConnection);
         }
@@ -106,10 +104,9 @@
             transaction?.Rollback();
         }
 
-        private IDatabaseConnectionService CreateDatabaseConnection(ILoggingService logger, string connectionString,
-                                                                    int? commandTimeout)
+        private IDatabaseConnectionService CreateDatabaseConnection()
         {
-            return databaseConnectionServiceFactory.Create(logger, connectionString, commandTimeout);
+            return databaseConnectionServiceFactory.Create();
         }
 
         private DbTransaction CreateTransaction(IDatabaseConnectionService service)

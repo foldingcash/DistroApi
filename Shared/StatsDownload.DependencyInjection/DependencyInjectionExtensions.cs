@@ -25,6 +25,8 @@
                                                           IConfiguration configuration)
         {
             return serviceCollection.AddEmail(configuration).AddStatsDownloadSettings(configuration)
+                                    .AddSingleton<IDatabaseConnectionService, MicrosoftSqlDatabaseConnectionProvider>()
+                                    .AddSingleton<IDatabaseConnectionServiceFactory, DatabaseConnectionServiceFactory>()
                                     .AddSingleton<IDateTimeService, DateTimeProvider>()
                                     .AddSingleton<IFileService, FileProvider>()
                                     .AddSingleton<IDirectoryService, DirectoryProvider>()
@@ -37,7 +39,6 @@
                                     .AddSingleton<IFileReaderService, FileReaderProvider>()
                                     .AddSingleton<IStatsDownloadDatabaseParameterService,
                                         StatsDownloadDatabaseParameterProvider>()
-                                    .AddSingleton<IDatabaseConnectionService, MicrosoftSqlDatabaseConnectionProvider>()
                                     .AddSingleton<IStatsDownloadDatabaseService, StatsDownloadDatabaseProvider>()
                                     .AddSingleton<IFileDownloadDatabaseService, FileDownloadDatabaseProvider>()
                                     .AddSingleton<ISecureFilePayloadService, SecureFilePayloadProvider>()
