@@ -12,9 +12,8 @@
     using Microsoft.Extensions.Logging;
 
     using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.Logging;
 
-    public partial class MainForm : Form, IApplicationLoggingService
+    public partial class MainForm : Form
     {
         private readonly ILogger logger;
 
@@ -27,38 +26,7 @@
             this.logger = logger;
             this.serviceProvider = serviceProvider;
         }
-
-        public void LogError(string message)
-        {
-            Log(message);
-            logger.LogError(message);
-        }
-
-        public void LogVerbose(string message)
-        {
-            Log(message);
-            logger.LogTrace(message);
-        }
-
-        internal void Log(string message)
-        {
-            if (LoggingTextBox.InvokeRequired)
-            {
-                LoggingTextBox.Invoke(new Action(() => Log(message)));
-            }
-            else
-            {
-                AppendToLog(message);
-                AppendToLog(Environment.NewLine);
-                AppendToLog(Environment.NewLine);
-            }
-        }
-
-        private void AppendToLog(string message)
-        {
-            LoggingTextBox.AppendText(message);
-        }
-
+        
         private async void CompressButton_Click(object sender, EventArgs e)
         {
             await RunActionAsync(() =>
@@ -314,6 +282,11 @@
 
                 ConfigurationManager.RefreshSection("appSettings");
             });
+        }
+
+        private void Log(string message)
+        {
+            logger.LogDebug(message + Environment.NewLine + Environment.NewLine);
         }
 
         private void MassExport(

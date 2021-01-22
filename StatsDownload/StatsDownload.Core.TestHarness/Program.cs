@@ -7,7 +7,6 @@ namespace StatsDownload.Core.TestHarness
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Options;
 
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.DependencyInjection;
 
     internal static class Program
@@ -32,8 +31,7 @@ namespace StatsDownload.Core.TestHarness
                     (innerService, provider) => new TestHarnessFileCompressionProvider(innerService,
                         provider.GetRequiredService<IOptions<TestHarnessSettings>>()));
 
-                services.AddSingleton<MainForm>().AddSingleton<IApplicationLoggingService, MainForm>()
-                        .AddSingleton<ISelectExportFilesProvider, SelectExportFilesForm>();
+                services.AddSingleton<MainForm>().AddSingleton<ISelectExportFilesProvider, SelectExportFilesForm>();
             });
 
             IHost host = hostBuilder.Build();
@@ -41,7 +39,10 @@ namespace StatsDownload.Core.TestHarness
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Application.Run(host.Services.GetRequiredService<MainForm>());
+            var mainForm = host.Services.GetRequiredService<MainForm>();
+            var logger = new LogWriter(mainForm.LoggingTextBox);
+            Console.SetOut(logger);
+            Application.Run(mainForm);
         }
     }
 }

@@ -355,7 +355,7 @@
         #endregion
 
         private System.Windows.Forms.Button FileDownloadButton;
-        private System.Windows.Forms.TextBox LoggingTextBox;
+        internal System.Windows.Forms.TextBox LoggingTextBox;
         private System.Windows.Forms.Button ImportButton;
         private System.Windows.Forms.GroupBox MassImportGroupBox;
         private System.Windows.Forms.Label ImportDirectoryLabel;
