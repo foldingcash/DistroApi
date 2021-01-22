@@ -6,7 +6,7 @@
     <members>
         <member name="M:StatsDownloadApi.WebApi.Controllers.GetDistroController.Get(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
             <summary>
-            Get a distribution based on a start and end date and proportionally split the amount
+                Get a distribution based on a start and end date and proportionally split the amount
             </summary>
             <param name="startDate"></param>
             <param name="endDate"></param>

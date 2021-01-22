@@ -1,12 +1,15 @@
 ﻿namespace StatsDownloadApi.WebApi.Controllers
 {
     using System;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    
+
+    using StatsDownloadApi.Interfaces;
+
     [Produces("application/json")]
     [Route("v1/[controller]")]
     public class GetDistroController : ApiControllerBase
@@ -17,7 +20,7 @@
         }
 
         /// <summary>
-        /// Get a distribution based on a start and end date and proportionally split the amount
+        ///     Get a distribution based on a start and end date and proportionally split the amount
         /// </summary>
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
@@ -25,6 +28,7 @@
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
+        [ProducesResponseType(typeof (GetDistroResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get(DateTime? startDate, DateTime? endDate, int? amount,
                                              CancellationToken cancellationToken = default)
         {
@@ -32,6 +36,7 @@
         }
 
         [HttpGet("All")]
+        [ProducesResponseType((int)HttpStatusCode.Redirect)]
         public IActionResult GetAllDistro(CancellationToken cancellationToken = default)
         {
             var startDate = new DateTime(2000, 10, 3);
