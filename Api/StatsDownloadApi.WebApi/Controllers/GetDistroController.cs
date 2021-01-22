@@ -5,12 +5,18 @@
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     [Produces("application/json")]
     [Route("v1/[controller]")]
     [ApiExplorerSettings(IgnoreApi = false, GroupName = nameof(GetDistroController))]
     public class GetDistroController : ApiControllerBase
     {
+        public GetDistroController(ILogger<GetDistroController> logger, IServiceProvider serviceProvider)
+            : base(logger, serviceProvider)
+        {
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get(DateTime? startDate, DateTime? endDate, int? amount,
                                              CancellationToken cancellationToken = default)

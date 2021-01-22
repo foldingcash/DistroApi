@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
-    <ProjectReference Include="..\..\Shared\StatsDownload.Database.CastleWindsor\StatsDownload.Database.CastleWindsor.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Database\StatsDownload.Database.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.DependencyInjection\StatsDownload.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\Shared\StatsDownload.Email\StatsDownload.Email.csproj" />

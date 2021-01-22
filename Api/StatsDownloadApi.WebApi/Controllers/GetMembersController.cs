@@ -4,12 +4,18 @@
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     [Produces("application/json")]
     [Route("v1/[controller]")]
     [ApiExplorerSettings(IgnoreApi = false, GroupName = nameof(GetMembersController))]
     public class GetMembersController : ApiControllerBase
     {
+        public GetMembersController(ILogger<GetMembersController> logger, IServiceProvider serviceProvider)
+            : base(logger, serviceProvider)
+        {
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {

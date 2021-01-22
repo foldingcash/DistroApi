@@ -3,14 +3,11 @@
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
 
-    using StatsDownloadApi.WebApi.CastleWindsor;
-
     public class Program
     {
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
-            WindsorContainer.Dispose();
         }
 
         private static IWebHost BuildWebHost(string[] args)
