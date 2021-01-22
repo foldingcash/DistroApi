@@ -5,8 +5,8 @@ namespace StatsDownload.Core.TestHarness
 
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
 
-    using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.DependencyInjection;
 
@@ -22,15 +22,18 @@ namespace StatsDownload.Core.TestHarness
 
             hostBuilder.ConfigureServices((context, services) =>
             {
-                services.AddStatsDownload(context.Configuration);
+                services.AddStatsDownload(context.Configuration,
+                    (innerService, provider) => new TestHarnessOneHundredUsersFilter(innerService,
+                        provider.GetRequiredService<IOptions<TestHarnessSettings>>()),
+                    (innerService, provider) => new TestHarnessMinimumWaitTimeProvider(innerService,
+                        provider.GetRequiredService<IOptions<TestHarnessSettings>>()),
+                    (innerService, provider) => new TestHarnessSecureHttpFilePayloadProvider(innerService,
+                        provider.GetRequiredService<IOptions<TestHarnessSettings>>()),
+                    (innerService, provider) => new TestHarnessFileCompressionProvider(innerService,
+                        provider.GetRequiredService<IOptions<TestHarnessSettings>>()));
 
-                services.AddSingleton<IApplicationLoggingService, MainForm>()
-                        .AddSingleton<IFileDownloadMinimumWaitTimeService, TestHarnessMinimumWaitTimeProvider>()
-                        .AddSingleton<ISecureFilePayloadService, TestHarnessSecureHttpFilePayloadProvider>()
-                        .AddSingleton<IStatsFileParserService, TestHarnessOneHundredUsersFilter>()
-                        .AddSingleton<IStatsUploadDatabaseService, TestHarnessStatsUploadDatabaseProvider>()
-                        .AddSingleton<IFileCompressionService, TestHarnessFileCompressionProvider>()
-                        .AddSingleton<ISelectExportFilesProvider, SelectExportFilesForm>().AddSingleton<MainForm>();
+                services.AddSingleton<MainForm>().AddSingleton<IApplicationLoggingService, MainForm>()
+                        .AddSingleton<ISelectExportFilesProvider, SelectExportFilesForm>();
             });
 
             IHost host = hostBuilder.Build();
