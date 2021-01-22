@@ -1,6 +1,9 @@
 ﻿namespace StatsDownloadApi.WebApi
 {
+    using System;
     using System.Diagnostics;
+    using System.IO;
+    using System.Reflection;
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -8,6 +11,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
 
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.DependencyInjection;
@@ -37,18 +41,32 @@
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = string.Empty;
+            });
+
             app.UseRouting();
             app.UseEndpoints(builder => builder.MapControllers());
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.IgnoreNullValues = true;
             });
-            services.AddControllersWithViews();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
 
             services.AddOptions();
             services.AddLazyCache();

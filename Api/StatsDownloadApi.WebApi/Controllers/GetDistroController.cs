@@ -6,10 +6,9 @@
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-
+    
     [Produces("application/json")]
     [Route("v1/[controller]")]
-    [ApiExplorerSettings(IgnoreApi = false, GroupName = nameof(GetDistroController))]
     public class GetDistroController : ApiControllerBase
     {
         public GetDistroController(ILogger<GetDistroController> logger, IServiceProvider serviceProvider)
@@ -17,6 +16,14 @@
         {
         }
 
+        /// <summary>
+        /// Get a distribution based on a start and end date and proportionally split the amount
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="amount"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get(DateTime? startDate, DateTime? endDate, int? amount,
                                              CancellationToken cancellationToken = default)

@@ -8,7 +8,6 @@
 
     [Produces("application/json")]
     [Route("v1/[controller]")]
-    [ApiExplorerSettings(IgnoreApi = false, GroupName = nameof(GetMembersController))]
     public class GetMembersController : ApiControllerBase
     {
         public GetMembersController(ILogger<GetMembersController> logger, IServiceProvider serviceProvider)
