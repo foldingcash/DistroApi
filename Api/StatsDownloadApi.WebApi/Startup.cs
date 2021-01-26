@@ -13,29 +13,18 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Microsoft.OpenApi.Models;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Core.Interfaces.Settings;
     using StatsDownload.DependencyInjection;
 
     using StatsDownloadApi.Core;
     using StatsDownloadApi.Database;
     using StatsDownloadApi.DataStore;
     using StatsDownloadApi.Interfaces;
-
-    public class SwaggerSettings
-    {
-        public string JsonUrl { get; set; }
-
-        public string Name => Title + " " + Version;
-
-        public string SwaggerUrl { get; set; }
-
-        public string Title { get; set; }
-
-        public string Version { get; set; }
-    }
 
     public class Startup
     {
@@ -99,6 +88,9 @@
 
             services.AddStatsDownload(configuration);
 
+            services.Configure<DataStoreCacheSettings>(
+                configuration.GetSection($"{nameof(DataStoreSettings)}:{nameof(DataStoreCacheSettings)}"));
+
             services.AddSingleton<IStatsDownloadApiEmailService, StatsDownloadApiEmailProvider>()
                     .AddSingleton<IStatsDownloadApiService, StatsDownloadApiProvider>()
                     .AddSingleton<IStatsDownloadApiTokenDistributionService, StandardTokenDistributionProvider>()
@@ -115,11 +107,14 @@
             services.AddSingleton<IStatsDownloadApiDataStoreService>(provider =>
             {
                 return new StatsDownloadApiDataStoreCacheProvider(
+                    provider.GetRequiredService<ILogger<StatsDownloadApiDataStoreCacheProvider>>(),
+                    provider.GetRequiredService<IOptions<DataStoreCacheSettings>>(),
+                    provider.GetRequiredService<IAppCache>(),
                     new StatsDownloadApiDataStoreProvider(provider.GetRequiredService<IDataStoreServiceFactory>(),
                         provider.GetRequiredService<IStatsDownloadApiDatabaseService>(),
                         provider.GetRequiredService<IFileValidationService>(),
                         provider.GetRequiredService<IFilePayloadApiSettingsService>(),
-                        provider.GetRequiredService<ILoggingService>()), provider.GetRequiredService<IAppCache>());
+                        provider.GetRequiredService<ILoggingService>()));
             });
         }
     }
