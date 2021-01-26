@@ -22,6 +22,8 @@ namespace StatsDownload.Core.TestHarness
 
             hostBuilder.ConfigureServices((context, services) =>
             {
+                services.Configure<TestHarnessSettings>(context.Configuration.GetSection(nameof(TestHarnessSettings)));
+
                 services.AddStatsDownload(context.Configuration,
                     (innerService, provider) => new TestHarnessOneHundredUsersFilter(innerService,
                         provider.GetRequiredService<IOptions<TestHarnessSettings>>()),
