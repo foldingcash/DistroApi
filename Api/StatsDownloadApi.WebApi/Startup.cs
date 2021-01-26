@@ -99,8 +99,7 @@
 
             services.AddStatsDownload(configuration);
 
-            services.AddSingleton<IApplicationLoggingService, StatsDownloadApiLoggingProvider>()
-                    .AddSingleton<IStatsDownloadApiEmailService, StatsDownloadApiEmailProvider>()
+            services.AddSingleton<IStatsDownloadApiEmailService, StatsDownloadApiEmailProvider>()
                     .AddSingleton<IStatsDownloadApiService, StatsDownloadApiProvider>()
                     .AddSingleton<IStatsDownloadApiTokenDistributionService, StandardTokenDistributionProvider>()
                     .AddSingleton<IFilePayloadApiSettingsService, FilePayloadApiSettingsProvider>();

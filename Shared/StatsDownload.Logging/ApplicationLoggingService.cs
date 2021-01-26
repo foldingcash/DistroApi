@@ -1,4 +1,4 @@
-﻿namespace StatsDownloadApi.WebApi
+﻿namespace StatsDownload.Logging
 {
     using System;
 
@@ -6,11 +6,11 @@
 
     using StatsDownload.Core.Interfaces.Logging;
 
-    public class StatsDownloadApiLoggingProvider : IApplicationLoggingService
+    public class ApplicationLoggingService : IApplicationLoggingService
     {
         private readonly ILogger logger;
 
-        public StatsDownloadApiLoggingProvider(ILogger<StatsDownloadApiLoggingProvider> logger)
+        public ApplicationLoggingService(ILogger<ApplicationLoggingService> logger)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
