@@ -24,11 +24,14 @@
 
         private readonly ILoggingService loggingService;
 
+        private readonly IResourceCleanupService resourceCleanupService;
+
         public StatsDownloadApiDataStoreProvider(IDataStoreServiceFactory dataStoreServiceFactory,
                                                  IStatsDownloadApiDatabaseService databaseService,
                                                  IFileValidationService fileValidationService,
                                                  IFilePayloadApiSettingsService filePayloadApiSettingsService,
-                                                 ILoggingService loggingService)
+                                                 ILoggingService loggingService,
+                                                 IResourceCleanupService resourceCleanupService)
         {
             dataStoreService = dataStoreServiceFactory.Create();
 
@@ -36,6 +39,7 @@
             this.fileValidationService = fileValidationService;
             this.filePayloadApiSettingsService = filePayloadApiSettingsService;
             this.loggingService = loggingService;
+            this.resourceCleanupService = resourceCleanupService;
         }
 
         public async Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate)
@@ -168,6 +172,8 @@
             filePayloadApiSettingsService.SetFilePayloadApiSettings(filePayload);
             await dataStoreService.DownloadFile(filePayload, validatedFile);
             ParseResults results = fileValidationService.ValidateFile(filePayload);
+            var result = new FileDownloadResult(filePayload);
+            resourceCleanupService.Cleanup(result);
             loggingService.LogMethodFinished();
             return results;
         }

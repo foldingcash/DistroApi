@@ -15,20 +15,10 @@
 
         public ResourceCleanupProvider(IFileService fileService, ILoggingService loggingService)
         {
-            if (fileService == null)
-            {
-                throw new ArgumentNullException(nameof(fileService));
-            }
-
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            this.fileService = fileService;
-            this.loggingService = loggingService;
+            this.fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
-
+        
         public void Cleanup(FileDownloadResult fileDownloadResult)
         {
             FilePayload filePayload = fileDownloadResult.FilePayload;

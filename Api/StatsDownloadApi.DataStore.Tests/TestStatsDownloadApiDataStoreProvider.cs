@@ -63,8 +63,11 @@ namespace StatsDownloadApi.DataStore.Tests
 
             loggingServiceMock = Substitute.For<ILoggingService>();
 
+            resourceCleanupServiceMock = Substitute.For<IResourceCleanupService>();
+
             systemUnderTest = new StatsDownloadApiDataStoreProvider(dataStoreServiceFactoryMock, databaseServiceMock,
-                fileValidationServiceMock, filePayloadApiSettingsServiceMock, loggingServiceMock);
+                fileValidationServiceMock, filePayloadApiSettingsServiceMock, loggingServiceMock,
+                resourceCleanupServiceMock);
         }
 
         private IStatsDownloadApiDatabaseService databaseServiceMock;
@@ -76,6 +79,8 @@ namespace StatsDownloadApi.DataStore.Tests
         private IFileValidationService fileValidationServiceMock;
 
         private ILoggingService loggingServiceMock;
+
+        private IResourceCleanupService resourceCleanupServiceMock;
 
         private IStatsDownloadApiDataStoreService systemUnderTest;
 
@@ -95,15 +100,17 @@ namespace StatsDownloadApi.DataStore.Tests
 
             Received.InOrder(() =>
             {
-                databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
+                databaseServiceMock.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
 
-                filePayloadApiSettingsServiceMock.Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
-                dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock1);
-                fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
+                filePayloadApiSettingsServiceMock.SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+                dataStoreServiceMock.DownloadFile(Arg.Any<FilePayload>(), validatedFileMock1);
+                fileValidationServiceMock.ValidateFile(Arg.Any<FilePayload>());
+                resourceCleanupServiceMock.Cleanup(Arg.Any<FileDownloadResult>());
 
-                filePayloadApiSettingsServiceMock.Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
-                dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock3);
-                fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
+                filePayloadApiSettingsServiceMock.SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+                dataStoreServiceMock.DownloadFile(Arg.Any<FilePayload>(), validatedFileMock3);
+                fileValidationServiceMock.ValidateFile(Arg.Any<FilePayload>());
+                resourceCleanupServiceMock.Cleanup(Arg.Any<FileDownloadResult>());
             });
         }
 
@@ -124,16 +131,6 @@ namespace StatsDownloadApi.DataStore.Tests
             Assert.That(actual[1].BitcoinAddress, Is.EqualTo("btc2"));
             Assert.That(actual[1].PointsGained, Is.EqualTo(2));
             Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(2));
-        }
-
-        [Test]
-        public void GetMembers_WhenInvoked()
-        {
-        }
-
-        [Test]
-        public void GetTeams_WhenInvoked()
-        {
         }
 
         [TestCase(true)]

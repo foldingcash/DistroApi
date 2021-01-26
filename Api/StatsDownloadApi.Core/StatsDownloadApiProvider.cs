@@ -140,7 +140,6 @@
 
         private async Task<FoldingUsersResult> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
         {
-            // TODO: The validated files are not being cleaned up after processing
             return await statsDownloadApiDataStoreService.GetFoldingMembers(startDate.GetValueOrDefault(),
                        endDate.GetValueOrDefault());
         }

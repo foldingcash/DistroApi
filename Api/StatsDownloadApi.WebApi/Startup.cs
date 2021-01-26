@@ -120,7 +120,8 @@
                         provider.GetRequiredService<IStatsDownloadApiDatabaseService>(),
                         provider.GetRequiredService<IFileValidationService>(),
                         provider.GetRequiredService<IFilePayloadApiSettingsService>(),
-                        provider.GetRequiredService<ILoggingService>()));
+                        provider.GetRequiredService<ILoggingService>(),
+                        provider.GetRequiredService<IResourceCleanupService>()));
             });
         }
     }

@@ -247,8 +247,7 @@
                 }
 
                 ConfigurationManager.RefreshSection("appSettings");
-
-                // TODO: Refactor dup code
+                
                 importFiles = Directory.GetFiles(importDirectory, "*.txt.bz2", SearchOption.TopDirectoryOnly);
 
                 if (importFiles.Length == 0)
