@@ -91,6 +91,9 @@
             services.Configure<DataStoreCacheSettings>(
                 configuration.GetSection($"{nameof(DataStoreSettings)}:{nameof(DataStoreCacheSettings)}"));
 
+            services.Configure<DatabaseCacheSettings>(
+                configuration.GetSection($"{nameof(DatabaseSettings)}:{nameof(DatabaseCacheSettings)}"));
+
             services.AddSingleton<IStatsDownloadApiEmailService, StatsDownloadApiEmailProvider>()
                     .AddSingleton<IStatsDownloadApiService, StatsDownloadApiProvider>()
                     .AddSingleton<IStatsDownloadApiTokenDistributionService, StandardTokenDistributionProvider>()
@@ -99,9 +102,12 @@
             services.AddSingleton<IStatsDownloadApiDatabaseService>(provider =>
             {
                 return new StatsDownloadApiDatabaseCacheProvider(
+                    provider.GetRequiredService<ILogger<StatsDownloadApiDatabaseCacheProvider>>(),
+                    provider.GetRequiredService<IOptions<DatabaseCacheSettings>>(),
+                    provider.GetRequiredService<IAppCache>(),
                     new StatsDownloadApiDatabaseValidationProvider(new StatsDownloadApiDatabaseProvider(
                         provider.GetRequiredService<IStatsDownloadDatabaseService>(),
-                        provider.GetRequiredService<ILoggingService>())), provider.GetRequiredService<IAppCache>());
+                        provider.GetRequiredService<ILoggingService>())));
             });
 
             services.AddSingleton<IStatsDownloadApiDataStoreService>(provider =>

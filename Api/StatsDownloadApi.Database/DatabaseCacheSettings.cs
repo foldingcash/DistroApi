@@ -1,6 +1,6 @@
-﻿namespace StatsDownloadApi.DataStore
+﻿namespace StatsDownloadApi.Database
 {
-    public class DataStoreCacheSettings
+    public class DatabaseCacheSettings
     {
         public int Days { get; set; }
 
