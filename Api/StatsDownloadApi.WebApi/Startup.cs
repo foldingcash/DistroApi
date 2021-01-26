@@ -19,17 +19,36 @@
     using StatsDownloadApi.Core;
     using StatsDownloadApi.Interfaces;
 
+    public class SwaggerSettings
+    {
+        public string JsonUrl { get; set; }
+
+        public string Name => Title + " " + Version;
+
+        public string SwaggerUrl { get; set; }
+
+        public string Title { get; set; }
+
+        public string Version { get; set; }
+    }
+
     public class Startup
     {
+        private readonly IConfiguration configuration;
+
         private readonly ILogger<Startup> logger;
+
+        private readonly SwaggerSettings swaggerSettings;
 
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
-            Configuration = configuration;
+            this.configuration = configuration;
             this.logger = logger;
-        }
 
-        public IConfiguration Configuration { get; }
+            var settings = new SwaggerSettings();
+            configuration.GetSection(nameof(swaggerSettings)).Bind(settings);
+            swaggerSettings = settings;
+        }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -44,8 +63,8 @@
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.RoutePrefix = string.Empty;
+                c.SwaggerEndpoint(swaggerSettings.JsonUrl, swaggerSettings.Name);
+                c.RoutePrefix = swaggerSettings.SwaggerUrl;
             });
 
             app.UseRouting();
@@ -61,7 +80,8 @@
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                c.SwaggerDoc(swaggerSettings.Version,
+                    new OpenApiInfo { Title = swaggerSettings.Title, Version = swaggerSettings.Version });
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -70,9 +90,9 @@
 
             services.AddOptions();
             services.AddLazyCache();
-            services.AddSingleton(Configuration);
+            services.AddSingleton(configuration);
 
-            services.AddStatsDownload(Configuration);
+            services.AddStatsDownload(configuration);
 
             services.AddSingleton<IApplicationLoggingService, StatsDownloadApiLoggingProvider>()
                     .AddSingleton<IStatsDownloadApiEmailService, StatsDownloadApiEmailProvider>();

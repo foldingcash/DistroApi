@@ -18,6 +18,10 @@
         {
         }
 
+        /// <summary>
+        ///     Get all teams
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(typeof (GetTeamsResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get()

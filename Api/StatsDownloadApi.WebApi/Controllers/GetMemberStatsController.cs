@@ -18,6 +18,12 @@
         {
         }
 
+        /// <summary>
+        ///     Get member stats based on a start and end date
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(typeof (GetMemberStatsResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get(DateTime? startDate, DateTime? endDate)

@@ -18,6 +18,10 @@
         {
         }
 
+        /// <summary>
+        ///     Get all members
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(typeof (GetMemberStatsResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get()

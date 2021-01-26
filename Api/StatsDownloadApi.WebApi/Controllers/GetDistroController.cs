@@ -35,6 +35,11 @@
             return await InvokeApiService(async apiService => await apiService.GetDistro(startDate, endDate, amount));
         }
 
+        /// <summary>
+        ///     Get a system defined distribution
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpGet("All")]
         [ProducesResponseType((int)HttpStatusCode.Redirect)]
         public IActionResult GetAllDistro(CancellationToken cancellationToken = default)
