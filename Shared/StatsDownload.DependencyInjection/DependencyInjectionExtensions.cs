@@ -37,10 +37,10 @@
                                                           Func<IFileCompressionService, IServiceProvider,
                                                               IFileCompressionService> decorateFileCompressionService)
         {
-            serviceCollection.AddEmail(configuration).AddStatsDownloadSettings(configuration);
-            serviceCollection.AddSingleton<IDatabaseConnectionService, MicrosoftSqlDatabaseConnectionProvider>()
-                             .AddSingleton<IDatabaseConnectionServiceFactory, DatabaseConnectionServiceFactory>()
-                             .AddSingleton<IDateTimeService, DateTimeProvider>()
+            serviceCollection.AddEmail(configuration).AddStatsDownloadSettings(configuration).AddDatabase()
+                             .AddDataStore();
+
+            serviceCollection.AddSingleton<IDateTimeService, DateTimeProvider>()
                              .AddSingleton<IFileService, FileProvider>()
                              .AddSingleton<IDirectoryService, DirectoryProvider>()
                              .AddSingleton<IResourceCleanupService, ResourceCleanupProvider>()
@@ -65,8 +65,6 @@
                              .AddSingleton<IFileDownloadEmailService, StatsDownloadEmailProvider>()
                              .AddSingleton<IFilePayloadUploadService, FilePayloadUploadProvider>()
                              .AddSingleton<IFileValidationService, FileValidationProvider>()
-                             .AddSingleton<IDataStoreServiceFactory, DataStoreServiceFactory>()
-                             .AddSingleton<IDataStoreService, UncDataStoreProvider>()
                              .AddTransient<IWebClient, WebClientWrapper>();
 
             serviceCollection.AddSingleton(provider =>
@@ -114,7 +112,7 @@
             serviceCollection.AddSingleton(provider =>
             {
                 var service = new Bz2CompressionProvider();
-                return decorateFileCompressionService.Invoke(service, provider) ?? service;
+                return decorateFileCompressionService?.Invoke(service, provider) ?? service;
             });
 
             return serviceCollection;
@@ -134,7 +132,20 @@
                                     .Configure<FilterSettings>(configuration.GetSection(nameof(FilterSettings)))
                                     .Configure<DateTimeSettings>(configuration.GetSection(nameof(DateTimeSettings)))
                                     .Configure<DatabaseSettings>(configuration.GetSection(nameof(DatabaseSettings)))
-                                    .Configure<DataStoreSettings>(configuration.GetSection(nameof(DataStoreSettings)));
+                                    .Configure<DataStoreSettings>(configuration.GetSection(nameof(DataStoreSettings)))
+                                    .Configure<DownloadSettings>(configuration.GetSection(nameof(DownloadSettings)));
+        }
+
+        private static IServiceCollection AddDatabase(this IServiceCollection serviceCollection)
+        {
+            return serviceCollection.AddSingleton<IDatabaseConnectionServiceFactory, DatabaseConnectionServiceFactory>()
+                                    .AddSingleton<MicrosoftSqlDatabaseConnectionProvider>();
+        }
+
+        private static IServiceCollection AddDataStore(this IServiceCollection serviceCollection)
+        {
+            return serviceCollection.AddSingleton<IDataStoreServiceFactory, DataStoreServiceFactory>()
+                                    .AddSingleton<UncDataStoreProvider>();
         }
     }
 }

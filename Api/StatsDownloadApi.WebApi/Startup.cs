@@ -5,6 +5,8 @@
     using System.IO;
     using System.Reflection;
 
+    using LazyCache;
+
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -13,10 +15,13 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi.Models;
 
+    using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.DependencyInjection;
 
     using StatsDownloadApi.Core;
+    using StatsDownloadApi.Database;
+    using StatsDownloadApi.DataStore;
     using StatsDownloadApi.Interfaces;
 
     public class SwaggerSettings
@@ -95,7 +100,28 @@
             services.AddStatsDownload(configuration);
 
             services.AddSingleton<IApplicationLoggingService, StatsDownloadApiLoggingProvider>()
-                    .AddSingleton<IStatsDownloadApiEmailService, StatsDownloadApiEmailProvider>();
+                    .AddSingleton<IStatsDownloadApiEmailService, StatsDownloadApiEmailProvider>()
+                    .AddSingleton<IStatsDownloadApiService, StatsDownloadApiProvider>()
+                    .AddSingleton<IStatsDownloadApiTokenDistributionService, StandardTokenDistributionProvider>()
+                    .AddSingleton<IFilePayloadApiSettingsService, FilePayloadApiSettingsProvider>();
+
+            services.AddSingleton<IStatsDownloadApiDatabaseService>(provider =>
+            {
+                return new StatsDownloadApiDatabaseCacheProvider(
+                    new StatsDownloadApiDatabaseValidationProvider(new StatsDownloadApiDatabaseProvider(
+                        provider.GetRequiredService<IStatsDownloadDatabaseService>(),
+                        provider.GetRequiredService<ILoggingService>())), provider.GetRequiredService<IAppCache>());
+            });
+
+            services.AddSingleton<IStatsDownloadApiDataStoreService>(provider =>
+            {
+                return new StatsDownloadApiDataStoreCacheProvider(
+                    new StatsDownloadApiDataStoreProvider(provider.GetRequiredService<IDataStoreServiceFactory>(),
+                        provider.GetRequiredService<IStatsDownloadApiDatabaseService>(),
+                        provider.GetRequiredService<IFileValidationService>(),
+                        provider.GetRequiredService<IFilePayloadApiSettingsService>(),
+                        provider.GetRequiredService<ILoggingService>()), provider.GetRequiredService<IAppCache>());
+            });
         }
     }
 }
