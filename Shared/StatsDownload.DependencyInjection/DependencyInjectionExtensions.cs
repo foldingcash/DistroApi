@@ -38,7 +38,7 @@
                                                               IFileCompressionService> decorateFileCompressionService)
         {
             serviceCollection.AddEmail(configuration).AddStatsDownloadSettings(configuration).AddDatabase()
-                             .AddDataStore().AddLogging();
+                             .AddDataStore().AddLogging().AddWebClient();
 
             serviceCollection.AddSingleton<IDateTimeService, DateTimeProvider>()
                              .AddSingleton<IFileService, FileProvider>()
@@ -64,8 +64,7 @@
                              .AddSingleton<IStatsDownloadEmailService, StatsDownloadEmailProvider>()
                              .AddSingleton<IFileDownloadEmailService, StatsDownloadEmailProvider>()
                              .AddSingleton<IFilePayloadUploadService, FilePayloadUploadProvider>()
-                             .AddSingleton<IFileValidationService, FileValidationProvider>()
-                             .AddTransient<IWebClient, WebClientWrapper>();
+                             .AddSingleton<IFileValidationService, FileValidationProvider>();
 
             serviceCollection.AddSingleton(provider =>
             {
@@ -151,6 +150,12 @@
         private static IServiceCollection AddLogging(this IServiceCollection serviceCollection)
         {
             return serviceCollection.AddSingleton<IApplicationLoggingService, ApplicationLoggingService>();
+        }
+
+        private static IServiceCollection AddWebClient(this IServiceCollection serviceCollection)
+        {
+            return serviceCollection.AddTransient<IWebClient, WebClientWrapper>()
+                                    .AddSingleton<IWebClientFactory, WebClientFactory>();
         }
     }
 }
