@@ -7,9 +7,9 @@
 
     public class LogWriter : TextWriter
     {
-        private readonly Control control;
+        private readonly TextBox control;
 
-        public LogWriter(Control control)
+        public LogWriter(TextBox control)
         {
             this.control = control;
         }
@@ -34,7 +34,9 @@
             }
             else
             {
-                control.Text += value;
+                control.AppendText(value);
+                control.SelectionStart = control.TextLength;
+                control.ScrollToCaret();
             }
         }
     }
