@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Configuration;
     using System.Data.Common;
     using System.IO;
@@ -19,6 +20,8 @@
 
         private readonly IServiceProvider serviceProvider;
 
+        private BackgroundWorker worker;
+
         public MainForm(ILogger<MainForm> logger, IServiceProvider serviceProvider)
         {
             InitializeComponent();
@@ -26,7 +29,7 @@
             this.logger = logger;
             this.serviceProvider = serviceProvider;
         }
-        
+
         private async void CompressButton_Click(object sender, EventArgs e)
         {
             await RunActionAsync(() =>
@@ -247,7 +250,7 @@
                 }
 
                 ConfigurationManager.RefreshSection("appSettings");
-                
+
                 importFiles = Directory.GetFiles(importDirectory, "*.txt.bz2", SearchOption.TopDirectoryOnly);
 
                 if (importFiles.Length == 0)
@@ -323,22 +326,33 @@
             }
         }
 
-        private async Task RunActionAsync(Func<Task> action)
+        private Task RunActionAsync(Func<Task> action)
         {
+            if (worker != null && worker.IsBusy)
+            {
+                return Task.CompletedTask;
+            }
+
             try
             {
                 EnableGui(false);
-                await action();
+                worker = new BackgroundWorker();
+                worker.DoWork += async (sender, args) => await action();
+                worker.RunWorkerCompleted += (sender, args) =>
+                {
+                    CreateSeparationInLog();
+                    EnableGui(true);
+                    worker.Dispose();
+                    worker = null;
+                };
+                worker.RunWorkerAsync();
             }
             catch (Exception exception)
             {
                 Log(exception.ToString());
             }
-            finally
-            {
-                CreateSeparationInLog();
-                EnableGui(true);
-            }
+
+            return Task.CompletedTask;
         }
 
         private (int fileId, string fileName)[] SelectSubsetOfExportFiles((int fileId, string fileName)[] files)

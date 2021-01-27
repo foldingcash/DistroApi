@@ -30,7 +30,8 @@
 
         public Task DownloadFile(FilePayload filePayload, ValidatedFile validatedFile)
         {
-            return Task.Run(() => fileService.CopyFile(validatedFile.FilePath, filePayload.UploadPath));
+            fileService.CopyFile(validatedFile.FilePath, filePayload.UploadPath);
+            return Task.CompletedTask;
         }
 
         public Task<bool> IsAvailable()
@@ -48,7 +49,8 @@
 
         public Task UploadFile(FilePayload filePayload)
         {
-            return Task.Run(() => fileService.CopyFile(filePayload.DownloadFilePath, filePayload.UploadPath));
+            fileService.CopyFile(filePayload.DownloadFilePath, filePayload.UploadPath);
+            return Task.CompletedTask;
         }
     }
 }
