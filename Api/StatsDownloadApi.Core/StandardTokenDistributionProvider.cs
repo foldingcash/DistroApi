@@ -11,18 +11,40 @@
     {
         private const int MaxPrecision = 8;
 
+        private const decimal SmallestUnit = 0.00000001M;
+
         public IList<DistroUser> GetDistro(int amount, IList<FoldingUser> foldingUsers)
         {
             var distro = new List<DistroUser>();
 
             AddDistroUsers(amount, distro, foldingUsers);
 
+            CorrectDrift(amount, distro);
+
             return distro;
         }
 
-        public decimal Round(decimal value, int precision)
+        public void CorrectDrift(int amount, List<DistroUser> distro)
         {
-            return Math.Round(value, precision, MidpointRounding.ToEven);
+            decimal distroAmount = distro.Sum(user => user.Amount);
+
+            if (distroAmount > Convert.ToDecimal(amount))
+            {
+                IOrderedEnumerable<DistroUser> ordered = distro.OrderByDescending(user => user.PointsGained);
+                DistroUser max = ordered.First();
+                max.Amount -= SmallestUnit;
+            }
+            else if (distroAmount < Convert.ToDecimal(amount))
+            {
+                IOrderedEnumerable<DistroUser> ordered = distro.OrderBy(user => user.PointsGained);
+                DistroUser min = ordered.First();
+                min.Amount += SmallestUnit;
+            }
+
+            if (distro.Sum(user => user.Amount) != Convert.ToDecimal(amount))
+            {
+                CorrectDrift(amount, distro);
+            }
         }
 
         private void AddDistroUsers(int amount, List<DistroUser> distro, IList<FoldingUser> foldingUsers)
@@ -78,6 +100,11 @@
         {
             return new DistroUser(bitcoinAddress, pointsGained, workUnitsGained,
                 GetRewardAmount(amount, totalPoints, pointsGained));
+        }
+
+        private decimal Round(decimal value, int precision)
+        {
+            return Math.Round(value, precision, MidpointRounding.ToEven);
         }
     }
 }
