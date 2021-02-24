@@ -203,6 +203,8 @@
             Assert.That(actual.TotalPoints, Is.EqualTo(4));
             Assert.That(actual.TotalWorkUnits, Is.EqualTo(6));
             Assert.That(actual.TotalDistro, Is.EqualTo(100.12345678));
+            Assert.That(actual.StartDateTime, Is.EqualTo(startDateMock));
+            Assert.That(actual.EndDateTime, Is.EqualTo(endDateMock));
         }
 
         [Test]
