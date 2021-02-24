@@ -1,9 +1,8 @@
-﻿namespace StatsDownload.Core.Tests
+﻿namespace StatsDownload.Parsing.Tests
 {
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
-    using StatsDownload.Parsing;
 
     [TestFixture]
     public class TestBitcoinAddressValidatorProvider
