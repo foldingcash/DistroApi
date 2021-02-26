@@ -39,7 +39,9 @@
                      + $"Total Work Units: {failedUserData.UserData?.TotalWorkUnits}{Environment.NewLine}"
                      + $"Team Number: {failedUserData.UserData?.TeamNumber}{Environment.NewLine}"
                      + $"Friendly Name: {failedUserData.UserData?.FriendlyName}{Environment.NewLine}"
-                     + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}");
+                     + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}"
+                     + $"Bitcoin Cash Address: {failedUserData.UserData?.BitcoinCashAddress}"
+                     + $"SLP Address: {failedUserData.UserData?.SlpAddress}");
         }
 
         public void LogMethodFinished([CallerMemberName] string method = "")

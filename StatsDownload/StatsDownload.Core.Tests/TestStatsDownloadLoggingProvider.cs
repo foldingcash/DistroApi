@@ -58,7 +58,10 @@
             var failedUserData = new FailedUserData(100, "data", RejectionReason.UnexpectedFormat,
                 new UserData(0, "name", 1, 2, 3)
                 {
-                    BitcoinAddress = "bitcoin address", FriendlyName = "friendly name"
+                    BitcoinAddress = "bitcoin address",
+                    FriendlyName = "friendly name",
+                    SlpAddress = "slp address",
+                    BitcoinCashAddress = "bitcoin cash address"
                 });
 
             systemUnderTest.LogFailedUserData(10, failedUserData);
@@ -72,7 +75,9 @@
                                                    + $"Total Work Units: {failedUserData.UserData?.TotalWorkUnits}{Environment.NewLine}"
                                                    + $"Team Number: {failedUserData.UserData?.TeamNumber}{Environment.NewLine}"
                                                    + $"Friendly Name: {failedUserData.UserData?.FriendlyName}{Environment.NewLine}"
-                                                   + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}");
+                                                   + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}"
+                                                   + $"Bitcoin Cash Address: {failedUserData.UserData?.BitcoinCashAddress}"
+                                                   + $"SLP Address: {failedUserData.UserData?.SlpAddress}");
         }
 
         [Test]
