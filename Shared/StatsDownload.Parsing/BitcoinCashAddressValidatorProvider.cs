@@ -19,11 +19,11 @@
             this.logger = logger;
         }
 
-        public bool IsValidBitcoinCashAddress(string bitcoinCashAddress)
+        public bool IsValidBitcoinCashAddress(string address)
         {
             try
             {
-                CashAddressToOldAddress(bitcoinCashAddress, out bool isP2PKH, out bool _);
+                CashAddressToOldAddress(address, out bool isP2PKH, out bool _);
                 return true;
             }
             catch (Exception ex)
@@ -33,12 +33,12 @@
             }
         }
 
-        private string CashAddressToOldAddress(string cashAddress, out bool isP2PKH, out bool main)
+        private string CashAddressToOldAddress(string address, out bool isP2PKH, out bool main)
         {
-            cashAddress = cashAddress.ToLower();
-            if (cashAddress.Length != 54 && cashAddress.Length != 42 && cashAddress.Length != 50)
+            address = address.ToLower();
+            if (address.Length != 54 && address.Length != 42 && address.Length != 50)
             {
-                if (cashAddress.StartsWith("bchreg:"))
+                if (address.StartsWith("bchreg:"))
                 {
                     throw new Exception("Decoding RegTest addresses is not implemented.");
                 }
@@ -47,23 +47,23 @@
             }
 
             int afterPrefix;
-            if (cashAddress.StartsWith("bitcoincash:"))
+            if (address.StartsWith("bitcoincash:"))
             {
                 main = true;
                 afterPrefix = 12;
             }
-            else if (cashAddress.StartsWith("bchtest:"))
+            else if (address.StartsWith("bchtest:"))
             {
                 main = false;
                 afterPrefix = 8;
             }
-            else if (cashAddress.StartsWith("bchreg:"))
+            else if (address.StartsWith("bchreg:"))
             {
                 throw new Exception("Decoding RegTest addresses is not implemented.");
             }
             else
             {
-                if (cashAddress.IndexOf(":", StringComparison.OrdinalIgnoreCase) == -1)
+                if (address.IndexOf(":", StringComparison.OrdinalIgnoreCase) == -1)
                 {
                     main = true;
                     afterPrefix = 0;
@@ -75,7 +75,7 @@
             }
 
             int max = afterPrefix + 42;
-            if (max != cashAddress.Length)
+            if (max != address.Length)
             {
                 throw new Exception("Address to be decoded is longer or shorter than expected.");
             }
@@ -83,7 +83,7 @@
             var decodedBytes = new byte[42];
             for (int i = afterPrefix; i < max; i++)
             {
-                int value = CashAddress[cashAddress[i]];
+                int value = CashAddress[address[i]];
                 if (value != -1)
                 {
                     decodedBytes[i - afterPrefix] = (byte)value;

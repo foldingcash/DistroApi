@@ -2,6 +2,6 @@
 {
     public interface IBitcoinCashAddressValidatorService
     {
-        bool IsValidBitcoinCashAddress(string bitcoinCashAddress);
+        bool IsValidBitcoinCashAddress(string address);
     }
 }
