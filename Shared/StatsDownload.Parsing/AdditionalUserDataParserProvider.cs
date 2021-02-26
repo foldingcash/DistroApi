@@ -9,11 +9,17 @@
     {
         private readonly IBitcoinAddressValidatorService bitcoinAddressValidatorService;
 
-        public AdditionalUserDataParserProvider(IBitcoinAddressValidatorService bitcoinAddressValidatorService)
+        private readonly IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorService;
+
+        public AdditionalUserDataParserProvider(IBitcoinAddressValidatorService bitcoinAddressValidatorService,
+                                                IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorService)
         {
             this.bitcoinAddressValidatorService = bitcoinAddressValidatorService
                                                   ?? throw new ArgumentNullException(
                                                       nameof(bitcoinAddressValidatorService));
+            this.bitcoinCashAddressValidatorService = bitcoinCashAddressValidatorService
+                                                      ?? throw new ArgumentNullException(
+                                                          nameof(bitcoinCashAddressValidatorService));
         }
 
         public void Parse(UserData userData)
@@ -26,6 +32,7 @@
             }
 
             SetBitcoinAddress(tokenizedName, userData);
+            SetBitcoinCashAddress(tokenizedName, userData);
             SetFriendlyName(tokenizedName, userData);
         }
 
@@ -50,9 +57,20 @@
             }
         }
 
+        private void SetBitcoinCashAddress(string[] tokenizedName, UserData userData)
+        {
+            int addressPosition = tokenizedName.Length - 1;
+
+            if (bitcoinCashAddressValidatorService.IsValidBitcoinCashAddress(tokenizedName[addressPosition]))
+            {
+                userData.BitcoinCashAddress = tokenizedName[addressPosition];
+            }
+        }
+
         private void SetFriendlyName(string[] tokenizedName, UserData userData)
         {
-            if (tokenizedName.Length > 1 && !string.IsNullOrWhiteSpace(userData.BitcoinAddress))
+            if (tokenizedName.Length > 1 && (!string.IsNullOrWhiteSpace(userData.BitcoinAddress)
+                                             || !string.IsNullOrWhiteSpace(userData.BitcoinCashAddress)))
             {
                 userData.FriendlyName = tokenizedName[0];
             }

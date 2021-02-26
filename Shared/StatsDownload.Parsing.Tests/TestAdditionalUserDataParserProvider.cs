@@ -8,7 +8,6 @@
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Parsing;
 
     [TestFixture]
     public class TestAdditionalUserDataParserProvider
@@ -19,17 +18,26 @@
             bitcoinAddressValidatorServiceMock = Substitute.For<IBitcoinAddressValidatorService>();
             bitcoinAddressValidatorServiceMock.IsValidBitcoinAddress("Address").Returns(true);
 
-            systemUnderTest = NewAdditionalUserDataParserProvider(bitcoinAddressValidatorServiceMock);
+            bitcoinCashAddressValidatorServiceMock = Substitute.For<IBitcoinCashAddressValidatorService>();
+            bitcoinCashAddressValidatorServiceMock.IsValidBitcoinCashAddress("CashAddress").Returns(true);
+
+            systemUnderTest = NewAdditionalUserDataParserProvider(bitcoinAddressValidatorServiceMock,
+                bitcoinCashAddressValidatorServiceMock);
         }
 
         private IBitcoinAddressValidatorService bitcoinAddressValidatorServiceMock;
+
+        private IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorServiceMock;
 
         private IAdditionalUserDataParserService systemUnderTest;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewAdditionalUserDataParserProvider(null));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewAdditionalUserDataParserProvider(null, bitcoinCashAddressValidatorServiceMock));
+            Assert.Throws<ArgumentNullException>(() =>
+                NewAdditionalUserDataParserProvider(bitcoinAddressValidatorServiceMock, null));
         }
 
         [TestCase("Address")]
@@ -45,8 +53,22 @@
             Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
         }
 
+        [TestCase("CashAddress")]
+        [TestCase("Name_CashAddress")]
+        [TestCase("Name_TAG_CashAddress")]
+        [TestCase("Name__CashAddress")]
+        public void Parse_WhenInvoked_ReturnsBitcoinCashAddress(string name)
+        {
+            var userData = new UserData(0, name, 0, 0, 0);
+
+            systemUnderTest.Parse(userData);
+
+            Assert.That(userData.BitcoinCashAddress, Is.EqualTo("CashAddress"));
+        }
+
         [TestCase("Name.Name_Address", "Name.Name")]
         [TestCase("Name-Name_TAG_Address", "Name-Name")]
+        [TestCase("Name-Name_TAG_CashAddress", "Name-Name")]
         public void Parse_WhenInvoked_ReturnsComplexFriendlyName(string name, string expectedFriendlyName)
         {
             var userData = new UserData(0, name, 0, 0, 0);
@@ -59,6 +81,7 @@
         [TestCase("Name_Address")]
         [TestCase("Name_TAG_Address")]
         [TestCase("Name__Address")]
+        [TestCase("Name__CashAddress")]
         public void Parse_WhenInvoked_ReturnsFriendlyName(string name)
         {
             var userData = new UserData(0, name, 0, 0, 0);
@@ -84,6 +107,7 @@
         [TestCase("name")]
         [TestCase("Name_BadAddress")]
         [TestCase("Name_TAG_BadAddress")]
+        [TestCase("Name_TAG_BadCashAddress")]
         public void Parse_WhenNoBitcoinAddress_ReturnsNoAdditionalData(string name)
         {
             var userData = new UserData(0, name, 0, 0, 0);
@@ -96,6 +120,7 @@
 
         [TestCase("name")]
         [TestCase("Address")]
+        [TestCase("CashAddress")]
         public void Parse_WhenNoFriendlyName_ReturnsNoFriendlyName(string name)
         {
             var userData = new UserData(0, name, 0, 0, 0);
@@ -106,9 +131,11 @@
         }
 
         private IAdditionalUserDataParserService NewAdditionalUserDataParserProvider(
-            IBitcoinAddressValidatorService bitcoinAddressValidatorService)
+            IBitcoinAddressValidatorService bitcoinAddressValidatorService,
+            IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorService)
         {
-            return new AdditionalUserDataParserProvider(bitcoinAddressValidatorService);
+            return new AdditionalUserDataParserProvider(bitcoinAddressValidatorService,
+                bitcoinCashAddressValidatorService);
         }
     }
 }
