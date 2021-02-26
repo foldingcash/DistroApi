@@ -11,8 +11,11 @@
 
         private readonly IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorService;
 
+        private readonly ISlpAddressValidatorService slpAddressValidatorService;
+
         public AdditionalUserDataParserProvider(IBitcoinAddressValidatorService bitcoinAddressValidatorService,
-                                                IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorService)
+                                                IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorService,
+                                                ISlpAddressValidatorService slpAddressValidatorService)
         {
             this.bitcoinAddressValidatorService = bitcoinAddressValidatorService
                                                   ?? throw new ArgumentNullException(
@@ -20,6 +23,8 @@
             this.bitcoinCashAddressValidatorService = bitcoinCashAddressValidatorService
                                                       ?? throw new ArgumentNullException(
                                                           nameof(bitcoinCashAddressValidatorService));
+            this.slpAddressValidatorService = slpAddressValidatorService
+                                              ?? throw new ArgumentNullException(nameof(slpAddressValidatorService));
         }
 
         public void Parse(UserData userData)
@@ -33,6 +38,7 @@
 
             SetBitcoinAddress(tokenizedName, userData);
             SetBitcoinCashAddress(tokenizedName, userData);
+            SetSlpAddress(tokenizedName, userData);
             SetFriendlyName(tokenizedName, userData);
         }
 
@@ -70,9 +76,19 @@
         private void SetFriendlyName(string[] tokenizedName, UserData userData)
         {
             if (tokenizedName.Length > 1 && (!string.IsNullOrWhiteSpace(userData.BitcoinAddress)
-                                             || !string.IsNullOrWhiteSpace(userData.BitcoinCashAddress)))
+                                             || !string.IsNullOrWhiteSpace(userData.BitcoinCashAddress) || !string.IsNullOrWhiteSpace(userData.SlpAddress)))
             {
                 userData.FriendlyName = tokenizedName[0];
+            }
+        }
+
+        private void SetSlpAddress(string[] tokenizedName, UserData userData)
+        {
+            int addressPosition = tokenizedName.Length - 1;
+
+            if (slpAddressValidatorService.IsValidSlpAddress(tokenizedName[addressPosition]))
+            {
+                userData.SlpAddress = tokenizedName[addressPosition];
             }
         }
     }

@@ -26,6 +26,8 @@
 
         public string Name { get; }
 
+        public string SlpAddress { get; set; }
+
         public long TeamNumber { get; }
 
         public long TotalPoints { get; }
