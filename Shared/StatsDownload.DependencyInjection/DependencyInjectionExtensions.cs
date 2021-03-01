@@ -58,6 +58,8 @@
                                  StatsFileDateTimeFormatsAndOffsetProvider>()
                              .AddSingleton<IAdditionalUserDataParserService, AdditionalUserDataParserProvider>()
                              .AddSingleton<IBitcoinAddressValidatorService, BitcoinAddressValidatorProvider>()
+                             .AddSingleton<IBitcoinCashAddressValidatorService, BitcoinCashAddressValidatorProvider>()
+                             .AddSingleton<ISlpAddressValidatorService, SlpAddressValidatorProvider>()
                              .AddSingleton<IFileDownloadService, FileDownloadProvider>()
                              .AddSingleton<IFileDownloadMinimumWaitTimeService, FileDownloadMinimumWaitTimeProvider>()
                              .AddSingleton<IErrorMessageService, ErrorMessageProvider>()
