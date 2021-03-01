@@ -19,11 +19,16 @@
             this.logger = logger;
         }
 
+        public string GetBitcoinAddress(string address)
+        {
+            return CashAddressToOldAddress(address, out bool _, out bool _);
+        }
+
         public bool IsValidSlpAddress(string address)
         {
             try
             {
-                CashAddressToOldAddress(address, out bool isP2PKH, out bool _);
+                CashAddressToOldAddress(address, out bool _, out bool _);
                 return true;
             }
             catch (Exception ex)

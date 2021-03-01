@@ -63,32 +63,6 @@
             Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
         }
 
-        [TestCase("CashAddress")]
-        [TestCase("Name_CashAddress")]
-        [TestCase("Name_TAG_CashAddress")]
-        [TestCase("Name__CashAddress")]
-        public void Parse_WhenInvoked_ReturnsBitcoinCashAddress(string name)
-        {
-            var userData = new UserData(0, name, 0, 0, 0);
-
-            systemUnderTest.Parse(userData);
-
-            Assert.That(userData.BitcoinCashAddress, Is.EqualTo("CashAddress"));
-        }
-
-        [TestCase("SlpAddress")]
-        [TestCase("Name_SlpAddress")]
-        [TestCase("Name_TAG_SlpAddress")]
-        [TestCase("Name__SlpAddress")]
-        public void Parse_WhenInvoked_ReturnsSlpAddress(string name)
-        {
-            var userData = new UserData(0, name, 0, 0, 0);
-
-            systemUnderTest.Parse(userData);
-
-            Assert.That(userData.SlpAddress, Is.EqualTo("SlpAddress"));
-        }
-
         [TestCase("Name.Name_Address", "Name.Name")]
         [TestCase("Name-Name_TAG_Address", "Name-Name")]
         [TestCase("Name-Name_TAG_CashAddress", "Name-Name")]
@@ -118,6 +92,38 @@
             Assert.That(userData.FriendlyName, Is.EqualTo("Name"));
         }
 
+        [TestCase("CashAddress")]
+        [TestCase("Name_CashAddress")]
+        [TestCase("Name_TAG_CashAddress")]
+        [TestCase("Name__CashAddress")]
+        public void Parse_WhenInvokedWithBitcoinCashAddress_ReturnsAddresses(string name)
+        {
+            bitcoinCashAddressValidatorServiceMock.GetBitcoinAddress("CashAddress").Returns("Address");
+
+            var userData = new UserData(0, name, 0, 0, 0);
+
+            systemUnderTest.Parse(userData);
+
+            Assert.That(userData.BitcoinCashAddress, Is.EqualTo("CashAddress"));
+            Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
+        }
+
+        [TestCase("SlpAddress")]
+        [TestCase("Name_SlpAddress")]
+        [TestCase("Name_TAG_SlpAddress")]
+        [TestCase("Name__SlpAddress")]
+        public void Parse_WhenInvokedWithSlpAddress_ReturnsAddresses(string name)
+        {
+            slpAddressValidatorServiceMock.GetBitcoinAddress("SlpAddress").Returns("Address");
+
+            var userData = new UserData(0, name, 0, 0, 0);
+
+            systemUnderTest.Parse(userData);
+
+            Assert.That(userData.SlpAddress, Is.EqualTo("SlpAddress"));
+            Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
+        }
+
         [TestCase("")]
         [TestCase(null)]
         [TestCase("part1_part2_part3_part4")]
@@ -142,8 +148,10 @@
 
             systemUnderTest.Parse(userData);
 
-            Assert.IsNull(userData.BitcoinAddress);
             Assert.IsNull(userData.FriendlyName);
+            Assert.IsNull(userData.BitcoinAddress);
+            Assert.IsNull(userData.BitcoinCashAddress);
+            Assert.IsNull(userData.SlpAddress);
         }
 
         [TestCase("name")]

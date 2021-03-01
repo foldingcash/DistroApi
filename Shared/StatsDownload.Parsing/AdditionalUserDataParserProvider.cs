@@ -66,17 +66,20 @@
         private void SetBitcoinCashAddress(string[] tokenizedName, UserData userData)
         {
             int addressPosition = tokenizedName.Length - 1;
+            string address = tokenizedName[addressPosition];
 
-            if (bitcoinCashAddressValidatorService.IsValidBitcoinCashAddress(tokenizedName[addressPosition]))
+            if (bitcoinCashAddressValidatorService.IsValidBitcoinCashAddress(address))
             {
-                userData.BitcoinCashAddress = tokenizedName[addressPosition];
+                userData.BitcoinCashAddress = address;
+                userData.BitcoinAddress = bitcoinCashAddressValidatorService.GetBitcoinAddress(address);
             }
         }
 
         private void SetFriendlyName(string[] tokenizedName, UserData userData)
         {
             if (tokenizedName.Length > 1 && (!string.IsNullOrWhiteSpace(userData.BitcoinAddress)
-                                             || !string.IsNullOrWhiteSpace(userData.BitcoinCashAddress) || !string.IsNullOrWhiteSpace(userData.SlpAddress)))
+                                             || !string.IsNullOrWhiteSpace(userData.BitcoinCashAddress)
+                                             || !string.IsNullOrWhiteSpace(userData.SlpAddress)))
             {
                 userData.FriendlyName = tokenizedName[0];
             }
@@ -85,10 +88,12 @@
         private void SetSlpAddress(string[] tokenizedName, UserData userData)
         {
             int addressPosition = tokenizedName.Length - 1;
+            string address = tokenizedName[addressPosition];
 
-            if (slpAddressValidatorService.IsValidSlpAddress(tokenizedName[addressPosition]))
+            if (slpAddressValidatorService.IsValidSlpAddress(address))
             {
-                userData.SlpAddress = tokenizedName[addressPosition];
+                userData.SlpAddress = address;
+                userData.BitcoinAddress = slpAddressValidatorService.GetBitcoinAddress(address);
             }
         }
     }
