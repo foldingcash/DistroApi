@@ -20,9 +20,11 @@
 
             bitcoinCashAddressValidatorServiceMock = Substitute.For<IBitcoinCashAddressValidatorService>();
             bitcoinCashAddressValidatorServiceMock.IsValidBitcoinCashAddress("CashAddress").Returns(true);
+            bitcoinCashAddressValidatorServiceMock.GetBitcoinAddress("CashAddress").Returns("Address");
 
             slpAddressValidatorServiceMock = Substitute.For<ISlpAddressValidatorService>();
             slpAddressValidatorServiceMock.IsValidSlpAddress("SlpAddress").Returns(true);
+            slpAddressValidatorServiceMock.GetBitcoinAddress("SlpAddress").Returns("Address");
 
             systemUnderTest = NewAdditionalUserDataParserProvider(bitcoinAddressValidatorServiceMock,
                 bitcoinCashAddressValidatorServiceMock, slpAddressValidatorServiceMock);
@@ -61,6 +63,8 @@
             systemUnderTest.Parse(userData);
 
             Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
+            Assert.IsNull(userData.BitcoinCashAddress);
+            Assert.IsNull(userData.SlpAddress);
         }
 
         [TestCase("Name.Name_Address", "Name.Name")]
@@ -98,14 +102,13 @@
         [TestCase("Name__CashAddress")]
         public void Parse_WhenInvokedWithBitcoinCashAddress_ReturnsAddresses(string name)
         {
-            bitcoinCashAddressValidatorServiceMock.GetBitcoinAddress("CashAddress").Returns("Address");
-
             var userData = new UserData(0, name, 0, 0, 0);
 
             systemUnderTest.Parse(userData);
 
             Assert.That(userData.BitcoinCashAddress, Is.EqualTo("CashAddress"));
             Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
+            Assert.IsNull(userData.SlpAddress);
         }
 
         [TestCase("SlpAddress")]
@@ -114,14 +117,13 @@
         [TestCase("Name__SlpAddress")]
         public void Parse_WhenInvokedWithSlpAddress_ReturnsAddresses(string name)
         {
-            slpAddressValidatorServiceMock.GetBitcoinAddress("SlpAddress").Returns("Address");
-
             var userData = new UserData(0, name, 0, 0, 0);
 
             systemUnderTest.Parse(userData);
 
             Assert.That(userData.SlpAddress, Is.EqualTo("SlpAddress"));
             Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
+            Assert.IsNull(userData.BitcoinCashAddress);
         }
 
         [TestCase("")]
