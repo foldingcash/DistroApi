@@ -68,7 +68,8 @@
             int addressPosition = tokenizedName.Length - 1;
             string address = tokenizedName[addressPosition];
 
-            if (bitcoinCashAddressValidatorService.IsValidBitcoinCashAddress(address))
+            if (string.IsNullOrEmpty(userData.BitcoinAddress)
+                && bitcoinCashAddressValidatorService.IsValidBitcoinCashAddress(address))
             {
                 userData.BitcoinCashAddress = address;
                 userData.BitcoinAddress = bitcoinCashAddressValidatorService.GetBitcoinAddress(address);
@@ -90,7 +91,7 @@
             int addressPosition = tokenizedName.Length - 1;
             string address = tokenizedName[addressPosition];
 
-            if (slpAddressValidatorService.IsValidSlpAddress(address))
+            if (string.IsNullOrEmpty(userData.BitcoinAddress) && slpAddressValidatorService.IsValidSlpAddress(address))
             {
                 userData.SlpAddress = address;
                 userData.BitcoinAddress = slpAddressValidatorService.GetBitcoinAddress(address);
