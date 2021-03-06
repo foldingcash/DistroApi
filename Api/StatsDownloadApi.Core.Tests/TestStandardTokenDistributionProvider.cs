@@ -88,14 +88,14 @@
                 });
 
             Assert.That(actual.Count, Is.EqualTo(2));
-            Assert.That(actual[0].BitcoinAddress, Is.EqualTo("address2"));
-            Assert.That(actual[0].PointsGained, Is.EqualTo(98));
-            Assert.That(actual[0].WorkUnitsGained, Is.EqualTo(96));
-            Assert.That(actual[0].Amount, Is.EqualTo(0.98));
-            Assert.That(actual[1].BitcoinAddress, Is.EqualTo("address1"));
-            Assert.That(actual[1].PointsGained, Is.EqualTo(2));
-            Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(4));
-            Assert.That(actual[1].Amount, Is.EqualTo(0.02));
+            Assert.That(actual[0].BitcoinAddress, Is.EqualTo("address1"));
+            Assert.That(actual[0].PointsGained, Is.EqualTo(2));
+            Assert.That(actual[0].WorkUnitsGained, Is.EqualTo(4));
+            Assert.That(actual[0].Amount, Is.EqualTo(0.02));
+            Assert.That(actual[1].BitcoinAddress, Is.EqualTo("address2"));
+            Assert.That(actual[1].PointsGained, Is.EqualTo(98));
+            Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(96));
+            Assert.That(actual[1].Amount, Is.EqualTo(0.98));
         }
 
         [Test]

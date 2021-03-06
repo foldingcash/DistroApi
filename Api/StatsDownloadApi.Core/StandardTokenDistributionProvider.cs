@@ -9,22 +9,20 @@
 
     public class StandardTokenDistributionProvider : IStatsDownloadApiTokenDistributionService
     {
-        private const int MaxPrecision = 8;
+        private const int DecimalPlaces = 8;
 
-        private const decimal SmallestUnit = 0.00000001M;
+        private readonly decimal SmallestUnit = 1 / Convert.ToDecimal(Math.Pow(10, DecimalPlaces));
 
         public IList<DistroUser> GetDistro(int amount, IList<FoldingUser> foldingUsers)
         {
-            var distro = new List<DistroUser>();
-
-            AddDistroUsers(amount, distro, foldingUsers);
+            IList<DistroUser> distro = GetDistroUsers(amount, foldingUsers);
 
             CorrectDrift(amount, distro);
 
             return distro;
         }
 
-        public void CorrectDrift(int amount, List<DistroUser> distro)
+        public void CorrectDrift(int amount, IList<DistroUser> distro)
         {
             decimal distroAmount = distro.Sum(user => user.Amount);
 
@@ -47,33 +45,36 @@
             }
         }
 
-        private void AddDistroUsers(int amount, List<DistroUser> distro, IList<FoldingUser> foldingUsers)
+        private void AddingUserToDistro(int amount, Dictionary<string, DistroUser> distro, long totalPoints,
+                                        FoldingUser foldingUser)
         {
+            if (distro.ContainsKey(foldingUser.BitcoinAddress))
+            {
+                DistroUser previousUser = distro[foldingUser.BitcoinAddress];
+                DistroUser combinedUser = NewDistroUser(amount, totalPoints, foldingUser.BitcoinAddress,
+                    previousUser.PointsGained + foldingUser.PointsGained,
+                    previousUser.WorkUnitsGained + foldingUser.WorkUnitsGained);
+                distro[foldingUser.BitcoinAddress] = combinedUser;
+            }
+            else
+            {
+                DistroUser distroUser = NewDistroUser(amount, totalPoints, foldingUser.BitcoinAddress,
+                    foldingUser.PointsGained, foldingUser.WorkUnitsGained);
+                distro.Add(foldingUser.BitcoinAddress, distroUser);
+            }
+        }
+
+        private IList<DistroUser> GetDistroUsers(int amount, IList<FoldingUser> foldingUsers)
+        {
+            var distro = new Dictionary<string, DistroUser>();
             long totalPoints = GetTotalPoints(foldingUsers);
 
             foreach (FoldingUser foldingUser in foldingUsers)
             {
                 AddingUserToDistro(amount, distro, totalPoints, foldingUser);
             }
-        }
 
-        private void AddingUserToDistro(int amount, List<DistroUser> distro, long totalPoints, FoldingUser foldingUser)
-        {
-            if (distro.Exists(user => user.BitcoinAddress == foldingUser.BitcoinAddress))
-            {
-                DistroUser previousUser = distro.Find(user => user.BitcoinAddress == foldingUser.BitcoinAddress);
-                DistroUser combinedUser = NewDistroUser(amount, totalPoints, foldingUser.BitcoinAddress,
-                    previousUser.PointsGained + foldingUser.PointsGained,
-                    previousUser.WorkUnitsGained + foldingUser.WorkUnitsGained);
-                distro.Remove(previousUser);
-                distro.Add(combinedUser);
-            }
-            else
-            {
-                DistroUser distroUser = NewDistroUser(amount, totalPoints, foldingUser.BitcoinAddress,
-                    foldingUser.PointsGained, foldingUser.WorkUnitsGained);
-                distro.Add(distroUser);
-            }
+            return distro.Select(pair => pair.Value).ToList();
         }
 
         private decimal GetRewardAmount(int amount, long totalPoints, long pointsGained)
@@ -87,7 +88,7 @@
             decimal rawAmount = Convert.ToDecimal(pointsGained) / Convert.ToDecimal(totalPoints)
                                 * Convert.ToDecimal(amount);
 
-            return Round(rawAmount, MaxPrecision);
+            return Round(rawAmount, DecimalPlaces);
         }
 
         private long GetTotalPoints(IList<FoldingUser> foldingUsers)
