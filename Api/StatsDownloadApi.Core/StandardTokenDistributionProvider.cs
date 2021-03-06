@@ -71,6 +71,11 @@
 
             foreach (FoldingUser foldingUser in foldingUsers)
             {
+                if (foldingUser.PointsGained == 0 && foldingUser.WorkUnitsGained == 0)
+                {
+                    continue;
+                }
+
                 AddingUserToDistro(amount, distro, totalPoints, foldingUser);
             }
 

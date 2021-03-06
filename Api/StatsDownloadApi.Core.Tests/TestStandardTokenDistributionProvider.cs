@@ -99,6 +99,28 @@
         }
 
         [Test]
+        public void GetDistro_WhenInvoked_FiltersOutZeroPointFolders()
+        {
+            IList<DistroUser> actual = systemUnderTest.GetDistro(1,
+                new[]
+                {
+                    new FoldingUser("friendlyName1", "address1", 1, 2),
+                    new FoldingUser("friendlyName2", "address2", 99, 98),
+                    new FoldingUser("friendlyName3", "address3", 0, 0)
+                });
+
+            Assert.That(actual.Count, Is.EqualTo(2));
+            Assert.That(actual[0].BitcoinAddress, Is.EqualTo("address1"));
+            Assert.That(actual[0].PointsGained, Is.EqualTo(1));
+            Assert.That(actual[0].WorkUnitsGained, Is.EqualTo(2));
+            Assert.That(actual[0].Amount, Is.EqualTo(0.01));
+            Assert.That(actual[1].BitcoinAddress, Is.EqualTo("address2"));
+            Assert.That(actual[1].PointsGained, Is.EqualTo(99));
+            Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(98));
+            Assert.That(actual[1].Amount, Is.EqualTo(0.99));
+        }
+
+        [Test]
         public void GetDistro_WhenInvoked_ReturnsDistro()
         {
             IList<DistroUser> actual = systemUnderTest.GetDistro(1,
