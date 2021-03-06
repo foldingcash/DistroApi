@@ -15,14 +15,14 @@
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        public void LogDebug(string message)
+        {
+            logger.LogDebug(message);
+        }
+
         public void LogError(string message)
         {
             logger.LogError(message);
-        }
-
-        public void LogVerbose(string message)
-        {
-            logger.LogTrace(message);
         }
     }
 }

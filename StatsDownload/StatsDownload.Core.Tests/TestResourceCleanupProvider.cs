@@ -49,7 +49,7 @@
 
             systemUnderTest.Cleanup(fileDownloadResult);
 
-            loggingServiceMock.DidNotReceive().LogVerbose("Deleting: DecompressedDownloadFilePath");
+            loggingServiceMock.DidNotReceive().LogDebug("Deleting: DecompressedDownloadFilePath");
             fileServiceMock.DidNotReceive().Delete("DecompressedDownloadFilePath");
         }
 
@@ -60,7 +60,7 @@
 
             systemUnderTest.Cleanup(fileDownloadResult);
 
-            loggingServiceMock.DidNotReceive().LogVerbose("Deleting: DownloadFilePath");
+            loggingServiceMock.DidNotReceive().LogDebug("Deleting: DownloadFilePath");
             fileServiceMock.DidNotReceive().Delete("DownloadFilePath");
         }
 
@@ -71,7 +71,7 @@
 
             systemUnderTest.Cleanup(fileDownloadResult);
 
-            loggingServiceMock.Received().LogVerbose("Moving: DownloadFilePath to FailedDownloadFilePath");
+            loggingServiceMock.Received().LogDebug("Moving: DownloadFilePath to FailedDownloadFilePath");
             fileServiceMock.Received().Move("DownloadFilePath", "FailedDownloadFilePath");
         }
 
@@ -80,12 +80,12 @@
         {
             systemUnderTest.Cleanup(fileDownloadResult);
 
-            loggingServiceMock.Received().LogVerbose("Cleanup Invoked");
+            loggingServiceMock.Received().LogDebug("Cleanup Invoked");
             fileServiceMock.Received().Exists("DecompressedDownloadFilePath");
-            loggingServiceMock.Received().LogVerbose("Deleting: DecompressedDownloadFilePath");
+            loggingServiceMock.Received().LogDebug("Deleting: DecompressedDownloadFilePath");
             fileServiceMock.Received().Delete("DecompressedDownloadFilePath");
             fileServiceMock.Received().Exists("DownloadFilePath");
-            loggingServiceMock.Received().LogVerbose("Deleting: DownloadFilePath");
+            loggingServiceMock.Received().LogDebug("Deleting: DownloadFilePath");
             fileServiceMock.Received().Delete("DownloadFilePath");
         }
 

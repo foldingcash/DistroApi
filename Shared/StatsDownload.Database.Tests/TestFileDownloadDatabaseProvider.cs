@@ -419,7 +419,7 @@
             {
                 loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.UpdateToLatest));
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[UpdateToLatest]");
-                loggingServiceMock.LogVerbose($"'{NumberOfRowsEffectedExpected}' rows were effected");
+                loggingServiceMock.LogDebug($"'{NumberOfRowsEffectedExpected}' rows were effected");
             });
         }
 

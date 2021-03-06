@@ -39,7 +39,7 @@
                 if (uri.Scheme == oldScheme)
                 {
                     var newUri = new Uri(uri.AbsoluteUri.Replace(oldScheme, newScheme));
-                    loggingService.LogVerbose(
+                    loggingService.LogDebug(
                         $"Changing scheme {oldScheme} to {newScheme}{Environment.NewLine}Old Uri: {uri.AbsoluteUri}{Environment.NewLine}New Uri: {newUri.AbsoluteUri}");
                     filePayload.DownloadUri = newUri;
                 }

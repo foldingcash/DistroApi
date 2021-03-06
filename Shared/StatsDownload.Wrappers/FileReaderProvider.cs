@@ -26,20 +26,20 @@
 
         private void ReadCompressedFile(FilePayload filePayload)
         {
-            loggingService.LogVerbose($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
+            loggingService.LogDebug($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
 
             filePayload.DownloadFileData = File.ReadAllBytes(filePayload.DownloadFilePath);
 
-            loggingService.LogVerbose($"Reading file complete: {dateTimeService.DateTimeNow()}");
+            loggingService.LogDebug($"Reading file complete: {dateTimeService.DateTimeNow()}");
         }
 
         private void ReadDecompressedFile(FilePayload filePayload)
         {
-            loggingService.LogVerbose($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
+            loggingService.LogDebug($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
 
             filePayload.DecompressedDownloadFileData = File.ReadAllText(filePayload.DecompressedDownloadFilePath);
 
-            loggingService.LogVerbose($"Reading file complete: {dateTimeService.DateTimeNow()}");
+            loggingService.LogDebug($"Reading file complete: {dateTimeService.DateTimeNow()}");
         }
     }
 }

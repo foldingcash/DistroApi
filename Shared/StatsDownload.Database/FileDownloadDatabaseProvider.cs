@@ -230,18 +230,13 @@
                        DateTime? ?? default;
         }
 
-        private void LogVerbose(string message)
-        {
-            loggingService.LogVerbose(message);
-        }
-
         private void UpdateToLatest(IDatabaseConnectionService databaseConnection)
         {
             int numberOfRowsEffected =
                 databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase
                                                                    .UpdateToLatestStoredProcedureName);
 
-            LogVerbose($"'{numberOfRowsEffected}' rows were effected");
+            loggingService.LogDebug($"'{numberOfRowsEffected}' rows were effected");
         }
     }
 }

@@ -185,9 +185,9 @@
             IOrderedEnumerable<ValidatedFile> orderedFiles = validatedFiles.OrderBy(file => file.DownloadDateTime);
             ValidatedFile firstFile = orderedFiles.First();
             ValidatedFile lastFile = orderedFiles.Last();
-            loggingService.LogVerbose(
+            loggingService.LogDebug(
                 $"First File: DownloadId={firstFile.DownloadId} DownloadDateTime={firstFile.DownloadDateTime}");
-            loggingService.LogVerbose(
+            loggingService.LogDebug(
                 $"Last File: DownloadId={lastFile.DownloadId} DownloadDateTime={lastFile.DownloadDateTime}");
             Task<ParseResults> firstResultTask = GetValidatedFile(firstFile);
             Task<ParseResults> lastResultTask = GetValidatedFile(lastFile);

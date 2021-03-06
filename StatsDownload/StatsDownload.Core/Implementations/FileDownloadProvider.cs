@@ -77,7 +77,7 @@
                 }
 
                 UpdateToLatest();
-                LogVerbose($"Stats file download started: {DateTimeNow()}");
+                LogDebug($"Stats file download started: {DateTimeNow()}");
                 FileDownloadStarted(filePayload);
 
                 if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
@@ -149,7 +149,7 @@
 
         private async Task<FileDownloadResult> HandleSuccessAndUpload(FilePayload filePayload)
         {
-            LogVerbose($"Stats file download completed: {DateTimeNow()}");
+            LogDebug($"Stats file download completed: {DateTimeNow()}");
             await UploadFile(filePayload);
             FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
             Cleanup(successResult);
@@ -193,6 +193,11 @@
             return !fileDownloadMinimumWaitTimeService.IsMinimumWaitTimeMet(filePayload);
         }
 
+        private void LogDebug(string message)
+        {
+            loggingService.LogDebug(message);
+        }
+
         private void LogException(Exception exception)
         {
             loggingService.LogException(exception);
@@ -200,17 +205,12 @@
 
         private void LogMethodInvoked(string method)
         {
-            LogVerbose($"{method} Invoked");
+            LogDebug($"{method} Invoked");
         }
 
         private void LogResult(FileDownloadResult result)
         {
             loggingService.LogResult(result);
-        }
-
-        private void LogVerbose(string message)
-        {
-            loggingService.LogVerbose(message);
         }
 
         private FileDownloadResult NewFailedFileDownloadResult(Exception exception, FilePayload filePayload)

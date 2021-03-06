@@ -41,6 +41,25 @@
         }
 
         [Test]
+        public void LogDebug_WhenInvoked_LogsDebug()
+        {
+            systemUnderTest.LogDebug("debug");
+
+            applicationLoggingServiceMock.Received().LogDebug($"{dateTime}{Environment.NewLine}debug");
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("\t")]
+        [TestCase("\n")]
+        public void LogDebug_WhenInvokedWithNoMessage_DoesNotLogDebug(string noMessage)
+        {
+            systemUnderTest.LogDebug(noMessage);
+
+            applicationLoggingServiceMock.DidNotReceiveWithAnyArgs().LogDebug(noMessage);
+        }
+
+        [Test]
         public void LogError_WhenInvoked_LogsError()
         {
             systemUnderTest.LogError("error");
@@ -65,7 +84,7 @@
         {
             systemUnderTest.LogMethodFinished();
 
-            applicationLoggingServiceMock.Received().LogVerbose(
+            applicationLoggingServiceMock.Received().LogDebug(
                 $"{dateTime}{Environment.NewLine}{nameof(LogMethodFinishedInvoked_WhenInvoked_LogsMethodFinished)} Finished");
         }
 
@@ -74,27 +93,8 @@
         {
             systemUnderTest.LogMethodInvoked();
 
-            applicationLoggingServiceMock.Received().LogVerbose(
+            applicationLoggingServiceMock.Received().LogDebug(
                 $"{dateTime}{Environment.NewLine}{nameof(LogMethodInvoked_WhenInvoked_LogsMethodInvoked)} Invoked");
-        }
-
-        [Test]
-        public void LogVerbose_WhenInvoked_LogsVerbose()
-        {
-            systemUnderTest.LogVerbose("verbose");
-
-            applicationLoggingServiceMock.Received().LogVerbose($"{dateTime}{Environment.NewLine}verbose");
-        }
-
-        [TestCase(null)]
-        [TestCase("")]
-        [TestCase("\t")]
-        [TestCase("\n")]
-        public void LogVerbose_WhenInvokedWithNoMessage_DoesNotLogVerbose(string noMessage)
-        {
-            systemUnderTest.LogVerbose(noMessage);
-
-            applicationLoggingServiceMock.DidNotReceiveWithAnyArgs().LogVerbose(noMessage);
         }
 
         private ILoggingService NewLoggingProvider(IApplicationLoggingService applicationLoggingService,

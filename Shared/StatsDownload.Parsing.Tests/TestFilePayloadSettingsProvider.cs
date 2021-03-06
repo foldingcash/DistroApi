@@ -134,7 +134,7 @@
 
             Assert.That(filePayload.TimeoutSeconds, Is.EqualTo(100));
             loggingServiceMock.Received()
-                              .LogVerbose("The download timeout configuration was invalid, using the default value.");
+                              .LogDebug("The download timeout configuration was invalid, using the default value.");
         }
 
         [Test]
@@ -164,7 +164,7 @@
 
             Assert.That(filePayload.MinimumWaitTimeSpan, Is.EqualTo(MinimumWait.TimeSpan));
             loggingServiceMock.Received()
-                              .LogVerbose("The minimum wait time configuration was invalid, using the default value.");
+                              .LogDebug("The minimum wait time configuration was invalid, using the default value.");
         }
 
         [Test]

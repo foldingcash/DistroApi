@@ -27,7 +27,7 @@
 
         public void DownloadFile(FilePayload filePayload)
         {
-            loggingService.LogVerbose($"Attempting to download file: {dateTimeService.DateTimeNow()}");
+            loggingService.LogDebug($"Attempting to download file: {dateTimeService.DateTimeNow()}");
 
             IWebClient webClient = null;
 
@@ -42,7 +42,7 @@
                 webClientFactory.Release(webClient);
             }
 
-            loggingService.LogVerbose($"File download complete: {dateTimeService.DateTimeNow()}");
+            loggingService.LogDebug($"File download complete: {dateTimeService.DateTimeNow()}");
         }
 
         private void DownloadFile(FilePayload filePayload, IWebClient webClient)
@@ -57,7 +57,7 @@
 
             if (policyErrors == SslPolicyErrors.None)
             {
-                loggingService.LogVerbose(message);
+                loggingService.LogDebug(message);
             }
             else
             {

@@ -117,13 +117,13 @@
             if (!TryParseTimeout(downloadTimeout, out int timeoutInSeconds))
             {
                 timeoutInSeconds = 100;
-                loggingService.LogVerbose("The download timeout configuration was invalid, using the default value.");
+                loggingService.LogDebug("The download timeout configuration was invalid, using the default value.");
             }
 
             if (!TryParseMinimumWaitTimeSpan(configuredMinimumWaitTimeInHours, out TimeSpan minimumWaitTimeSpan))
             {
                 minimumWaitTimeSpan = MinimumWait.TimeSpan;
-                loggingService.LogVerbose("The minimum wait time configuration was invalid, using the default value.");
+                loggingService.LogDebug("The minimum wait time configuration was invalid, using the default value.");
             }
 
             filePayload.DownloadUri = downloadUri;

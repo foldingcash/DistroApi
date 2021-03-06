@@ -18,7 +18,7 @@
             this.fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
-        
+
         public void Cleanup(FileDownloadResult fileDownloadResult)
         {
             FilePayload filePayload = fileDownloadResult.FilePayload;
@@ -27,11 +27,11 @@
             string decompressedDownloadFilePath = filePayload.DecompressedDownloadFilePath;
             string failedDownloadFilePath = filePayload.FailedDownloadFilePath;
 
-            LogVerbose($"{nameof(Cleanup)} Invoked");
+            LogDebug($"{nameof(Cleanup)} Invoked");
 
             if (Exists(decompressedDownloadFilePath))
             {
-                LogVerbose($"Deleting: {decompressedDownloadFilePath}");
+                LogDebug($"Deleting: {decompressedDownloadFilePath}");
                 Delete(decompressedDownloadFilePath);
             }
 
@@ -39,12 +39,12 @@
             {
                 if (fileDownloadResult.FailedReason == FailedReason.FileDownloadFailedDecompression)
                 {
-                    LogVerbose($"Moving: {downloadFilePath} to {failedDownloadFilePath}");
+                    LogDebug($"Moving: {downloadFilePath} to {failedDownloadFilePath}");
                     Move(downloadFilePath, failedDownloadFilePath);
                 }
                 else
                 {
-                    LogVerbose($"Deleting: {downloadFilePath}");
+                    LogDebug($"Deleting: {downloadFilePath}");
                     Delete(downloadFilePath);
                 }
             }
@@ -60,9 +60,9 @@
             return fileService.Exists(path);
         }
 
-        private void LogVerbose(string message)
+        private void LogDebug(string message)
         {
-            loggingService.LogVerbose(message);
+            loggingService.LogDebug(message);
         }
 
         private void Move(string sourcePath, string destinationPath)

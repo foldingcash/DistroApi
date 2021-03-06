@@ -2,8 +2,8 @@
 {
     public interface IApplicationLoggingService
     {
-        void LogError(string message);
+        void LogDebug(string message);
 
-        void LogVerbose(string message);
+        void LogError(string message);
     }
 }

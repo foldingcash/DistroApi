@@ -54,7 +54,7 @@
             catch (EmailArgumentException emailArgumentException)
             {
                 logger.LogError(emailArgumentException, "There was an exception.");
-                LogEmailArgumentExceptionVerbose(emailArgumentException);
+                LogEmailArgumentExceptionDebug(emailArgumentException);
                 return NewEmailResult(emailArgumentException);
             }
             catch (Exception ex)
@@ -64,7 +64,7 @@
             }
         }
 
-        private void LogEmailArgumentExceptionVerbose(EmailArgumentException emailArgumentException)
+        private void LogEmailArgumentExceptionDebug(EmailArgumentException emailArgumentException)
         {
             var builder = new StringBuilder();
 

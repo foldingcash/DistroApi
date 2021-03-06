@@ -119,7 +119,7 @@
             if (databaseConnection.ConnectionState == ConnectionState.Closed)
             {
                 databaseConnection.Open();
-                LogVerbose(DatabaseConnectionSuccessfulLogMessage);
+                loggingService.LogDebug(DatabaseConnectionSuccessfulLogMessage);
             }
         }
 
@@ -139,11 +139,6 @@
         private void LogException(Exception exception)
         {
             loggingService.LogException(exception);
-        }
-
-        private void LogVerbose(string message)
-        {
-            loggingService.LogVerbose(message);
         }
     }
 }

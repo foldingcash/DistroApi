@@ -31,9 +31,8 @@
                 CashAddressToOldAddress(address, out bool _, out bool _);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                logger.LogWarning(ex, "There was an exception while validating the Bitcoin Cash address. {address}");
                 return false;
             }
         }

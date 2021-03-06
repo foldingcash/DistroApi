@@ -16,7 +16,7 @@
         public StatsFileDateTimeFormatsAndOffsetProvider(IOptions<DateTimeSettings> dateTimeSettings)
         {
             this.dateTimeSettings = dateTimeSettings?.Value
-                                           ?? throw new ArgumentNullException(nameof(dateTimeSettings));
+                                    ?? throw new ArgumentNullException(nameof(dateTimeSettings));
         }
 
         public (string format, int hourOffset)[] GetStatsFileDateTimeFormatsAndOffset()

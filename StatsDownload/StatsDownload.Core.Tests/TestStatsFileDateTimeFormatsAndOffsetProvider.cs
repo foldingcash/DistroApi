@@ -19,14 +19,14 @@
         public void SetUp()
         {
             dateTimeSettings = new DateTimeSettings
-                                      {
-                                          Formats = new[]
-                                                    {
-                                                        new DateTimeFormat { Format = "ZONE1", HourOffset = -1 },
-                                                        new DateTimeFormat { Format = "ZONE2", HourOffset = 0 },
-                                                        new DateTimeFormat { Format = "ZONE3", HourOffset = 1 }
-                                                    }
-                                      };
+                               {
+                                   Formats = new[]
+                                             {
+                                                 new DateTimeFormat { Format = "ZONE1", HourOffset = -1 },
+                                                 new DateTimeFormat { Format = "ZONE2", HourOffset = 0 },
+                                                 new DateTimeFormat { Format = "ZONE3", HourOffset = 1 }
+                                             }
+                               };
 
             dateTimeSettingsOptionsMock = Substitute.For<IOptions<DateTimeSettings>>();
             dateTimeSettingsOptionsMock.Value.Returns(dateTimeSettings);

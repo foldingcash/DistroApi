@@ -19,6 +19,16 @@
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
         }
 
+        public void LogDebug(string message)
+        {
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                string messageWithTime = GetMessageWithTimestamp(message);
+
+                applicationLoggingService.LogDebug(messageWithTime);
+            }
+        }
+
         public void LogError(string message)
         {
             string messageWithTime = GetMessageWithTimestamp(message);
@@ -35,22 +45,12 @@
 
         public void LogMethodFinished([CallerMemberName] string method = "")
         {
-            LogVerbose($"{method} Finished");
+            LogDebug($"{method} Finished");
         }
 
         public void LogMethodInvoked([CallerMemberName] string method = "")
         {
-            LogVerbose($"{method} Invoked");
-        }
-
-        public void LogVerbose(string message)
-        {
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                string messageWithTime = GetMessageWithTimestamp(message);
-
-                applicationLoggingService.LogVerbose(messageWithTime);
-            }
+            LogDebug($"{method} Invoked");
         }
 
         private string GetMessageWithTimestamp(string message)

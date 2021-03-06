@@ -116,7 +116,7 @@
             {
                 loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.IsAvailable));
                 databaseConnectionServiceMock.Open();
-                loggingServiceMock.LogVerbose("Database connection was successful");
+                loggingServiceMock.LogDebug("Database connection was successful");
             });
         }
 
@@ -127,7 +127,7 @@
 
             InvokeIsAvailable();
 
-            loggingServiceMock.DidNotReceive().LogVerbose("Database connection was successful");
+            loggingServiceMock.DidNotReceive().LogDebug("Database connection was successful");
             databaseConnectionServiceMock.DidNotReceive().Open();
         }
 
