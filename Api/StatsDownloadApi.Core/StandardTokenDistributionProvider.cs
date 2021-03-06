@@ -84,12 +84,6 @@
 
         private decimal GetRewardAmount(int amount, long totalPoints, long pointsGained)
         {
-            if (totalPoints == 0)
-            {
-                throw new InvalidDistributionStateException(
-                    "The total points earned was zero. A distribution cannot happen when zero points are earned because the distribution would be zero. Enter a new start date and/or end date and try again. If the error continues or you think this is incorrect, then contact your support team with this response.");
-            }
-
             decimal rawAmount = Convert.ToDecimal(pointsGained) / Convert.ToDecimal(totalPoints)
                                 * Convert.ToDecimal(amount);
 
@@ -98,7 +92,15 @@
 
         private long GetTotalPoints(IList<FoldingUser> foldingUsers)
         {
-            return foldingUsers.Sum(user => user.PointsGained);
+            long totalPoints = foldingUsers.Sum(user => user.PointsGained);
+
+            if (totalPoints == 0)
+            {
+                throw new InvalidDistributionStateException(
+                    "The total points earned was zero. A distribution cannot happen when zero points are earned because the distribution would be zero. Enter a new start date and/or end date and try again. If the error continues or you think this is incorrect, then contact your support team with this response.");
+            }
+
+            return totalPoints;
         }
 
         private DistroUser NewDistroUser(int amount, long totalPoints, string bitcoinAddress, long pointsGained,
