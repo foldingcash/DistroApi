@@ -1,6 +1,7 @@
 ﻿namespace StatsDownloadApi.DataStore
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -196,11 +197,19 @@
                 $"First File: DownloadId={firstFile.DownloadId} DownloadDateTime={firstFile.DownloadDateTime}");
             loggingService.LogDebug(
                 $"Last File: DownloadId={lastFile.DownloadId} DownloadDateTime={lastFile.DownloadDateTime}");
-            Task<ParseResults> firstResultTask = GetValidatedFile(firstFile);
-            Task<ParseResults> lastResultTask = GetValidatedFile(lastFile);
-            ParseResults[] results = await Task.WhenAll(firstResultTask, lastResultTask);
+
+            var results = new BlockingCollection<ParseResults>();
+
+            await Task.Run(() =>
+            {
+                Parallel.ForEach(new[] { firstFile, lastFile },
+                    async file => { results.Add(await GetValidatedFile(file)); });
+            });
+
+            ParseResults[] ordered = results.OrderBy(file => file.DownloadDateTime).ToArray();
+
             loggingService.LogMethodFinished();
-            return results;
+            return ordered;
         }
     }
 }

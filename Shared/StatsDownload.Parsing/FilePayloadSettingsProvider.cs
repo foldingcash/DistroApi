@@ -21,13 +21,15 @@
 
         private readonly IDownloadSettingsValidatorService downloadSettingsValidatorService;
 
+        private readonly IGuidService guidService;
+
         private readonly ILoggingService loggingService;
 
         public FilePayloadSettingsProvider(IDateTimeService dateTimeService,
                                            IOptions<DownloadSettings> downloadSettings,
                                            IDownloadSettingsValidatorService downloadSettingsValidatorService,
                                            ILoggingService loggingService,
-                                           IOptions<DataStoreSettings> dataStoreSettings)
+                                           IOptions<DataStoreSettings> dataStoreSettings, IGuidService guidService)
         {
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
             this.downloadSettings = downloadSettings?.Value
@@ -38,19 +40,24 @@
             this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
             this.dataStoreSettings =
                 dataStoreSettings?.Value ?? throw new ArgumentNullException(nameof(dataStoreSettings));
+            this.guidService = guidService ?? throw new ArgumentNullException(nameof(guidService));
         }
 
         public void SetFilePayloadDownloadDetails(FilePayload filePayload)
         {
             DateTime now = DateTimeNow();
+            Guid guid = guidService.NewGuid();
+
+            var prefix = $"{now.ToFileTime()}.{guid}";
+
             string downloadDirectory = GetDownloadDirectory();
             string uploadDirectory = GetUploadDirectory();
 
             SetDownloadDetails(filePayload);
-            SetDownloadFileDetails(filePayload, now, downloadDirectory);
-            SetDecompressedDownloadFileDetails(filePayload, now, downloadDirectory);
-            SetFailedDownloadFileDetails(filePayload, now, downloadDirectory);
-            SetUploadFileDetails(filePayload, now, uploadDirectory);
+            SetDownloadFileDetails(filePayload, prefix, downloadDirectory);
+            SetDecompressedDownloadFileDetails(filePayload, prefix, downloadDirectory);
+            SetFailedDownloadFileDetails(filePayload, prefix, downloadDirectory);
+            SetUploadFileDetails(filePayload, prefix, uploadDirectory);
         }
 
         private DateTime DateTimeNow()
@@ -70,14 +77,14 @@
             return downloadDirectory;
         }
 
-        private string GetDownloadFileName(DateTime dateTime)
+        private string GetDownloadFileName(string prefix)
         {
-            return $"{dateTime.ToFileTime()}.{Constants.FilePayload.FileName}";
+            return $"{prefix}.{Constants.FilePayload.FileName}";
         }
 
-        private string GetDownloadFileNameWithExtension(DateTime dateTime)
+        private string GetDownloadFileNameWithExtension(string prefix)
         {
-            return $"{dateTime.ToFileTime()}.{Constants.FilePayload.FileName}.{Constants.FilePayload.FileExtension}";
+            return $"{prefix}.{Constants.FilePayload.FileName}.{Constants.FilePayload.FileExtension}";
         }
 
         private string GetUploadDirectory()
@@ -90,10 +97,10 @@
             return new FileDownloadArgumentException(message);
         }
 
-        private void SetDecompressedDownloadFileDetails(FilePayload filePayload, DateTime dateTime,
+        private void SetDecompressedDownloadFileDetails(FilePayload filePayload, string prefix,
                                                         string downloadDirectory)
         {
-            var decompressedFileName = $"{dateTime.ToFileTime()}.{Constants.FilePayload.DecompressedFileName}";
+            var decompressedFileName = $"{prefix}.{Constants.FilePayload.DecompressedFileName}";
 
             filePayload.DecompressedDownloadDirectory = downloadDirectory;
             filePayload.DecompressedDownloadFileName = decompressedFileName;
@@ -132,26 +139,26 @@
             filePayload.MinimumWaitTimeSpan = minimumWaitTimeSpan;
         }
 
-        private void SetDownloadFileDetails(FilePayload filePayload, DateTime dateTime, string downloadDirectory)
+        private void SetDownloadFileDetails(FilePayload filePayload, string prefix, string downloadDirectory)
         {
             filePayload.DownloadDirectory = downloadDirectory;
-            filePayload.DownloadFileName = GetDownloadFileName(dateTime);
+            filePayload.DownloadFileName = GetDownloadFileName(prefix);
             filePayload.DownloadFileExtension = Constants.FilePayload.FileExtension;
-            filePayload.DownloadFilePath = Path.Combine(downloadDirectory, GetDownloadFileNameWithExtension(dateTime));
+            filePayload.DownloadFilePath = Path.Combine(downloadDirectory, GetDownloadFileNameWithExtension(prefix));
         }
 
-        private void SetFailedDownloadFileDetails(FilePayload filePayload, DateTime dateTime, string downloadDirectory)
+        private void SetFailedDownloadFileDetails(FilePayload filePayload, string prefix, string downloadDirectory)
         {
-            string downloadFileName = GetDownloadFileNameWithExtension(dateTime);
+            string downloadFileName = GetDownloadFileNameWithExtension(prefix);
 
             filePayload.FailedDownloadFilePath =
                 Path.Combine(downloadDirectory, "FileDownloadFailed", downloadFileName);
         }
 
-        private void SetUploadFileDetails(FilePayload filePayload, DateTime now, string uploadDirectory)
+        private void SetUploadFileDetails(FilePayload filePayload, string prefix, string uploadDirectory)
         {
             filePayload.UploadPath = Path.Combine(uploadDirectory,
-                $"{now.ToFileTime()}.{Constants.FilePayload.FileName}.{Constants.FilePayload.FileExtension}");
+                $"{prefix}.{Constants.FilePayload.FileName}.{Constants.FilePayload.FileExtension}");
         }
 
         private bool TryParseDownloadUri(string unsafeDownloadUri, out Uri downloadUri)

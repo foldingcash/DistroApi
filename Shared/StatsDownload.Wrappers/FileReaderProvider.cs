@@ -26,7 +26,7 @@
 
         private void ReadCompressedFile(FilePayload filePayload)
         {
-            loggingService.LogDebug($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
+            loggingService.LogDebug($"Attempting to read compressed file contents: {dateTimeService.DateTimeNow()}");
 
             filePayload.DownloadFileData = File.ReadAllBytes(filePayload.DownloadFilePath);
 

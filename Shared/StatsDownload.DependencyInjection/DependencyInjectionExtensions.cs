@@ -41,6 +41,7 @@
                              .AddDataStore().AddLogging().AddWebClient();
 
             serviceCollection.AddSingleton<IDateTimeService, DateTimeProvider>()
+                             .AddSingleton<IGuidService, GuidProvider>()
                              .AddSingleton<IFileService, FileProvider>()
                              .AddSingleton<IDirectoryService, DirectoryProvider>()
                              .AddSingleton<IResourceCleanupService, ResourceCleanupProvider>()

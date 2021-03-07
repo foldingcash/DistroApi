@@ -94,24 +94,16 @@ namespace StatsDownloadApi.DataStore.Tests
             new ValidatedFile(3, DateTime.Today.AddMinutes(3), "FilePath3");
 
         [Test]
-        public void GetFoldingMembers_WhenInvoked_GetsAndValidatesStatsFiles()
+        public async Task GetFoldingMembers_WhenInvoked_GetsAndValidatesStatsFiles()
         {
-            systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
+            await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
 
-            Received.InOrder(() =>
-            {
-                databaseServiceMock.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
-
-                filePayloadApiSettingsServiceMock.SetFilePayloadApiSettings(Arg.Any<FilePayload>());
-                dataStoreServiceMock.DownloadFile(Arg.Any<FilePayload>(), validatedFileMock1);
-                fileValidationServiceMock.ValidateFile(Arg.Any<FilePayload>());
-                resourceCleanupServiceMock.Cleanup(Arg.Any<FileDownloadResult>());
-
-                filePayloadApiSettingsServiceMock.SetFilePayloadApiSettings(Arg.Any<FilePayload>());
-                dataStoreServiceMock.DownloadFile(Arg.Any<FilePayload>(), validatedFileMock3);
-                fileValidationServiceMock.ValidateFile(Arg.Any<FilePayload>());
-                resourceCleanupServiceMock.Cleanup(Arg.Any<FileDownloadResult>());
-            });
+            databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
+            filePayloadApiSettingsServiceMock.Received(2).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+            await dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock1);
+            await dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock3);
+            fileValidationServiceMock.Received(2).ValidateFile(Arg.Any<FilePayload>());
+            resourceCleanupServiceMock.Received(2).Cleanup(Arg.Any<FileDownloadResult>());
         }
 
         [Test]
