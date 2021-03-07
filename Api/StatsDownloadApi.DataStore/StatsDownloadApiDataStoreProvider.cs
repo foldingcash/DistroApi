@@ -79,15 +79,20 @@
         private FoldingUser[] GetFoldingUsers(ParseResults firstFileResults, ParseResults lastFileResults)
         {
             loggingService.LogMethodInvoked();
+
+            Dictionary<(string Name, long TeamNumber), UserData> first =
+                firstFileResults.UsersData.ToDictionary(data => (data.Name, data.TeamNumber));
+
             int length = lastFileResults.UsersData.Count();
             var foldingUsers = new Dictionary<(string, long), FoldingUser>(length);
 
             foreach (UserData userData in lastFileResults.UsersData)
             {
-                UserData previous = firstFileResults.UsersData.FirstOrDefault(user =>
-                    user.Name == userData.Name && user.TeamNumber == userData.TeamNumber);
-                if (previous != null)
+                bool exists = first.ContainsKey((userData.Name, userData.TeamNumber));
+
+                if (exists)
                 {
+                    UserData previous = first[(userData.Name, userData.TeamNumber)];
                     var user = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
                         userData.TotalPoints - previous.TotalPoints, userData.TotalWorkUnits - previous.TotalWorkUnits);
 
