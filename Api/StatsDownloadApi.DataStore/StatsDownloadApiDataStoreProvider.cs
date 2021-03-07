@@ -80,13 +80,13 @@
         {
             loggingService.LogMethodInvoked();
             int length = lastFileResults.UsersData.Count();
-            var foldingUsers = new List<FoldingUser>(length);
+            var foldingUsers = new Dictionary<(string, long), FoldingUser>(length);
 
             foreach (UserData userData in lastFileResults.UsersData)
             {
                 UserData previous = firstFileResults.UsersData.FirstOrDefault(user =>
                     user.Name == userData.Name && user.TeamNumber == userData.TeamNumber);
-                if (previous is UserData)
+                if (previous != null)
                 {
                     var user = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
                         userData.TotalPoints - previous.TotalPoints, userData.TotalWorkUnits - previous.TotalWorkUnits);
@@ -103,17 +103,19 @@
                             "Negative work units earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
                     }
 
-                    foldingUsers.Add(user);
+                    foldingUsers[(userData.Name, userData.TeamNumber)] = user;
                 }
                 else
                 {
-                    foldingUsers.Add(new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
-                        userData.TotalPoints, userData.TotalWorkUnits));
+                    foldingUsers.Add((userData.Name, userData.TeamNumber),
+                        new FoldingUser(userData.FriendlyName, userData.BitcoinAddress, userData.TotalPoints,
+                            userData.TotalWorkUnits));
                 }
             }
 
+            FoldingUser[] users = foldingUsers.Select(pair => pair.Value).ToArray();
             loggingService.LogMethodFinished();
-            return foldingUsers.ToArray();
+            return users;
         }
 
         private Member[] GetMembers(ParseResults firstFileResults, ParseResults lastFileResults)
