@@ -71,7 +71,7 @@
 
             foreach (FoldingUser foldingUser in foldingUsers)
             {
-                if (foldingUser.PointsGained == 0 && foldingUser.WorkUnitsGained == 0)
+                if (foldingUser.PointsGained == 0)
                 {
                     continue;
                 }
