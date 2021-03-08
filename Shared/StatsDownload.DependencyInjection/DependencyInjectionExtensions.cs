@@ -4,6 +4,7 @@
 
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
     using StatsDownload.Core.Implementations;
@@ -41,8 +42,7 @@
                              .AddDataStore().AddWebClient();
 
             serviceCollection.AddSingleton<IDateTimeService, DateTimeProvider>()
-                             .AddSingleton<IGuidService, GuidProvider>()
-                             .AddSingleton<IFileService, FileProvider>()
+                             .AddSingleton<IGuidService, GuidProvider>().AddSingleton<IFileService, FileProvider>()
                              .AddSingleton<IDirectoryService, DirectoryProvider>()
                              .AddSingleton<IResourceCleanupService, ResourceCleanupProvider>()
                              .AddSingleton<ILoggingService, LoggingProvider>()
@@ -93,6 +93,7 @@
                         new WhitespaceNameUsersFilter(
                             new ZeroPointUsersFilter(
                                 new StatsFileParserProvider(
+                                    provider.GetRequiredService<ILogger<StatsFileParserProvider>>(),
                                     provider.GetRequiredService<IAdditionalUserDataParserService>(),
                                     provider.GetRequiredService<IStatsFileDateTimeFormatsAndOffsetService>()),
                                 provider.GetRequiredService<IOptions<FilterSettings>>()),
@@ -113,7 +114,8 @@
 
             serviceCollection.AddSingleton(provider =>
             {
-                var service = new Bz2CompressionProvider();
+                var service =
+                    new Bz2CompressionProvider(provider.GetRequiredService<ILogger<Bz2CompressionProvider>>());
                 return decorateFileCompressionService?.Invoke(service, provider) ?? service;
             });
 
