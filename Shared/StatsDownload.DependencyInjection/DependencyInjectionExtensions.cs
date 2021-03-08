@@ -77,12 +77,11 @@
 
             serviceCollection.AddSingleton<IDownloadService>(provider =>
             {
-                var service = new SecureDownloadProvider(
-                    new DownloadProvider(provider.GetRequiredService<ILoggingService>(),
+                var service = new SecureDownloadProvider(provider.GetRequiredService<ILogger<SecureDownloadProvider>>(),
+                    new DownloadProvider(provider.GetRequiredService<ILogger<DownloadProvider>>(),
                         provider.GetRequiredService<IDateTimeService>(),
                         provider.GetRequiredService<IWebClientFactory>()),
-                    provider.GetRequiredService<ISecureFilePayloadService>(),
-                    provider.GetRequiredService<ILoggingService>());
+                    provider.GetRequiredService<ISecureFilePayloadService>());
                 return service;
             });
 

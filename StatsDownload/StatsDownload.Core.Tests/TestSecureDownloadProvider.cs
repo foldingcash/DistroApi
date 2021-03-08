@@ -3,6 +3,8 @@
     using System;
     using System.Net;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -10,7 +12,6 @@
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestSecureDownloadProvider
@@ -24,17 +25,16 @@
 
             secureFilePayloadServiceMock = Substitute.For<ISecureFilePayloadService>();
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
+            loggerMock = Substitute.For<ILogger<SecureDownloadProvider>>();
 
-            systemUnderTest = NewSecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock,
-                loggingServiceMock);
+            systemUnderTest = NewSecureDownloadProvider(loggerMock, downloadServiceMock, secureFilePayloadServiceMock);
         }
 
         private IDownloadService downloadServiceMock;
 
         private FilePayload filePayload;
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<SecureDownloadProvider> loggerMock;
 
         private ISecureFilePayloadService secureFilePayloadServiceMock;
 
@@ -44,11 +44,11 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                NewSecureDownloadProvider(null, secureFilePayloadServiceMock, loggingServiceMock));
+                NewSecureDownloadProvider(null, downloadServiceMock, secureFilePayloadServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewSecureDownloadProvider(downloadServiceMock, null, loggingServiceMock));
+                NewSecureDownloadProvider(loggerMock, null, secureFilePayloadServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewSecureDownloadProvider(downloadServiceMock, secureFilePayloadServiceMock, null));
+                NewSecureDownloadProvider(loggerMock, downloadServiceMock, null));
         }
 
         [Test]
@@ -71,7 +71,8 @@
             Assert.Throws(Is.EqualTo(webException), () => systemUnderTest.DownloadFile(filePayload));
 
             secureFilePayloadServiceMock.DidNotReceive().DisableSecureFilePayload(Arg.Any<FilePayload>());
-            loggingServiceMock.Received().LogException(webException);
+            loggerMock.Received(1).LogError(webException,
+                "There was a web exception while trying to securely download the file");
         }
 
         [Test]
@@ -151,17 +152,18 @@
             {
                 secureFilePayloadServiceMock.EnableSecureFilePayload(filePayload);
                 downloadServiceMock.DownloadFile(filePayload);
-                loggingServiceMock.LogException(webException);
+                loggerMock.LogError(webException,
+                    "There was a web exception while trying to securely download the file");
                 secureFilePayloadServiceMock.DisableSecureFilePayload(filePayload);
                 downloadServiceMock.DownloadFile(filePayload);
             });
         }
 
-        private IDownloadService NewSecureDownloadProvider(IDownloadService downloadService,
-                                                           ISecureFilePayloadService secureFilePayloadService,
-                                                           ILoggingService loggingService)
+        private IDownloadService NewSecureDownloadProvider(ILogger<SecureDownloadProvider> logger,
+                                                           IDownloadService downloadService,
+                                                           ISecureFilePayloadService secureFilePayloadService)
         {
-            return new SecureDownloadProvider(downloadService, secureFilePayloadService, loggingService);
+            return new SecureDownloadProvider(logger, downloadService, secureFilePayloadService);
         }
     }
 }

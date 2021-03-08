@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -9,7 +11,6 @@
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Core.Interfaces.Networking;
 
     [TestFixture]
@@ -18,7 +19,8 @@
         [SetUp]
         public void SetUp()
         {
-            loggingServiceMock = Substitute.For<ILoggingService>();
+            loggerMock = Substitute.For<ILogger<DownloadProvider>>();
+
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
             filePayload = GenerateFilePayload();
 
@@ -26,14 +28,14 @@
             webClientFactoryMock = Substitute.For<IWebClientFactory>();
             webClientFactoryMock.Create().Returns(webClientMock);
 
-            systemUnderTest = new DownloadProvider(loggingServiceMock, dateTimeServiceMock, webClientFactoryMock);
+            systemUnderTest = new DownloadProvider(loggerMock, dateTimeServiceMock, webClientFactoryMock);
         }
 
         private IDateTimeService dateTimeServiceMock;
 
         private FilePayload filePayload;
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<DownloadProvider> loggerMock;
 
         private DownloadProvider systemUnderTest;
 
