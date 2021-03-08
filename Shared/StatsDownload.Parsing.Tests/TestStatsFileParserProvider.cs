@@ -201,7 +201,8 @@ TheWasp	13660834951	734045	70335";
         [Test]
         public void Parse_WhenInvokedWithMalformedUserRecord_ReturnsListOfFailedUsersData()
         {
-            var actual = new List<FailedUserData>(InvokeParse(MalformedUserRecord).FailedUsersData);
+            FailedUserData[] actual = new List<FailedUserData>(InvokeParse(MalformedUserRecord).FailedUsersData)
+                                      .OrderBy(data => data.LineNumber).ToArray();
 
             Assert.That(actual.Count, Is.EqualTo(4));
 

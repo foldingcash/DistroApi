@@ -1,9 +1,11 @@
 ﻿namespace StatsDownload.Parsing
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Microsoft.Extensions.Logging;
 
@@ -39,10 +41,12 @@
         {
             logger.LogMethodInvoked();
             string fileData = filePayload.DecompressedDownloadFileData;
-            var usersData = new List<UserData>();
-            var failedUsersData = new List<FailedUserData>();
 
             string[] fileLines = GetFileLines(fileData);
+            int length = fileLines?.Length ?? 0;
+
+            var usersData = new UserData[length];
+            var failedUsersData = new BlockingCollection<FailedUserData>();
 
             if (IsInvalidStatsFile(fileLines))
             {
@@ -50,8 +54,9 @@
             }
 
             DateTime downloadDateTime = ParseDownloadDateTime(fileLines);
-            Parse(fileLines, usersData, failedUsersData);
-            var results = new ParseResults(downloadDateTime, usersData, failedUsersData);
+            Parse(fileLines, length, usersData, failedUsersData);
+            IEnumerable<UserData> filteredUsersData = usersData.Where(data => data != null);
+            var results = new ParseResults(downloadDateTime, filteredUsersData, failedUsersData);
             logger.LogMethodFinished();
             return results;
         }
@@ -77,30 +82,31 @@
             return unparsedUserData.Length != 3 && unparsedUserData.Length != 4;
         }
 
-        private void Parse(string[] fileLines, List<UserData> usersData, List<FailedUserData> failedUsersData)
+        private void Parse(string[] fileLines, int length, UserData[] usersData,
+                           BlockingCollection<FailedUserData> failedUsersData)
         {
-            for (var lineIndex = 2; lineIndex < fileLines.Length; lineIndex++)
+            Parallel.For(2, length, index =>
             {
-                int lineNumber = lineIndex + 1;
-                string currentLine = fileLines[lineIndex];
+                int lineNumber = index + 1;
+                string currentLine = fileLines[index];
                 string[] unparsedUserData = currentLine.Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (IsInvalidUserData(unparsedUserData))
                 {
                     failedUsersData.Add(new FailedUserData(lineNumber, currentLine, RejectionReason.UnexpectedFormat));
-                    continue;
+                    return;
                 }
 
                 if (TryParseUserData(lineNumber, unparsedUserData, out UserData userData))
                 {
                     additionalUserDataParserService.Parse(userData);
-                    usersData.Add(userData);
-                    continue;
+                    usersData[index] = userData;
+                    return;
                 }
 
                 failedUsersData.Add(
                     new FailedUserData(lineNumber, currentLine, RejectionReason.FailedParsing, userData));
-            }
+            });
         }
 
         private DateTime ParseDownloadDateTime(string[] fileLines)
