@@ -5,21 +5,28 @@
     using System.Globalization;
     using System.Linq;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Core.Interfaces.Exceptions;
+    using StatsDownload.Logging;
 
     public class StatsFileParserProvider : IStatsFileParserService
     {
         private readonly IAdditionalUserDataParserService additionalUserDataParserService;
 
+        private readonly ILogger<StatsFileParserProvider> logger;
+
         private readonly IStatsFileDateTimeFormatsAndOffsetService statsFileDateTimeFormatsAndOffsetService;
 
-        public StatsFileParserProvider(IAdditionalUserDataParserService additionalUserDataParserService,
+        public StatsFileParserProvider(ILogger<StatsFileParserProvider> logger,
+                                       IAdditionalUserDataParserService additionalUserDataParserService,
                                        IStatsFileDateTimeFormatsAndOffsetService
                                            statsFileDateTimeFormatsAndOffsetService)
         {
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.additionalUserDataParserService = additionalUserDataParserService
                                                    ?? throw new ArgumentNullException(
                                                        nameof(additionalUserDataParserService));
@@ -30,6 +37,7 @@
 
         public ParseResults Parse(FilePayload filePayload)
         {
+            logger.LogMethodInvoked();
             string fileData = filePayload.DecompressedDownloadFileData;
             var usersData = new List<UserData>();
             var failedUsersData = new List<FailedUserData>();
@@ -43,8 +51,9 @@
 
             DateTime downloadDateTime = ParseDownloadDateTime(fileLines);
             Parse(fileLines, usersData, failedUsersData);
-
-            return new ParseResults(downloadDateTime, usersData, failedUsersData);
+            var results = new ParseResults(downloadDateTime, usersData, failedUsersData);
+            logger.LogMethodFinished();
+            return results;
         }
 
         private string GetDateTimeLine(string[] fileLines)

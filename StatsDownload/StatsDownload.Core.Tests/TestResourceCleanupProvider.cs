@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -10,7 +12,6 @@
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestResourceCleanupProvider
@@ -27,9 +28,9 @@
             fileServiceMock.Exists("DecompressedDownloadFilePath").Returns(true);
             fileServiceMock.Exists("DownloadFilePath").Returns(true);
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
+            loggerMock = Substitute.For<ILogger<ResourceCleanupProvider>>();
 
-            systemUnderTest = NewResourceCleanupProvider(fileServiceMock, loggingServiceMock);
+            systemUnderTest = NewResourceCleanupProvider(loggerMock, fileServiceMock);
         }
 
         private FileDownloadResult fileDownloadResult;
@@ -38,7 +39,7 @@
 
         private IFileService fileServiceMock;
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<ResourceCleanupProvider> loggerMock;
 
         private IResourceCleanupService systemUnderTest;
 
@@ -49,7 +50,7 @@
 
             systemUnderTest.Cleanup(fileDownloadResult);
 
-            loggingServiceMock.DidNotReceive().LogDebug("Deleting: DecompressedDownloadFilePath");
+            loggerMock.DidNotReceive().LogDebug("Deleting: DecompressedDownloadFilePath");
             fileServiceMock.DidNotReceive().Delete("DecompressedDownloadFilePath");
         }
 
@@ -60,7 +61,7 @@
 
             systemUnderTest.Cleanup(fileDownloadResult);
 
-            loggingServiceMock.DidNotReceive().LogDebug("Deleting: DownloadFilePath");
+            loggerMock.DidNotReceive().LogDebug("Deleting: DownloadFilePath");
             fileServiceMock.DidNotReceive().Delete("DownloadFilePath");
         }
 
@@ -71,7 +72,7 @@
 
             systemUnderTest.Cleanup(fileDownloadResult);
 
-            loggingServiceMock.Received().LogDebug("Moving: DownloadFilePath to FailedDownloadFilePath");
+            loggerMock.Received().LogDebug("Moving: DownloadFilePath to FailedDownloadFilePath");
             fileServiceMock.Received().Move("DownloadFilePath", "FailedDownloadFilePath");
         }
 
@@ -80,26 +81,26 @@
         {
             systemUnderTest.Cleanup(fileDownloadResult);
 
-            loggingServiceMock.Received().LogDebug("Cleanup Invoked");
+            loggerMock.Received().LogDebug("Cleanup Invoked");
             fileServiceMock.Received().Exists("DecompressedDownloadFilePath");
-            loggingServiceMock.Received().LogDebug("Deleting: DecompressedDownloadFilePath");
+            loggerMock.Received().LogDebug("Deleting: DecompressedDownloadFilePath");
             fileServiceMock.Received().Delete("DecompressedDownloadFilePath");
             fileServiceMock.Received().Exists("DownloadFilePath");
-            loggingServiceMock.Received().LogDebug("Deleting: DownloadFilePath");
+            loggerMock.Received().LogDebug("Deleting: DownloadFilePath");
             fileServiceMock.Received().Delete("DownloadFilePath");
         }
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewResourceCleanupProvider(null, loggingServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewResourceCleanupProvider(fileServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() => NewResourceCleanupProvider(null, fileServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewResourceCleanupProvider(loggerMock, null));
         }
 
-        private IResourceCleanupService NewResourceCleanupProvider(IFileService fileService,
-                                                                   ILoggingService loggingService)
+        private IResourceCleanupService NewResourceCleanupProvider(ILogger<ResourceCleanupProvider> logger,
+                                                                   IFileService fileService)
         {
-            return new ResourceCleanupProvider(fileService, loggingService);
+            return new ResourceCleanupProvider(logger, fileService);
         }
     }
 }

@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -23,6 +25,8 @@
 
             parseResultsMock = new ParseResults(DateTime.Today, null, null);
 
+            loggerMock = Substitute.For<ILogger<FileValidationProvider>>();
+
             fileCompressionServiceMock = Substitute.For<IFileCompressionService>();
 
             fileReaderServiceMock = Substitute.For<IFileReaderService>();
@@ -30,7 +34,7 @@
             statsFileParserServiceMock = Substitute.For<IStatsFileParserService>();
             statsFileParserServiceMock.Parse(filePayloadMock).Returns(parseResultsMock);
 
-            systemUnderTest = new FileValidationProvider(fileCompressionServiceMock, fileReaderServiceMock,
+            systemUnderTest = new FileValidationProvider(loggerMock, fileCompressionServiceMock, fileReaderServiceMock,
                 statsFileParserServiceMock);
         }
 
@@ -39,6 +43,8 @@
         private FilePayload filePayloadMock;
 
         private IFileReaderService fileReaderServiceMock;
+
+        private ILogger<FileValidationProvider> loggerMock;
 
         private ParseResults parseResultsMock;
 

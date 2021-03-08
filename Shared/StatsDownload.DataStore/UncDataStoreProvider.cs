@@ -30,7 +30,9 @@
 
         public Task DownloadFile(FilePayload filePayload, ValidatedFile validatedFile)
         {
+            logger.LogDebug("Copying download file...");
             fileService.CopyFile(validatedFile.FilePath, filePayload.UploadPath);
+            logger.LogDebug("Download file copied locally");
             return Task.CompletedTask;
         }
 
@@ -49,7 +51,9 @@
 
         public Task UploadFile(FilePayload filePayload)
         {
+            logger.LogDebug("Copying upload file...");
             fileService.CopyFile(filePayload.DownloadFilePath, filePayload.UploadPath);
+            logger.LogDebug("Upload file copied locally");
             return Task.CompletedTask;
         }
     }

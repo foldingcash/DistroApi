@@ -2,21 +2,22 @@
 {
     using System;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
 
     public class ResourceCleanupProvider : IResourceCleanupService
     {
         private readonly IFileService fileService;
 
-        private readonly ILoggingService loggingService;
+        private readonly ILogger logger;
 
-        public ResourceCleanupProvider(IFileService fileService, ILoggingService loggingService)
+        public ResourceCleanupProvider(ILogger<ResourceCleanupProvider> logger, IFileService fileService)
         {
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
-            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public void Cleanup(FileDownloadResult fileDownloadResult)
@@ -62,7 +63,7 @@
 
         private void LogDebug(string message)
         {
-            loggingService.LogDebug(message);
+            logger.LogDebug(message);
         }
 
         private void Move(string sourcePath, string destinationPath)

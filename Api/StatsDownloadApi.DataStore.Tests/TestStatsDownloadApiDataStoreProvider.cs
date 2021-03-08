@@ -3,6 +3,8 @@ namespace StatsDownloadApi.DataStore.Tests
     using System;
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -61,12 +63,12 @@ namespace StatsDownloadApi.DataStore.Tests
 
             filePayloadApiSettingsServiceMock = Substitute.For<IFilePayloadApiSettingsService>();
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
+            loggerMock = Substitute.For<ILogger<StatsDownloadApiDataStoreProvider>>();
 
             resourceCleanupServiceMock = Substitute.For<IResourceCleanupService>();
 
             systemUnderTest = new StatsDownloadApiDataStoreProvider(dataStoreServiceFactoryMock, databaseServiceMock,
-                fileValidationServiceMock, filePayloadApiSettingsServiceMock, loggingServiceMock,
+                fileValidationServiceMock, filePayloadApiSettingsServiceMock, loggerMock,
                 resourceCleanupServiceMock);
         }
 
@@ -78,7 +80,7 @@ namespace StatsDownloadApi.DataStore.Tests
 
         private IFileValidationService fileValidationServiceMock;
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<StatsDownloadApiDataStoreProvider> loggerMock;
 
         private IResourceCleanupService resourceCleanupServiceMock;
 

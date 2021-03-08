@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -16,16 +18,15 @@
         public void SetUp()
         {
             dateTime = DateTime.UtcNow;
-
-            applicationLoggingServiceMock = Substitute.For<IApplicationLoggingService>();
+            
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
 
-            systemUnderTest = NewLoggingProvider(applicationLoggingServiceMock, dateTimeServiceMock);
+            loggerMock = Substitute.For<ILogger<LoggingProvider>>();
+
+            systemUnderTest = NewLoggingProvider(loggerMock, dateTimeServiceMock);
 
             dateTimeServiceMock.DateTimeNow().Returns(dateTime);
         }
-
-        private IApplicationLoggingService applicationLoggingServiceMock;
 
         private DateTime dateTime;
 
@@ -33,11 +34,13 @@
 
         private ILoggingService systemUnderTest;
 
+        private ILogger<LoggingProvider> loggerMock;
+
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => NewLoggingProvider(null, dateTimeServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewLoggingProvider(applicationLoggingServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() => NewLoggingProvider(loggerMock, null));
         }
 
         [Test]
@@ -45,7 +48,7 @@
         {
             systemUnderTest.LogDebug("debug");
 
-            applicationLoggingServiceMock.Received().LogDebug($"{dateTime}{Environment.NewLine}debug");
+            loggerMock.Received().LogDebug($"{dateTime}{Environment.NewLine}debug");
         }
 
         [TestCase(null)]
@@ -56,7 +59,7 @@
         {
             systemUnderTest.LogDebug(noMessage);
 
-            applicationLoggingServiceMock.DidNotReceiveWithAnyArgs().LogDebug(noMessage);
+            loggerMock.DidNotReceiveWithAnyArgs().LogDebug(noMessage);
         }
 
         [Test]
@@ -64,7 +67,7 @@
         {
             systemUnderTest.LogError("error");
 
-            applicationLoggingServiceMock.Received().LogError($"{dateTime}{Environment.NewLine}error");
+            loggerMock.Received().LogError($"{dateTime}{Environment.NewLine}error");
         }
 
         [Test]
@@ -73,10 +76,10 @@
             var exception = new Exception("message");
             systemUnderTest.LogException(exception);
 
-            applicationLoggingServiceMock.Received().LogError($"{dateTime}{Environment.NewLine}"
-                                                              + $"Exception Type: {exception.GetType()}{Environment.NewLine}"
-                                                              + $"Exception Message: {exception.Message}{Environment.NewLine}"
-                                                              + $"Exception Stack-trace: {Environment.NewLine}{exception.StackTrace}");
+            loggerMock.Received().LogError($"{dateTime}{Environment.NewLine}"
+                                           + $"Exception Type: {exception.GetType()}{Environment.NewLine}"
+                                           + $"Exception Message: {exception.Message}{Environment.NewLine}"
+                                           + $"Exception Stack-trace: {Environment.NewLine}{exception.StackTrace}");
         }
 
         [Test]
@@ -84,7 +87,7 @@
         {
             systemUnderTest.LogMethodFinished();
 
-            applicationLoggingServiceMock.Received().LogDebug(
+            loggerMock.Received().LogDebug(
                 $"{dateTime}{Environment.NewLine}{nameof(LogMethodFinishedInvoked_WhenInvoked_LogsMethodFinished)} Finished");
         }
 
@@ -93,14 +96,14 @@
         {
             systemUnderTest.LogMethodInvoked();
 
-            applicationLoggingServiceMock.Received().LogDebug(
+            loggerMock.Received().LogDebug(
                 $"{dateTime}{Environment.NewLine}{nameof(LogMethodInvoked_WhenInvoked_LogsMethodInvoked)} Invoked");
         }
 
-        private ILoggingService NewLoggingProvider(IApplicationLoggingService applicationLoggingService,
+        private ILoggingService NewLoggingProvider(ILogger<LoggingProvider> logger,
                                                    IDateTimeService dateTimeService)
         {
-            return new LoggingProvider(applicationLoggingService, dateTimeService);
+            return new LoggingProvider(logger, dateTimeService);
         }
     }
 }

@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StatsDownload.Core.Interfaces\StatsDownload.Core.Interfaces.csproj" />
+    <ProjectReference Include="..\StatsDownload.Logging\StatsDownload.Logging.csproj" />
   </ItemGroup>
 
 </Project>

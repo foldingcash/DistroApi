@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -25,7 +27,9 @@
             statsFileDateTimeFormatsAndOffsetServiceMock.GetStatsFileDateTimeFormatsAndOffset()
                                                         .Returns(dateTimeFormatsAndOffset);
 
-            systemUnderTest = NewStatsFileParserProvider(additionalUserDataParserServiceMock,
+            loggerMock = Substitute.For<ILogger<StatsFileParserProvider>>();
+
+            systemUnderTest = NewStatsFileParserProvider(loggerMock, additionalUserDataParserServiceMock,
                 statsFileDateTimeFormatsAndOffsetServiceMock);
         }
 
@@ -114,6 +118,8 @@ TheWasp	13660834951	734045	70335";
             ("ddd MMM dd HH:mm:ss PST yyyy", -8)
         };
 
+        private ILogger<StatsFileParserProvider> loggerMock;
+
         private IStatsFileDateTimeFormatsAndOffsetService statsFileDateTimeFormatsAndOffsetServiceMock;
 
         private IStatsFileParserService systemUnderTest;
@@ -121,10 +127,12 @@ TheWasp	13660834951	734045	70335";
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
+            Assert.Throws<ArgumentNullException>(() => NewStatsFileParserProvider(null,
+                additionalUserDataParserServiceMock, statsFileDateTimeFormatsAndOffsetServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsFileParserProvider(null, statsFileDateTimeFormatsAndOffsetServiceMock));
+                NewStatsFileParserProvider(loggerMock, null, statsFileDateTimeFormatsAndOffsetServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsFileParserProvider(additionalUserDataParserServiceMock, null));
+                NewStatsFileParserProvider(loggerMock, additionalUserDataParserServiceMock, null));
         }
 
         [Test]
@@ -232,11 +240,13 @@ TheWasp	13660834951	734045	70335";
             return systemUnderTest.Parse(new FilePayload { DecompressedDownloadFileData = fileData });
         }
 
-        private IStatsFileParserService NewStatsFileParserProvider(
-            IAdditionalUserDataParserService additionalUserDataParserService,
-            IStatsFileDateTimeFormatsAndOffsetService statsFileDateTimeFormatsAndOffsetService)
+        private IStatsFileParserService NewStatsFileParserProvider(ILogger<StatsFileParserProvider> logger,
+                                                                   IAdditionalUserDataParserService
+                                                                       additionalUserDataParserService,
+                                                                   IStatsFileDateTimeFormatsAndOffsetService
+                                                                       statsFileDateTimeFormatsAndOffsetService)
         {
-            return new StatsFileParserProvider(additionalUserDataParserService,
+            return new StatsFileParserProvider(logger, additionalUserDataParserService,
                 statsFileDateTimeFormatsAndOffsetService);
         }
     }

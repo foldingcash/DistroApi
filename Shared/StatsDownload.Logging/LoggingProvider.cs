@@ -3,19 +3,20 @@
     using System;
     using System.Runtime.CompilerServices;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Logging;
 
     public class LoggingProvider : ILoggingService
     {
-        private readonly IApplicationLoggingService applicationLoggingService;
-
         private readonly IDateTimeService dateTimeService;
 
-        public LoggingProvider(IApplicationLoggingService applicationLoggingService, IDateTimeService dateTimeService)
+        private readonly ILogger<LoggingProvider> logger;
+
+        public LoggingProvider(ILogger<LoggingProvider> logger, IDateTimeService dateTimeService)
         {
-            this.applicationLoggingService = applicationLoggingService
-                                             ?? throw new ArgumentNullException(nameof(applicationLoggingService));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
         }
 
@@ -25,7 +26,7 @@
             {
                 string messageWithTime = GetMessageWithTimestamp(message);
 
-                applicationLoggingService.LogDebug(messageWithTime);
+                logger.LogDebug(messageWithTime);
             }
         }
 
@@ -33,7 +34,7 @@
         {
             string messageWithTime = GetMessageWithTimestamp(message);
 
-            applicationLoggingService.LogError(messageWithTime);
+            logger.LogError(messageWithTime);
         }
 
         public void LogException(Exception exception)
