@@ -5,12 +5,13 @@
     using System.Data;
     using System.Data.Common;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Core.Interfaces.Settings;
+    using StatsDownload.Logging;
 
     public class StatsDownloadDatabaseProvider : IStatsDownloadDatabaseService
     {
@@ -20,18 +21,18 @@
 
         private readonly DatabaseSettings databaseSettings;
 
-        private readonly ILoggingService loggingService;
+        private readonly ILogger logger;
 
         public StatsDownloadDatabaseProvider(IOptions<DatabaseSettings> databaseSettings,
                                              IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
-                                             ILoggingService loggingService)
+                                             ILogger<StatsDownloadDatabaseProvider> logger)
         {
             this.databaseSettings = databaseSettings?.Value
                                     ?? throw new ArgumentNullException(nameof(databaseSettings));
             this.databaseConnectionServiceFactory = databaseConnectionServiceFactory
                                                     ?? throw new ArgumentNullException(
                                                         nameof(databaseConnectionServiceFactory));
-            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void Commit(DbTransaction transaction)
@@ -50,7 +51,7 @@
 
         public DbTransaction CreateTransaction()
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
             DbTransaction transaction = null;
             CreateDatabaseConnectionAndExecuteAction(service => { transaction = CreateTransaction(service); });
             return transaction;
@@ -58,7 +59,7 @@
 
         public (bool isAvailable, DatabaseFailedReason reason) IsAvailable(string[] requiredObjects)
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
 
             try
             {
@@ -82,7 +83,7 @@
                     {
                         string missingObjectsCombined = "{'" + string.Join("', '", missingObjects) + "'}";
 
-                        loggingService.LogError(
+                        logger.LogError(
                             $"The required objects {missingObjectsCombined} are missing from the database.");
 
                         failedReason = DatabaseFailedReason.DatabaseMissingRequiredObjects;
@@ -100,7 +101,7 @@
 
         public void Rollback(DbTransaction transaction)
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
             transaction?.Rollback();
         }
 
@@ -119,7 +120,7 @@
             if (databaseConnection.ConnectionState == ConnectionState.Closed)
             {
                 databaseConnection.Open();
-                loggingService.LogDebug(DatabaseConnectionSuccessfulLogMessage);
+                logger.LogDebug(DatabaseConnectionSuccessfulLogMessage);
             }
         }
 
@@ -138,7 +139,7 @@
 
         private void LogException(Exception exception)
         {
-            loggingService.LogException(exception);
+            logger.LogError(exception, "There was an exception opening the database connection");
         }
     }
 }
