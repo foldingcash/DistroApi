@@ -71,7 +71,8 @@
 
             serviceCollection.AddSingleton(provider =>
             {
-                var service = new SecureFilePayloadProvider(provider.GetRequiredService<ILoggingService>());
+                var service =
+                    new SecureFilePayloadProvider(provider.GetRequiredService<ILogger<SecureFilePayloadProvider>>());
                 return decorateSecureFilePayloadService?.Invoke(service, provider) ?? service;
             });
 
