@@ -17,7 +17,6 @@
     using Microsoft.OpenApi.Models;
 
     using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Core.Interfaces.Settings;
     using StatsDownload.DependencyInjection;
 
@@ -106,8 +105,8 @@
                     provider.GetRequiredService<IOptions<DatabaseCacheSettings>>(),
                     provider.GetRequiredService<IAppCache>(),
                     new StatsDownloadApiDatabaseValidationProvider(new StatsDownloadApiDatabaseProvider(
-                        provider.GetRequiredService<IStatsDownloadDatabaseService>(),
-                        provider.GetRequiredService<ILoggingService>())));
+                        provider.GetRequiredService<ILogger<StatsDownloadApiDatabaseProvider>>(),
+                        provider.GetRequiredService<IStatsDownloadDatabaseService>())));
             });
 
             services.AddSingleton<IStatsDownloadApiDataStoreService>(provider =>

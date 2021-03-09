@@ -3,12 +3,12 @@
     using System;
     using System.IO;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Exceptions;
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Core.Interfaces.Settings;
 
     public class FilePayloadSettingsProvider : IFilePayloadSettingsService
@@ -23,12 +23,12 @@
 
         private readonly IGuidService guidService;
 
-        private readonly ILoggingService loggingService;
+        private readonly ILogger loggingService;
 
         public FilePayloadSettingsProvider(IDateTimeService dateTimeService,
                                            IOptions<DownloadSettings> downloadSettings,
                                            IDownloadSettingsValidatorService downloadSettingsValidatorService,
-                                           ILoggingService loggingService,
+                                           ILogger<FilePayloadSettingsProvider> logger,
                                            IOptions<DataStoreSettings> dataStoreSettings, IGuidService guidService)
         {
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
@@ -37,7 +37,7 @@
             this.downloadSettingsValidatorService = downloadSettingsValidatorService
                                                     ?? throw new ArgumentNullException(
                                                         nameof(downloadSettingsValidatorService));
-            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            loggingService = logger ?? throw new ArgumentNullException(nameof(logger));
             this.dataStoreSettings =
                 dataStoreSettings?.Value ?? throw new ArgumentNullException(nameof(dataStoreSettings));
             this.guidService = guidService ?? throw new ArgumentNullException(nameof(guidService));

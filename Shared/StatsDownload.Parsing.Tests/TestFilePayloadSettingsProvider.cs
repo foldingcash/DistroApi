@@ -2,6 +2,7 @@
 {
     using System;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
     using NSubstitute;
@@ -11,7 +12,6 @@
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Exceptions;
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Core.Interfaces.Settings;
 
     [TestFixture]
@@ -23,6 +23,8 @@
             dateTime = DateTime.UtcNow;
             timeSpan = TimeSpan.MaxValue;
             uri = new Uri("http://localhost");
+
+            loggerMock = Substitute.For<ILogger<FilePayloadSettingsProvider>>();
 
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
             dateTimeServiceMock.DateTimeNow().Returns(dateTime);
@@ -61,8 +63,6 @@
             });
             downloadSettingsValidatorServiceMock.IsValidDownloadDirectory("DownloadDirectory").Returns(true);
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
-
             dataStoreSettings = new DataStoreSettings { UploadDirectory = "UploadDirectory" };
 
             dataStoreSettingsOptionsMock = Substitute.For<IOptions<DataStoreSettings>>();
@@ -72,8 +72,7 @@
             guidServiceMock.NewGuid().Returns(guid);
 
             systemUnderTest = NewFilePayloadSettingsProvider(dateTimeServiceMock, downloadSettingsOptionsMock,
-                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsOptionsMock,
-                guidServiceMock);
+                downloadSettingsValidatorServiceMock, loggerMock, dataStoreSettingsOptionsMock, guidServiceMock);
         }
 
         private DataStoreSettings dataStoreSettings;
@@ -94,7 +93,7 @@
 
         private IGuidService guidServiceMock;
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<FilePayloadSettingsProvider> loggerMock;
 
         private IFilePayloadSettingsService systemUnderTest;
 
@@ -106,21 +105,18 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(null, downloadSettingsOptionsMock,
-                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsOptionsMock,
-                guidServiceMock));
+                downloadSettingsValidatorServiceMock, loggerMock, dataStoreSettingsOptionsMock, guidServiceMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock, null,
-                downloadSettingsValidatorServiceMock, loggingServiceMock, dataStoreSettingsOptionsMock,
-                guidServiceMock));
+                downloadSettingsValidatorServiceMock, loggerMock, dataStoreSettingsOptionsMock, guidServiceMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
-                downloadSettingsOptionsMock, null, loggingServiceMock, dataStoreSettingsOptionsMock, guidServiceMock));
+                downloadSettingsOptionsMock, null, loggerMock, dataStoreSettingsOptionsMock, guidServiceMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
                 downloadSettingsOptionsMock, downloadSettingsValidatorServiceMock, null, dataStoreSettingsOptionsMock,
                 guidServiceMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
-                downloadSettingsOptionsMock, downloadSettingsValidatorServiceMock, loggingServiceMock, null,
-                guidServiceMock));
+                downloadSettingsOptionsMock, downloadSettingsValidatorServiceMock, loggerMock, null, guidServiceMock));
             Assert.Throws<ArgumentNullException>(() => NewFilePayloadSettingsProvider(dateTimeServiceMock,
-                downloadSettingsOptionsMock, downloadSettingsValidatorServiceMock, loggingServiceMock,
+                downloadSettingsOptionsMock, downloadSettingsValidatorServiceMock, loggerMock,
                 dataStoreSettingsOptionsMock, null));
         }
 
@@ -148,8 +144,7 @@
             InvokeSetFilePayloadDownloadDetails(filePayload);
 
             Assert.That(filePayload.TimeoutSeconds, Is.EqualTo(100));
-            loggingServiceMock.Received()
-                              .LogDebug("The download timeout configuration was invalid, using the default value.");
+            loggerMock.Received().LogDebug("The download timeout configuration was invalid, using the default value.");
         }
 
         [Test]
@@ -178,8 +173,7 @@
             InvokeSetFilePayloadDownloadDetails(filePayload);
 
             Assert.That(filePayload.MinimumWaitTimeSpan, Is.EqualTo(MinimumWait.TimeSpan));
-            loggingServiceMock.Received()
-                              .LogDebug("The minimum wait time configuration was invalid, using the default value.");
+            loggerMock.Received().LogDebug("The minimum wait time configuration was invalid, using the default value.");
         }
 
         [Test]
@@ -255,11 +249,12 @@
 
         private IFilePayloadSettingsService NewFilePayloadSettingsProvider(
             IDateTimeService dateTimeService, IOptions<DownloadSettings> downloadSettingsOptions,
-            IDownloadSettingsValidatorService downloadSettingsValidatorService, ILoggingService loggingService,
-            IOptions<DataStoreSettings> dataStoreSettingsOptions, IGuidService guidService)
+            IDownloadSettingsValidatorService downloadSettingsValidatorService,
+            ILogger<FilePayloadSettingsProvider> logger, IOptions<DataStoreSettings> dataStoreSettingsOptions,
+            IGuidService guidService)
         {
             return new FilePayloadSettingsProvider(dateTimeService, downloadSettingsOptions,
-                downloadSettingsValidatorService, loggingService, dataStoreSettingsOptions, guidService);
+                downloadSettingsValidatorService, logger, dataStoreSettingsOptions, guidService);
         }
     }
 }
