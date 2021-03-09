@@ -3,6 +3,8 @@
     using System;
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
 
@@ -10,7 +12,6 @@
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
 
     using StatsDownloadApi.Interfaces;
     using StatsDownloadApi.Interfaces.DataTransfer;
@@ -21,6 +22,8 @@
         [SetUp]
         public void SetUp()
         {
+            loggerMock = Substitute.For<ILogger<StatsDownloadApiProvider>>();
+
             statsDownloadApiDatabaseServiceMock = Substitute.For<IStatsDownloadApiDatabaseService>();
             statsDownloadApiDatabaseServiceMock.IsAvailable().Returns((true, DatabaseFailedReason.None));
 
@@ -29,13 +32,11 @@
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
             dateTimeServiceMock.DateTimeNow().Returns(DateTime.UtcNow);
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
-
             statsDownloadApiDataStoreServiceMock = Substitute.For<IStatsDownloadApiDataStoreService>();
             statsDownloadApiDataStoreServiceMock.IsAvailable().Returns(true);
 
-            systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock,
+            systemUnderTest = NewStatsDownloadApiProvider(loggerMock, statsDownloadApiDatabaseServiceMock,
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock,
                 statsDownloadApiDataStoreServiceMock);
         }
 
@@ -45,7 +46,7 @@
 
         private readonly DateTime endDateMock = DateTime.UtcNow.Date.AddDays(-1);
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<StatsDownloadApiProvider> loggerMock;
 
         private readonly DateTime startDateMock = DateTime.UtcNow.Date.AddDays(-1);
 
@@ -61,18 +62,19 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(null,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock,
+                statsDownloadApiDatabaseServiceMock, statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock,
                 statsDownloadApiDataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                null, dateTimeServiceMock, loggingServiceMock, statsDownloadApiDataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, null, loggingServiceMock,
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(loggerMock, null,
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock,
                 statsDownloadApiDataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, null,
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(loggerMock,
+                statsDownloadApiDatabaseServiceMock, null, dateTimeServiceMock, statsDownloadApiDataStoreServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(loggerMock,
+                statsDownloadApiDatabaseServiceMock, statsDownloadApiTokenDistributionServiceMock, null,
                 statsDownloadApiDataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(loggerMock,
+                statsDownloadApiDatabaseServiceMock, statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock,
+                null));
         }
 
         [Test]
@@ -165,23 +167,6 @@
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.InvalidDistributionState));
             Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo("invalid state"));
-        }
-
-        [Test]
-        public async Task GetDistro_WhenInvoked_LogsMethodInvoked()
-        {
-            var foldingUsers = new FoldingUser[0];
-            var resultMock = new FoldingUsersResult(foldingUsers, startDateMock, endDateMock);
-            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(resultMock);
-
-            await systemUnderTest.GetDistro(startDateMock, endDateMock, amountMock);
-
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetDistro));
-                statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers);
-                loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetDistro));
-            });
         }
 
         [Test]
@@ -355,19 +340,6 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenInvoked_LogsMethodInvoked()
-        {
-            await systemUnderTest.GetMemberStats(DateTime.MinValue, endDateMock);
-
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetMemberStats));
-                statsDownloadApiDataStoreServiceMock.GetMembers(DateTime.MinValue, endDateMock);
-                loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetMemberStats));
-            });
-        }
-
-        [Test]
         public async Task GetMemberStats_WhenInvoked_ReturnsSuccessMemberStatsResponse()
         {
             var members = new Member[2];
@@ -484,19 +456,6 @@
         }
 
         [Test]
-        public async Task GetTeams_WhenInvoked_LogsMethodInvoked()
-        {
-            await systemUnderTest.GetTeams();
-
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetTeams));
-                statsDownloadApiDataStoreServiceMock.GetTeams();
-                loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetTeams));
-            });
-        }
-
-        [Test]
         public async Task GetTeams_WhenInvoked_ReturnsSuccessGetTeamsResponse()
         {
             var teams = new[] { new Team(0, ""), new Team(0, "") };
@@ -537,15 +496,17 @@
             return systemUnderTest.GetTeams();
         }
 
-        private IStatsDownloadApiService NewStatsDownloadApiProvider(
-            IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
-            IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService,
-            IDateTimeService dateTimeService, ILoggingService loggingService,
-            IStatsDownloadApiDataStoreService statsDownloadApiDataStoreService)
+        private IStatsDownloadApiService NewStatsDownloadApiProvider(ILogger<StatsDownloadApiProvider> logger,
+                                                                     IStatsDownloadApiDatabaseService
+                                                                         statsDownloadApiDatabaseService,
+                                                                     IStatsDownloadApiTokenDistributionService
+                                                                         statsDownloadApiTokenDistributionService,
+                                                                     IDateTimeService dateTimeService,
+                                                                     IStatsDownloadApiDataStoreService
+                                                                         statsDownloadApiDataStoreService)
         {
-            return new StatsDownloadApiProvider(statsDownloadApiDatabaseService,
-                statsDownloadApiTokenDistributionService, dateTimeService, loggingService,
-                statsDownloadApiDataStoreService);
+            return new StatsDownloadApiProvider(logger, statsDownloadApiDatabaseService,
+                statsDownloadApiTokenDistributionService, dateTimeService, statsDownloadApiDataStoreService);
         }
     }
 }
