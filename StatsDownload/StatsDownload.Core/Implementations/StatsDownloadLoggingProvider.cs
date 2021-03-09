@@ -4,33 +4,35 @@
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Extensions;
+    using StatsDownload.Logging;
 
     public class StatsDownloadLoggingProvider : IStatsDownloadLoggingService
     {
-        private readonly ILoggingService loggingService;
+        private readonly ILogger logger;
 
-        public StatsDownloadLoggingProvider(ILoggingService loggingService)
+        public StatsDownloadLoggingProvider(ILogger<StatsDownloadLoggingProvider> logger)
         {
-            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void LogDebug(string message)
         {
-            loggingService.LogDebug(message);
+            logger.LogDebug(message);
         }
 
         public void LogError(string message)
         {
-            loggingService.LogError(message);
+            logger.LogError(message);
         }
 
         public void LogException(Exception exception)
         {
-            loggingService.LogException(exception);
+            logger.LogError(exception, "There was an unexpected exception");
         }
 
         public void LogFailedUserData(int downloadId, FailedUserData failedUserData)
@@ -51,12 +53,12 @@
 
         public void LogMethodFinished([CallerMemberName] string method = "")
         {
-            loggingService.LogMethodFinished(method);
+            logger.LogMethodFinished(method);
         }
 
         public void LogMethodInvoked([CallerMemberName] string method = "")
         {
-            loggingService.LogMethodInvoked(method);
+            logger.LogMethodInvoked(method);
         }
 
         public void LogResult(FileDownloadResult result)
