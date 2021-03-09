@@ -2,17 +2,18 @@
 {
     using System;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Logging;
 
     public class SecureFilePayloadProvider : ISecureFilePayloadService
     {
-        private readonly ILoggingService loggingService;
+        private readonly ILogger logger;
 
-        public SecureFilePayloadProvider(ILoggingService loggingService)
+        public SecureFilePayloadProvider(ILogger<SecureFilePayloadProvider> logger)
         {
-            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void DisableSecureFilePayload(FilePayload filePayload)
@@ -39,7 +40,7 @@
                 if (uri.Scheme == oldScheme)
                 {
                     var newUri = new Uri(uri.AbsoluteUri.Replace(oldScheme, newScheme));
-                    loggingService.LogDebug(
+                    logger.LogDebug(
                         $"Changing scheme {oldScheme} to {newScheme}{Environment.NewLine}Old Uri: {uri.AbsoluteUri}{Environment.NewLine}New Uri: {newUri.AbsoluteUri}");
                     filePayload.DownloadUri = newUri;
                 }
