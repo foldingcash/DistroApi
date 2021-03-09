@@ -9,7 +9,6 @@
 
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Core.Interfaces.Networking;
     using StatsDownload.Core.Interfaces.Settings;
     using StatsDownload.Database;
@@ -45,7 +44,6 @@
                              .AddSingleton<IGuidService, GuidProvider>().AddSingleton<IFileService, FileProvider>()
                              .AddSingleton<IDirectoryService, DirectoryProvider>()
                              .AddSingleton<IResourceCleanupService, ResourceCleanupProvider>()
-                             .AddSingleton<ILoggingService, LoggingProvider>()
                              .AddSingleton<IFileDownloadLoggingService, StatsDownloadLoggingProvider>()
                              .AddSingleton<IStatsUploadLoggingService, StatsDownloadLoggingProvider>()
                              .AddSingleton<IFilePayloadSettingsService, FilePayloadSettingsProvider>()

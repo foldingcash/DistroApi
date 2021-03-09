@@ -1,10 +1,15 @@
 ﻿namespace StatsDownload.Core.Interfaces
 {
-    using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Logging;
+    using System;
 
-    public interface IFileDownloadLoggingService : ILoggingService
+    using StatsDownload.Core.Interfaces.DataTransfer;
+
+    public interface IFileDownloadLoggingService
     {
+        void LogDebug(string message);
+
+        void LogException(Exception exception);
+
         void LogResult(FileDownloadResult result);
     }
 }

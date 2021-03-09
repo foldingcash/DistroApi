@@ -2,14 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
 
     using Microsoft.Extensions.Logging;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Extensions;
-    using StatsDownload.Logging;
 
     public class StatsDownloadLoggingProvider : IStatsDownloadLoggingService
     {
@@ -49,16 +47,6 @@
                      + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}"
                      + $"Bitcoin Cash Address: {failedUserData.UserData?.BitcoinCashAddress}"
                      + $"SLP Address: {failedUserData.UserData?.SlpAddress}");
-        }
-
-        public void LogMethodFinished([CallerMemberName] string method = "")
-        {
-            logger.LogMethodFinished(method);
-        }
-
-        public void LogMethodInvoked([CallerMemberName] string method = "")
-        {
-            logger.LogMethodInvoked(method);
         }
 
         public void LogResult(FileDownloadResult result)
