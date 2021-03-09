@@ -5,14 +5,16 @@
     using System.Data;
     using System.Data.Common;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Logging;
 
     public class FileDownloadDatabaseProvider : IFileDownloadDatabaseService
     {
-        private readonly ILoggingService loggingService;
+        private readonly ILogger<FileDownloadDatabaseProvider> logger;
 
         private readonly IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterService;
 
@@ -20,7 +22,8 @@
 
         public FileDownloadDatabaseProvider(IStatsDownloadDatabaseService statsDownloadDatabaseService,
                                             IStatsDownloadDatabaseParameterService
-                                                statsDownloadDatabaseParameterService, ILoggingService loggingService)
+                                                statsDownloadDatabaseParameterService,
+                                            ILogger<FileDownloadDatabaseProvider> logger)
         {
             this.statsDownloadDatabaseService = statsDownloadDatabaseService
                                                 ?? throw new ArgumentNullException(
@@ -28,24 +31,24 @@
             this.statsDownloadDatabaseParameterService = statsDownloadDatabaseParameterService
                                                          ?? throw new ArgumentNullException(
                                                              nameof(statsDownloadDatabaseParameterService));
-            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void FileDownloadError(FileDownloadResult fileDownloadResult)
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadError(service, fileDownloadResult); });
         }
 
         public void FileDownloadFinished(FilePayload filePayload)
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => { FileDownloadFinished(service, filePayload); });
         }
 
         public void FileDownloadStarted(FilePayload filePayload)
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
             int downloadId = default;
             CreateDatabaseConnectionAndExecuteAction(service => { downloadId = FileDownloadStarted(service); });
             filePayload.DownloadId = downloadId;
@@ -53,25 +56,25 @@
 
         public void FileValidated(FilePayload filePayload)
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => { FileValidated(service, filePayload); });
         }
 
         public void FileValidationError(FileDownloadResult fileDownloadResult)
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => { FileValidationError(service, fileDownloadResult); });
         }
 
         public void FileValidationStarted(FilePayload filePayload)
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(service => { FileValidationStarted(service, filePayload); });
         }
 
         public DateTime GetLastFileDownloadDateTime()
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
             DateTime lastFileDownloadDateTime = default;
             CreateDatabaseConnectionAndExecuteAction(service =>
             {
@@ -109,7 +112,7 @@
 
         public void UpdateToLatest()
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
             CreateDatabaseConnectionAndExecuteAction(UpdateToLatest);
         }
 
@@ -236,7 +239,7 @@
                 databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase
                                                                    .UpdateToLatestStoredProcedureName);
 
-            loggingService.LogDebug($"'{numberOfRowsEffected}' rows were effected");
+            logger.LogDebug($"'{numberOfRowsEffected}' rows were effected");
         }
     }
 }
