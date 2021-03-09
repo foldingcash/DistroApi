@@ -83,14 +83,16 @@
         {
             logger.LogMethodInvoked();
 
-            Dictionary<(string Name, long TeamNumber), UserData> first =
-                firstFileResults.UsersData.ToDictionary(data => (data.Name, data.TeamNumber));
+            Dictionary<(string Name, long TeamNumber), UserData> first = firstFileResults.UsersData
+                .Where(data => !string.IsNullOrEmpty(data.BitcoinAddress))
+                .ToDictionary(data => (data.Name, data.TeamNumber));
 
-            int length = lastFileResults.UsersData.Count();
-            var foldingUsers = new Dictionary<(string, long), FoldingUser>(length);
+            int length = lastFileResults.UsersData.Length;
+            var users = new FoldingUser[length];
 
-            foreach (UserData userData in lastFileResults.UsersData)
+            Parallel.For(0, length, index =>
             {
+                UserData userData = lastFileResults.UsersData[index];
                 bool exists = first.ContainsKey((userData.Name, userData.TeamNumber));
 
                 if (exists)
@@ -111,19 +113,17 @@
                             "Negative work units earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
                     }
 
-                    foldingUsers[(userData.Name, userData.TeamNumber)] = user;
+                    users[index] = user;
                 }
                 else
                 {
-                    foldingUsers.Add((userData.Name, userData.TeamNumber),
-                        new FoldingUser(userData.FriendlyName, userData.BitcoinAddress, userData.TotalPoints,
-                            userData.TotalWorkUnits));
+                    users[index] = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress, userData.TotalPoints,
+                        userData.TotalWorkUnits);
                 }
-            }
+            });
 
-            FoldingUser[] users = foldingUsers.Select(pair => pair.Value).ToArray();
             logger.LogMethodFinished();
-            return users;
+            return users.ToArray();
         }
 
         private Member[] GetMembers(ParseResults firstFileResults, ParseResults lastFileResults)
@@ -195,10 +195,10 @@
             IOrderedEnumerable<ValidatedFile> orderedFiles = validatedFiles.OrderBy(file => file.DownloadDateTime);
             ValidatedFile firstFile = orderedFiles.First();
             ValidatedFile lastFile = orderedFiles.Last();
-            logger.LogDebug(
-                "First File: DownloadId={downloadId} DownloadDateTime={downloadDateTime}", firstFile.DownloadId, firstFile.DownloadDateTime);
-            logger.LogDebug(
-                "Last File: DownloadId={downloadId} DownloadDateTime={downloadDateTime}", lastFile.DownloadId, lastFile.DownloadDateTime);
+            logger.LogDebug("First File: DownloadId={downloadId} DownloadDateTime={downloadDateTime}",
+                firstFile.DownloadId, firstFile.DownloadDateTime);
+            logger.LogDebug("Last File: DownloadId={downloadId} DownloadDateTime={downloadDateTime}",
+                lastFile.DownloadId, lastFile.DownloadDateTime);
 
             var results = new BlockingCollection<ParseResults>();
 

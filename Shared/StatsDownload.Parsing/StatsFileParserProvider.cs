@@ -56,7 +56,7 @@
             DateTime downloadDateTime = ParseDownloadDateTime(fileLines);
             Parse(fileLines, length, usersData, failedUsersData);
             IEnumerable<UserData> filteredUsersData = usersData.Where(data => data != null);
-            var results = new ParseResults(downloadDateTime, filteredUsersData, failedUsersData);
+            var results = new ParseResults(downloadDateTime, filteredUsersData.ToArray(), failedUsersData.ToArray());
             logger.LogMethodFinished();
             return results;
         }

@@ -87,7 +87,7 @@
 
             serviceCollection.AddSingleton(provider =>
             {
-                var service = new GoogleUsersFilter(
+                var service = new GoogleUsersFilter(provider.GetRequiredService<ILogger<GoogleUsersFilter>>(),
                     new NoPaymentAddressUsersFilter(
                         new WhitespaceNameUsersFilter(
                             new ZeroPointUsersFilter(

@@ -1,12 +1,10 @@
 ﻿namespace StatsDownload.Core.Interfaces.DataTransfer
 {
     using System;
-    using System.Collections.Generic;
 
     public class ParseResults
     {
-        public ParseResults(DateTime downloadDateTime, IEnumerable<UserData> usersData,
-                            IEnumerable<FailedUserData> failedUsersData)
+        public ParseResults(DateTime downloadDateTime, UserData[] usersData, FailedUserData[] failedUsersData)
         {
             DownloadDateTime = downloadDateTime;
             UsersData = usersData;
@@ -15,8 +13,8 @@
 
         public DateTime DownloadDateTime { get; }
 
-        public IEnumerable<FailedUserData> FailedUsersData { get; }
+        public FailedUserData[] FailedUsersData { get; }
 
-        public IEnumerable<UserData> UsersData { get; }
+        public UserData[] UsersData { get; }
     }
 }

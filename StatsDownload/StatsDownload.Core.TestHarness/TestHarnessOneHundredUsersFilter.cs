@@ -26,7 +26,8 @@
 
             if (settings.EnableOneHundredUsersFilter)
             {
-                return new ParseResults(results.DownloadDateTime, results.UsersData.Take(100), results.FailedUsersData);
+                return new ParseResults(results.DownloadDateTime, results.UsersData.Take(100).ToArray(),
+                    results.FailedUsersData);
             }
 
             return results;

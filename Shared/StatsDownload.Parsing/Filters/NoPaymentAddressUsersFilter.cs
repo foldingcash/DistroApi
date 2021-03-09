@@ -28,7 +28,7 @@
             if (filterSettings.EnableNoPaymentAddressUsersFilter)
             {
                 return new ParseResults(results.DownloadDateTime,
-                    results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.BitcoinAddress)),
+                    results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.BitcoinAddress)).ToArray(),
                     results.FailedUsersData);
             }
 

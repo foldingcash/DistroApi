@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
     using NSubstitute;
@@ -20,6 +21,8 @@
         [SetUp]
         public void SetUp()
         {
+            loggerMock = Substitute.For<ILogger<GoogleUsersFilter>>();
+
             innerServiceMock = Substitute.For<IStatsFileParserService>();
 
             filterSettings = new FilterSettings();
@@ -27,7 +30,7 @@
             filterSettingsOptionsMock = Substitute.For<IOptions<FilterSettings>>();
             filterSettingsOptionsMock.Value.Returns(filterSettings);
 
-            systemUnderTest = new GoogleUsersFilter(innerServiceMock, filterSettingsOptionsMock);
+            systemUnderTest = new GoogleUsersFilter(loggerMock, innerServiceMock, filterSettingsOptionsMock);
 
             downloadDateTime = DateTime.UtcNow;
         }
@@ -41,6 +44,8 @@
         private IOptions<FilterSettings> filterSettingsOptionsMock;
 
         private IStatsFileParserService innerServiceMock;
+
+        private ILogger<GoogleUsersFilter> loggerMock;
 
         private IStatsFileParserService systemUnderTest;
 

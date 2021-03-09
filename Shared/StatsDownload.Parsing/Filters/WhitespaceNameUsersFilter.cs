@@ -27,7 +27,8 @@
             if (filterSettings.EnableWhitespaceNameUsersFilter)
             {
                 return new ParseResults(results.DownloadDateTime,
-                    results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.Name)), results.FailedUsersData);
+                    results.UsersData.Where(data => !string.IsNullOrWhiteSpace(data.Name)).ToArray(),
+                    results.FailedUsersData);
             }
 
             return results;
