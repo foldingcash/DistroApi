@@ -6,6 +6,8 @@
     using System.Data.Common;
     using System.Linq;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -13,7 +15,6 @@
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Database.Tests;
 
     using StatsDownloadApi.Interfaces;
@@ -40,14 +41,14 @@
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
+            loggerMock = Substitute.For<ILogger<StatsDownloadApiDatabaseProvider>>();
 
-            systemUnderTest = NewStatsDownloadApiDatabaseProvider(statsDownloadDatabaseServiceMock, loggingServiceMock);
+            systemUnderTest = NewStatsDownloadApiDatabaseProvider(loggerMock, statsDownloadDatabaseServiceMock);
         }
 
         private IDatabaseConnectionService databaseConnectionServiceMock;
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<StatsDownloadApiDatabaseProvider> loggerMock;
 
         private IStatsDownloadDatabaseService statsDownloadDatabaseServiceMock;
 
@@ -56,9 +57,9 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiDatabaseProvider(null, loggingServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiDatabaseProvider(statsDownloadDatabaseServiceMock, null));
+                NewStatsDownloadApiDatabaseProvider(null, statsDownloadDatabaseServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiDatabaseProvider(loggerMock, null));
         }
 
         [Test]
@@ -121,14 +122,6 @@
             Assert.That(actualParameters.ElementAt(1).Value, Is.EqualTo(DateTime.MaxValue));
         }
 
-        [Test]
-        public void GetValidatedFiles_WhenInvoked_LogsMethodInvoked()
-        {
-            systemUnderTest.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
-
-            loggingServiceMock.Received().LogMethodInvoked(nameof(systemUnderTest.GetValidatedFiles));
-        }
-
         [TestCase(true, DatabaseFailedReason.None)]
         [TestCase(false, DatabaseFailedReason.DatabaseMissingRequiredObjects)]
         public void IsAvailable_WhenInvoked_ReturnsIsAvailable(bool expectedIsAvailable,
@@ -144,9 +137,10 @@
         }
 
         private IStatsDownloadApiDatabaseService NewStatsDownloadApiDatabaseProvider(
-            IStatsDownloadDatabaseService statsDownloadDatabaseService, ILoggingService loggingService)
+            ILogger<StatsDownloadApiDatabaseProvider> logger,
+            IStatsDownloadDatabaseService statsDownloadDatabaseService)
         {
-            return new StatsDownloadApiDatabaseProvider(statsDownloadDatabaseService, loggingService);
+            return new StatsDownloadApiDatabaseProvider(logger, statsDownloadDatabaseService);
         }
     }
 }
