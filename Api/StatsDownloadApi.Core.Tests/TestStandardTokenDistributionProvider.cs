@@ -1,6 +1,7 @@
 ﻿namespace StatsDownloadApi.Core.Tests
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using NUnit.Framework;
 
@@ -16,7 +17,64 @@
             systemUnderTest = new StandardTokenDistributionProvider();
         }
 
-        private IStatsDownloadApiTokenDistributionService systemUnderTest;
+        private StandardTokenDistributionProvider systemUnderTest;
+
+        [Test]
+        public void CorrectDrift_WhenLargeDriftOver_FixesDrift()
+        {
+            var users = new List<DistroUser> { new("", 0, 0, 0.5M), new("", 0, 0, 0.50000009M) };
+
+            systemUnderTest.CorrectDrift(1, users);
+
+            Assert.That(users.Sum(user => user.Amount), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void CorrectDrift_WhenLargeDriftUnder_FixesDrift()
+        {
+            var users = new List<DistroUser> { new("", 0, 0, 0.5M), new("", 0, 0, 0.49999990M) };
+
+            systemUnderTest.CorrectDrift(1, users);
+
+            Assert.That(users.Sum(user => user.Amount), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void GetDistro_WhenDistributionHasNoReward_ThrowsException()
+        {
+            Assert.Throws<InvalidDistributionStateException>(() =>
+                systemUnderTest.GetDistro(1, new[] { new FoldingUser("friendlyName1", "address1", 0, 0) }));
+        }
+
+        [Test]
+        public void GetDistro_WhenInvoked_AmountAddedToEqualAmount()
+        {
+            IList<DistroUser> actual = systemUnderTest.GetDistro(1,
+                new[]
+                {
+                    new FoldingUser("friendlyName1", "address1", 500, 0),
+                    new FoldingUser("friendlyName2", "address2", 560, 0),
+                    new FoldingUser("friendlyName3", "address3", 251, 0)
+                });
+
+            Assert.That(actual.Count, Is.EqualTo(3));
+            Assert.That(actual.Sum(user => user.Amount), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void GetDistro_WhenInvoked_AmountSubtractedToEqualAmount()
+        {
+            IList<DistroUser> actual = systemUnderTest.GetDistro(1,
+                new[]
+                {
+                    new FoldingUser("friendlyName1", "address1", 508, 0),
+                    new FoldingUser("friendlyName2", "address2", 557, 0),
+                    new FoldingUser("friendlyName3", "address3", 931, 0)
+                });
+
+            Assert.That(actual.Count, Is.EqualTo(3));
+            Assert.That(actual.Sum(user => user.Amount), Is.EqualTo(1));
+        }
 
         [Test]
         public void GetDistro_WhenInvoked_CombinesDistroUsersByAddress()
@@ -30,14 +88,33 @@
                 });
 
             Assert.That(actual.Count, Is.EqualTo(2));
-            Assert.That(actual[0].BitcoinAddress, Is.EqualTo("address2"));
-            Assert.That(actual[0].PointsGained, Is.EqualTo(98));
-            Assert.That(actual[0].WorkUnitsGained, Is.EqualTo(96));
-            Assert.That(actual[0].Amount, Is.EqualTo(0.98));
-            Assert.That(actual[1].BitcoinAddress, Is.EqualTo("address1"));
-            Assert.That(actual[1].PointsGained, Is.EqualTo(2));
-            Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(4));
-            Assert.That(actual[1].Amount, Is.EqualTo(0.02));
+            Assert.That(actual[0].BitcoinAddress, Is.EqualTo("address1"));
+            Assert.That(actual[0].PointsGained, Is.EqualTo(2));
+            Assert.That(actual[0].WorkUnitsGained, Is.EqualTo(4));
+            Assert.That(actual[0].Amount, Is.EqualTo(0.02));
+            Assert.That(actual[1].BitcoinAddress, Is.EqualTo("address2"));
+            Assert.That(actual[1].PointsGained, Is.EqualTo(98));
+            Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(96));
+            Assert.That(actual[1].Amount, Is.EqualTo(0.98));
+        }
+
+        [Test]
+        public void GetDistro_WhenInvoked_FiltersOutZeroPointFolders()
+        {
+            IList<DistroUser> actual = systemUnderTest.GetDistro(1,
+                new[]
+                {
+                    new FoldingUser("friendlyName1", "address1", 1, 2),
+                    new FoldingUser("friendlyName2", "address2", 99, 98),
+                    new FoldingUser("friendlyName3", "address3", 1, 0),
+                    new FoldingUser("friendlyName4", "address4", 0, 0),
+                    new FoldingUser("friendlyName5", "address5", 0, 1)
+                });
+
+            Assert.That(actual.Count, Is.EqualTo(3));
+            Assert.That(actual[0].BitcoinAddress, Is.EqualTo("address1"));
+            Assert.That(actual[1].BitcoinAddress, Is.EqualTo("address2"));
+            Assert.That(actual[2].BitcoinAddress, Is.EqualTo("address3"));
         }
 
         [Test]

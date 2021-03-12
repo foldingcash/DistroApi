@@ -3,12 +3,16 @@
     using System;
     using System.Linq;
 
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
 
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Settings;
     using StatsDownload.Parsing.Filters;
 
     [TestFixture]
@@ -17,11 +21,16 @@
         [SetUp]
         public void SetUp()
         {
+            loggerMock = Substitute.For<ILogger<GoogleUsersFilter>>();
+
             innerServiceMock = Substitute.For<IStatsFileParserService>();
 
-            settingsMock = Substitute.For<IGoogleUsersFilterSettings>();
+            filterSettings = new FilterSettings();
 
-            systemUnderTest = new GoogleUsersFilter(innerServiceMock, settingsMock);
+            filterSettingsOptionsMock = Substitute.For<IOptions<FilterSettings>>();
+            filterSettingsOptionsMock.Value.Returns(filterSettings);
+
+            systemUnderTest = new GoogleUsersFilter(loggerMock, innerServiceMock, filterSettingsOptionsMock);
 
             downloadDateTime = DateTime.UtcNow;
         }
@@ -30,16 +39,20 @@
 
         private readonly FilePayload FilePayload = new FilePayload { DecompressedDownloadFileData = "fileData" };
 
+        private FilterSettings filterSettings;
+
+        private IOptions<FilterSettings> filterSettingsOptionsMock;
+
         private IStatsFileParserService innerServiceMock;
 
-        private IGoogleUsersFilterSettings settingsMock;
+        private ILogger<GoogleUsersFilter> loggerMock;
 
         private IStatsFileParserService systemUnderTest;
 
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()
         {
-            settingsMock.Enabled.Returns(false);
+            filterSettings.EnableGoogleUsersFilter = false;
 
             var expected = new ParseResults(downloadDateTime, null, null);
             innerServiceMock.Parse(FilePayload).Returns(expected);
@@ -52,7 +65,7 @@
         [Test]
         public void Parse_WhenInvoked_FiltersResults()
         {
-            settingsMock.Enabled.Returns(true);
+            filterSettings.EnableGoogleUsersFilter = true;
 
             innerServiceMock.Parse(FilePayload).Returns(new ParseResults(downloadDateTime,
                 new[]
@@ -70,8 +83,7 @@
             Assert.That(actual.UsersData.Count(), Is.EqualTo(2));
             Assert.That(
                 actual.UsersData.Count(data =>
-                    data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ?? false),
-                Is.EqualTo(0));
+                    data.Name?.StartsWith("google", StringComparison.OrdinalIgnoreCase) ?? false), Is.EqualTo(0));
         }
     }
 }

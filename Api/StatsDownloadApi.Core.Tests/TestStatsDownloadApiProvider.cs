@@ -3,13 +3,15 @@
     using System;
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
 
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
 
     using StatsDownloadApi.Interfaces;
     using StatsDownloadApi.Interfaces.DataTransfer;
@@ -20,6 +22,8 @@
         [SetUp]
         public void SetUp()
         {
+            loggerMock = Substitute.For<ILogger<StatsDownloadApiProvider>>();
+
             statsDownloadApiDatabaseServiceMock = Substitute.For<IStatsDownloadApiDatabaseService>();
             statsDownloadApiDatabaseServiceMock.IsAvailable().Returns((true, DatabaseFailedReason.None));
 
@@ -28,13 +32,11 @@
             dateTimeServiceMock = Substitute.For<IDateTimeService>();
             dateTimeServiceMock.DateTimeNow().Returns(DateTime.UtcNow);
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
-
             statsDownloadApiDataStoreServiceMock = Substitute.For<IStatsDownloadApiDataStoreService>();
             statsDownloadApiDataStoreServiceMock.IsAvailable().Returns(true);
 
-            systemUnderTest = NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock,
+            systemUnderTest = NewStatsDownloadApiProvider(loggerMock, statsDownloadApiDatabaseServiceMock,
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock,
                 statsDownloadApiDataStoreServiceMock);
         }
 
@@ -44,7 +46,7 @@
 
         private readonly DateTime endDateMock = DateTime.UtcNow.Date.AddDays(-1);
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<StatsDownloadApiProvider> loggerMock;
 
         private readonly DateTime startDateMock = DateTime.UtcNow.Date.AddDays(-1);
 
@@ -60,25 +62,26 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(null,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock,
+                statsDownloadApiDatabaseServiceMock, statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock,
                 statsDownloadApiDataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                null, dateTimeServiceMock, loggingServiceMock, statsDownloadApiDataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, null, loggingServiceMock,
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(loggerMock, null,
+                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock,
                 statsDownloadApiDataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, null,
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(loggerMock,
+                statsDownloadApiDatabaseServiceMock, null, dateTimeServiceMock, statsDownloadApiDataStoreServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(loggerMock,
+                statsDownloadApiDatabaseServiceMock, statsDownloadApiTokenDistributionServiceMock, null,
                 statsDownloadApiDataStoreServiceMock));
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(statsDownloadApiDatabaseServiceMock,
-                statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock, loggingServiceMock, null));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiProvider(loggerMock,
+                statsDownloadApiDatabaseServiceMock, statsDownloadApiTokenDistributionServiceMock, dateTimeServiceMock,
+                null));
         }
 
         [Test]
         public async Task GetDistro_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetDistroResponse actual = await InvokeGetDistro();
 
@@ -91,8 +94,8 @@
         [Test]
         public async Task GetDistro_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
 
             GetDistroResponse actual = await InvokeGetDistro();
 
@@ -131,8 +134,8 @@
         [Test]
         public async Task GetDistro_WhenErrorsOccurs_ReturnsErrorResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetDistroResponse actual = await InvokeGetDistro(null, null, amountMock);
 
@@ -147,19 +150,23 @@
         }
 
         [Test]
-        public async Task GetDistro_WhenInvoked_LogsMethodInvoked()
+        public async Task
+            GetDistro_WhenInvalidDistributionStateExceptionThrown_ReturnsInvalidDistributionStateResponse()
         {
+            var exception = new InvalidDistributionStateException("invalid state");
+
             var foldingUsers = new FoldingUser[0];
-            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
+            var resultMock = new FoldingUsersResult(foldingUsers, startDateMock, endDateMock);
+            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(resultMock);
+            statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers)
+                                                        .ThrowsForAnyArgs(exception);
 
-            await systemUnderTest.GetDistro(startDateMock, endDateMock, amountMock);
+            GetDistroResponse actual = await InvokeGetDistro();
 
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetDistro));
-                statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers);
-                loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetDistro));
-            });
+            Assert.That(actual.Success, Is.False);
+            Assert.That(actual.Errors?.Count, Is.EqualTo(1));
+            Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.InvalidDistributionState));
+            Assert.That(actual.Errors?[0].ErrorMessage, Is.EqualTo("invalid state"));
         }
 
         [Test]
@@ -167,7 +174,8 @@
         {
             var foldingUsers = new FoldingUser[0];
             var distro = new[] { new DistroUser(null, 1, 2, 0.12345678m), new DistroUser(null, 3, 4, 100m) };
-            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(foldingUsers);
+            var resultMock = new FoldingUsersResult(foldingUsers, startDateMock, endDateMock);
+            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(resultMock);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);
 
             GetDistroResponse actual = await InvokeGetDistro();
@@ -180,6 +188,8 @@
             Assert.That(actual.TotalPoints, Is.EqualTo(4));
             Assert.That(actual.TotalWorkUnits, Is.EqualTo(6));
             Assert.That(actual.TotalDistro, Is.EqualTo(100.12345678));
+            Assert.That(actual.StartDateTime, Is.EqualTo(startDateMock));
+            Assert.That(actual.EndDateTime, Is.EqualTo(endDateMock));
         }
 
         [Test]
@@ -263,8 +273,8 @@
         [Test]
         public async Task GetMemberStats_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetMemberStatsResponse actual = await InvokeGetMemberStats();
 
@@ -278,8 +288,8 @@
         public async Task
             GetMemberStats_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
 
             GetMemberStatsResponse actual = await InvokeGetMemberStats();
 
@@ -318,8 +328,8 @@
         [Test]
         public async Task GetMemberStats_WhenErrorsOccurs_ReturnsErrorsResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetMemberStatsResponse actual = await InvokeGetMemberStats(null, null);
 
@@ -327,19 +337,6 @@
             Assert.That(actual.Members, Is.Null);
             Assert.That(actual.Errors?.Count, Is.EqualTo(3));
             Assert.That(actual.FirstErrorCode, Is.EqualTo(ApiErrorCode.NoStartDate));
-        }
-
-        [Test]
-        public async Task GetMemberStats_WhenInvoked_LogsMethodInvoked()
-        {
-            await systemUnderTest.GetMemberStats(DateTime.MinValue, endDateMock);
-
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetMemberStats));
-                statsDownloadApiDataStoreServiceMock.GetMembers(DateTime.MinValue, endDateMock);
-                loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetMemberStats));
-            });
         }
 
         [Test]
@@ -388,7 +385,8 @@
 
             await systemUnderTest.GetMemberStats(dateTime, dateTime);
 
-            statsDownloadApiDataStoreServiceMock.Received().GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
+            await statsDownloadApiDataStoreServiceMock.Received()
+                                                      .GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
         }
 
         [Test]
@@ -417,8 +415,8 @@
         [Test]
         public async Task GetTeams_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseUnavailable));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
             GetTeamsResponse actual = await InvokeGetTeams();
 
@@ -431,8 +429,8 @@
         [Test]
         public async Task GetTeams_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
         {
-            statsDownloadApiDatabaseServiceMock
-                .IsAvailable().Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
+            statsDownloadApiDatabaseServiceMock.IsAvailable()
+                                               .Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
 
             GetTeamsResponse actual = await InvokeGetTeams();
 
@@ -455,19 +453,6 @@
             Assert.That(actual.Errors?[0].ErrorCode, Is.EqualTo(ApiErrorCode.DataStoreUnavailable));
             Assert.That(actual.Errors?[0].ErrorMessage,
                 Is.EqualTo(Constants.ErrorMessages.DataStoreUnavailableMessage));
-        }
-
-        [Test]
-        public async Task GetTeams_WhenInvoked_LogsMethodInvoked()
-        {
-            await systemUnderTest.GetTeams();
-
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetTeams));
-                statsDownloadApiDataStoreServiceMock.GetTeams();
-                loggingServiceMock.LogMethodFinished(nameof(systemUnderTest.GetTeams));
-            });
         }
 
         [Test]
@@ -511,15 +496,17 @@
             return systemUnderTest.GetTeams();
         }
 
-        private IStatsDownloadApiService NewStatsDownloadApiProvider(
-            IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
-            IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService,
-            IDateTimeService dateTimeService, ILoggingService loggingService,
-            IStatsDownloadApiDataStoreService statsDownloadApiDataStoreService)
+        private IStatsDownloadApiService NewStatsDownloadApiProvider(ILogger<StatsDownloadApiProvider> logger,
+                                                                     IStatsDownloadApiDatabaseService
+                                                                         statsDownloadApiDatabaseService,
+                                                                     IStatsDownloadApiTokenDistributionService
+                                                                         statsDownloadApiTokenDistributionService,
+                                                                     IDateTimeService dateTimeService,
+                                                                     IStatsDownloadApiDataStoreService
+                                                                         statsDownloadApiDataStoreService)
         {
-            return new StatsDownloadApiProvider(statsDownloadApiDatabaseService,
-                statsDownloadApiTokenDistributionService, dateTimeService, loggingService,
-                statsDownloadApiDataStoreService);
+            return new StatsDownloadApiProvider(logger, statsDownloadApiDatabaseService,
+                statsDownloadApiTokenDistributionService, dateTimeService, statsDownloadApiDataStoreService);
         }
     }
 }

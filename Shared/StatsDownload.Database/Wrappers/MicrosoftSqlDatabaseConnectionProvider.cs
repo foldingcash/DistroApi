@@ -7,39 +7,38 @@
     using System.Data.SqlClient;
     using System.Linq;
 
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Core.Interfaces.Settings;
 
     public class MicrosoftSqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
-        private readonly int? commandTimeout;
+        private readonly ILogger logger;
 
-        private readonly ILoggingService logger;
+        private readonly DatabaseSettings settings;
 
         private bool disposed;
 
         private DbConnection sqlConnection;
 
-        public MicrosoftSqlDatabaseConnectionProvider(ILoggingService logger, string connectionString,
-                                                      int? commandTimeout = null)
+        public MicrosoftSqlDatabaseConnectionProvider(ILogger<MicrosoftSqlDatabaseConnectionProvider> logger,
+                                                      IOptions<DatabaseSettings> settings)
         {
-            // This class is instantiated by a Castle.Windsor TypedFactory. NULL is not a valid
-            // argument for typed factories and is ignored. Leaving it a required parameter
-            // throws an unresolved dependency exception. Marking it as optional lets be created
-            // with the NULL value when that's the argument.
-            this.commandTimeout = commandTimeout;
             this.logger = logger;
+            this.settings = settings.Value;
 
-            sqlConnection = NewSqlConnection(connectionString);
+            sqlConnection = NewSqlConnection(this.settings.ConnectionString);
         }
 
         public ConnectionState ConnectionState => sqlConnection.State;
 
         public void Close()
         {
-            logger.LogVerbose("Attempting to close the SQL connection");
+            logger.LogDebug("Attempting to close the SQL connection");
             sqlConnection.Close();
-            logger.LogVerbose("SQL connection closed");
+            logger.LogDebug("SQL connection closed");
         }
 
         public DbCommand CreateDbCommand()
@@ -83,11 +82,11 @@
         {
             if (!disposed)
             {
-                logger.LogVerbose("Attempting to dispose the SQL connection");
+                logger.LogDebug("Attempting to dispose the SQL connection");
                 sqlConnection.Dispose();
                 sqlConnection = null;
                 disposed = true;
-                logger.LogVerbose("SQL connection disposed");
+                logger.LogDebug("SQL connection disposed");
             }
         }
 
@@ -158,9 +157,9 @@
 
         public void Open()
         {
-            logger.LogVerbose("Attempting to open SQL connection");
+            logger.LogDebug("Attempting to open SQL connection");
             sqlConnection.Open();
-            logger.LogVerbose("SQL connection opened");
+            logger.LogDebug("SQL connection opened");
         }
 
         public DbCommand CreateStoredProcedureCommand(string storedProcedure)
@@ -175,25 +174,25 @@
         {
             try
             {
-                logger.LogVerbose("Attempting to create a SQL connection");
+                logger.LogDebug("Attempting to create a SQL connection");
                 var connection = new SqlConnection(connectionString);
                 string server = connection.DataSource;
                 string database = connection.Database;
-                logger.LogVerbose($"SQL connection created with Server: {server} Database: {database}");
+                logger.LogInformation($"SQL connection created with Server: {server} Database: {database}");
                 return connection;
             }
             catch (Exception)
             {
-                logger.LogVerbose($"SQL connection failed to create with ConnectionString: {connectionString}");
+                logger.LogError($"SQL connection failed to create with ConnectionString: {connectionString}");
                 throw;
             }
         }
 
         private void SetCommandTimeout(DbCommand command)
         {
-            if (commandTimeout.HasValue)
+            if (settings.CommandTimeout.HasValue)
             {
-                command.CommandTimeout = commandTimeout.Value;
+                command.CommandTimeout = settings.CommandTimeout.Value;
             }
         }
     }

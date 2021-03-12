@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Email;
 
     using StatsDownloadApi.Interfaces;
@@ -10,13 +12,12 @@
     {
         private readonly IEmailService emailService;
 
-        private readonly IEmailSettingsService emailSettingsService;
+        private readonly EmailSettings emailSettings;
 
-        public StatsDownloadApiEmailProvider(IEmailService emailService, IEmailSettingsService emailSettingsService)
+        public StatsDownloadApiEmailProvider(IEmailService emailService, IOptions<EmailSettings> emailSettings)
         {
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
-            this.emailSettingsService =
-                emailSettingsService ?? throw new ArgumentNullException(nameof(emailSettingsService));
+            this.emailSettings = emailSettings?.Value ?? throw new ArgumentNullException(nameof(emailSettings));
         }
 
         public void SendUnhandledExceptionEmail(Exception exception)
@@ -28,7 +29,7 @@
 
         private string GetSubject(string baseSubject)
         {
-            string displayName = emailSettingsService.GetFromDisplayName();
+            string displayName = emailSettings.DisplayName;
 
             if (string.IsNullOrWhiteSpace(displayName))
             {

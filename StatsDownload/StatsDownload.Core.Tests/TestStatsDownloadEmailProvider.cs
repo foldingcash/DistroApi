@@ -2,8 +2,9 @@
 {
     using System;
 
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
-    using NSubstitute.ClearExtensions;
 
     using NUnit.Framework;
 
@@ -23,16 +24,20 @@
 
             errorMessageServiceMock = Substitute.For<IErrorMessageService>();
 
-            emailSettingsServiceMock = Substitute.For<IEmailSettingsService>();
-            emailSettingsServiceMock.GetFromDisplayName().Returns("DisplayName");
+            emailSettings = new EmailSettings { DisplayName = "DisplayName" };
+
+            emailSettingsOptionsMock = Substitute.For<IOptions<EmailSettings>>();
+            emailSettingsOptionsMock.Value.Returns(emailSettings);
 
             systemUnderTest = NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock,
-                emailSettingsServiceMock);
+                emailSettingsOptionsMock);
         }
 
         private IEmailService emailServiceMock;
 
-        private IEmailSettingsService emailSettingsServiceMock;
+        private EmailSettings emailSettings;
+
+        private IOptions<EmailSettings> emailSettingsOptionsMock;
 
         private IErrorMessageService errorMessageServiceMock;
 
@@ -42,9 +47,9 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadEmailProvider(null, errorMessageServiceMock, emailSettingsServiceMock));
+                NewStatsDownloadEmailProvider(null, errorMessageServiceMock, emailSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadEmailProvider(emailServiceMock, null, emailSettingsServiceMock));
+                NewStatsDownloadEmailProvider(emailServiceMock, null, emailSettingsOptionsMock));
             Assert.Throws<ArgumentNullException>(() =>
                 NewStatsDownloadEmailProvider(emailServiceMock, errorMessageServiceMock, null));
         }
@@ -100,8 +105,7 @@
         [TestCase("\n")]
         public void SendTestEmail_WhenEmptyDisplayName_DoesNotPrependDisplayName(string displayName)
         {
-            emailSettingsServiceMock.ClearSubstitute();
-            emailSettingsServiceMock.GetFromDisplayName().Returns(displayName);
+            emailSettings.DisplayName = displayName;
 
             systemUnderTest.SendTestEmail();
 
@@ -118,9 +122,9 @@
 
         private IStatsDownloadEmailService NewStatsDownloadEmailProvider(IEmailService emailService,
                                                                          IErrorMessageService errorMessageService,
-                                                                         IEmailSettingsService emailSettingsService)
+                                                                         IOptions<EmailSettings> emailSettingsOptions)
         {
-            return new StatsDownloadEmailProvider(emailService, errorMessageService, emailSettingsService);
+            return new StatsDownloadEmailProvider(emailService, errorMessageService, emailSettingsOptions);
         }
     }
 }

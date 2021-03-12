@@ -4,10 +4,13 @@
     using System.Net;
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Core.Interfaces.Exceptions;
+    using StatsDownload.Logging;
 
     public class FileDownloadProvider : IFileDownloadService
     {
@@ -27,11 +30,14 @@
 
         private readonly IFilePayloadUploadService filePayloadUploadService;
 
+        private readonly ILogger<FileDownloadProvider> logger;
+
         private readonly IFileDownloadLoggingService loggingService;
 
         private readonly IResourceCleanupService resourceCleanupService;
 
-        public FileDownloadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
+        public FileDownloadProvider(ILogger<FileDownloadProvider> logger,
+                                    IFileDownloadDatabaseService fileDownloadDatabaseService,
                                     IFileDownloadLoggingService loggingService, IDownloadService downloadService,
                                     IFilePayloadSettingsService filePayloadSettingsService,
                                     IResourceCleanupService resourceCleanupService,
@@ -41,19 +47,26 @@
                                     IFileDownloadEmailService fileDownloadEmailService,
                                     IDataStoreServiceFactory dataStoreServiceFactory)
         {
-            this.fileDownloadDatabaseService = fileDownloadDatabaseService;
-            this.loggingService = loggingService;
-            this.downloadService = downloadService;
-            this.filePayloadSettingsService = filePayloadSettingsService;
-            this.resourceCleanupService = resourceCleanupService;
-            this.fileDownloadMinimumWaitTimeService = fileDownloadMinimumWaitTimeService;
-            this.dateTimeService = dateTimeService;
-            this.filePayloadUploadService = filePayloadUploadService;
-            this.fileDownloadEmailService = fileDownloadEmailService;
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.fileDownloadDatabaseService = fileDownloadDatabaseService
+                                               ?? throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            this.downloadService = downloadService ?? throw new ArgumentNullException(nameof(downloadService));
+            this.filePayloadSettingsService = filePayloadSettingsService
+                                              ?? throw new ArgumentNullException(nameof(filePayloadSettingsService));
+            this.resourceCleanupService =
+                resourceCleanupService ?? throw new ArgumentNullException(nameof(resourceCleanupService));
+            this.fileDownloadMinimumWaitTimeService = fileDownloadMinimumWaitTimeService
+                                                      ?? throw new ArgumentNullException(
+                                                          nameof(fileDownloadMinimumWaitTimeService));
+            this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            this.filePayloadUploadService = filePayloadUploadService
+                                            ?? throw new ArgumentNullException(nameof(filePayloadUploadService));
+            this.fileDownloadEmailService = fileDownloadEmailService
+                                            ?? throw new ArgumentNullException(nameof(fileDownloadEmailService));
 
-            dataStoreService = dataStoreServiceFactory?.Create();
-
-            ValidateCtorArgs();
+            dataStoreService = dataStoreServiceFactory?.Create()
+                               ?? throw new ArgumentNullException(nameof(dataStoreServiceFactory));
         }
 
         public async Task<FileDownloadResult> DownloadStatsFile()
@@ -62,7 +75,7 @@
 
             try
             {
-                LogMethodInvoked(nameof(DownloadStatsFile));
+                logger.LogMethodInvoked();
 
                 (bool isAvailable, FailedReason failedReason) result = await IsDataStoreAvailable();
                 bool dataStoreUnavailable = !result.isAvailable;
@@ -76,8 +89,8 @@
                     return failedResult;
                 }
 
-                UpdateToLatest();
-                LogVerbose($"Stats file download started: {DateTimeNow()}");
+                fileDownloadDatabaseService.UpdateToLatest();
+                logger.LogDebug($"Stats file download started: {DateTimeNow()}");
                 FileDownloadStarted(filePayload);
 
                 if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
@@ -85,7 +98,7 @@
                     return HandleDownloadNotReadyToRun(failedReason, filePayload);
                 }
 
-                SetDownloadFileDetails(filePayload);
+                filePayloadSettingsService.SetFilePayloadDownloadDetails(filePayload);
                 DownloadFile(filePayload);
                 return await HandleSuccessAndUpload(filePayload);
             }
@@ -149,9 +162,9 @@
 
         private async Task<FileDownloadResult> HandleSuccessAndUpload(FilePayload filePayload)
         {
-            LogVerbose($"Stats file download completed: {DateTimeNow()}");
-            await UploadFile(filePayload);
-            FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
+            logger.LogDebug($"Stats file download completed: {DateTimeNow()}");
+            await filePayloadUploadService.UploadFile(filePayload);
+            var successResult = new FileDownloadResult(filePayload);
             Cleanup(successResult);
             LogResult(successResult);
             return successResult;
@@ -195,22 +208,12 @@
 
         private void LogException(Exception exception)
         {
-            loggingService.LogException(exception);
-        }
-
-        private void LogMethodInvoked(string method)
-        {
-            LogVerbose($"{method} Invoked");
+            logger.LogError(exception, "There was an unhandled exception");
         }
 
         private void LogResult(FileDownloadResult result)
         {
             loggingService.LogResult(result);
-        }
-
-        private void LogVerbose(string message)
-        {
-            loggingService.LogVerbose(message);
         }
 
         private FileDownloadResult NewFailedFileDownloadResult(Exception exception, FilePayload filePayload)
@@ -260,19 +263,9 @@
             return new FilePayload();
         }
 
-        private FileDownloadResult NewSuccessFileDownloadResult(FilePayload filePayload)
-        {
-            return new FileDownloadResult(filePayload);
-        }
-
         private void SendEmail(FileDownloadResult fileDownloadResult)
         {
             fileDownloadEmailService.SendEmail(fileDownloadResult);
-        }
-
-        private void SetDownloadFileDetails(FilePayload filePayload)
-        {
-            filePayloadSettingsService.SetFilePayloadDownloadDetails(filePayload);
         }
 
         private void UpdateToError(FileDownloadResult exceptionResult)
@@ -284,69 +277,6 @@
             else
             {
                 fileDownloadDatabaseService.FileValidationError(exceptionResult);
-            }
-        }
-
-        private void UpdateToLatest()
-        {
-            fileDownloadDatabaseService.UpdateToLatest();
-        }
-
-        private async Task UploadFile(FilePayload filePayload)
-        {
-            await filePayloadUploadService.UploadFile(filePayload);
-        }
-
-        private void ValidateCtorArgs()
-        {
-            if (fileDownloadDatabaseService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
-            }
-
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            if (downloadService == null)
-            {
-                throw new ArgumentNullException(nameof(downloadService));
-            }
-
-            if (filePayloadSettingsService == null)
-            {
-                throw new ArgumentNullException(nameof(filePayloadSettingsService));
-            }
-
-            if (resourceCleanupService == null)
-            {
-                throw new ArgumentNullException(nameof(resourceCleanupService));
-            }
-
-            if (fileDownloadMinimumWaitTimeService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadMinimumWaitTimeService));
-            }
-
-            if (dateTimeService == null)
-            {
-                throw new ArgumentNullException(nameof(dateTimeService));
-            }
-
-            if (filePayloadUploadService == null)
-            {
-                throw new ArgumentNullException(nameof(filePayloadUploadService));
-            }
-
-            if (fileDownloadEmailService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadEmailService));
-            }
-
-            if (dataStoreService == null)
-            {
-                throw new ArgumentNullException(nameof(dataStoreService));
             }
         }
     }

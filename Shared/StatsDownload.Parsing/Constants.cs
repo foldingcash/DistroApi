@@ -1,5 +1,7 @@
 ﻿namespace StatsDownload.Parsing
 {
+    using StatsDownload.Core.Interfaces.Settings;
+
     public static class Constants
     {
         public static class BitcoinAddress
@@ -43,9 +45,13 @@
                 "name\tnewcredit\tsum(total)\tteam", "name\tscore\twu\tteam"
             };
 
-            public static readonly (string timeZone, int hourOffset)[] TimeZonesAndOffset =
+            public static readonly DateTimeFormat[] TimeZonesAndOffset =
             {
-                ("GMT", 0), ("CDT", -5), ("CST", -6), ("PDT", -7), ("PST", -8)
+                new DateTimeFormat { Format = "GMT", HourOffset = 0 },
+                new DateTimeFormat { Format = "CDT", HourOffset = -5 },
+                new DateTimeFormat { Format = "CST", HourOffset = -6 },
+                new DateTimeFormat { Format = "PDT", HourOffset = -7 },
+                new DateTimeFormat { Format = "PST", HourOffset = -8 }
             };
         }
     }

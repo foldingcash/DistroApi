@@ -4,9 +4,11 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Logging;
 
     using StatsDownloadApi.Interfaces;
     using StatsDownloadApi.Interfaces.DataTransfer;
@@ -15,7 +17,7 @@
     {
         private readonly IDateTimeService dateTimeService;
 
-        private readonly ILoggingService loggingService;
+        private readonly ILogger<StatsDownloadApiProvider> logger;
 
         private readonly IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService;
 
@@ -23,12 +25,13 @@
 
         private readonly IStatsDownloadApiTokenDistributionService statsDownloadApiTokenDistributionService;
 
-        public StatsDownloadApiProvider(IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
+        public StatsDownloadApiProvider(ILogger<StatsDownloadApiProvider> logger,
+                                        IStatsDownloadApiDatabaseService statsDownloadApiDatabaseService,
                                         IStatsDownloadApiTokenDistributionService
                                             statsDownloadApiTokenDistributionService, IDateTimeService dateTimeService,
-                                        ILoggingService loggingService,
                                         IStatsDownloadApiDataStoreService statsDownloadApiDataStoreService)
         {
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.statsDownloadApiDatabaseService = statsDownloadApiDatabaseService
                                                    ?? throw new ArgumentNullException(
                                                        nameof(statsDownloadApiDatabaseService));
@@ -36,7 +39,6 @@
                                                             ?? throw new ArgumentNullException(
                                                                 nameof(statsDownloadApiTokenDistributionService));
             this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
-            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
             this.statsDownloadApiDataStoreService = statsDownloadApiDataStoreService
                                                     ?? throw new ArgumentNullException(
                                                         nameof(statsDownloadApiDataStoreService));
@@ -44,7 +46,7 @@
 
         public async Task<GetDistroResponse> GetDistro(DateTime? startDate, DateTime? endDate, int? amount)
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
 
             IList<ApiError> errors = new List<ApiError>();
 
@@ -52,21 +54,21 @@
 
             if (isNotPreparedToRun)
             {
-                loggingService.LogMethodFinished();
+                logger.LogMethodFinished();
                 return new GetDistroResponse(errors);
             }
 
-            IList<FoldingUser> foldingMembers = await GetFoldingMembers(startDate, endDate);
-            GetDistroResponse response = GetDistro(amount, foldingMembers);
+            FoldingUsersResult result = await GetFoldingMembers(startDate, endDate);
+            GetDistroResponse response = GetDistro(amount, result);
 
-            loggingService.LogMethodFinished();
+            logger.LogMethodFinished();
 
             return response;
         }
 
         public async Task<GetMemberStatsResponse> GetMemberStats(DateTime? startDate, DateTime? endDate)
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
 
             IList<ApiError> errors = new List<ApiError>();
 
@@ -74,7 +76,7 @@
 
             if (isNotPreparedToRun)
             {
-                loggingService.LogMethodFinished();
+                logger.LogMethodFinished();
                 return new GetMemberStatsResponse(errors);
             }
 
@@ -91,14 +93,14 @@
 
             var memberStatsResponse = new GetMemberStatsResponse(members);
 
-            loggingService.LogMethodFinished();
+            logger.LogMethodFinished();
 
             return memberStatsResponse;
         }
 
         public async Task<GetTeamsResponse> GetTeams()
         {
-            loggingService.LogMethodInvoked();
+            logger.LogMethodInvoked();
 
             var errors = new List<ApiError>();
 
@@ -106,7 +108,7 @@
 
             if (isNotPreparedToRun)
             {
-                loggingService.LogMethodFinished();
+                logger.LogMethodFinished();
                 return new GetTeamsResponse(errors);
             }
 
@@ -114,20 +116,21 @@
 
             var teamsResponse = new GetTeamsResponse(teams);
 
-            loggingService.LogMethodFinished();
+            logger.LogMethodFinished();
 
             return teamsResponse;
         }
 
-        private GetDistroResponse GetDistro(int? amount, IList<FoldingUser> foldingUsers)
+        private GetDistroResponse GetDistro(int? amount, FoldingUsersResult foldingUsersResult)
         {
             try
             {
+                FoldingUser[] foldingUsers = foldingUsersResult.FoldingUsers;
                 IList<DistroUser> distro =
                     statsDownloadApiTokenDistributionService.GetDistro(amount.GetValueOrDefault(), foldingUsers);
-                return new GetDistroResponse(distro);
+                return new GetDistroResponse(distro, foldingUsersResult.StartDateTime, foldingUsersResult.EndDateTime);
             }
-            catch (InvalidDistributionState invalidDistributionState)
+            catch (InvalidDistributionStateException invalidDistributionState)
             {
                 return new GetDistroResponse(new List<ApiError>
                                              {
@@ -137,7 +140,7 @@
             }
         }
 
-        private async Task<IList<FoldingUser>> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
+        private async Task<FoldingUsersResult> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
         {
             return await statsDownloadApiDataStoreService.GetFoldingMembers(startDate.GetValueOrDefault(),
                        endDate.GetValueOrDefault());

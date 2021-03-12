@@ -162,7 +162,7 @@
         {
             int failedUsersCount = failedUsersData.Count();
 
-            string message = $"Top {numberOfUsers} Failed Users:";
+            var message = $"Top {numberOfUsers} Failed Users:";
 
             for (var userIndex = 0; userIndex < numberOfUsers && userIndex < failedUsersCount; userIndex++)
             {

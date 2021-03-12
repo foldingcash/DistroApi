@@ -17,8 +17,7 @@
                 Arg.Any<ParameterDirection>()).Returns(CreateParameterMock);
 
             databaseConnectionServiceMock.CreateParameter(Arg.Any<string>(), Arg.Any<DbType>(),
-                                             Arg.Any<ParameterDirection>(), Arg.Any<int>())
-                                         .Returns(CreateParameterMockWithSize);
+                Arg.Any<ParameterDirection>(), Arg.Any<int>()).Returns(CreateParameterMockWithSize);
         }
 
         public static void SetUpDatabaseConnectionServiceReturns(

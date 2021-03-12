@@ -3,26 +3,26 @@
     using System;
     using System.Net;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Logging;
 
     public class SecureDownloadProvider : IDownloadService
     {
         private readonly IDownloadService downloadService;
 
-        private readonly ILoggingService loggingService;
+        private readonly ILogger logger;
 
         private readonly ISecureFilePayloadService secureFilePayloadService;
 
-        public SecureDownloadProvider(IDownloadService downloadService,
-                                      ISecureFilePayloadService secureFilePayloadService,
-                                      ILoggingService loggingService)
+        public SecureDownloadProvider(ILogger<SecureDownloadProvider> logger, IDownloadService downloadService,
+                                      ISecureFilePayloadService secureFilePayloadService)
         {
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.downloadService = downloadService ?? throw new ArgumentNullException(nameof(downloadService));
             this.secureFilePayloadService = secureFilePayloadService
                                             ?? throw new ArgumentNullException(nameof(secureFilePayloadService));
-            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public void DownloadFile(FilePayload filePayload)
@@ -36,7 +36,7 @@
             }
             catch (WebException webException)
             {
-                loggingService.LogException(webException);
+                logger.LogError(webException, "There was a web exception while trying to securely download the file");
 
                 if (originalWasNotSecure)
                 {

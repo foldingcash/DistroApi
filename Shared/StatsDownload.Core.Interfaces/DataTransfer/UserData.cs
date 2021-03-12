@@ -18,11 +18,15 @@
 
         public string BitcoinAddress { get; set; }
 
+        public string BitcoinCashAddress { get; set; }
+
         public string FriendlyName { get; set; }
 
         public int LineNumber { get; }
 
         public string Name { get; }
+
+        public string SlpAddress { get; set; }
 
         public long TeamNumber { get; }
 

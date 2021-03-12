@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
@@ -19,18 +21,17 @@
 
         private readonly IEmailService emailService;
 
-        private readonly IEmailSettingsService emailSettingsService;
+        private readonly EmailSettings emailSettings;
 
         private readonly IErrorMessageService errorMessageService;
 
         public StatsDownloadEmailProvider(IEmailService emailService, IErrorMessageService errorMessageService,
-                                          IEmailSettingsService emailSettingsService)
+                                          IOptions<EmailSettings> emailSettings)
         {
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             this.errorMessageService =
                 errorMessageService ?? throw new ArgumentNullException(nameof(errorMessageService));
-            this.emailSettingsService =
-                emailSettingsService ?? throw new ArgumentNullException(nameof(emailSettingsService));
+            this.emailSettings = emailSettings?.Value ?? throw new ArgumentNullException(nameof(emailSettings));
         }
 
         public void SendEmail(FileDownloadResult fileDownloadResult)
@@ -75,7 +76,7 @@
 
         private string GetSubject(string baseSubject)
         {
-            string displayName = emailSettingsService.GetFromDisplayName();
+            string displayName = emailSettings.DisplayName;
 
             if (string.IsNullOrWhiteSpace(displayName))
             {

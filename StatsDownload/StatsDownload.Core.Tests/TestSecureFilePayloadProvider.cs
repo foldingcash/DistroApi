@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -9,7 +11,6 @@
     using StatsDownload.Core.Implementations;
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestSecureFilePayloadProvider
@@ -19,14 +20,14 @@
         {
             filePayload = new FilePayload();
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
+            loggerMock = Substitute.For<ILogger<SecureFilePayloadProvider>>();
 
-            systemUnderTest = NewSecureHttpFilePayloadProvider(loggingServiceMock);
+            systemUnderTest = NewSecureHttpFilePayloadProvider(loggerMock);
         }
 
         private FilePayload filePayload;
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<SecureFilePayloadProvider> loggerMock;
 
         private ISecureFilePayloadService systemUnderTest;
 
@@ -44,9 +45,9 @@
             systemUnderTest.DisableSecureFilePayload(filePayload);
 
             Assert.That(filePayload.DownloadUri.Scheme, Is.EqualTo(Uri.UriSchemeHttp));
-            loggingServiceMock.Received()
-                              .LogVerbose(
-                                  $"Changing scheme https to http{Environment.NewLine}Old Uri: https://localhost/{Environment.NewLine}New Uri: http://localhost/");
+            loggerMock.Received()
+                      .LogDebug(
+                          $"Changing scheme https to http{Environment.NewLine}Old Uri: https://localhost/{Environment.NewLine}New Uri: http://localhost/");
         }
 
         [Test]
@@ -57,9 +58,9 @@
             systemUnderTest.EnableSecureFilePayload(filePayload);
 
             Assert.That(filePayload.DownloadUri.Scheme, Is.EqualTo(Uri.UriSchemeHttps));
-            loggingServiceMock.Received()
-                              .LogVerbose(
-                                  $"Changing scheme http to https{Environment.NewLine}Old Uri: http://localhost/{Environment.NewLine}New Uri: https://localhost/");
+            loggerMock.Received()
+                      .LogDebug(
+                          $"Changing scheme http to https{Environment.NewLine}Old Uri: http://localhost/{Environment.NewLine}New Uri: https://localhost/");
         }
 
         [Test]
@@ -92,9 +93,9 @@
             Assert.That(actual, Is.True);
         }
 
-        private ISecureFilePayloadService NewSecureHttpFilePayloadProvider(ILoggingService loggingService)
+        private ISecureFilePayloadService NewSecureHttpFilePayloadProvider(ILogger<SecureFilePayloadProvider> logger)
         {
-            return new SecureFilePayloadProvider(loggingService);
+            return new SecureFilePayloadProvider(logger);
         }
     }
 }

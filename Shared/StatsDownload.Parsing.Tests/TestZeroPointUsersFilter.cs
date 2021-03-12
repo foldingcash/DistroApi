@@ -3,12 +3,15 @@
     using System;
     using System.Linq;
 
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
 
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Settings;
     using StatsDownload.Parsing.Filters;
 
     [TestFixture]
@@ -19,9 +22,12 @@
         {
             innerServiceMock = Substitute.For<IStatsFileParserService>();
 
-            settingsMock = Substitute.For<IZeroPointUsersFilterSettings>();
+            filterSettings = new FilterSettings();
 
-            systemUnderTest = new ZeroPointUsersFilter(innerServiceMock, settingsMock);
+            filterSettingsOptionsMock = Substitute.For<IOptions<FilterSettings>>();
+            filterSettingsOptionsMock.Value.Returns(filterSettings);
+
+            systemUnderTest = new ZeroPointUsersFilter(innerServiceMock, filterSettingsOptionsMock);
 
             downloadDateTime = DateTime.UtcNow;
         }
@@ -30,16 +36,18 @@
 
         private readonly FilePayload FilePayload = new FilePayload { DecompressedDownloadFileData = "fileData" };
 
-        private IStatsFileParserService innerServiceMock;
+        private FilterSettings filterSettings;
 
-        private IZeroPointUsersFilterSettings settingsMock;
+        private IOptions<FilterSettings> filterSettingsOptionsMock;
+
+        private IStatsFileParserService innerServiceMock;
 
         private IStatsFileParserService systemUnderTest;
 
         [Test]
         public void Parse_WhenDisabled_DoesNotModifyResults()
         {
-            settingsMock.Enabled.Returns(false);
+            filterSettings.EnableZeroPointUsersFilter = false;
 
             var expected = new ParseResults(downloadDateTime, null, null);
             innerServiceMock.Parse(FilePayload).Returns(expected);
@@ -52,11 +60,10 @@
         [Test]
         public void Parse_WhenInvoked_FiltersResults()
         {
-            settingsMock.Enabled.Returns(true);
+            filterSettings.EnableZeroPointUsersFilter = true;
 
             innerServiceMock.Parse(FilePayload).Returns(new ParseResults(downloadDateTime,
-                new[] { new UserData(), new UserData(0, null, 1, 0, 0) },
-                new[] { new FailedUserData() }));
+                new[] { new UserData(), new UserData(0, null, 1, 0, 0) }, new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse(FilePayload);
 

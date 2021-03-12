@@ -4,18 +4,19 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Settings;
 
     public class StatsFileDateTimeFormatsAndOffsetProvider : IStatsFileDateTimeFormatsAndOffsetService
     {
-        private readonly IStatsFileDateTimeFormatsAndOffsetSettings statsFileDateTimeFormatsAndOffsetSettings;
+        private readonly DateTimeSettings dateTimeSettings;
 
-        public StatsFileDateTimeFormatsAndOffsetProvider(
-            IStatsFileDateTimeFormatsAndOffsetSettings statsFileDateTimeFormatsAndOffsetSettings)
+        public StatsFileDateTimeFormatsAndOffsetProvider(IOptions<DateTimeSettings> dateTimeSettings)
         {
-            this.statsFileDateTimeFormatsAndOffsetSettings = statsFileDateTimeFormatsAndOffsetSettings
-                                                             ?? throw new ArgumentNullException(
-                                                                 nameof(statsFileDateTimeFormatsAndOffsetSettings));
+            this.dateTimeSettings = dateTimeSettings?.Value
+                                    ?? throw new ArgumentNullException(nameof(dateTimeSettings));
         }
 
         public (string format, int hourOffset)[] GetStatsFileDateTimeFormatsAndOffset()
@@ -28,41 +29,27 @@
 
         private (string format, int hourOffset)[] GetCodedFormats()
         {
-            var codedFormatsAndOffset = new List<(string format, int hourOffset)>();
-
-            foreach ((string timeZone, int hourOffset) timeZoneAndOffset in Constants.StatsFile.TimeZonesAndOffset)
-            {
-                foreach (string dateTimeFormat in Constants.StatsFile.DateTimeFormats)
-                {
-                    codedFormatsAndOffset.Add((string.Format(dateTimeFormat, timeZoneAndOffset.timeZone),
-                                                  timeZoneAndOffset.hourOffset));
-                }
-            }
-
-            return codedFormatsAndOffset.ToArray();
+            return GetFormats(Constants.StatsFile.TimeZonesAndOffset);
         }
 
         private (string format, int hourOffset)[] GetConfiguredFormats()
         {
-            string settings = statsFileDateTimeFormatsAndOffsetSettings.GetStatsFileTimeZoneAndOffsetSettings();
+            return GetFormats(dateTimeSettings.Formats);
+        }
 
-            string[] settingsSplit = settings?.Split(';', '=');
+        private (string format, int hourOffset)[] GetFormats(ICollection<DateTimeFormat> dateTimeFormats)
+        {
+            var formats = new List<(string, int)>();
 
-            var configuredFormatsAndOffset = new List<(string format, int hourOffset)>();
-
-            for (var index = 0; index < settingsSplit?.Length && index + 1 < settingsSplit.Length; index++)
+            foreach (DateTimeFormat format in dateTimeFormats ?? Enumerable.Empty<DateTimeFormat>())
             {
-                string timeZone = settingsSplit[index];
-                index++;
-                string offset = settingsSplit[index];
-
-                foreach (string dateTimeFormat in Constants.StatsFile.DateTimeFormats)
+                foreach (string template in Constants.StatsFile.DateTimeFormats)
                 {
-                    configuredFormatsAndOffset.Add((string.Format(dateTimeFormat, timeZone), int.Parse(offset)));
+                    formats.Add((string.Format(template, format.Format), format.HourOffset));
                 }
             }
 
-            return configuredFormatsAndOffset.ToArray();
+            return formats.ToArray();
         }
     }
 }

@@ -7,7 +7,7 @@
 
     public interface IStatsDownloadApiDataStoreService
     {
-        Task<FoldingUser[]> GetFoldingMembers(DateTime startDate, DateTime endDate);
+        Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate);
 
         Task<Member[]> GetMembers(DateTime startDate, DateTime endDate);
 

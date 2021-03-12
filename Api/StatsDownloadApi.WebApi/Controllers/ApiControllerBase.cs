@@ -5,23 +5,36 @@
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
-
-    using StatsDownload.Core.Interfaces.Logging;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
 
     using StatsDownloadApi.Interfaces;
-    using StatsDownloadApi.WebApi.CastleWindsor;
 
     public abstract class ApiControllerBase : Controller
     {
+        private readonly ILogger logger;
+
+        private readonly IServiceProvider serviceProvider;
+
+        protected ApiControllerBase(ILogger logger, IServiceProvider serviceProvider)
+        {
+            this.logger = logger;
+            this.serviceProvider = serviceProvider;
+        }
+
         protected async Task<IActionResult> InvokeApiService<T>(
             Func<IStatsDownloadApiService, Task<T>> invokeApiServiceFunc)
             where T : ApiResponse
         {
-            IStatsDownloadApiService apiService = null;
             try
             {
-                apiService = WindsorContainer.Instance.Resolve<IStatsDownloadApiService>();
-                T result = await invokeApiServiceFunc?.Invoke(apiService);
+                if (invokeApiServiceFunc == null)
+                {
+                    throw new ArgumentNullException(nameof(invokeApiServiceFunc));
+                }
+
+                var apiService = serviceProvider.GetRequiredService<IStatsDownloadApiService>();
+                T result = await invokeApiServiceFunc.Invoke(apiService);
 
                 if (result.Success)
                 {
@@ -39,42 +52,16 @@
             }
             catch (Exception exception)
             {
-                TryLoggingUnhandledException(exception);
+                logger.LogError(exception, "There was an unhandled exception");
                 TrySendingUnhandledExceptionEmail(exception);
                 return new ServerErrorObjectResult(new ApiResponse(new[] { Constants.ApiErrors.UnexpectedException }));
-            }
-            finally
-            {
-                WindsorContainer.Instance.Release(apiService);
-            }
-        }
-
-        private void TryLoggingUnhandledException(Exception exception)
-        {
-            ILoggingService loggingService = null;
-            try
-            {
-                loggingService = WindsorContainer.Instance.Resolve<ILoggingService>();
-                loggingService.LogException(exception);
-            }
-            finally
-            {
-                WindsorContainer.Instance.Release(loggingService);
             }
         }
 
         private void TrySendingUnhandledExceptionEmail(Exception exception)
         {
-            IStatsDownloadApiEmailService emailService = null;
-            try
-            {
-                emailService = WindsorContainer.Instance.Resolve<IStatsDownloadApiEmailService>();
-                emailService.SendUnhandledExceptionEmail(exception);
-            }
-            finally
-            {
-                WindsorContainer.Instance.Release(emailService);
-            }
+            var emailService = serviceProvider.GetService<IStatsDownloadApiEmailService>();
+            emailService?.SendUnhandledExceptionEmail(exception);
         }
     }
 }

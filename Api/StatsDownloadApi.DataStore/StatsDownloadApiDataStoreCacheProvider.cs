@@ -6,6 +6,9 @@
 
     using LazyCache;
 
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+
     using StatsDownloadApi.Interfaces;
     using StatsDownloadApi.Interfaces.DataTransfer;
 
@@ -13,32 +16,36 @@
     {
         private readonly IAppCache cache;
 
-        private readonly int cacheDurationInHours = 12;
-
         private readonly IStatsDownloadApiDataStoreService innerService;
 
-        public StatsDownloadApiDataStoreCacheProvider(IStatsDownloadApiDataStoreService innerService, IAppCache cache)
+        private readonly ILogger logger;
+
+        private readonly DataStoreCacheSettings settings;
+
+        public StatsDownloadApiDataStoreCacheProvider(ILogger<StatsDownloadApiDataStoreCacheProvider> logger,
+                                                      IOptions<DataStoreCacheSettings> settings, IAppCache cache,
+                                                      IStatsDownloadApiDataStoreService innerService)
         {
-            this.innerService = innerService;
+            this.logger = logger;
+            this.settings = settings.Value;
             this.cache = cache;
+            this.innerService = innerService;
         }
 
-        public Task<FoldingUser[]> GetFoldingMembers(DateTime startDate, DateTime endDate)
+        public Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate)
         {
             return GetOrAdd(async () => await innerService.GetFoldingMembers(startDate, endDate),
-                DateTimeOffset.Now.AddHours(cacheDurationInHours), $"{startDate}-{endDate}");
+                $"{startDate}-{endDate}");
         }
 
         public Task<Member[]> GetMembers(DateTime startDate, DateTime endDate)
         {
-            return GetOrAdd(async () => await innerService.GetMembers(startDate, endDate),
-                DateTimeOffset.Now.AddHours(cacheDurationInHours), $"{startDate}-{endDate}");
+            return GetOrAdd(async () => await innerService.GetMembers(startDate, endDate), $"{startDate}-{endDate}");
         }
 
         public Task<Team[]> GetTeams()
         {
-            return GetOrAdd(async () => await innerService.GetTeams(),
-                DateTimeOffset.Now.AddHours(cacheDurationInHours));
+            return GetOrAdd(async () => await innerService.GetTeams(), DateTimeOffset.Now.AddHours(settings.Hours));
         }
 
         public async Task<bool> IsAvailable()
@@ -50,6 +57,13 @@
                                           [CallerMemberName] string method = null)
         {
             return await cache.GetOrAdd($"{method}-{key}", func, addHours);
+        }
+
+        private async Task<T> GetOrAdd<T>(Func<Task<T>> func, string key = null,
+                                          [CallerMemberName] string method = null)
+        {
+            return await cache.GetOrAdd($"{method}-{key}", func,
+                       DateTimeOffset.Now.AddDays(settings.Days).AddHours(settings.Hours).AddMinutes(settings.Minutes));
         }
     }
 }

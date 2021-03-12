@@ -2,11 +2,14 @@
 {
     using System;
 
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
 
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Settings;
     using StatsDownload.Parsing;
 
     [TestFixture]
@@ -15,13 +18,20 @@
         [SetUp]
         public void SetUp()
         {
-            statsFileDateTimeFormatsAndOffsetSettingsMock =
-                Substitute.For<IStatsFileDateTimeFormatsAndOffsetSettings>();
-            statsFileDateTimeFormatsAndOffsetSettingsMock
-                .GetStatsFileTimeZoneAndOffsetSettings().Returns("ZONE1=-1;ZONE2=0;ZONE3=1;");
+            dateTimeSettings = new DateTimeSettings
+                               {
+                                   Formats = new[]
+                                             {
+                                                 new DateTimeFormat { Format = "ZONE1", HourOffset = -1 },
+                                                 new DateTimeFormat { Format = "ZONE2", HourOffset = 0 },
+                                                 new DateTimeFormat { Format = "ZONE3", HourOffset = 1 }
+                                             }
+                               };
 
-            systemUnderTest =
-                NewStatsFileDateTimeFormatsAndOffsetProvider(statsFileDateTimeFormatsAndOffsetSettingsMock);
+            dateTimeSettingsOptionsMock = Substitute.For<IOptions<DateTimeSettings>>();
+            dateTimeSettingsOptionsMock.Value.Returns(dateTimeSettings);
+
+            systemUnderTest = NewStatsFileDateTimeFormatsAndOffsetProvider(dateTimeSettingsOptionsMock);
         }
 
         private readonly (string format, int hourOffset)[] dateTimeFormatsAndOffset =
@@ -38,7 +48,9 @@
             ("ddd MMM dd HH:mm:ss PST yyyy", -8)
         };
 
-        private IStatsFileDateTimeFormatsAndOffsetSettings statsFileDateTimeFormatsAndOffsetSettingsMock;
+        private DateTimeSettings dateTimeSettings;
+
+        private IOptions<DateTimeSettings> dateTimeSettingsOptionsMock;
 
         private IStatsFileDateTimeFormatsAndOffsetService systemUnderTest;
 
@@ -56,21 +68,20 @@
             CollectionAssert.IsSupersetOf(actual, dateTimeFormatsAndOffset);
         }
 
-        [TestCase("malformed")]
-        public void GetStatsFileDateTimeZoneAndOffset_WhenMalformedSettings_ReturnsDateTimeFormats(string settings)
+        [Test]
+        public void GetStatsFileDateTimeZoneAndOffset_WhenSettingsEmpty_ReturnsDateTimeFormats()
         {
-            statsFileDateTimeFormatsAndOffsetSettingsMock.GetStatsFileTimeZoneAndOffsetSettings().Returns(settings);
+            dateTimeSettings.Formats = new DateTimeFormat[0];
 
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
             CollectionAssert.AreEquivalent(actual, dateTimeFormatsAndOffset);
         }
 
-        [TestCase(null)]
-        [TestCase("")]
-        public void GetStatsFileDateTimeZoneAndOffset_WhenSettingsEmpty_ReturnsDateTimeFormats(string settings)
+        [Test]
+        public void GetStatsFileDateTimeZoneAndOffset_WhenSettingsMissing_ReturnsDateTimeFormats()
         {
-            statsFileDateTimeFormatsAndOffsetSettingsMock.GetStatsFileTimeZoneAndOffsetSettings().Returns(settings);
+            dateTimeSettings.Formats = null;
 
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
@@ -95,9 +106,9 @@
         }
 
         private IStatsFileDateTimeFormatsAndOffsetService NewStatsFileDateTimeFormatsAndOffsetProvider(
-            IStatsFileDateTimeFormatsAndOffsetSettings statsFileDateTimeFormatsAndOffsetSettings)
+            IOptions<DateTimeSettings> dateTimeSettingsOptions)
         {
-            return new StatsFileDateTimeFormatsAndOffsetProvider(statsFileDateTimeFormatsAndOffsetSettings);
+            return new StatsFileDateTimeFormatsAndOffsetProvider(dateTimeSettingsOptions);
         }
     }
 }

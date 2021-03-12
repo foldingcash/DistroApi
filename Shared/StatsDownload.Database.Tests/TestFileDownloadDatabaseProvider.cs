@@ -5,6 +5,8 @@
     using System.Data;
     using System.Data.Common;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
     using NSubstitute.ClearExtensions;
 
@@ -13,7 +15,6 @@
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
 
     [TestFixture]
     public class TestFileDownloadDatabaseProvider
@@ -25,20 +26,20 @@
 
             statsDownloadDatabaseServiceMock = Substitute.For<IStatsDownloadDatabaseService>();
             statsDownloadDatabaseServiceMock.When(service =>
-                service.CreateDatabaseConnectionAndExecuteAction(
-                    Arg.Any<Action<IDatabaseConnectionService>>())).Do(callInfo =>
-            {
-                var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
+                service.CreateDatabaseConnectionAndExecuteAction(Arg.Any<Action<IDatabaseConnectionService>>())).Do(
+                callInfo =>
+                {
+                    var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
 
-                service.Invoke(databaseConnectionServiceMock);
-            });
+                    service.Invoke(databaseConnectionServiceMock);
+                });
 
             statsDownloadDatabaseParameterServiceMock = Substitute.For<IStatsDownloadDatabaseParameterService>();
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
+            loggerMock = Substitute.For<ILogger<FileDownloadDatabaseProvider>>();
 
             systemUnderTest = NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock,
-                statsDownloadDatabaseParameterServiceMock, loggingServiceMock);
+                statsDownloadDatabaseParameterServiceMock, loggerMock);
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
@@ -88,7 +89,7 @@
 
         private FilePayload filePayload;
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<FileDownloadDatabaseProvider> loggerMock;
 
         private IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterServiceMock;
 
@@ -100,9 +101,9 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                NewFileDownloadDatabaseProvider(null, statsDownloadDatabaseParameterServiceMock, loggingServiceMock));
+                NewFileDownloadDatabaseProvider(null, statsDownloadDatabaseParameterServiceMock, loggerMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock, null, loggingServiceMock));
+                NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock, null, loggerMock));
             Assert.Throws<ArgumentNullException>(() => NewFileDownloadDatabaseProvider(statsDownloadDatabaseServiceMock,
                 statsDownloadDatabaseParameterServiceMock, null));
         }
@@ -135,12 +136,8 @@
         {
             InvokeFileDownloadError();
 
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileDownloadError));
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]",
-                    Arg.Any<List<DbParameter>>());
-            });
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]",
+                Arg.Any<List<DbParameter>>());
         }
 
         [Test]
@@ -148,12 +145,8 @@
         {
             InvokeFileDownloadFinished();
 
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileDownloadFinished));
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]",
-                    Arg.Any<List<DbParameter>>());
-            });
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]",
+                Arg.Any<List<DbParameter>>());
         }
 
         [Test]
@@ -192,12 +185,8 @@
         {
             InvokeFileDownloadStarted();
 
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileDownloadStarted));
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadStarted]",
-                    Arg.Any<List<DbParameter>>());
-            });
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileDownloadStarted]",
+                Arg.Any<List<DbParameter>>());
         }
 
         [Test]
@@ -214,8 +203,9 @@
 
             Assert.That(actualParameters.Count, Is.EqualTo(1));
             Assert.That(actualParameters[0], Is.EqualTo(downloadIdParameterMock));
-            statsDownloadDatabaseParameterServiceMock
-                .Received().CreateDownloadIdParameter(databaseConnectionServiceMock, ParameterDirection.Output);
+            statsDownloadDatabaseParameterServiceMock.Received()
+                                                     .CreateDownloadIdParameter(databaseConnectionServiceMock,
+                                                         ParameterDirection.Output);
         }
 
         [Test]
@@ -238,12 +228,8 @@
         {
             InvokeFileValidated();
 
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileValidated));
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileValidated]",
-                    Arg.Any<List<DbParameter>>());
-            });
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileValidated]",
+                Arg.Any<List<DbParameter>>());
         }
 
         [Test]
@@ -306,12 +292,8 @@
         {
             InvokeFileValidationError();
 
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileValidationError));
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileValidationError]",
-                    Arg.Any<List<DbParameter>>());
-            });
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileValidationError]",
+                Arg.Any<List<DbParameter>>());
         }
 
         [Test]
@@ -319,12 +301,8 @@
         {
             InvokeFileValidationStarted();
 
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.FileValidationStarted));
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[FileValidationStarted]",
-                    Arg.Any<List<DbParameter>>());
-            });
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileValidationStarted]",
+                Arg.Any<List<DbParameter>>());
         }
 
         [Test]
@@ -351,11 +329,8 @@
         {
             InvokeGetLastFileDownloadDateTime();
 
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.GetLastFileDownloadDateTime));
-                databaseConnectionServiceMock.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()");
-            });
+            databaseConnectionServiceMock.Received(1)
+                                         .ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()");
         }
 
         [Test]
@@ -380,6 +355,8 @@
 
         [TestCase(true, DatabaseFailedReason.None, FailedReason.None)]
         [TestCase(false, DatabaseFailedReason.DatabaseUnavailable, FailedReason.DatabaseUnavailable)]
+        [TestCase(false, DatabaseFailedReason.DatabaseMissingRequiredObjects,
+            FailedReason.DatabaseMissingRequiredObjects)]
         public void IsAvailable_WhenInvoked_ReturnsDatabaseAvailability(bool expectedIsAvailable,
                                                                         DatabaseFailedReason failedReason,
                                                                         FailedReason expectedReason)
@@ -394,6 +371,17 @@
         }
 
         [Test]
+        public void IsAvailable_WhenInvokedAndUnsupportedDatabaseFailedReasonReturned_ThrowsException()
+        {
+            statsDownloadDatabaseServiceMock.IsAvailable(Constants.FileDownloadDatabase.FileDownloadObjects)
+                                            .Returns((false,
+                                                         (DatabaseFailedReason)Enum.ToObject(
+                                                             typeof (DatabaseFailedReason), -1)));
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => InvokeIsAvailable());
+        }
+
+        [Test]
         public void UpdateToLatest_WhenInvoked_DatabaseUpdatedToLatest()
         {
             databaseConnectionServiceMock.ExecuteStoredProcedure(Arg.Any<string>())
@@ -403,9 +391,8 @@
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.UpdateToLatest));
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[UpdateToLatest]");
-                loggingServiceMock.LogVerbose($"'{NumberOfRowsEffectedExpected}' rows were effected");
+                loggerMock.LogDebug($"'{NumberOfRowsEffectedExpected}' rows were effected");
             });
         }
 
@@ -457,10 +444,10 @@
         private IFileDownloadDatabaseService NewFileDownloadDatabaseProvider(
             IStatsDownloadDatabaseService statsDownloadDatabaseService,
             IStatsDownloadDatabaseParameterService statsDownloadDatabaseParameterService,
-            ILoggingService loggingService)
+            ILogger<FileDownloadDatabaseProvider> logger)
         {
             return new FileDownloadDatabaseProvider(statsDownloadDatabaseService, statsDownloadDatabaseParameterService,
-                loggingService);
+                logger);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace StatsDownload.Core.Tests
 {
     using System;
+    using System.Threading.Tasks;
 
     using NSubstitute;
 
@@ -80,12 +81,12 @@
 
         [Test]
         public void
-            UploadFile_WhenUnexpectedValidationExceptionThrown_ThrownUnexpectedValidationExceptionWithInnerException()
+            UploadFile_WhenUnexpectedValidationExceptionThrown_ThrowsUnexpectedValidationExceptionWithInnerException()
         {
             var expected = new Exception();
             fileValidationServiceMock.When(mock => mock.ValidateFile(Arg.Any<FilePayload>())).Throw(expected);
 
-            var actual = Assert.Throws<UnexpectedValidationException>(InvokeUploadFile);
+            var actual = Assert.ThrowsAsync<UnexpectedValidationException>(InvokeUploadFile);
             Assert.That(actual.InnerException, Is.EqualTo(expected));
         }
 
@@ -96,12 +97,12 @@
             var expected = Activator.CreateInstance(expectedException) as Exception;
             fileValidationServiceMock.When(mock => mock.ValidateFile(Arg.Any<FilePayload>())).Throw(expected);
 
-            Assert.Throws(expectedException, InvokeUploadFile);
+            Assert.ThrowsAsync(expectedException, InvokeUploadFile);
         }
 
-        private void InvokeUploadFile()
+        private Task InvokeUploadFile()
         {
-            systemUnderTest.UploadFile(filePayload);
+            return systemUnderTest.UploadFile(filePayload);
         }
 
         private IFilePayloadUploadService NewFilePayloadUploadProvider(

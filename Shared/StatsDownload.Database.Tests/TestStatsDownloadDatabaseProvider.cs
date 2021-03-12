@@ -4,13 +4,16 @@
     using System.Data;
     using System.Data.Common;
 
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
 
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Core.Interfaces.Settings;
 
     [TestFixture]
     public class TestStatsDownloadDatabaseProvider
@@ -18,21 +21,19 @@
         [SetUp]
         public void SetUp()
         {
-            databaseConnectionSettingsServiceMock = Substitute.For<IDatabaseConnectionSettingsService>();
-            databaseConnectionSettingsServiceMock.GetConnectionString().Returns("connectionString");
-            databaseConnectionSettingsServiceMock.GetCommandTimeout().Returns(42);
+            loggerMock = Substitute.For<ILogger<StatsDownloadDatabaseProvider>>();
+
+            databaseSettings = new DatabaseSettings { ConnectionString = "connectionString", CommandTimeout = 42 };
+
+            databaseSettingsOptionsMock = Substitute.For<IOptions<DatabaseSettings>>();
+            databaseSettingsOptionsMock.Value.Returns(databaseSettings);
 
             databaseConnectionServiceMock = Substitute.For<IDatabaseConnectionService>();
             databaseConnectionServiceFactoryMock = Substitute.For<IDatabaseConnectionServiceFactory>();
-            databaseConnectionServiceFactoryMock
-                .Create(loggingServiceMock, "connectionString", 42).Returns(databaseConnectionServiceMock);
+            databaseConnectionServiceFactoryMock.Create().Returns(databaseConnectionServiceMock);
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
-
-            errorMessageServiceMock = Substitute.For<IErrorMessageService>();
-
-            systemUnderTest = NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock,
-                databaseConnectionServiceFactoryMock, loggingServiceMock);
+            systemUnderTest = NewFileDownloadDatabaseProvider(databaseSettingsOptionsMock,
+                databaseConnectionServiceFactoryMock, loggerMock);
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
@@ -49,13 +50,13 @@
 
         private IDatabaseConnectionService databaseConnectionServiceMock;
 
-        private IDatabaseConnectionSettingsService databaseConnectionSettingsServiceMock;
+        private DatabaseSettings databaseSettings;
+
+        private IOptions<DatabaseSettings> databaseSettingsOptionsMock;
 
         private DbDataReader dbDataReaderMock;
 
-        private IErrorMessageService errorMessageServiceMock;
-
-        private ILoggingService loggingServiceMock;
+        private ILogger<StatsDownloadDatabaseProvider> loggerMock;
 
         private IStatsDownloadDatabaseService systemUnderTest;
 
@@ -73,12 +74,12 @@
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                NewFileDownloadDatabaseProvider(null, databaseConnectionServiceFactoryMock, loggingServiceMock));
+                NewFileDownloadDatabaseProvider(null, databaseConnectionServiceFactoryMock, loggerMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock, null, loggingServiceMock));
+                NewFileDownloadDatabaseProvider(databaseSettingsOptionsMock, null, loggerMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewFileDownloadDatabaseProvider(databaseConnectionSettingsServiceMock,
-                    databaseConnectionServiceFactoryMock, null));
+                NewFileDownloadDatabaseProvider(databaseSettingsOptionsMock, databaseConnectionServiceFactoryMock,
+                    null));
         }
 
         [Test]
@@ -86,11 +87,7 @@
         {
             systemUnderTest.CreateTransaction();
 
-            Received.InOrder(() =>
-            {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.CreateTransaction));
-                databaseConnectionServiceMock.CreateTransaction();
-            });
+            Received.InOrder(() => { databaseConnectionServiceMock.CreateTransaction(); });
         }
 
         [Test]
@@ -113,9 +110,8 @@
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.IsAvailable));
                 databaseConnectionServiceMock.Open();
-                loggingServiceMock.LogVerbose("Database connection was successful");
+                loggerMock.LogDebug("Database connection was successful");
             });
         }
 
@@ -126,7 +122,7 @@
 
             InvokeIsAvailable();
 
-            loggingServiceMock.DidNotReceive().LogVerbose("Database connection was successful");
+            loggerMock.DidNotReceive().LogDebug("Database connection was successful");
             databaseConnectionServiceMock.DidNotReceive().Open();
         }
 
@@ -140,9 +136,8 @@
 
             Received.InOrder(() =>
             {
-                loggingServiceMock.LogMethodInvoked(nameof(systemUnderTest.IsAvailable));
                 databaseConnectionServiceMock.Open();
-                loggingServiceMock.LogException(expected);
+                loggerMock.LogError(expected, "There was an exception opening the database connection");
             });
         }
 
@@ -161,7 +156,7 @@
         [TestCase("")]
         public void IsAvailable_WhenInvalidConnectionString_ReturnsFalse(string connectionString)
         {
-            databaseConnectionSettingsServiceMock.GetConnectionString().Returns(connectionString);
+            databaseSettings.ConnectionString = connectionString;
 
             (bool isAvailable, DatabaseFailedReason reason) actual = InvokeIsAvailable();
 
@@ -196,8 +191,8 @@
 
             InvokeIsAvailable(new[] { "object1", "object2", "object3" });
 
-            loggingServiceMock
-                .Received().LogError("The required objects {'object1', 'object3'} are missing from the database.");
+            loggerMock.Received()
+                      .LogError("The required objects {'object1', 'object3'} are missing from the database.");
         }
 
         [Test]
@@ -227,11 +222,11 @@
         }
 
         private IStatsDownloadDatabaseService NewFileDownloadDatabaseProvider(
-            IDatabaseConnectionSettingsService databaseConnectionSettingsService,
-            IDatabaseConnectionServiceFactory databaseConnectionServiceFactory, ILoggingService loggingService)
+            IOptions<DatabaseSettings> databaseSettingsOptions,
+            IDatabaseConnectionServiceFactory databaseConnectionServiceFactory,
+            ILogger<StatsDownloadDatabaseProvider> logger)
         {
-            return new StatsDownloadDatabaseProvider(databaseConnectionSettingsService,
-                databaseConnectionServiceFactory, loggingService);
+            return new StatsDownloadDatabaseProvider(databaseSettingsOptions, databaseConnectionServiceFactory, logger);
         }
     }
 }

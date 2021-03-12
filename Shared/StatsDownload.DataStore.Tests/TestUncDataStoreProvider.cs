@@ -3,12 +3,16 @@
     using System;
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+
     using NSubstitute;
 
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Settings;
 
     [TestFixture]
     public class TestUncDataStoreProvider
@@ -24,24 +28,31 @@
 
             validatedFileMock = new ValidatedFile(0, DateTime.UtcNow, "\\ValidatedFilePath\\Source.ext");
 
-            dataStoreSettingsMock = Substitute.For<IDataStoreSettings>();
+            loggerMock = Substitute.For<ILogger<UncDataStoreProvider>>();
 
-            dataStoreSettingsMock.UploadDirectory.Returns("C:\\Path");
+            dataStoreSettings = new DataStoreSettings { UploadDirectory = "C:\\Path" };
+            dataStoreSettingsOptionsMock = Substitute.For<IOptions<DataStoreSettings>>();
+            dataStoreSettingsOptionsMock.Value.Returns(dataStoreSettings);
 
             directoryServiceMock = Substitute.For<IDirectoryService>();
 
             fileServiceMock = Substitute.For<IFileService>();
 
-            systemUnderTest = new UncDataStoreProvider(dataStoreSettingsMock, directoryServiceMock, fileServiceMock);
+            systemUnderTest = new UncDataStoreProvider(loggerMock, dataStoreSettingsOptionsMock, directoryServiceMock,
+                fileServiceMock);
         }
 
-        private IDataStoreSettings dataStoreSettingsMock;
+        private DataStoreSettings dataStoreSettings;
+
+        private IOptions<DataStoreSettings> dataStoreSettingsOptionsMock;
 
         private IDirectoryService directoryServiceMock;
 
         private FilePayload filePayloadMock;
 
         private IFileService fileServiceMock;
+
+        private ILogger<UncDataStoreProvider> loggerMock;
 
         private IDataStoreService systemUnderTest;
 
@@ -64,6 +75,16 @@
             bool actual = await systemUnderTest.IsAvailable();
 
             Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public async Task IsAvailable_WhenNotAvailable_LogsWarning()
+        {
+            directoryServiceMock.Exists("C:\\Path").Returns(false);
+
+            await systemUnderTest.IsAvailable();
+
+            loggerMock.Received(1).LogWarning("The path 'C:\\Path' does not exist");
         }
 
         [Test]

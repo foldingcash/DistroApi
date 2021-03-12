@@ -4,30 +4,31 @@
     using System.Net.Security;
     using System.Security.Cryptography.X509Certificates;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Core.Interfaces.Networking;
 
     public class DownloadProvider : IDownloadService
     {
         private readonly IDateTimeService dateTimeService;
 
-        private readonly ILoggingService loggingService;
+        private readonly ILogger<DownloadProvider> logger;
 
         private readonly IWebClientFactory webClientFactory;
 
-        public DownloadProvider(ILoggingService loggingService, IDateTimeService dateTimeService,
+        public DownloadProvider(ILogger<DownloadProvider> logger, IDateTimeService dateTimeService,
                                 IWebClientFactory webClientFactory)
         {
-            this.loggingService = loggingService;
+            this.logger = logger;
             this.dateTimeService = dateTimeService;
             this.webClientFactory = webClientFactory;
         }
 
         public void DownloadFile(FilePayload filePayload)
         {
-            loggingService.LogVerbose($"Attempting to download file: {dateTimeService.DateTimeNow()}");
+            logger.LogDebug($"Attempting to download file: {dateTimeService.DateTimeNow()}");
 
             IWebClient webClient = null;
 
@@ -42,7 +43,7 @@
                 webClientFactory.Release(webClient);
             }
 
-            loggingService.LogVerbose($"File download complete: {dateTimeService.DateTimeNow()}");
+            logger.LogDebug($"File download complete: {dateTimeService.DateTimeNow()}");
         }
 
         private void DownloadFile(FilePayload filePayload, IWebClient webClient)
@@ -52,16 +53,16 @@
 
         private void LogCertificate(X509Certificate certificate, SslPolicyErrors policyErrors)
         {
-            string message =
+            var message =
                 $"SSL Certificate from Server.{Environment.NewLine}Details - Issuer: '{certificate.Issuer}' Subject: '{certificate.Subject}' Error Code: {policyErrors}";
 
             if (policyErrors == SslPolicyErrors.None)
             {
-                loggingService.LogVerbose(message);
+                logger.LogDebug(message);
             }
             else
             {
-                loggingService.LogError(message);
+                logger.LogError(message);
             }
         }
 

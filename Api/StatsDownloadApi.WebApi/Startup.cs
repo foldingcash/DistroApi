@@ -2,8 +2,10 @@
 {
     using System;
     using System.Diagnostics;
+    using System.IO;
+    using System.Reflection;
 
-    using Castle.Windsor.MsDependencyInjection;
+    using LazyCache;
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -11,24 +13,36 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Microsoft.OpenApi.Models;
 
-    using StatsDownloadApi.WebApi.CastleWindsor;
+    using StatsDownload.Core.Interfaces;
+    using StatsDownload.Core.Interfaces.Settings;
+    using StatsDownload.DependencyInjection;
 
-    using ApiWindsorContainer = StatsDownloadApi.WebApi.CastleWindsor.WindsorContainer;
+    using StatsDownloadApi.Core;
+    using StatsDownloadApi.Database;
+    using StatsDownloadApi.DataStore;
+    using StatsDownloadApi.Interfaces;
 
     public class Startup
     {
+        private readonly IConfiguration configuration;
+
         private readonly ILogger<Startup> logger;
+
+        private readonly SwaggerSettings swaggerSettings;
 
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
-            Configuration = configuration;
+            this.configuration = configuration;
             this.logger = logger;
+
+            var settings = new SwaggerSettings();
+            configuration.GetSection(nameof(swaggerSettings)).Bind(settings);
+            swaggerSettings = settings;
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             logger.LogTrace("PID: {PID} Environment: {environment}", Process.GetCurrentProcess().Id,
@@ -39,28 +53,75 @@
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint(swaggerSettings.JsonUrl, swaggerSettings.Name);
+                c.RoutePrefix = swaggerSettings.SwaggerUrl;
+            });
+
             app.UseRouting();
             app.UseEndpoints(builder => builder.MapControllers());
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.IgnoreNullValues = true;
             });
-            services.AddControllersWithViews();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc(swaggerSettings.Version,
+                    new OpenApiInfo { Title = swaggerSettings.Title, Version = swaggerSettings.Version });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
 
             services.AddOptions();
             services.AddLazyCache();
-            services.AddSingleton(Configuration);
+            services.AddSingleton(configuration);
 
-            IServiceProvider provider =
-                WindsorRegistrationHelper.CreateServiceProvider(ApiWindsorContainer.Instance, services);
-            DependencyRegistration.Register(); // This registration must come after the provider creation
-            return provider;
+            services.AddStatsDownload(configuration);
+
+            services.Configure<DataStoreCacheSettings>(
+                configuration.GetSection($"{nameof(DataStoreSettings)}:{nameof(DataStoreCacheSettings)}"));
+
+            services.Configure<DatabaseCacheSettings>(
+                configuration.GetSection($"{nameof(DatabaseSettings)}:{nameof(DatabaseCacheSettings)}"));
+
+            services.AddSingleton<IStatsDownloadApiEmailService, StatsDownloadApiEmailProvider>()
+                    .AddSingleton<IStatsDownloadApiService, StatsDownloadApiProvider>()
+                    .AddSingleton<IStatsDownloadApiTokenDistributionService, StandardTokenDistributionProvider>()
+                    .AddSingleton<IFilePayloadApiSettingsService, FilePayloadApiSettingsProvider>();
+
+            services.AddSingleton<IStatsDownloadApiDatabaseService>(provider =>
+            {
+                return new StatsDownloadApiDatabaseCacheProvider(
+                    provider.GetRequiredService<ILogger<StatsDownloadApiDatabaseCacheProvider>>(),
+                    provider.GetRequiredService<IOptions<DatabaseCacheSettings>>(),
+                    provider.GetRequiredService<IAppCache>(),
+                    new StatsDownloadApiDatabaseValidationProvider(new StatsDownloadApiDatabaseProvider(
+                        provider.GetRequiredService<ILogger<StatsDownloadApiDatabaseProvider>>(),
+                        provider.GetRequiredService<IStatsDownloadDatabaseService>())));
+            });
+
+            services.AddSingleton<IStatsDownloadApiDataStoreService>(provider =>
+            {
+                return new StatsDownloadApiDataStoreCacheProvider(
+                    provider.GetRequiredService<ILogger<StatsDownloadApiDataStoreCacheProvider>>(),
+                    provider.GetRequiredService<IOptions<DataStoreCacheSettings>>(),
+                    provider.GetRequiredService<IAppCache>(),
+                    new StatsDownloadApiDataStoreProvider(provider.GetRequiredService<IDataStoreServiceFactory>(),
+                        provider.GetRequiredService<IStatsDownloadApiDatabaseService>(),
+                        provider.GetRequiredService<IFileValidationService>(),
+                        provider.GetRequiredService<IFilePayloadApiSettingsService>(),
+                        provider.GetRequiredService<ILogger<StatsDownloadApiDataStoreProvider>>(),
+                        provider.GetRequiredService<IResourceCleanupService>()));
+            });
         }
     }
 }

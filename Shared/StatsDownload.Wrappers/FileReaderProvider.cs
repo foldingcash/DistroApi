@@ -2,44 +2,38 @@
 {
     using System.IO;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Logging;
+    using StatsDownload.Logging;
 
     public class FileReaderProvider : IFileReaderService
     {
         private readonly IDateTimeService dateTimeService;
 
-        private readonly ILoggingService loggingService;
+        private readonly ILogger<FileReaderProvider> logger;
 
-        public FileReaderProvider(ILoggingService loggingService, IDateTimeService dateTimeService)
+        public FileReaderProvider(ILogger<FileReaderProvider> logger, IDateTimeService dateTimeService)
         {
-            this.loggingService = loggingService;
+            this.logger = logger;
             this.dateTimeService = dateTimeService;
         }
 
         public void ReadFile(FilePayload filePayload)
         {
+            logger.LogMethodInvoked();
             ReadDecompressedFile(filePayload);
-            ReadCompressedFile(filePayload);
-        }
-
-        private void ReadCompressedFile(FilePayload filePayload)
-        {
-            loggingService.LogVerbose($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
-
-            filePayload.DownloadFileData = File.ReadAllBytes(filePayload.DownloadFilePath);
-
-            loggingService.LogVerbose($"Reading file complete: {dateTimeService.DateTimeNow()}");
+            logger.LogMethodFinished();
         }
 
         private void ReadDecompressedFile(FilePayload filePayload)
         {
-            loggingService.LogVerbose($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
+            logger.LogDebug($"Attempting to read file contents: {dateTimeService.DateTimeNow()}");
 
             filePayload.DecompressedDownloadFileData = File.ReadAllText(filePayload.DecompressedDownloadFilePath);
 
-            loggingService.LogVerbose($"Reading file complete: {dateTimeService.DateTimeNow()}");
+            logger.LogDebug($"Reading file complete: {dateTimeService.DateTimeNow()}");
         }
     }
 }

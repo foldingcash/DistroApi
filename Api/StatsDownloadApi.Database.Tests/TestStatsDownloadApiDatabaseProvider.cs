@@ -6,6 +6,8 @@
     using System.Data.Common;
     using System.Linq;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
@@ -13,7 +15,6 @@
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
     using StatsDownload.Database.Tests;
 
     using StatsDownloadApi.Interfaces;
@@ -30,24 +31,24 @@
 
             statsDownloadDatabaseServiceMock = Substitute.For<IStatsDownloadDatabaseService>();
             statsDownloadDatabaseServiceMock.When(service =>
-                service.CreateDatabaseConnectionAndExecuteAction(
-                    Arg.Any<Action<IDatabaseConnectionService>>())).Do(callInfo =>
-            {
-                var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
+                service.CreateDatabaseConnectionAndExecuteAction(Arg.Any<Action<IDatabaseConnectionService>>())).Do(
+                callInfo =>
+                {
+                    var service = callInfo.Arg<Action<IDatabaseConnectionService>>();
 
-                service.Invoke(databaseConnectionServiceMock);
-            });
+                    service.Invoke(databaseConnectionServiceMock);
+                });
 
             DatabaseProviderTestingHelper.SetUpDatabaseConnectionServiceReturns(databaseConnectionServiceMock);
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
+            loggerMock = Substitute.For<ILogger<StatsDownloadApiDatabaseProvider>>();
 
-            systemUnderTest = NewStatsDownloadApiDatabaseProvider(statsDownloadDatabaseServiceMock, loggingServiceMock);
+            systemUnderTest = NewStatsDownloadApiDatabaseProvider(loggerMock, statsDownloadDatabaseServiceMock);
         }
 
         private IDatabaseConnectionService databaseConnectionServiceMock;
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<StatsDownloadApiDatabaseProvider> loggerMock;
 
         private IStatsDownloadDatabaseService statsDownloadDatabaseServiceMock;
 
@@ -56,36 +57,34 @@
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiDatabaseProvider(null, loggingServiceMock));
             Assert.Throws<ArgumentNullException>(() =>
-                NewStatsDownloadApiDatabaseProvider(statsDownloadDatabaseServiceMock, null));
+                NewStatsDownloadApiDatabaseProvider(null, statsDownloadDatabaseServiceMock));
+            Assert.Throws<ArgumentNullException>(() => NewStatsDownloadApiDatabaseProvider(loggerMock, null));
         }
 
         [Test]
         public void GetValidatedFiles_WhenInvoked_GetsValidatedFiles()
         {
             databaseConnectionServiceMock.When(service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[GetValidatedFiles]",
-                    Arg.Any<IEnumerable<DbParameter>>(), Arg.Any<DataTable>())).Do(
-                callInfo =>
-                {
-                    var dataTable = callInfo.Arg<DataTable>();
-                    dataTable.Columns.Add(new DataColumn("DownloadId", typeof (int)));
-                    dataTable.Columns.Add(new DataColumn("DownloadDateTime",
-                        typeof (DateTime)));
-                    dataTable.Columns.Add(new DataColumn("FilePath", typeof (string)));
-                    DataRow user1 = dataTable.NewRow();
-                    dataTable.Rows.Add(user1);
-                    user1["DownloadId"] = 1;
-                    user1["DownloadDateTime"] = DateTime.Today.AddMinutes(1);
-                    user1["FilePath"] = "FilePath1";
-                    DataRow user2 = dataTable.NewRow();
-                    dataTable.Rows.Add(user2);
-                    user2["DownloadId"] = 2;
-                    user2["DownloadDateTime"] = DateTime.Today.AddMinutes(2);
-                    user2["FilePath"] = "FilePath2";
-                    dataTable.AcceptChanges();
-                });
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetValidatedFiles]", Arg.Any<IEnumerable<DbParameter>>(),
+                    Arg.Any<DataTable>())).Do(callInfo =>
+            {
+                var dataTable = callInfo.Arg<DataTable>();
+                dataTable.Columns.Add(new DataColumn("DownloadId", typeof (int)));
+                dataTable.Columns.Add(new DataColumn("DownloadDateTime", typeof (DateTime)));
+                dataTable.Columns.Add(new DataColumn("FilePath", typeof (string)));
+                DataRow user1 = dataTable.NewRow();
+                dataTable.Rows.Add(user1);
+                user1["DownloadId"] = 1;
+                user1["DownloadDateTime"] = DateTime.Today.AddMinutes(1);
+                user1["FilePath"] = "FilePath1";
+                DataRow user2 = dataTable.NewRow();
+                dataTable.Rows.Add(user2);
+                user2["DownloadId"] = 2;
+                user2["DownloadDateTime"] = DateTime.Today.AddMinutes(2);
+                user2["FilePath"] = "FilePath2";
+                dataTable.AcceptChanges();
+            });
 
             IList<ValidatedFile> actual = systemUnderTest.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
 
@@ -104,12 +103,11 @@
             IEnumerable<DbParameter> actualParameters = null;
 
             databaseConnectionServiceMock.When(service =>
-                                             service.ExecuteStoredProcedure("[FoldingCoin].[GetValidatedFiles]",
-                                                 Arg.Any<IEnumerable<DbParameter>>(), Arg.Any<DataTable>()))
-                                         .Do(callInfo =>
-                                         {
-                                             actualParameters = callInfo.Arg<IEnumerable<DbParameter>>();
-                                         });
+                service.ExecuteStoredProcedure("[FoldingCoin].[GetValidatedFiles]", Arg.Any<IEnumerable<DbParameter>>(),
+                    Arg.Any<DataTable>())).Do(callInfo =>
+            {
+                actualParameters = callInfo.Arg<IEnumerable<DbParameter>>();
+            });
 
             systemUnderTest.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
 
@@ -122,14 +120,6 @@
             Assert.That(actualParameters.ElementAt(1).DbType, Is.EqualTo(DbType.Date));
             Assert.That(actualParameters.ElementAt(1).Direction, Is.EqualTo(ParameterDirection.Input));
             Assert.That(actualParameters.ElementAt(1).Value, Is.EqualTo(DateTime.MaxValue));
-        }
-
-        [Test]
-        public void GetValidatedFiles_WhenInvoked_LogsMethodInvoked()
-        {
-            systemUnderTest.GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
-
-            loggingServiceMock.Received().LogMethodInvoked(nameof(systemUnderTest.GetValidatedFiles));
         }
 
         [TestCase(true, DatabaseFailedReason.None)]
@@ -147,9 +137,10 @@
         }
 
         private IStatsDownloadApiDatabaseService NewStatsDownloadApiDatabaseProvider(
-            IStatsDownloadDatabaseService statsDownloadDatabaseService, ILoggingService loggingService)
+            ILogger<StatsDownloadApiDatabaseProvider> logger,
+            IStatsDownloadDatabaseService statsDownloadDatabaseService)
         {
-            return new StatsDownloadApiDatabaseProvider(statsDownloadDatabaseService, loggingService);
+            return new StatsDownloadApiDatabaseProvider(logger, statsDownloadDatabaseService);
         }
     }
 }

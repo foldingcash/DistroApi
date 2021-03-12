@@ -2,31 +2,22 @@
 {
     using System;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
-    using StatsDownload.Core.Interfaces.Logging;
 
     public class ResourceCleanupProvider : IResourceCleanupService
     {
         private readonly IFileService fileService;
 
-        private readonly ILoggingService loggingService;
+        private readonly ILogger logger;
 
-        public ResourceCleanupProvider(IFileService fileService, ILoggingService loggingService)
+        public ResourceCleanupProvider(ILogger<ResourceCleanupProvider> logger, IFileService fileService)
         {
-            if (fileService == null)
-            {
-                throw new ArgumentNullException(nameof(fileService));
-            }
-
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            this.fileService = fileService;
-            this.loggingService = loggingService;
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
         }
 
         public void Cleanup(FileDownloadResult fileDownloadResult)
@@ -37,11 +28,11 @@
             string decompressedDownloadFilePath = filePayload.DecompressedDownloadFilePath;
             string failedDownloadFilePath = filePayload.FailedDownloadFilePath;
 
-            LogVerbose($"{nameof(Cleanup)} Invoked");
+            LogDebug($"{nameof(Cleanup)} Invoked");
 
             if (Exists(decompressedDownloadFilePath))
             {
-                LogVerbose($"Deleting: {decompressedDownloadFilePath}");
+                LogDebug($"Deleting: {decompressedDownloadFilePath}");
                 Delete(decompressedDownloadFilePath);
             }
 
@@ -49,12 +40,12 @@
             {
                 if (fileDownloadResult.FailedReason == FailedReason.FileDownloadFailedDecompression)
                 {
-                    LogVerbose($"Moving: {downloadFilePath} to {failedDownloadFilePath}");
+                    LogDebug($"Moving: {downloadFilePath} to {failedDownloadFilePath}");
                     Move(downloadFilePath, failedDownloadFilePath);
                 }
                 else
                 {
-                    LogVerbose($"Deleting: {downloadFilePath}");
+                    LogDebug($"Deleting: {downloadFilePath}");
                     Delete(downloadFilePath);
                 }
             }
@@ -70,9 +61,9 @@
             return fileService.Exists(path);
         }
 
-        private void LogVerbose(string message)
+        private void LogDebug(string message)
         {
-            loggingService.LogVerbose(message);
+            logger.LogDebug(message);
         }
 
         private void Move(string sourcePath, string destinationPath)

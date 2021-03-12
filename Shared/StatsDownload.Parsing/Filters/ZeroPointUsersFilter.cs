@@ -2,29 +2,32 @@
 {
     using System.Linq;
 
+    using Microsoft.Extensions.Options;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Settings;
 
     public class ZeroPointUsersFilter : IStatsFileParserService
     {
         private readonly IStatsFileParserService innerService;
 
-        private readonly IZeroPointUsersFilterSettings settings;
+        private readonly FilterSettings settings;
 
-        public ZeroPointUsersFilter(IStatsFileParserService innerService, IZeroPointUsersFilterSettings settings)
+        public ZeroPointUsersFilter(IStatsFileParserService innerService, IOptions<FilterSettings> settings)
         {
             this.innerService = innerService;
-            this.settings = settings;
+            this.settings = settings.Value;
         }
 
         public ParseResults Parse(FilePayload filePayload)
         {
             ParseResults results = innerService.Parse(filePayload);
 
-            if (settings.Enabled)
+            if (settings.EnableZeroPointUsersFilter)
             {
-                return new ParseResults(results.DownloadDateTime, results.UsersData.Where(data => data.TotalPoints > 0),
-                    results.FailedUsersData);
+                return new ParseResults(results.DownloadDateTime,
+                    results.UsersData.Where(data => data.TotalPoints > 0).ToArray(), results.FailedUsersData);
             }
 
             return results;

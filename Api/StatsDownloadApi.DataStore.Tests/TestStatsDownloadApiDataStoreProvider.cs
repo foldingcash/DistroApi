@@ -3,13 +3,14 @@ namespace StatsDownloadApi.DataStore.Tests
     using System;
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Logging;
+
     using NSubstitute;
 
     using NUnit.Framework;
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-    using StatsDownload.Core.Interfaces.Logging;
 
     using StatsDownloadApi.Interfaces;
     using StatsDownloadApi.Interfaces.DataTransfer;
@@ -36,11 +37,11 @@ namespace StatsDownloadApi.DataStore.Tests
 
             var followingUsersData = new[]
                                      {
-                                         new UserData(1, "user1", 2, 2, 2)
+                                         new UserData(1, "user1", 2, 2, 1)
                                          {
                                              BitcoinAddress = "btc1", FriendlyName = "user1"
                                          },
-                                         new UserData(2, "user2", 4, 4, 4)
+                                         new UserData(2, "user2", 4, 4, 2)
                                          {
                                              BitcoinAddress = "btc2", FriendlyName = "user2"
                                          }
@@ -61,10 +62,13 @@ namespace StatsDownloadApi.DataStore.Tests
 
             filePayloadApiSettingsServiceMock = Substitute.For<IFilePayloadApiSettingsService>();
 
-            loggingServiceMock = Substitute.For<ILoggingService>();
+            loggerMock = Substitute.For<ILogger<StatsDownloadApiDataStoreProvider>>();
+
+            resourceCleanupServiceMock = Substitute.For<IResourceCleanupService>();
 
             systemUnderTest = new StatsDownloadApiDataStoreProvider(dataStoreServiceFactoryMock, databaseServiceMock,
-                fileValidationServiceMock, filePayloadApiSettingsServiceMock, loggingServiceMock);
+                fileValidationServiceMock, filePayloadApiSettingsServiceMock, loggerMock,
+                resourceCleanupServiceMock);
         }
 
         private IStatsDownloadApiDatabaseService databaseServiceMock;
@@ -75,7 +79,9 @@ namespace StatsDownloadApi.DataStore.Tests
 
         private IFileValidationService fileValidationServiceMock;
 
-        private ILoggingService loggingServiceMock;
+        private ILogger<StatsDownloadApiDataStoreProvider> loggerMock;
+
+        private IResourceCleanupService resourceCleanupServiceMock;
 
         private IStatsDownloadApiDataStoreService systemUnderTest;
 
@@ -89,28 +95,23 @@ namespace StatsDownloadApi.DataStore.Tests
             new ValidatedFile(3, DateTime.Today.AddMinutes(3), "FilePath3");
 
         [Test]
-        public void GetFoldingMembers_WhenInvoked_GetsAndValidatesStatsFiles()
+        public async Task GetFoldingMembers_WhenInvoked_GetsAndValidatesStatsFiles()
         {
-            systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
+            await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
 
-            Received.InOrder(() =>
-            {
-                databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
-
-                filePayloadApiSettingsServiceMock.Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
-                dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock1);
-                fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
-
-                filePayloadApiSettingsServiceMock.Received(1).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
-                dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock3);
-                fileValidationServiceMock.Received(1).ValidateFile(Arg.Any<FilePayload>());
-            });
+            databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
+            filePayloadApiSettingsServiceMock.Received(2).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
+            await dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock1);
+            await dataStoreServiceMock.Received(1).DownloadFile(Arg.Any<FilePayload>(), validatedFileMock3);
+            fileValidationServiceMock.Received(2).ValidateFile(Arg.Any<FilePayload>());
+            resourceCleanupServiceMock.Received(2).Cleanup(Arg.Any<FileDownloadResult>());
         }
 
         [Test]
         public async Task GetFoldingMembers_WhenInvoked_GetsFoldingMembers()
         {
-            FoldingUser[] actual = await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
+            FoldingUsersResult result = await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
+            FoldingUser[] actual = result.FoldingUsers;
 
             Assert.That(actual.Length, Is.EqualTo(2));
 
@@ -123,16 +124,6 @@ namespace StatsDownloadApi.DataStore.Tests
             Assert.That(actual[1].BitcoinAddress, Is.EqualTo("btc2"));
             Assert.That(actual[1].PointsGained, Is.EqualTo(2));
             Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(2));
-        }
-
-        [Test]
-        public void GetMembers_WhenInvoked()
-        {
-        }
-
-        [Test]
-        public void GetTeams_WhenInvoked()
-        {
         }
 
         [TestCase(true)]

@@ -7,92 +7,71 @@
     using System.Text;
     using System.Threading;
 
-    using StatsDownload.Core.Interfaces.Logging;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
 
     public class EmailProvider : IEmailService
     {
+        private readonly EmailSettings emailSettings;
+
         private readonly IEmailSettingsValidatorService emailSettingsValidatorService;
 
-        private readonly ILoggingService loggingService;
-
-        private readonly IEmailSettingsService settingsService;
+        private readonly ILogger logger;
 
         private readonly int WaitTimeInMillisecondsBeforeTryingSendAgain = 5000;
 
-        public EmailProvider(IEmailSettingsService settingsService,
-                             IEmailSettingsValidatorService emailSettingsValidatorService,
-                             ILoggingService loggingService)
+        public EmailProvider(ILogger<EmailProvider> logger, IOptions<EmailSettings> emailSettings,
+                             IEmailSettingsValidatorService emailSettingsValidatorService)
         {
-            this.settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            this.emailSettings = emailSettings?.Value ?? throw new ArgumentNullException(nameof(emailSettings));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.emailSettingsValidatorService = emailSettingsValidatorService
                                                  ?? throw new ArgumentNullException(
                                                      nameof(emailSettingsValidatorService));
-            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
         public EmailResult SendEmail(string subject, string body)
         {
-            var sb = new StringBuilder();
-
             try
             {
-                sb.AppendLine("Attempting to send email:");
-                sb.AppendLine($"Subject: {subject}");
-                sb.AppendLine($"Body: {body}");
+                logger.LogInformation("Attempting to send email(s)");
+                logger.LogDebug("Sending email(s) with subject {subject} and body {body}", subject, body);
 
                 MailAddress fromAddress = NewMailAddress();
+                IEnumerable<string> receivers = ParseReceivers(emailSettings.Receivers);
 
-                IEnumerable<string> receivers = ParseReceivers(settingsService.GetReceivers());
-
-                using (SmtpClient smtpClient = NewSmtpClient(sb, fromAddress))
+                using (SmtpClient smtpClient = NewSmtpClient(fromAddress))
                 {
-                    sb.AppendLine();
-                    sb.AppendLine();
-
                     foreach (string address in receivers)
                     {
                         MailAddress toAddress = NewMailAddress(address);
-                        SendMessage(sb, smtpClient, fromAddress, toAddress, subject, body);
+                        SendMessage(smtpClient, fromAddress, toAddress, subject, body);
                     }
                 }
 
-                LogVerbose(sb);
                 return NewEmailResult();
             }
             catch (EmailArgumentException emailArgumentException)
             {
-                LogVerbose(sb);
-                LogException(emailArgumentException);
-                LogEmailArgumentExceptionVerbose(emailArgumentException);
+                logger.LogError(emailArgumentException, "There was an exception.");
+                LogEmailArgumentExceptionDebug(emailArgumentException);
                 return NewEmailResult(emailArgumentException);
             }
             catch (Exception ex)
             {
-                LogVerbose(sb);
-                LogException(ex);
+                logger.LogError(ex, "There was an exception.");
                 return NewEmailResult(ex);
             }
         }
 
-        private void LogEmailArgumentExceptionVerbose(EmailArgumentException emailArgumentException)
+        private void LogEmailArgumentExceptionDebug(EmailArgumentException emailArgumentException)
         {
             var builder = new StringBuilder();
 
             builder.AppendLine("There was a problem with the email settings.");
             builder.AppendLine("Ensure all of the email settings are configured and valid before trying again.");
-            builder.Append($"Exception message: {emailArgumentException.Message}");
 
-            LogVerbose(builder);
-        }
-
-        private void LogException(Exception exception)
-        {
-            loggingService.LogException(exception);
-        }
-
-        private void LogVerbose(StringBuilder sb)
-        {
-            loggingService.LogVerbose(sb.ToString());
+            logger.LogTrace(emailArgumentException, builder.ToString());
         }
 
         private EmailResult NewEmailResult()
@@ -107,8 +86,8 @@
 
         private MailAddress NewMailAddress()
         {
-            string fromAddress = ParseFromAddress(settingsService.GetFromAddress());
-            string displayName = ParseFromDisplayName(settingsService.GetFromDisplayName());
+            string fromAddress = ParseFromAddress(emailSettings.Address);
+            string displayName = ParseFromDisplayName(emailSettings.DisplayName);
 
             return NewMailAddress(fromAddress, displayName);
         }
@@ -133,24 +112,25 @@
             return new NetworkCredential(userName, password);
         }
 
-        private SmtpClient NewSmtpClient(StringBuilder sb, MailAddress fromAddress)
+        private SmtpClient NewSmtpClient(MailAddress fromAddress)
         {
-            string host = ParseSmtpHost(settingsService.GetSmtpHost());
-            int port = ParsePort(settingsService.GetPort());
-            string password = ParsePassword(settingsService.GetPassword());
+            string host = ParseSmtpHost(emailSettings.Host);
+            int port = ParsePort(emailSettings.Port);
+            string password = ParsePassword(emailSettings.Password);
             ICredentialsByHost credentials = NewNetworkCredential(fromAddress.Address, password);
             var deliveryMethod = SmtpDeliveryMethod.Network;
             var enableSsl = true;
             var useDefaultCredentials = false;
 
-            sb.AppendLine("Preparing Smtp client:");
-            sb.AppendLine($"Host: {host}");
-            sb.AppendLine($"Port: {port}");
-            sb.AppendLine($"From Address: {fromAddress}");
-            sb.AppendLine($"Delivery Method: {deliveryMethod}");
-            sb.AppendLine($"Enable Ssl: {enableSsl}");
-            sb.AppendLine($"Use Default Credentials: {useDefaultCredentials}");
-            sb.AppendLine();
+            logger.LogDebug(@"Preparing Smtp client:
+    Host: {host}
+    Port: {port}
+    From Address: {address}
+    Delivery Method: {deliveryMethod}
+    Enable SSL: {enableSsl}
+    Use Default Credential: {useDefaultCredentails}", host, port, fromAddress, enableSsl, useDefaultCredentials);
+
+            logger.LogTrace("Prepared Smtp client with password {password}", password);
 
             return new SmtpClient
                    {
@@ -178,12 +158,12 @@
             return emailSettingsValidatorService.ParsePassword(unsafePassword);
         }
 
-        private int ParsePort(string unsafePort)
+        private int ParsePort(int unsafePort)
         {
             return emailSettingsValidatorService.ParsePort(unsafePort);
         }
 
-        private IEnumerable<string> ParseReceivers(string unsafeReceivers)
+        private IEnumerable<string> ParseReceivers(ICollection<string> unsafeReceivers)
         {
             return emailSettingsValidatorService.ParseReceivers(unsafeReceivers);
         }
@@ -193,10 +173,10 @@
             return emailSettingsValidatorService.ParseSmtpHost(unsafeSmtpHost);
         }
 
-        private void SendMessage(StringBuilder sb, SmtpClient smtpClient, MailAddress fromAddress,
-                                 MailAddress toAddress, string subject, string body)
+        private void SendMessage(SmtpClient smtpClient, MailAddress fromAddress, MailAddress toAddress, string subject,
+                                 string body)
         {
-            sb.AppendLine($"Sending message to {toAddress.Address}");
+            logger.LogDebug("Sending message to {address}", toAddress.Address);
 
             using (MailMessage mailMessage = NewMailMessage(fromAddress, toAddress, subject, body))
             {
@@ -206,12 +186,13 @@
                 }
                 catch (SmtpException smtpException)
                 {
-                    sb.AppendLine($"An smtp exception was caught with a status code of {smtpException.StatusCode}");
+                    logger.LogError(smtpException, "An smtp exception was caught with a status code of {statusCode}",
+                        smtpException.StatusCode);
 
                     SmtpStatusCode statusCode = smtpException.StatusCode;
                     if (statusCode == SmtpStatusCode.MailboxBusy || statusCode == SmtpStatusCode.MailboxUnavailable)
                     {
-                        sb.AppendLine($"Attempting to resend message to {toAddress.Address}");
+                        logger.LogWarning("Attempting to resend message to {address}", toAddress.Address);
 
                         Thread.Sleep(WaitTimeInMillisecondsBeforeTryingSendAgain);
                         smtpClient.Send(mailMessage);
