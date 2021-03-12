@@ -191,7 +191,7 @@
             {
                 fileDownloadDatabaseServiceMock.IsAvailable();
                 loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
-                loggingServiceMock.LogException(expected);
+                loggerMock.LogError(expected, "There was an unhandled exception");
             });
         }
 
@@ -262,7 +262,7 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
-                loggingServiceMock.LogException(exception);
+                loggerMock.LogError(exception, "There was an unhandled exception");
             });
         }
 
@@ -342,7 +342,7 @@
             Received.InOrder(() =>
             {
                 loggingServiceMock.LogResult(Arg.Any<FileDownloadResult>());
-                loggingServiceMock.LogException(exception);
+                loggerMock.LogError(exception, "There was an unhandled exception");
             });
         }
 

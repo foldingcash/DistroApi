@@ -202,7 +202,7 @@
 
         private void LogException(Exception exception)
         {
-            loggingService.LogException(exception);
+            logger.LogError(exception, "There was an unhandled exception");
         }
 
         private void LogResult(FileDownloadResult result)

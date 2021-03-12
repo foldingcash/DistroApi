@@ -37,23 +37,6 @@
         }
 
         [Test]
-        public void LogError_WhenInvoked_LogsError()
-        {
-            systemUnderTest.LogError("error");
-
-            loggerMock.Received().LogError("error");
-        }
-
-        [Test]
-        public void LogException_WhenInvoked_LogsException()
-        {
-            var exception = new Exception();
-            systemUnderTest.LogException(exception);
-
-            loggerMock.Received().LogError(exception, "There was an unexpected exception");
-        }
-
-        [Test]
         public void LogFailedUserData_WhenInvoked_LogsFailedUserData()
         {
             var failedUserData = new FailedUserData(100, "data", RejectionReason.UnexpectedFormat,

@@ -18,30 +18,20 @@
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public void LogError(string message)
-        {
-            logger.LogError(message);
-        }
-
-        public void LogException(Exception exception)
-        {
-            logger.LogError(exception, "There was an unexpected exception");
-        }
-
         public void LogFailedUserData(int downloadId, FailedUserData failedUserData)
         {
-            LogError($"Download Id: {downloadId}{Environment.NewLine}"
-                     + $"Line Number: {failedUserData.LineNumber}{Environment.NewLine}"
-                     + $"Data: {failedUserData.Data}{Environment.NewLine}"
-                     + $"Rejection Reason: {failedUserData.RejectionReason}{Environment.NewLine}"
-                     + $"Name: {failedUserData.UserData?.Name}{Environment.NewLine}"
-                     + $"Total Points: {failedUserData.UserData?.TotalPoints}{Environment.NewLine}"
-                     + $"Total Work Units: {failedUserData.UserData?.TotalWorkUnits}{Environment.NewLine}"
-                     + $"Team Number: {failedUserData.UserData?.TeamNumber}{Environment.NewLine}"
-                     + $"Friendly Name: {failedUserData.UserData?.FriendlyName}{Environment.NewLine}"
-                     + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}"
-                     + $"Bitcoin Cash Address: {failedUserData.UserData?.BitcoinCashAddress}"
-                     + $"SLP Address: {failedUserData.UserData?.SlpAddress}");
+            logger.LogError($"Download Id: {downloadId}{Environment.NewLine}"
+                            + $"Line Number: {failedUserData.LineNumber}{Environment.NewLine}"
+                            + $"Data: {failedUserData.Data}{Environment.NewLine}"
+                            + $"Rejection Reason: {failedUserData.RejectionReason}{Environment.NewLine}"
+                            + $"Name: {failedUserData.UserData?.Name}{Environment.NewLine}"
+                            + $"Total Points: {failedUserData.UserData?.TotalPoints}{Environment.NewLine}"
+                            + $"Total Work Units: {failedUserData.UserData?.TotalWorkUnits}{Environment.NewLine}"
+                            + $"Team Number: {failedUserData.UserData?.TeamNumber}{Environment.NewLine}"
+                            + $"Friendly Name: {failedUserData.UserData?.FriendlyName}{Environment.NewLine}"
+                            + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}"
+                            + $"Bitcoin Cash Address: {failedUserData.UserData?.BitcoinCashAddress}"
+                            + $"SLP Address: {failedUserData.UserData?.SlpAddress}");
         }
 
         public void LogResult(FileDownloadResult result)
