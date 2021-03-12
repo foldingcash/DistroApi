@@ -48,19 +48,25 @@
                                     IDataStoreServiceFactory dataStoreServiceFactory)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            this.fileDownloadDatabaseService = fileDownloadDatabaseService;
-            this.loggingService = loggingService;
-            this.downloadService = downloadService;
-            this.filePayloadSettingsService = filePayloadSettingsService;
-            this.resourceCleanupService = resourceCleanupService;
-            this.fileDownloadMinimumWaitTimeService = fileDownloadMinimumWaitTimeService;
-            this.dateTimeService = dateTimeService;
-            this.filePayloadUploadService = filePayloadUploadService;
-            this.fileDownloadEmailService = fileDownloadEmailService;
+            this.fileDownloadDatabaseService = fileDownloadDatabaseService
+                                               ?? throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
+            this.loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
+            this.downloadService = downloadService ?? throw new ArgumentNullException(nameof(downloadService));
+            this.filePayloadSettingsService = filePayloadSettingsService
+                                              ?? throw new ArgumentNullException(nameof(filePayloadSettingsService));
+            this.resourceCleanupService =
+                resourceCleanupService ?? throw new ArgumentNullException(nameof(resourceCleanupService));
+            this.fileDownloadMinimumWaitTimeService = fileDownloadMinimumWaitTimeService
+                                                      ?? throw new ArgumentNullException(
+                                                          nameof(fileDownloadMinimumWaitTimeService));
+            this.dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            this.filePayloadUploadService = filePayloadUploadService
+                                            ?? throw new ArgumentNullException(nameof(filePayloadUploadService));
+            this.fileDownloadEmailService = fileDownloadEmailService
+                                            ?? throw new ArgumentNullException(nameof(fileDownloadEmailService));
 
-            dataStoreService = dataStoreServiceFactory?.Create();
-
-            ValidateCtorArgs();
+            dataStoreService = dataStoreServiceFactory?.Create()
+                               ?? throw new ArgumentNullException(nameof(dataStoreServiceFactory));
         }
 
         public async Task<FileDownloadResult> DownloadStatsFile()
@@ -83,7 +89,7 @@
                     return failedResult;
                 }
 
-                UpdateToLatest();
+                fileDownloadDatabaseService.UpdateToLatest();
                 logger.LogDebug($"Stats file download started: {DateTimeNow()}");
                 FileDownloadStarted(filePayload);
 
@@ -92,7 +98,7 @@
                     return HandleDownloadNotReadyToRun(failedReason, filePayload);
                 }
 
-                SetDownloadFileDetails(filePayload);
+                filePayloadSettingsService.SetFilePayloadDownloadDetails(filePayload);
                 DownloadFile(filePayload);
                 return await HandleSuccessAndUpload(filePayload);
             }
@@ -157,8 +163,8 @@
         private async Task<FileDownloadResult> HandleSuccessAndUpload(FilePayload filePayload)
         {
             logger.LogDebug($"Stats file download completed: {DateTimeNow()}");
-            await UploadFile(filePayload);
-            FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
+            await filePayloadUploadService.UploadFile(filePayload);
+            var successResult = new FileDownloadResult(filePayload);
             Cleanup(successResult);
             LogResult(successResult);
             return successResult;
@@ -257,19 +263,9 @@
             return new FilePayload();
         }
 
-        private FileDownloadResult NewSuccessFileDownloadResult(FilePayload filePayload)
-        {
-            return new FileDownloadResult(filePayload);
-        }
-
         private void SendEmail(FileDownloadResult fileDownloadResult)
         {
             fileDownloadEmailService.SendEmail(fileDownloadResult);
-        }
-
-        private void SetDownloadFileDetails(FilePayload filePayload)
-        {
-            filePayloadSettingsService.SetFilePayloadDownloadDetails(filePayload);
         }
 
         private void UpdateToError(FileDownloadResult exceptionResult)
@@ -281,69 +277,6 @@
             else
             {
                 fileDownloadDatabaseService.FileValidationError(exceptionResult);
-            }
-        }
-
-        private void UpdateToLatest()
-        {
-            fileDownloadDatabaseService.UpdateToLatest();
-        }
-
-        private async Task UploadFile(FilePayload filePayload)
-        {
-            await filePayloadUploadService.UploadFile(filePayload);
-        }
-
-        private void ValidateCtorArgs()
-        {
-            if (fileDownloadDatabaseService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadDatabaseService));
-            }
-
-            if (loggingService == null)
-            {
-                throw new ArgumentNullException(nameof(loggingService));
-            }
-
-            if (downloadService == null)
-            {
-                throw new ArgumentNullException(nameof(downloadService));
-            }
-
-            if (filePayloadSettingsService == null)
-            {
-                throw new ArgumentNullException(nameof(filePayloadSettingsService));
-            }
-
-            if (resourceCleanupService == null)
-            {
-                throw new ArgumentNullException(nameof(resourceCleanupService));
-            }
-
-            if (fileDownloadMinimumWaitTimeService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadMinimumWaitTimeService));
-            }
-
-            if (dateTimeService == null)
-            {
-                throw new ArgumentNullException(nameof(dateTimeService));
-            }
-
-            if (filePayloadUploadService == null)
-            {
-                throw new ArgumentNullException(nameof(filePayloadUploadService));
-            }
-
-            if (fileDownloadEmailService == null)
-            {
-                throw new ArgumentNullException(nameof(fileDownloadEmailService));
-            }
-
-            if (dataStoreService == null)
-            {
-                throw new ArgumentNullException(nameof(dataStoreService));
             }
         }
     }
