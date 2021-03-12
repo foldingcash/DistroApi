@@ -1,6 +1,6 @@
 {
   // We want to download once everyday at noon UTC
-  "schedule": "0 0 12 * * *"
+  //"schedule": "0 0 12 * * *"
 
   // Examples:
 
