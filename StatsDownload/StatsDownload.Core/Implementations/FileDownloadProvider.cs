@@ -4,10 +4,13 @@
     using System.Net;
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Logging;
+
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Core.Interfaces.Enums;
     using StatsDownload.Core.Interfaces.Exceptions;
+    using StatsDownload.Logging;
 
     public class FileDownloadProvider : IFileDownloadService
     {
@@ -27,11 +30,14 @@
 
         private readonly IFilePayloadUploadService filePayloadUploadService;
 
+        private readonly ILogger<FileDownloadProvider> logger;
+
         private readonly IFileDownloadLoggingService loggingService;
 
         private readonly IResourceCleanupService resourceCleanupService;
 
-        public FileDownloadProvider(IFileDownloadDatabaseService fileDownloadDatabaseService,
+        public FileDownloadProvider(ILogger<FileDownloadProvider> logger,
+                                    IFileDownloadDatabaseService fileDownloadDatabaseService,
                                     IFileDownloadLoggingService loggingService, IDownloadService downloadService,
                                     IFilePayloadSettingsService filePayloadSettingsService,
                                     IResourceCleanupService resourceCleanupService,
@@ -41,6 +47,7 @@
                                     IFileDownloadEmailService fileDownloadEmailService,
                                     IDataStoreServiceFactory dataStoreServiceFactory)
         {
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.fileDownloadDatabaseService = fileDownloadDatabaseService;
             this.loggingService = loggingService;
             this.downloadService = downloadService;
@@ -62,7 +69,7 @@
 
             try
             {
-                LogMethodInvoked(nameof(DownloadStatsFile));
+                logger.LogMethodInvoked();
 
                 (bool isAvailable, FailedReason failedReason) result = await IsDataStoreAvailable();
                 bool dataStoreUnavailable = !result.isAvailable;
@@ -77,7 +84,7 @@
                 }
 
                 UpdateToLatest();
-                LogDebug($"Stats file download started: {DateTimeNow()}");
+                logger.LogDebug($"Stats file download started: {DateTimeNow()}");
                 FileDownloadStarted(filePayload);
 
                 if (IsFileDownloadNotReadyToRun(filePayload, out failedReason))
@@ -149,7 +156,7 @@
 
         private async Task<FileDownloadResult> HandleSuccessAndUpload(FilePayload filePayload)
         {
-            LogDebug($"Stats file download completed: {DateTimeNow()}");
+            logger.LogDebug($"Stats file download completed: {DateTimeNow()}");
             await UploadFile(filePayload);
             FileDownloadResult successResult = NewSuccessFileDownloadResult(filePayload);
             Cleanup(successResult);
@@ -193,19 +200,9 @@
             return !fileDownloadMinimumWaitTimeService.IsMinimumWaitTimeMet(filePayload);
         }
 
-        private void LogDebug(string message)
-        {
-            loggingService.LogDebug(message);
-        }
-
         private void LogException(Exception exception)
         {
             loggingService.LogException(exception);
-        }
-
-        private void LogMethodInvoked(string method)
-        {
-            LogDebug($"{method} Invoked");
         }
 
         private void LogResult(FileDownloadResult result)

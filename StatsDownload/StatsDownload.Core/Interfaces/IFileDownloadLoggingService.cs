@@ -6,8 +6,6 @@
 
     public interface IFileDownloadLoggingService
     {
-        void LogDebug(string message);
-
         void LogException(Exception exception);
 
         void LogResult(FileDownloadResult result);

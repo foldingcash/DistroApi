@@ -37,14 +37,6 @@
         }
 
         [Test]
-        public void LogDebug_WhenInvoked_LogsDebug()
-        {
-            systemUnderTest.LogDebug("debug");
-
-            loggerMock.Received().LogDebug("debug");
-        }
-
-        [Test]
         public void LogError_WhenInvoked_LogsError()
         {
             systemUnderTest.LogError("error");
