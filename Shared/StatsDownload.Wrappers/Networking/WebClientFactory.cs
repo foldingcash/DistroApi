@@ -21,11 +21,13 @@
 
         public IWebClient Create()
         {
+            logger.LogDebug("Creating a new web client");
             return provider.GetRequiredService<IWebClient>();
         }
 
         public void Release(IWebClient webClient)
         {
+            logger.LogDebug("Releasing a web client");
         }
     }
 }
