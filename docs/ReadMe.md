@@ -6,10 +6,9 @@ This is a C# implementation for downloading FAH statistics on a scheduled basis,
 
 ## Built With
 
-* Visual Studio 2017
+* Visual Studio 2019
 * Microsoft SQL Server 2017
 * ReSharper
-* WiX
 
 ## Solutions
 
