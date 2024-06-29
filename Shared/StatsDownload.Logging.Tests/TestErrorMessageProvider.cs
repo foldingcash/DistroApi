@@ -357,7 +357,7 @@
             string actual = systemUnderTest.GetErrorMessage(new FailedUserData(0, null,
                 (RejectionReason)Enum.Parse(typeof (RejectionReason), "-1")));
 
-            Assert.IsEmpty(actual);
+            Assert.That(actual, Is.Empty);
         }
     }
 }

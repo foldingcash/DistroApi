@@ -23,7 +23,7 @@
         {
             bool actual = systemUnderTest.IsValidBitcoinAddress(bitcoinAddress);
 
-            Assert.IsFalse(actual);
+            Assert.That(actual, Is.False);
         }
 
         [TestCase("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i")]
@@ -32,7 +32,7 @@
         {
             bool actual = systemUnderTest.IsValidBitcoinAddress(bitcoinAddress);
 
-            Assert.IsTrue(actual);
+            Assert.That(actual, Is.True);
         }
     }
 }

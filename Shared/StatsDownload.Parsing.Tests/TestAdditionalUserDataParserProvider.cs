@@ -63,8 +63,8 @@
             systemUnderTest.Parse(userData);
 
             Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
-            Assert.IsNull(userData.BitcoinCashAddress);
-            Assert.IsNull(userData.SlpAddress);
+            Assert.That(userData.BitcoinCashAddress, Is.Null);
+            Assert.That(userData.SlpAddress, Is.Null);
         }
 
         [TestCase("Name.Name_Address", "Name.Name")]
@@ -108,7 +108,7 @@
 
             Assert.That(userData.BitcoinCashAddress, Is.EqualTo("CashAddress"));
             Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
-            Assert.IsNull(userData.SlpAddress);
+            Assert.That(userData.SlpAddress, Is.Null);
         }
 
         [TestCase("SlpAddress")]
@@ -123,7 +123,7 @@
 
             Assert.That(userData.SlpAddress, Is.EqualTo("SlpAddress"));
             Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
-            Assert.IsNull(userData.BitcoinCashAddress);
+            Assert.That(userData.BitcoinCashAddress, Is.Null);
         }
 
         [TestCase("")]
@@ -135,8 +135,8 @@
 
             systemUnderTest.Parse(userData);
 
-            Assert.IsNull(userData.BitcoinAddress);
-            Assert.IsNull(userData.FriendlyName);
+            Assert.That(userData.BitcoinAddress, Is.Null);
+            Assert.That(userData.FriendlyName, Is.Null);
         }
 
         [TestCase("name")]
@@ -150,10 +150,10 @@
 
             systemUnderTest.Parse(userData);
 
-            Assert.IsNull(userData.FriendlyName);
-            Assert.IsNull(userData.BitcoinAddress);
-            Assert.IsNull(userData.BitcoinCashAddress);
-            Assert.IsNull(userData.SlpAddress);
+            Assert.That(userData.FriendlyName, Is.Null);
+            Assert.That(userData.BitcoinAddress, Is.Null);
+            Assert.That(userData.BitcoinCashAddress, Is.Null);
+            Assert.That(userData.SlpAddress, Is.Null);
         }
 
         [TestCase("name")]
@@ -166,7 +166,7 @@
 
             systemUnderTest.Parse(userData);
 
-            Assert.IsNull(userData.FriendlyName);
+            Assert.That(userData.FriendlyName, Is.Null);
         }
 
         private IAdditionalUserDataParserService NewAdditionalUserDataParserProvider(
