@@ -5,5 +5,7 @@
     public interface IFileReaderService
     {
         void ReadFile(FilePayload filePayload);
+
+        bool IsFileEmpty(FilePayload filePayload);
     }
 }

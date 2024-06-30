@@ -71,6 +71,7 @@
 
             Received.InOrder(() =>
             {
+                fileValidationServiceMock.PreValidateFile(filePayload);
                 dataStoreServiceMock.UploadFile(filePayload);
                 fileDownloadDatabaseServiceMock.FileDownloadFinished(filePayload);
                 fileDownloadDatabaseServiceMock.FileValidationStarted(filePayload);
