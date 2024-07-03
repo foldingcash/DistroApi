@@ -135,7 +135,7 @@
                 decodedBytes[0] = 0xc4;
             }
 
-            var hasher = SHA256.Create();
+            using var hasher = SHA256.Create();
             byte[] checksum = hasher.ComputeHash(hasher.ComputeHash(decodedBytes, 0, 21));
             decodedBytes[21] = checksum[0];
             decodedBytes[22] = checksum[1];
