@@ -5,10 +5,8 @@
     using System.Numerics;
     using System.Security.Cryptography;
     using System.Text;
-
+    using Core.Interfaces;
     using Microsoft.Extensions.Logging;
-
-    using StatsDownload.Core.Interfaces;
 
     public class SlpAddressValidatorProvider : ISlpAddressValidatorService
     {

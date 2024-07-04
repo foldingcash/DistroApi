@@ -1,13 +1,10 @@
 ﻿namespace StatsDownload.Parsing.Tests
 {
     using System;
-
+    using Core.Interfaces;
+    using Core.Interfaces.DataTransfer;
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestAdditionalUserDataParserProvider
@@ -31,18 +28,19 @@
             cashTokensAddressValidatorServiceMock.GetBitcoinAddress("CashTokens").Returns("Address");
 
             systemUnderTest = NewAdditionalUserDataParserProvider(bitcoinAddressValidatorServiceMock,
-                bitcoinCashAddressValidatorServiceMock, slpAddressValidatorServiceMock, cashTokensAddressValidatorServiceMock);
+                bitcoinCashAddressValidatorServiceMock, slpAddressValidatorServiceMock,
+                cashTokensAddressValidatorServiceMock);
         }
 
         private IBitcoinAddressValidatorService bitcoinAddressValidatorServiceMock;
 
         private IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorServiceMock;
 
+        private ICashTokensAddressValidatorService cashTokensAddressValidatorServiceMock;
+
         private ISlpAddressValidatorService slpAddressValidatorServiceMock;
 
         private IAdditionalUserDataParserService systemUnderTest;
-
-        private ICashTokensAddressValidatorService cashTokensAddressValidatorServiceMock;
 
         [Test]
         public void Constructor_WhenNullDependencyProvided_ThrowsException()

@@ -1,12 +1,9 @@
 ﻿namespace StatsDownload.Parsing.Tests
 {
+    using Core.Interfaces;
     using Microsoft.Extensions.Logging;
-
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Interfaces;
 
     [TestFixture]
     public class TestSlpAddressValidatorProvider

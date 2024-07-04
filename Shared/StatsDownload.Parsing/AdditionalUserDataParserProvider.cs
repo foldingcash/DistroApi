@@ -1,9 +1,8 @@
 ﻿namespace StatsDownload.Parsing
 {
     using System;
-
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.DataTransfer;
+    using Core.Interfaces;
+    using Core.Interfaces.DataTransfer;
 
     public class AdditionalUserDataParserProvider : IAdditionalUserDataParserService
     {
@@ -11,13 +10,14 @@
 
         private readonly IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorService;
 
-        private readonly ISlpAddressValidatorService slpAddressValidatorService;
-
         private readonly ICashTokensAddressValidatorService cashTokensAddressValidatorService;
 
+        private readonly ISlpAddressValidatorService slpAddressValidatorService;
+
         public AdditionalUserDataParserProvider(IBitcoinAddressValidatorService bitcoinAddressValidatorService,
-                                                IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorService,
-                                                ISlpAddressValidatorService slpAddressValidatorService, ICashTokensAddressValidatorService cashTokensAddressValidatorService)
+            IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorService,
+            ISlpAddressValidatorService slpAddressValidatorService,
+            ICashTokensAddressValidatorService cashTokensAddressValidatorService)
         {
             this.bitcoinAddressValidatorService = bitcoinAddressValidatorService
                                                   ?? throw new ArgumentNullException(
@@ -27,7 +27,9 @@
                                                           nameof(bitcoinCashAddressValidatorService));
             this.slpAddressValidatorService = slpAddressValidatorService
                                               ?? throw new ArgumentNullException(nameof(slpAddressValidatorService));
-            this.cashTokensAddressValidatorService = cashTokensAddressValidatorService ?? throw new ArgumentNullException(nameof(cashTokensAddressValidatorService));
+            this.cashTokensAddressValidatorService = cashTokensAddressValidatorService ??
+                                                     throw new ArgumentNullException(
+                                                         nameof(cashTokensAddressValidatorService));
         }
 
         public void Parse(UserData userData)
@@ -45,17 +47,6 @@
             SetCashTokensAddress(tokenizedName, userData);
             SetFriendlyName(tokenizedName, userData);
         }
-
-        private void SetCashTokensAddress(string[] tokenizedName, UserData userData)
-        {
-            int addressPosition = tokenizedName.Length - 1;
-            string address = tokenizedName[addressPosition];
-
-            if (cashTokensAddressValidatorService.IsValidCashTokensAddress(address))
-            {
-                userData.CashTokensAddress = address;
-                userData.BitcoinAddress = cashTokensAddressValidatorService.GetBitcoinAddress(address);
-            }        }
 
         private string[] GetTokenizedName(UserData userData)
         {
@@ -87,6 +78,18 @@
             {
                 userData.BitcoinCashAddress = address;
                 userData.BitcoinAddress = bitcoinCashAddressValidatorService.GetBitcoinAddress(address);
+            }
+        }
+
+        private void SetCashTokensAddress(string[] tokenizedName, UserData userData)
+        {
+            int addressPosition = tokenizedName.Length - 1;
+            string address = tokenizedName[addressPosition];
+
+            if (cashTokensAddressValidatorService.IsValidCashTokensAddress(address))
+            {
+                userData.CashTokensAddress = address;
+                userData.BitcoinAddress = cashTokensAddressValidatorService.GetBitcoinAddress(address);
             }
         }
 
