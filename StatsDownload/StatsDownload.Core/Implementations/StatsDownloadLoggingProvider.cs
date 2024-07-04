@@ -31,7 +31,8 @@
                             + $"Friendly Name: {failedUserData.UserData?.FriendlyName}{Environment.NewLine}"
                             + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}"
                             + $"Bitcoin Cash Address: {failedUserData.UserData?.BitcoinCashAddress}"
-                            + $"SLP Address: {failedUserData.UserData?.SlpAddress}");
+                            + $"SLP Address: {failedUserData.UserData?.SlpAddress}"
+                            + $"CashTokens Address: {failedUserData.UserData?.CashTokensAddress}");
         }
 
         public void LogResult(FileDownloadResult result)

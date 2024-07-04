@@ -45,7 +45,8 @@
                     BitcoinAddress = "bitcoin address",
                     FriendlyName = "friendly name",
                     SlpAddress = "slp address",
-                    BitcoinCashAddress = "bitcoin cash address"
+                    BitcoinCashAddress = "bitcoin cash address",
+                    CashTokensAddress = "cashtokens address"
                 });
 
             systemUnderTest.LogFailedUserData(10, failedUserData);
@@ -61,7 +62,8 @@
                                            + $"Friendly Name: {failedUserData.UserData?.FriendlyName}{Environment.NewLine}"
                                            + $"Bitcoin Address: {failedUserData.UserData?.BitcoinAddress}"
                                            + $"Bitcoin Cash Address: {failedUserData.UserData?.BitcoinCashAddress}"
-                                           + $"SLP Address: {failedUserData.UserData?.SlpAddress}");
+                                           + $"SLP Address: {failedUserData.UserData?.SlpAddress}"
+                                           + $"CashTokens Address: {failedUserData.UserData?.CashTokensAddress}");
         }
 
         [TestCase(150)]
