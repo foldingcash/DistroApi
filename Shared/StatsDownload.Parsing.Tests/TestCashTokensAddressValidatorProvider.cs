@@ -58,6 +58,7 @@
         [TestCase("pqq3728yw0y47sqn6l2na30mcw6zm78dzq5ucqzc37")]
         [TestCase("zqydwz7znetl8ya46s223q4afrpv9gy2mgyqhfu2dm")]
         [TestCase("bchtest:zqydwz7znetl8ya46s223q4afrpv9gy2mgyqhfu2dm")]
+        [TestCase("zrfh6hz9g782fd48uryk0ras7j6laxncfqtc88plnd")]
         public void IsValidCashTokensAddress_WhenInvokedWithInvalidAddress_ReturnsFalse(string address)
         {
             bool actual = systemUnderTest.IsValidCashTokensAddress(address);

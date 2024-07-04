@@ -13,9 +13,11 @@
 
         private readonly ISlpAddressValidatorService slpAddressValidatorService;
 
+        private readonly ICashTokensAddressValidatorService cashTokensAddressValidatorService;
+
         public AdditionalUserDataParserProvider(IBitcoinAddressValidatorService bitcoinAddressValidatorService,
                                                 IBitcoinCashAddressValidatorService bitcoinCashAddressValidatorService,
-                                                ISlpAddressValidatorService slpAddressValidatorService)
+                                                ISlpAddressValidatorService slpAddressValidatorService, ICashTokensAddressValidatorService cashTokensAddressValidatorService)
         {
             this.bitcoinAddressValidatorService = bitcoinAddressValidatorService
                                                   ?? throw new ArgumentNullException(
@@ -25,6 +27,7 @@
                                                           nameof(bitcoinCashAddressValidatorService));
             this.slpAddressValidatorService = slpAddressValidatorService
                                               ?? throw new ArgumentNullException(nameof(slpAddressValidatorService));
+            this.cashTokensAddressValidatorService = cashTokensAddressValidatorService ?? throw new ArgumentNullException(nameof(cashTokensAddressValidatorService));
         }
 
         public void Parse(UserData userData)
@@ -39,8 +42,20 @@
             SetBitcoinAddress(tokenizedName, userData);
             SetBitcoinCashAddress(tokenizedName, userData);
             SetSlpAddress(tokenizedName, userData);
+            SetCashTokensAddress(tokenizedName, userData);
             SetFriendlyName(tokenizedName, userData);
         }
+
+        private void SetCashTokensAddress(string[] tokenizedName, UserData userData)
+        {
+            int addressPosition = tokenizedName.Length - 1;
+            string address = tokenizedName[addressPosition];
+
+            if (cashTokensAddressValidatorService.IsValidCashTokensAddress(address))
+            {
+                userData.CashTokensAddress = address;
+                userData.BitcoinAddress = cashTokensAddressValidatorService.GetBitcoinAddress(address);
+            }        }
 
         private string[] GetTokenizedName(UserData userData)
         {
