@@ -118,7 +118,7 @@
             systemUnderTest.Parse(userData);
 
             Assert.That(userData.BitcoinCashAddress, Is.EqualTo("CashAddress"));
-            Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
+            Assert.That(userData.BitcoinAddress, Is.Null);
             Assert.That(userData.SlpAddress, Is.Null);
             Assert.That(userData.CashTokensAddress, Is.Null);
         }
@@ -134,7 +134,7 @@
             systemUnderTest.Parse(userData);
 
             Assert.That(userData.CashTokensAddress, Is.EqualTo("CashTokens"));
-            Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
+            Assert.That(userData.BitcoinAddress, Is.Null);
             Assert.That(userData.SlpAddress, Is.Null);
             Assert.That(userData.BitcoinCashAddress, Is.Null);
         }
@@ -150,7 +150,7 @@
             systemUnderTest.Parse(userData);
 
             Assert.That(userData.SlpAddress, Is.EqualTo("SlpAddress"));
-            Assert.That(userData.BitcoinAddress, Is.EqualTo("Address"));
+            Assert.That(userData.BitcoinAddress, Is.Null);
             Assert.That(userData.BitcoinCashAddress, Is.Null);
             Assert.That(userData.CashTokensAddress, Is.Null);
         }

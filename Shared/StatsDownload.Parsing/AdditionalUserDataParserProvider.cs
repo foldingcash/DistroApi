@@ -62,10 +62,11 @@
         private void SetBitcoinAddress(string[] tokenizedName, UserData userData)
         {
             int addressPosition = tokenizedName.Length - 1;
+            string address = tokenizedName[addressPosition];
 
-            if (bitcoinAddressValidatorService.IsValidBitcoinAddress(tokenizedName[addressPosition]))
+            if (bitcoinAddressValidatorService.IsValidBitcoinAddress(address))
             {
-                userData.BitcoinAddress = tokenizedName[addressPosition];
+                userData.BitcoinAddress = address;
             }
         }
 
@@ -77,7 +78,6 @@
             if (bitcoinCashAddressValidatorService.IsValidBitcoinCashAddress(address))
             {
                 userData.BitcoinCashAddress = address;
-                userData.BitcoinAddress = bitcoinCashAddressValidatorService.GetBitcoinAddress(address);
             }
         }
 
@@ -89,7 +89,6 @@
             if (cashTokensAddressValidatorService.IsValidCashTokensAddress(address))
             {
                 userData.CashTokensAddress = address;
-                userData.BitcoinAddress = cashTokensAddressValidatorService.GetBitcoinAddress(address);
             }
         }
 
@@ -97,7 +96,8 @@
         {
             if (tokenizedName.Length > 1 && (!string.IsNullOrWhiteSpace(userData.BitcoinAddress)
                                              || !string.IsNullOrWhiteSpace(userData.BitcoinCashAddress)
-                                             || !string.IsNullOrWhiteSpace(userData.SlpAddress)))
+                                             || !string.IsNullOrWhiteSpace(userData.SlpAddress)
+                                             || !string.IsNullOrWhiteSpace(userData.CashTokensAddress)))
             {
                 userData.FriendlyName = tokenizedName[0];
             }
@@ -111,7 +111,6 @@
             if (slpAddressValidatorService.IsValidSlpAddress(address))
             {
                 userData.SlpAddress = address;
-                userData.BitcoinAddress = slpAddressValidatorService.GetBitcoinAddress(address);
             }
         }
     }
