@@ -3,9 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
-    using StatsDownloadApi.Interfaces;
-    using StatsDownloadApi.Interfaces.DataTransfer;
+    using Interfaces;
+    using Interfaces.DataTransfer;
 
     public class StandardTokenDistributionProvider : IStatsDownloadApiTokenDistributionService
     {
@@ -46,12 +45,13 @@
         }
 
         private void AddingUserToDistro(int amount, Dictionary<string, DistroUser> distro, long totalPoints,
-                                        FoldingUser foldingUser)
+            FoldingUser foldingUser)
         {
             if (distro.ContainsKey(foldingUser.BitcoinAddress))
             {
                 DistroUser previousUser = distro[foldingUser.BitcoinAddress];
                 DistroUser combinedUser = NewDistroUser(amount, totalPoints, foldingUser.BitcoinAddress,
+                    foldingUser.BitcoinCashAddress, foldingUser.SlpAddress, foldingUser.CashTokensAddress,
                     previousUser.PointsGained + foldingUser.PointsGained,
                     previousUser.WorkUnitsGained + foldingUser.WorkUnitsGained);
                 distro[foldingUser.BitcoinAddress] = combinedUser;
@@ -59,6 +59,7 @@
             else
             {
                 DistroUser distroUser = NewDistroUser(amount, totalPoints, foldingUser.BitcoinAddress,
+                    foldingUser.BitcoinCashAddress, foldingUser.SlpAddress, foldingUser.CashTokensAddress,
                     foldingUser.PointsGained, foldingUser.WorkUnitsGained);
                 distro.Add(foldingUser.BitcoinAddress, distroUser);
             }
@@ -103,10 +104,12 @@
             return totalPoints;
         }
 
-        private DistroUser NewDistroUser(int amount, long totalPoints, string bitcoinAddress, long pointsGained,
-                                         long workUnitsGained)
+        private DistroUser NewDistroUser(int amount, long totalPoints, string bitcoinAddress, string bitcoinCashAddress,
+            string slpAddress, string cashTokensAddress, long pointsGained,
+            long workUnitsGained)
         {
-            return new DistroUser(bitcoinAddress, pointsGained, workUnitsGained,
+            return new DistroUser(bitcoinAddress, bitcoinCashAddress, slpAddress, cashTokensAddress, pointsGained,
+                workUnitsGained,
                 GetRewardAmount(amount, totalPoints, pointsGained));
         }
 

@@ -5,15 +5,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using Microsoft.Extensions.Logging;
-
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Logging;
-
-    using StatsDownloadApi.Interfaces;
-    using StatsDownloadApi.Interfaces.DataTransfer;
 
     public class StatsDownloadApiDataStoreProvider : IStatsDownloadApiDataStoreService
     {
@@ -30,11 +27,11 @@
         private readonly IResourceCleanupService resourceCleanupService;
 
         public StatsDownloadApiDataStoreProvider(IDataStoreServiceFactory dataStoreServiceFactory,
-                                                 IStatsDownloadApiDatabaseService databaseService,
-                                                 IFileValidationService fileValidationService,
-                                                 IFilePayloadApiSettingsService filePayloadApiSettingsService,
-                                                 ILogger<StatsDownloadApiDataStoreProvider> logger,
-                                                 IResourceCleanupService resourceCleanupService)
+            IStatsDownloadApiDatabaseService databaseService,
+            IFileValidationService fileValidationService,
+            IFilePayloadApiSettingsService filePayloadApiSettingsService,
+            ILogger<StatsDownloadApiDataStoreProvider> logger,
+            IResourceCleanupService resourceCleanupService)
         {
             dataStoreService = dataStoreServiceFactory.Create();
 
@@ -99,6 +96,7 @@
                 {
                     UserData previous = first[(userData.Name, userData.TeamNumber)];
                     var user = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
+                        userData.BitcoinCashAddress, userData.SlpAddress, userData.CashTokensAddress,
                         userData.TotalPoints - previous.TotalPoints, userData.TotalWorkUnits - previous.TotalWorkUnits);
 
                     if (user.PointsGained < 0)
@@ -117,7 +115,9 @@
                 }
                 else
                 {
-                    users[index] = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress, userData.TotalPoints,
+                    users[index] = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
+                        userData.BitcoinCashAddress, userData.SlpAddress, userData.CashTokensAddress,
+                        userData.TotalPoints,
                         userData.TotalWorkUnits);
                 }
             });
@@ -129,7 +129,7 @@
         private Member[] GetMembers(ParseResults firstFileResults, ParseResults lastFileResults)
         {
             logger.LogMethodInvoked();
-            var members = new List<Member>(lastFileResults.UsersData.Count());
+            var members = new List<Member>(lastFileResults.UsersData.Length);
 
             foreach (UserData lastUserData in lastFileResults.UsersData)
             {
@@ -202,11 +202,9 @@
 
             var results = new BlockingCollection<ParseResults>();
 
-            await Task.Run(() =>
-            {
-                Parallel.ForEach(new[] { firstFile, lastFile },
-                    async file => { results.Add(await GetValidatedFile(file)); });
-            });
+            await Task.WhenAll(
+                Task.Factory.StartNew(async () => results.Add(await GetValidatedFile(firstFile))),
+                Task.Factory.StartNew(async () => results.Add(await GetValidatedFile(lastFile))));
 
             ParseResults[] ordered = results.OrderBy(file => file.DownloadDateTime).ToArray();
 

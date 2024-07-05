@@ -2,18 +2,13 @@ namespace StatsDownloadApi.DataStore.Tests
 {
     using System;
     using System.Threading.Tasks;
-
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using Microsoft.Extensions.Logging;
-
     using NSubstitute;
-
     using NUnit.Framework;
-
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
-
-    using StatsDownloadApi.Interfaces;
-    using StatsDownloadApi.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestStatsDownloadApiDataStoreProvider
@@ -24,28 +19,32 @@ namespace StatsDownloadApi.DataStore.Tests
             ValidatedFile[] validatedFiles = { validatedFileMock1, validatedFileMock2, validatedFileMock3 };
 
             var firstUsersData = new[]
-                                 {
-                                     new UserData(1, "user1", 1, 1, 1)
-                                     {
-                                         BitcoinAddress = "btc1", FriendlyName = "user1"
-                                     },
-                                     new UserData(2, "user2", 2, 2, 2)
-                                     {
-                                         BitcoinAddress = "btc2", FriendlyName = "user2"
-                                     }
-                                 };
+            {
+                new UserData(1, "user1", 1, 1, 1)
+                {
+                    BitcoinAddress = "btc1", FriendlyName = "user1", BitcoinCashAddress = "bch1", SlpAddress = "slp1",
+                    CashTokensAddress = "tokens1"
+                },
+                new UserData(2, "user2", 2, 2, 2)
+                {
+                    BitcoinAddress = "btc2", FriendlyName = "user2", BitcoinCashAddress = "bch2", SlpAddress = "slp2",
+                    CashTokensAddress = "tokens2"
+                }
+            };
 
             var followingUsersData = new[]
-                                     {
-                                         new UserData(1, "user1", 2, 2, 1)
-                                         {
-                                             BitcoinAddress = "btc1", FriendlyName = "user1"
-                                         },
-                                         new UserData(2, "user2", 4, 4, 2)
-                                         {
-                                             BitcoinAddress = "btc2", FriendlyName = "user2"
-                                         }
-                                     };
+            {
+                new UserData(1, "user1", 2, 2, 1)
+                {
+                    BitcoinAddress = "btc1", FriendlyName = "user1", BitcoinCashAddress = "bch1", SlpAddress = "slp1",
+                    CashTokensAddress = "tokens1"
+                },
+                new UserData(2, "user2", 4, 4, 2)
+                {
+                    BitcoinAddress = "btc2", FriendlyName = "user2", BitcoinCashAddress = "bch2", SlpAddress = "slp2",
+                    CashTokensAddress = "tokens2"
+                }
+            };
 
             dataStoreServiceMock = Substitute.For<IDataStoreService>();
 
@@ -117,11 +116,17 @@ namespace StatsDownloadApi.DataStore.Tests
 
             Assert.That(actual[0].FriendlyName, Is.EqualTo("user1"));
             Assert.That(actual[0].BitcoinAddress, Is.EqualTo("btc1"));
+            Assert.That(actual[0].BitcoinCashAddress, Is.EqualTo("bch1"));
+            Assert.That(actual[0].SlpAddress, Is.EqualTo("slp1"));
+            Assert.That(actual[0].CashTokensAddress, Is.EqualTo("tokens1"));
             Assert.That(actual[0].PointsGained, Is.EqualTo(1));
             Assert.That(actual[0].WorkUnitsGained, Is.EqualTo(1));
 
             Assert.That(actual[1].FriendlyName, Is.EqualTo("user2"));
             Assert.That(actual[1].BitcoinAddress, Is.EqualTo("btc2"));
+            Assert.That(actual[1].BitcoinCashAddress, Is.EqualTo("bch2"));
+            Assert.That(actual[1].SlpAddress, Is.EqualTo("slp2"));
+            Assert.That(actual[1].CashTokensAddress, Is.EqualTo("tokens2"));
             Assert.That(actual[1].PointsGained, Is.EqualTo(2));
             Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(2));
         }

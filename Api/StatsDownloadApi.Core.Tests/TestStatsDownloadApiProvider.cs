@@ -2,19 +2,14 @@
 {
     using System;
     using System.Threading.Tasks;
-
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using Microsoft.Extensions.Logging;
-
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
-
     using NUnit.Framework;
-
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Enums;
-
-    using StatsDownloadApi.Interfaces;
-    using StatsDownloadApi.Interfaces.DataTransfer;
 
     [TestFixture]
     public class TestStatsDownloadApiProvider
@@ -173,7 +168,11 @@
         public async Task GetDistro_WhenInvoked_ReturnsSuccessGetDistroResponse()
         {
             var foldingUsers = new FoldingUser[0];
-            var distro = new[] { new DistroUser(null, 1, 2, 0.12345678m), new DistroUser(null, 3, 4, 100m) };
+            var distro = new[]
+            {
+                new DistroUser(null, null, null, null, 1, 2, 0.12345678m),
+                new DistroUser(null, null, null, null, 3, 4, 100m)
+            };
             var resultMock = new FoldingUsersResult(foldingUsers, startDateMock, endDateMock);
             statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(resultMock);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);
@@ -497,13 +496,13 @@
         }
 
         private IStatsDownloadApiService NewStatsDownloadApiProvider(ILogger<StatsDownloadApiProvider> logger,
-                                                                     IStatsDownloadApiDatabaseService
-                                                                         statsDownloadApiDatabaseService,
-                                                                     IStatsDownloadApiTokenDistributionService
-                                                                         statsDownloadApiTokenDistributionService,
-                                                                     IDateTimeService dateTimeService,
-                                                                     IStatsDownloadApiDataStoreService
-                                                                         statsDownloadApiDataStoreService)
+            IStatsDownloadApiDatabaseService
+                statsDownloadApiDatabaseService,
+            IStatsDownloadApiTokenDistributionService
+                statsDownloadApiTokenDistributionService,
+            IDateTimeService dateTimeService,
+            IStatsDownloadApiDataStoreService
+                statsDownloadApiDataStoreService)
         {
             return new StatsDownloadApiProvider(logger, statsDownloadApiDatabaseService,
                 statsDownloadApiTokenDistributionService, dateTimeService, statsDownloadApiDataStoreService);
