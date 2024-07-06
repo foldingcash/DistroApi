@@ -22,13 +22,23 @@ namespace StatsDownloadApi.DataStore.Tests
             {
                 new UserData(1, "user1", 1, 1, 1)
                 {
-                    BitcoinAddress = "btc1", FriendlyName = "user1", BitcoinCashAddress = "bch1", SlpAddress = "slp1",
-                    CashTokensAddress = "tokens1"
+                    BitcoinAddress = "btc1", FriendlyName = "user1", BitcoinCashAddress = null, SlpAddress = null,
+                    CashTokensAddress = null
                 },
                 new UserData(2, "user2", 2, 2, 2)
                 {
-                    BitcoinAddress = "btc2", FriendlyName = "user2", BitcoinCashAddress = "bch2", SlpAddress = "slp2",
-                    CashTokensAddress = "tokens2"
+                    BitcoinAddress = null, FriendlyName = "user2", BitcoinCashAddress = "bch2", SlpAddress = null,
+                    CashTokensAddress = null
+                },
+                new UserData(3, "user3", 3, 3, 3)
+                {
+                    BitcoinAddress = null, FriendlyName = "user3", BitcoinCashAddress = null, SlpAddress = "slp3",
+                    CashTokensAddress = null
+                },
+                new UserData(4, "user4", 4, 4, 4)
+                {
+                    BitcoinAddress = null, FriendlyName = "user4", BitcoinCashAddress = null, SlpAddress = null,
+                    CashTokensAddress = "tokens4"
                 }
             };
 
@@ -36,13 +46,28 @@ namespace StatsDownloadApi.DataStore.Tests
             {
                 new UserData(1, "user1", 2, 2, 1)
                 {
-                    BitcoinAddress = "btc1", FriendlyName = "user1", BitcoinCashAddress = "bch1", SlpAddress = "slp1",
-                    CashTokensAddress = "tokens1"
+                    BitcoinAddress = "btc1", FriendlyName = "user1", BitcoinCashAddress = null, SlpAddress = null,
+                    CashTokensAddress = null
                 },
                 new UserData(2, "user2", 4, 4, 2)
                 {
-                    BitcoinAddress = "btc2", FriendlyName = "user2", BitcoinCashAddress = "bch2", SlpAddress = "slp2",
-                    CashTokensAddress = "tokens2"
+                    BitcoinAddress = null, FriendlyName = "user2", BitcoinCashAddress = "bch2", SlpAddress = null,
+                    CashTokensAddress = null
+                },
+                new UserData(3, "user3", 6, 6, 3)
+                {
+                    BitcoinAddress = null, FriendlyName = "user3", BitcoinCashAddress = null, SlpAddress = "slp3",
+                    CashTokensAddress = null
+                },
+                new UserData(4, "user4", 8, 8, 4)
+                {
+                    BitcoinAddress = null, FriendlyName = "user4", BitcoinCashAddress = null, SlpAddress = null,
+                    CashTokensAddress = "tokens4"
+                },
+                new UserData(5, "user5", 10, 10, 5)
+                {
+                    BitcoinAddress = null, FriendlyName = "user5", BitcoinCashAddress = null, SlpAddress = null,
+                    CashTokensAddress = "tokens5"
                 }
             };
 
@@ -96,7 +121,7 @@ namespace StatsDownloadApi.DataStore.Tests
         [Test]
         public async Task GetFoldingMembers_WhenInvoked_GetsAndValidatesStatsFiles()
         {
-            await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
+            await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue, FoldingUserTypes.All);
 
             databaseServiceMock.Received(1).GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
             filePayloadApiSettingsServiceMock.Received(2).SetFilePayloadApiSettings(Arg.Any<FilePayload>());
@@ -109,26 +134,109 @@ namespace StatsDownloadApi.DataStore.Tests
         [Test]
         public async Task GetFoldingMembers_WhenInvoked_GetsFoldingMembers()
         {
-            FoldingUsersResult result = await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue);
+            FoldingUsersResult result =
+                await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue, FoldingUserTypes.All);
             FoldingUser[] actual = result.FoldingUsers;
 
-            Assert.That(actual.Length, Is.EqualTo(2));
+            Assert.That(actual.Length, Is.EqualTo(5));
 
             Assert.That(actual[0].FriendlyName, Is.EqualTo("user1"));
             Assert.That(actual[0].BitcoinAddress, Is.EqualTo("btc1"));
-            Assert.That(actual[0].BitcoinCashAddress, Is.EqualTo("bch1"));
-            Assert.That(actual[0].SlpAddress, Is.EqualTo("slp1"));
-            Assert.That(actual[0].CashTokensAddress, Is.EqualTo("tokens1"));
+            Assert.That(actual[0].BitcoinCashAddress, Is.Null);
+            Assert.That(actual[0].SlpAddress, Is.Null);
+            Assert.That(actual[0].CashTokensAddress, Is.Null);
             Assert.That(actual[0].PointsGained, Is.EqualTo(1));
             Assert.That(actual[0].WorkUnitsGained, Is.EqualTo(1));
 
             Assert.That(actual[1].FriendlyName, Is.EqualTo("user2"));
-            Assert.That(actual[1].BitcoinAddress, Is.EqualTo("btc2"));
+            Assert.That(actual[1].BitcoinAddress, Is.Null);
             Assert.That(actual[1].BitcoinCashAddress, Is.EqualTo("bch2"));
-            Assert.That(actual[1].SlpAddress, Is.EqualTo("slp2"));
-            Assert.That(actual[1].CashTokensAddress, Is.EqualTo("tokens2"));
+            Assert.That(actual[1].SlpAddress, Is.Null);
+            Assert.That(actual[1].CashTokensAddress, Is.Null);
             Assert.That(actual[1].PointsGained, Is.EqualTo(2));
             Assert.That(actual[1].WorkUnitsGained, Is.EqualTo(2));
+
+            Assert.That(actual[2].FriendlyName, Is.EqualTo("user3"));
+            Assert.That(actual[2].BitcoinAddress, Is.Null);
+            Assert.That(actual[2].BitcoinCashAddress, Is.Null);
+            Assert.That(actual[2].SlpAddress, Is.EqualTo("slp3"));
+            Assert.That(actual[2].CashTokensAddress, Is.Null);
+            Assert.That(actual[2].PointsGained, Is.EqualTo(3));
+            Assert.That(actual[2].WorkUnitsGained, Is.EqualTo(3));
+
+            Assert.That(actual[3].FriendlyName, Is.EqualTo("user4"));
+            Assert.That(actual[3].BitcoinAddress, Is.Null);
+            Assert.That(actual[3].BitcoinCashAddress, Is.Null);
+            Assert.That(actual[3].SlpAddress, Is.Null);
+            Assert.That(actual[3].CashTokensAddress, Is.EqualTo("tokens4"));
+            Assert.That(actual[3].PointsGained, Is.EqualTo(4));
+            Assert.That(actual[3].WorkUnitsGained, Is.EqualTo(4));
+
+            Assert.That(actual[4].FriendlyName, Is.EqualTo("user5"));
+            Assert.That(actual[4].BitcoinAddress, Is.Null);
+            Assert.That(actual[4].BitcoinCashAddress, Is.Null);
+            Assert.That(actual[4].SlpAddress, Is.Null);
+            Assert.That(actual[4].CashTokensAddress, Is.EqualTo("tokens5"));
+            Assert.That(actual[4].PointsGained, Is.EqualTo(10));
+            Assert.That(actual[4].WorkUnitsGained, Is.EqualTo(10));
+        }
+
+        [Test]
+        public async Task GetFoldingMembers_WhenInvokedWithBitcoinCashType_GetsBitcoinCashFoldingMembers()
+        {
+            FoldingUsersResult result = await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue,
+                FoldingUserTypes.BitcoinCash);
+            FoldingUser[] actual = result.FoldingUsers;
+
+            Assert.That(actual.Length, Is.EqualTo(1));
+            Assert.That(actual[0].BitcoinCashAddress, Is.EqualTo("bch2"));
+        }
+
+        [Test]
+        public async Task GetFoldingMembers_WhenInvokedWithBitcoinType_GetsBitcoinFoldingMembers()
+        {
+            FoldingUsersResult result =
+                await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue, FoldingUserTypes.Bitcoin);
+            FoldingUser[] actual = result.FoldingUsers;
+
+            Assert.That(actual.Length, Is.EqualTo(1));
+            Assert.That(actual[0].BitcoinAddress, Is.EqualTo("btc1"));
+        }
+
+        [Test]
+        public async Task GetFoldingMembers_WhenInvokedWithCashTokensType_GetsCashTokensFoldingMembers()
+        {
+            FoldingUsersResult result = await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue,
+                FoldingUserTypes.CashTokens);
+            FoldingUser[] actual = result.FoldingUsers;
+
+            Assert.That(actual.Length, Is.EqualTo(2));
+            Assert.That(actual[0].CashTokensAddress, Is.EqualTo("tokens4"));
+        }
+
+        [TestCase(FoldingUserTypes.CashTokens | FoldingUserTypes.BitcoinCash, 3)]
+        [TestCase(FoldingUserTypes.Bitcoin | FoldingUserTypes.BitcoinCash, 2)]
+        [TestCase(FoldingUserTypes.Slp | FoldingUserTypes.BitcoinCash, 2)]
+        [TestCase(FoldingUserTypes.CashTokens | FoldingUserTypes.BitcoinCash | FoldingUserTypes.Slp, 4)]
+        public async Task GetFoldingMembers_WhenInvokedWithMultipleTypes_GetsMultiTypeFoldingMembers(
+            FoldingUserTypes includeFoldingUserTypes, int expectedCount)
+        {
+            FoldingUsersResult result = await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue,
+                includeFoldingUserTypes);
+            FoldingUser[] actual = result.FoldingUsers;
+
+            Assert.That(actual.Length, Is.EqualTo(expectedCount));
+        }
+
+        [Test]
+        public async Task GetFoldingMembers_WhenInvokedWithSlpType_GetsSlpFoldingMembers()
+        {
+            FoldingUsersResult result =
+                await systemUnderTest.GetFoldingMembers(DateTime.MinValue, DateTime.MaxValue, FoldingUserTypes.Slp);
+            FoldingUser[] actual = result.FoldingUsers;
+
+            Assert.That(actual.Length, Is.EqualTo(1));
+            Assert.That(actual[0].SlpAddress, Is.EqualTo("slp3"));
         }
 
         [TestCase(true)]

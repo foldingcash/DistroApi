@@ -4,11 +4,9 @@
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Interfaces;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-
-    using StatsDownloadApi.Interfaces;
 
     [Produces("application/json")]
     [Route("v1/[controller]")]
@@ -25,14 +23,17 @@
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
         /// <param name="amount"></param>
+        /// <param name="includeFoldingUserTypes"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(typeof (GetDistroResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get(DateTime? startDate, DateTime? endDate, int? amount,
-                                             CancellationToken cancellationToken = default)
+            FoldingUserTypes includeFoldingUserTypes = FoldingUserTypes.All,
+            CancellationToken cancellationToken = default)
         {
-            return await InvokeApiService(async apiService => await apiService.GetDistro(startDate, endDate, amount));
+            return await InvokeApiService(async apiService =>
+                await apiService.GetDistro(startDate, endDate, amount, includeFoldingUserTypes));
         }
 
         /// <summary>

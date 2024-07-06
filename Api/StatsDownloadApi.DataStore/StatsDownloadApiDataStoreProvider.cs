@@ -42,15 +42,17 @@
             this.resourceCleanupService = resourceCleanupService;
         }
 
-        public async Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate)
+        public async Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate,
+            FoldingUserTypes includeFoldingUserTypes)
         {
             logger.LogMethodInvoked();
             ParseResults[] parsedFiles = await GetValidatedFiles(startDate, endDate);
             ParseResults first = parsedFiles.First();
             ParseResults last = parsedFiles.Last();
             FoldingUser[] foldingUsers = GetFoldingUsers(first, last);
+            FoldingUser[] filteredFoldingUsers = FilterFoldingUsers(foldingUsers, includeFoldingUserTypes);
             logger.LogMethodFinished();
-            return new FoldingUsersResult(foldingUsers, first.DownloadDateTime, last.DownloadDateTime);
+            return new FoldingUsersResult(filteredFoldingUsers, first.DownloadDateTime, last.DownloadDateTime);
         }
 
         public async Task<Member[]> GetMembers(DateTime startDate, DateTime endDate)
@@ -76,12 +78,41 @@
             return dataStoreService.IsAvailable();
         }
 
+        private FoldingUser[] FilterFoldingUsers(FoldingUser[] foldingUsers, FoldingUserTypes includeFoldingUserTypes)
+        {
+            bool BitcoinFilter(FoldingUser f)
+            {
+                return includeFoldingUserTypes.HasFlag(FoldingUserTypes.Bitcoin) &&
+                       !string.IsNullOrEmpty(f.BitcoinAddress);
+            }
+
+            bool BitcoinCashFilter(FoldingUser f)
+            {
+                return includeFoldingUserTypes.HasFlag(FoldingUserTypes.BitcoinCash) &&
+                       !string.IsNullOrEmpty(f.BitcoinCashAddress);
+            }
+
+            bool SlpFilter(FoldingUser f)
+            {
+                return includeFoldingUserTypes.HasFlag(FoldingUserTypes.Slp) && !string.IsNullOrEmpty(f.SlpAddress);
+            }
+
+            bool CashTokensFilter(FoldingUser f)
+            {
+                return includeFoldingUserTypes.HasFlag(FoldingUserTypes.CashTokens) &&
+                       !string.IsNullOrEmpty(f.CashTokensAddress);
+            }
+
+            return foldingUsers
+                   .Where(f => BitcoinFilter(f) || BitcoinCashFilter(f) || SlpFilter(f) || CashTokensFilter(f))
+                   .ToArray();
+        }
+
         private FoldingUser[] GetFoldingUsers(ParseResults firstFileResults, ParseResults lastFileResults)
         {
             logger.LogMethodInvoked();
 
             Dictionary<(string Name, long TeamNumber), UserData> first = firstFileResults.UsersData
-                .Where(data => !string.IsNullOrEmpty(data.BitcoinAddress))
                 .ToDictionary(data => (data.Name, data.TeamNumber));
 
             int length = lastFileResults.UsersData.Length;
@@ -123,7 +154,7 @@
             });
 
             logger.LogMethodFinished();
-            return users.ToArray();
+            return users;
         }
 
         private Member[] GetMembers(ParseResults firstFileResults, ParseResults lastFileResults)

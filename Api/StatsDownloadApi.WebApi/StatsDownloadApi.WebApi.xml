@@ -4,13 +4,14 @@
         <name>StatsDownloadApi.WebApi</name>
     </assembly>
     <members>
-        <member name="M:StatsDownloadApi.WebApi.Controllers.GetDistroController.Get(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+        <member name="M:StatsDownloadApi.WebApi.Controllers.GetDistroController.Get(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},StatsDownloadApi.Interfaces.FoldingUserTypes,System.Threading.CancellationToken)">
             <summary>
                 Get a distribution based on a start and end date and proportionally split the amount
             </summary>
             <param name="startDate"></param>
             <param name="endDate"></param>
             <param name="amount"></param>
+            <param name="includeFoldingUserTypes"></param>
             <param name="cancellationToken"></param>
             <returns></returns>
         </member>

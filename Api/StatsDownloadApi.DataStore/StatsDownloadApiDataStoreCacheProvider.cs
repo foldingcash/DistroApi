@@ -32,9 +32,9 @@
             this.innerService = innerService;
         }
 
-        public Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate)
+        public Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate, FoldingUserTypes includeFoldingUserTypes)
         {
-            return GetOrAdd(async () => await innerService.GetFoldingMembers(startDate, endDate),
+            return GetOrAdd(async () => await innerService.GetFoldingMembers(startDate, endDate, includeFoldingUserTypes),
                 $"{startDate}-{endDate}");
         }
 

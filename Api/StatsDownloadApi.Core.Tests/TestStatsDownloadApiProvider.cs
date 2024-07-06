@@ -152,7 +152,7 @@
 
             var foldingUsers = new FoldingUser[0];
             var resultMock = new FoldingUsersResult(foldingUsers, startDateMock, endDateMock);
-            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(resultMock);
+            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock, FoldingUserTypes.BitcoinCash).Returns(resultMock);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers)
                                                         .ThrowsForAnyArgs(exception);
 
@@ -174,7 +174,7 @@
                 new DistroUser(null, null, null, null, 3, 4, 100m)
             };
             var resultMock = new FoldingUsersResult(foldingUsers, startDateMock, endDateMock);
-            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock).Returns(resultMock);
+            statsDownloadApiDataStoreServiceMock.GetFoldingMembers(startDateMock, endDateMock, FoldingUserTypes.BitcoinCash).Returns(resultMock);
             statsDownloadApiTokenDistributionServiceMock.GetDistro(amountMock, foldingUsers).Returns(distro);
 
             GetDistroResponse actual = await InvokeGetDistro();
@@ -477,7 +477,7 @@
 
         private async Task<GetDistroResponse> InvokeGetDistro(DateTime? startDate, DateTime? endDate, int? amount)
         {
-            return await systemUnderTest.GetDistro(startDate, endDate, amount);
+            return await systemUnderTest.GetDistro(startDate, endDate, amount, FoldingUserTypes.BitcoinCash);
         }
 
         private Task<GetMemberStatsResponse> InvokeGetMemberStats(DateTime? startDate, DateTime? endDate)
