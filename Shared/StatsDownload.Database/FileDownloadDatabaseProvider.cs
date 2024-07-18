@@ -239,7 +239,7 @@
                 databaseConnection.ExecuteStoredProcedure(Constants.FileDownloadDatabase
                                                                    .UpdateToLatestStoredProcedureName);
 
-            logger.LogDebug($"'{numberOfRowsEffected}' rows were effected");
+            logger.LogDebug($"'{numberOfRowsEffected}' rows were affected");
         }
     }
 }
