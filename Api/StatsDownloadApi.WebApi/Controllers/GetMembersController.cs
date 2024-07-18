@@ -26,9 +26,9 @@
         [ProducesResponseType(typeof (GetMemberStatsResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get()
         {
-            var fahStartDate = new DateTime(2000, 10, 3);
-            DateTime yesterday = DateTime.Today.AddDays(-1);
-            return await InvokeApiService(apiService => apiService.GetMemberStats(fahStartDate, yesterday));
+            var fahStartDate = FoldingAtHome.FoldingAtHomeStartDate;
+            DateTime today = DateTime.Today;
+            return await InvokeApiService(apiService => apiService.GetMemberStats(fahStartDate, today));
         }
     }
 }
