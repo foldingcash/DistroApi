@@ -58,7 +58,8 @@
                 return new GetDistroResponse(errors);
             }
 
-            FoldingUsersResult result = await GetFoldingMembers(startDate, endDate, includeFoldingUserTypes);
+            FoldingUsersResult result = await statsDownloadApiDataStoreService.GetFoldingMembers(startDate.GetValueOrDefault(),
+                       endDate.GetValueOrDefault(), includeFoldingUserTypes);
             GetDistroResponse response = GetDistro(amount, result);
 
             logger.LogMethodFinished();
@@ -138,12 +139,6 @@
                                                      invalidDistributionState.Message)
                                              });
             }
-        }
-
-        private async Task<FoldingUsersResult> GetFoldingMembers(DateTime? startDate, DateTime? endDate, FoldingUserTypes includeFoldingUserTypes)
-        {
-            return await statsDownloadApiDataStoreService.GetFoldingMembers(startDate.GetValueOrDefault(),
-                       endDate.GetValueOrDefault(), includeFoldingUserTypes);
         }
 
         private async Task<bool> IsNotPreparedToGetMemberStats(DateTime? startDate, DateTime? endDate,

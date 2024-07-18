@@ -45,8 +45,8 @@
         [ProducesResponseType((int)HttpStatusCode.Redirect)]
         public IActionResult GetAllDistro(CancellationToken cancellationToken = default)
         {
-            var startDate = new DateTime(2000, 10, 3);
-            DateTime endDate = DateTime.Today.AddDays(-1);
+            var startDate = FoldingAtHome.FoldingAtHomeStartDate;
+            DateTime endDate = DateTime.Today;
             var amount = 100000;
             return RedirectToAction(nameof(Get), new { startDate, endDate, amount });
         }
