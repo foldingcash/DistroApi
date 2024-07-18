@@ -43,7 +43,7 @@
 
         public static class StatsDownloadDatabase
         {
-            public const string DatabaseSchema = "[FoldingCoin]";
+            public const string DatabaseSchema = "[FoldingCash]";
 
             public const string SchemaSeparator = ".";
         }

@@ -66,7 +66,7 @@
         public void GetValidatedFiles_WhenInvoked_GetsValidatedFiles()
         {
             databaseConnectionServiceMock.When(service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[GetValidatedFiles]", Arg.Any<IEnumerable<DbParameter>>(),
+                service.ExecuteStoredProcedure("[FoldingCash].[GetValidatedFiles]", Arg.Any<IEnumerable<DbParameter>>(),
                     Arg.Any<DataTable>())).Do(callInfo =>
             {
                 var dataTable = callInfo.Arg<DataTable>();
@@ -103,7 +103,7 @@
             IEnumerable<DbParameter> actualParameters = null;
 
             databaseConnectionServiceMock.When(service =>
-                service.ExecuteStoredProcedure("[FoldingCoin].[GetValidatedFiles]", Arg.Any<IEnumerable<DbParameter>>(),
+                service.ExecuteStoredProcedure("[FoldingCash].[GetValidatedFiles]", Arg.Any<IEnumerable<DbParameter>>(),
                     Arg.Any<DataTable>())).Do(callInfo =>
             {
                 actualParameters = callInfo.Arg<IEnumerable<DbParameter>>();

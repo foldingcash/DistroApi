@@ -59,7 +59,7 @@
             dbDataReaderMock.GetInt32(0).Returns(100, 200, 300);
 
             databaseConnectionServiceMock
-                .ExecuteReader("SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]")
+                .ExecuteReader("SELECT DownloadId FROM [FoldingCash].[DownloadsReadyForUpload]")
                 .Returns(dbDataReaderMock);
 
             downloadIdParameterMock = Substitute.For<DbParameter>();
@@ -117,7 +117,7 @@
 
             databaseConnectionServiceMock
                 .When(service =>
-                    service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]", Arg.Any<List<DbParameter>>()))
+                    service.ExecuteStoredProcedure("[FoldingCash].[FileDownloadError]", Arg.Any<List<DbParameter>>()))
                 .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             statsDownloadDatabaseParameterServiceMock
@@ -136,7 +136,7 @@
         {
             InvokeFileDownloadError();
 
-            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileDownloadError]",
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCash].[FileDownloadError]",
                 Arg.Any<List<DbParameter>>());
         }
 
@@ -145,7 +145,7 @@
         {
             InvokeFileDownloadFinished();
 
-            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]",
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCash].[FileDownloadFinished]",
                 Arg.Any<List<DbParameter>>());
         }
 
@@ -156,7 +156,7 @@
 
             databaseConnectionServiceMock
                 .When(service =>
-                    service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadFinished]",
+                    service.ExecuteStoredProcedure("[FoldingCash].[FileDownloadFinished]",
                         Arg.Any<List<DbParameter>>())).Do(callback =>
                 {
                     actualParameters = callback.Arg<List<DbParameter>>();
@@ -185,7 +185,7 @@
         {
             InvokeFileDownloadStarted();
 
-            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileDownloadStarted]",
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCash].[FileDownloadStarted]",
                 Arg.Any<List<DbParameter>>());
         }
 
@@ -196,7 +196,7 @@
 
             databaseConnectionServiceMock
                 .When(service =>
-                    service.ExecuteStoredProcedure("[FoldingCoin].[FileDownloadStarted]", Arg.Any<List<DbParameter>>()))
+                    service.ExecuteStoredProcedure("[FoldingCash].[FileDownloadStarted]", Arg.Any<List<DbParameter>>()))
                 .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             InvokeFileDownloadStarted();
@@ -228,7 +228,7 @@
         {
             InvokeFileValidated();
 
-            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileValidated]",
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCash].[FileValidated]",
                 Arg.Any<List<DbParameter>>());
         }
 
@@ -239,7 +239,7 @@
 
             databaseConnectionServiceMock
                 .When(service =>
-                    service.ExecuteStoredProcedure("[FoldingCoin].[FileValidated]", Arg.Any<List<DbParameter>>()))
+                    service.ExecuteStoredProcedure("[FoldingCash].[FileValidated]", Arg.Any<List<DbParameter>>()))
                 .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             InvokeFileValidated();
@@ -273,7 +273,7 @@
 
             databaseConnectionServiceMock
                 .When(service =>
-                    service.ExecuteStoredProcedure("[FoldingCoin].[FileValidationError]", Arg.Any<List<DbParameter>>()))
+                    service.ExecuteStoredProcedure("[FoldingCash].[FileValidationError]", Arg.Any<List<DbParameter>>()))
                 .Do(callback => { actualParameters = callback.Arg<List<DbParameter>>(); });
 
             statsDownloadDatabaseParameterServiceMock
@@ -292,7 +292,7 @@
         {
             InvokeFileValidationError();
 
-            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileValidationError]",
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCash].[FileValidationError]",
                 Arg.Any<List<DbParameter>>());
         }
 
@@ -301,7 +301,7 @@
         {
             InvokeFileValidationStarted();
 
-            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCoin].[FileValidationStarted]",
+            databaseConnectionServiceMock.Received(1).ExecuteStoredProcedure("[FoldingCash].[FileValidationStarted]",
                 Arg.Any<List<DbParameter>>());
         }
 
@@ -312,7 +312,7 @@
 
             databaseConnectionServiceMock
                 .When(service =>
-                    service.ExecuteStoredProcedure("[FoldingCoin].[FileValidationStarted]",
+                    service.ExecuteStoredProcedure("[FoldingCash].[FileValidationStarted]",
                         Arg.Any<List<DbParameter>>())).Do(callback =>
                 {
                     actualParameters = callback.Arg<List<DbParameter>>();
@@ -330,14 +330,14 @@
             InvokeGetLastFileDownloadDateTime();
 
             databaseConnectionServiceMock.Received(1)
-                                         .ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()");
+                                         .ExecuteScalar("SELECT [FoldingCash].[GetLastFileDownloadDateTime]()");
         }
 
         [Test]
         public void GetLastFileDownloadDateTime_WhenInvoked_ReturnsDateTime()
         {
             DateTime dateTime = DateTime.UtcNow;
-            databaseConnectionServiceMock.ExecuteScalar("SELECT [FoldingCoin].[GetLastFileDownloadDateTime]()")
+            databaseConnectionServiceMock.ExecuteScalar("SELECT [FoldingCash].[GetLastFileDownloadDateTime]()")
                                          .Returns(dateTime);
 
             DateTime actual = InvokeGetLastFileDownloadDateTime();
@@ -391,7 +391,7 @@
 
             Received.InOrder(() =>
             {
-                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCoin].[UpdateToLatest]");
+                databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCash].[UpdateToLatest]");
                 loggerMock.LogDebug($"'{NumberOfRowsEffectedExpected}' rows were effected");
             });
         }

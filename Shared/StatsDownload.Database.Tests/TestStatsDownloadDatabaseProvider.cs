@@ -42,7 +42,7 @@
             dbDataReaderMock.GetInt32(0).Returns(100, 200, 300);
 
             databaseConnectionServiceMock
-                .ExecuteReader("SELECT DownloadId FROM [FoldingCoin].[DownloadsReadyForUpload]")
+                .ExecuteReader("SELECT DownloadId FROM [FoldingCash].[DownloadsReadyForUpload]")
                 .Returns(dbDataReaderMock);
         }
 
