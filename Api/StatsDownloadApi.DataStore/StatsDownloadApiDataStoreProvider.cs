@@ -169,12 +169,12 @@
 
                 if (firstUserData == default(UserData))
                 {
-                    members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress,
+                    members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
                         lastUserData.TeamNumber, 0, 0, lastUserData.TotalPoints, lastUserData.TotalWorkUnits));
                     continue;
                 }
 
-                members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress,
+                members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
                     lastUserData.TeamNumber, firstUserData.TotalPoints, firstUserData.TotalWorkUnits,
                     lastUserData.TotalPoints - firstUserData.TotalPoints,
                     lastUserData.TotalWorkUnits - firstUserData.TotalWorkUnits));
