@@ -184,7 +184,7 @@
             databaseService.CreateDatabaseConnectionAndExecuteAction(service =>
             {
                 using (DbDataReader fileReader =
-                    service.ExecuteReader("SELECT FileId, FileName, FileExtension FROM FoldingCoin.Files"))
+                    service.ExecuteReader("SELECT FileId, FileName, FileExtension FROM FoldingCash.Files"))
                 {
                     if (!fileReader.HasRows)
                     {
