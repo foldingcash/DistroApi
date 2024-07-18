@@ -81,16 +81,7 @@
                 return new GetMemberStatsResponse(errors);
             }
 
-            DateTime startDateTime = startDate.GetValueOrDefault();
-            DateTime endDateTime = endDate.GetValueOrDefault();
-
-            if (startDateTime.Date == startDateTime && startDateTime.Date == endDateTime)
-            {
-                startDateTime = startDateTime.Date.AddHours(12);
-                endDateTime = endDateTime.Date.AddHours(36);
-            }
-
-            IList<Member> members = await statsDownloadApiDataStoreService.GetMembers(startDateTime, endDateTime);
+            IList<Member> members = await statsDownloadApiDataStoreService.GetMembers(startDate.Value, endDate.Value);
 
             var memberStatsResponse = new GetMemberStatsResponse(members);
 
@@ -231,7 +222,7 @@
                 return;
             }
 
-            if (date.Value.Date >= dateTimeService.DateTimeNow().Date)
+            if (date.Value.Date > dateTimeService.DateTimeNow().Date)
             {
                 errors.Add(dateUnsearchable);
             }
