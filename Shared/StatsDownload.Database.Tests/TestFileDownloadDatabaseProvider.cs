@@ -392,7 +392,7 @@
             Received.InOrder(() =>
             {
                 databaseConnectionServiceMock.ExecuteStoredProcedure("[FoldingCash].[UpdateToLatest]");
-                loggerMock.LogDebug($"'{NumberOfRowsEffectedExpected}' rows were effected");
+                loggerMock.LogDebug($"'{NumberOfRowsEffectedExpected}' rows were affected");
             });
         }
 
