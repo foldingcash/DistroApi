@@ -5,15 +5,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using Microsoft.Extensions.Logging;
-
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
     using StatsDownload.Logging;
-
-    using StatsDownloadApi.Interfaces;
-    using StatsDownloadApi.Interfaces.DataTransfer;
 
     public class StatsDownloadApiDataStoreProvider : IStatsDownloadApiDataStoreService
     {
@@ -30,11 +27,11 @@
         private readonly IResourceCleanupService resourceCleanupService;
 
         public StatsDownloadApiDataStoreProvider(IDataStoreServiceFactory dataStoreServiceFactory,
-                                                 IStatsDownloadApiDatabaseService databaseService,
-                                                 IFileValidationService fileValidationService,
-                                                 IFilePayloadApiSettingsService filePayloadApiSettingsService,
-                                                 ILogger<StatsDownloadApiDataStoreProvider> logger,
-                                                 IResourceCleanupService resourceCleanupService)
+            IStatsDownloadApiDatabaseService databaseService,
+            IFileValidationService fileValidationService,
+            IFilePayloadApiSettingsService filePayloadApiSettingsService,
+            ILogger<StatsDownloadApiDataStoreProvider> logger,
+            IResourceCleanupService resourceCleanupService)
         {
             dataStoreService = dataStoreServiceFactory.Create();
 
@@ -45,15 +42,17 @@
             this.resourceCleanupService = resourceCleanupService;
         }
 
-        public async Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate)
+        public async Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate,
+            FoldingUserTypes includeFoldingUserTypes)
         {
             logger.LogMethodInvoked();
             ParseResults[] parsedFiles = await GetValidatedFiles(startDate, endDate);
             ParseResults first = parsedFiles.First();
             ParseResults last = parsedFiles.Last();
             FoldingUser[] foldingUsers = GetFoldingUsers(first, last);
+            FoldingUser[] filteredFoldingUsers = FilterFoldingUsers(foldingUsers, includeFoldingUserTypes);
             logger.LogMethodFinished();
-            return new FoldingUsersResult(foldingUsers, first.DownloadDateTime, last.DownloadDateTime);
+            return new FoldingUsersResult(filteredFoldingUsers, first.DownloadDateTime, last.DownloadDateTime);
         }
 
         public async Task<Member[]> GetMembers(DateTime startDate, DateTime endDate)
@@ -79,12 +78,41 @@
             return dataStoreService.IsAvailable();
         }
 
+        private FoldingUser[] FilterFoldingUsers(FoldingUser[] foldingUsers, FoldingUserTypes includeFoldingUserTypes)
+        {
+            bool BitcoinFilter(FoldingUser f)
+            {
+                return includeFoldingUserTypes.HasFlag(FoldingUserTypes.Bitcoin) &&
+                       !string.IsNullOrEmpty(f.BitcoinAddress);
+            }
+
+            bool BitcoinCashFilter(FoldingUser f)
+            {
+                return includeFoldingUserTypes.HasFlag(FoldingUserTypes.BitcoinCash) &&
+                       !string.IsNullOrEmpty(f.BitcoinCashAddress);
+            }
+
+            bool SlpFilter(FoldingUser f)
+            {
+                return includeFoldingUserTypes.HasFlag(FoldingUserTypes.Slp) && !string.IsNullOrEmpty(f.SlpAddress);
+            }
+
+            bool CashTokensFilter(FoldingUser f)
+            {
+                return includeFoldingUserTypes.HasFlag(FoldingUserTypes.CashTokens) &&
+                       !string.IsNullOrEmpty(f.CashTokensAddress);
+            }
+
+            return foldingUsers
+                   .Where(f => BitcoinFilter(f) || BitcoinCashFilter(f) || SlpFilter(f) || CashTokensFilter(f))
+                   .ToArray();
+        }
+
         private FoldingUser[] GetFoldingUsers(ParseResults firstFileResults, ParseResults lastFileResults)
         {
             logger.LogMethodInvoked();
 
             Dictionary<(string Name, long TeamNumber), UserData> first = firstFileResults.UsersData
-                .Where(data => !string.IsNullOrEmpty(data.BitcoinAddress))
                 .ToDictionary(data => (data.Name, data.TeamNumber));
 
             int length = lastFileResults.UsersData.Length;
@@ -99,6 +127,7 @@
                 {
                     UserData previous = first[(userData.Name, userData.TeamNumber)];
                     var user = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
+                        userData.BitcoinCashAddress, userData.SlpAddress, userData.CashTokensAddress,
                         userData.TotalPoints - previous.TotalPoints, userData.TotalWorkUnits - previous.TotalWorkUnits);
 
                     if (user.PointsGained < 0)
@@ -117,19 +146,21 @@
                 }
                 else
                 {
-                    users[index] = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress, userData.TotalPoints,
+                    users[index] = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
+                        userData.BitcoinCashAddress, userData.SlpAddress, userData.CashTokensAddress,
+                        userData.TotalPoints,
                         userData.TotalWorkUnits);
                 }
             });
 
             logger.LogMethodFinished();
-            return users.ToArray();
+            return users;
         }
 
         private Member[] GetMembers(ParseResults firstFileResults, ParseResults lastFileResults)
         {
             logger.LogMethodInvoked();
-            var members = new List<Member>(lastFileResults.UsersData.Count());
+            var members = new List<Member>(lastFileResults.UsersData.Length);
 
             foreach (UserData lastUserData in lastFileResults.UsersData)
             {
@@ -202,11 +233,9 @@
 
             var results = new BlockingCollection<ParseResults>();
 
-            await Task.Run(() =>
-            {
-                Parallel.ForEach(new[] { firstFile, lastFile },
-                    async file => { results.Add(await GetValidatedFile(file)); });
-            });
+            await Task.WhenAll(
+                Task.Factory.StartNew(async () => results.Add(await GetValidatedFile(firstFile))),
+                Task.Factory.StartNew(async () => results.Add(await GetValidatedFile(lastFile))));
 
             ParseResults[] ordered = results.OrderBy(file => file.DownloadDateTime).ToArray();
 

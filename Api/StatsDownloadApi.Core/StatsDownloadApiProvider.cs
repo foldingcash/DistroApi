@@ -44,7 +44,7 @@
                                                         nameof(statsDownloadApiDataStoreService));
         }
 
-        public async Task<GetDistroResponse> GetDistro(DateTime? startDate, DateTime? endDate, int? amount)
+        public async Task<GetDistroResponse> GetDistro(DateTime? startDate, DateTime? endDate, int? amount, FoldingUserTypes includeFoldingUserTypes)
         {
             logger.LogMethodInvoked();
 
@@ -58,7 +58,7 @@
                 return new GetDistroResponse(errors);
             }
 
-            FoldingUsersResult result = await GetFoldingMembers(startDate, endDate);
+            FoldingUsersResult result = await GetFoldingMembers(startDate, endDate, includeFoldingUserTypes);
             GetDistroResponse response = GetDistro(amount, result);
 
             logger.LogMethodFinished();
@@ -140,10 +140,10 @@
             }
         }
 
-        private async Task<FoldingUsersResult> GetFoldingMembers(DateTime? startDate, DateTime? endDate)
+        private async Task<FoldingUsersResult> GetFoldingMembers(DateTime? startDate, DateTime? endDate, FoldingUserTypes includeFoldingUserTypes)
         {
             return await statsDownloadApiDataStoreService.GetFoldingMembers(startDate.GetValueOrDefault(),
-                       endDate.GetValueOrDefault());
+                       endDate.GetValueOrDefault(), includeFoldingUserTypes);
         }
 
         private async Task<bool> IsNotPreparedToGetMemberStats(DateTime? startDate, DateTime? endDate,

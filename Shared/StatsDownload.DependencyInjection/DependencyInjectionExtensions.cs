@@ -59,6 +59,7 @@
                              .AddSingleton<IBitcoinAddressValidatorService, BitcoinAddressValidatorProvider>()
                              .AddSingleton<IBitcoinCashAddressValidatorService, BitcoinCashAddressValidatorProvider>()
                              .AddSingleton<ISlpAddressValidatorService, SlpAddressValidatorProvider>()
+                             .AddSingleton<ICashTokensAddressValidatorService, CashTokensAddressValidatorProvider>()
                              .AddSingleton<IFileDownloadService, FileDownloadProvider>()
                              .AddSingleton<IFileDownloadMinimumWaitTimeService, FileDownloadMinimumWaitTimeProvider>()
                              .AddSingleton<IErrorMessageService, ErrorMessageProvider>()

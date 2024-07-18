@@ -20,6 +20,11 @@
             this.dateTimeService = dateTimeService;
         }
 
+        public bool IsFileEmpty(FilePayload filePayload)
+        {
+            return new FileInfo(filePayload.DownloadFilePath).Length == 0;
+        }
+
         public void ReadFile(FilePayload filePayload)
         {
             logger.LogMethodInvoked();

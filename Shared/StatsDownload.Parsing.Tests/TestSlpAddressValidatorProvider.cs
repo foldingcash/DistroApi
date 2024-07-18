@@ -1,12 +1,9 @@
 ﻿namespace StatsDownload.Parsing.Tests
 {
+    using Core.Interfaces;
     using Microsoft.Extensions.Logging;
-
     using NSubstitute;
-
     using NUnit.Framework;
-
-    using StatsDownload.Core.Interfaces;
 
     [TestFixture]
     public class TestSlpAddressValidatorProvider
@@ -50,7 +47,7 @@
         {
             bool actual = systemUnderTest.IsValidSlpAddress(address);
 
-            Assert.IsFalse(actual);
+            Assert.That(actual, Is.False);
         }
 
         [TestCase("simpleledger:qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a")]
@@ -67,7 +64,7 @@
         {
             bool actual = systemUnderTest.IsValidSlpAddress(address);
 
-            Assert.IsTrue(actual);
+            Assert.That(actual, Is.True);
         }
     }
 }

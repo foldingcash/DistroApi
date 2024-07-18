@@ -10,6 +10,7 @@
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Exceptions;
 
     [TestFixture]
     public class TestFileValidationProvider
@@ -80,6 +81,22 @@
                 fileReaderServiceMock.Received(1).ReadFile(filePayloadMock);
                 statsFileParserServiceMock.Parse(filePayloadMock);
             });
+        }
+
+        [Test]
+        public void PreValidateFile_WhenFileIsEmpty_ExceptionThrown()
+        {
+            fileReaderServiceMock.IsFileEmpty(filePayloadMock).Returns(true);
+
+            Assert.Throws<FileEmptyException>(() => systemUnderTest.PreValidateFile(filePayloadMock));
+        }
+
+        [Test]
+        public void PreValidateFile_WhenFileContainsData_Returns()
+        {
+            fileReaderServiceMock.IsFileEmpty(filePayloadMock).Returns(false);
+
+            Assert.DoesNotThrow(() => systemUnderTest.PreValidateFile(filePayloadMock));
         }
     }
 }

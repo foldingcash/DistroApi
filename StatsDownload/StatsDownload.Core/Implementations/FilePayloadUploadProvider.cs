@@ -30,6 +30,7 @@
 
         public async Task UploadFile(FilePayload filePayload)
         {
+            fileValidationService.PreValidateFile(filePayload);
             await dataStoreService.UploadFile(filePayload);
             fileDownloadDatabaseService.FileDownloadFinished(filePayload);
 

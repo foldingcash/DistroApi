@@ -20,6 +20,8 @@
 
         public string BitcoinCashAddress { get; set; }
 
+        public string CashTokensAddress { get; set; }
+
         public string FriendlyName { get; set; }
 
         public int LineNumber { get; }

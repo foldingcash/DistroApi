@@ -4,6 +4,7 @@
 
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.DataTransfer;
+    using StatsDownload.Core.Interfaces.Exceptions;
     using StatsDownload.Logging;
 
     public class FileValidationProvider : IFileValidationService
@@ -24,6 +25,14 @@
             this.fileCompressionService = fileCompressionService;
             this.fileReaderService = fileReaderService;
             this.statsFileParserService = statsFileParserService;
+        }
+
+        public void PreValidateFile(FilePayload filePayload)
+        {
+            if(fileReaderService.IsFileEmpty(filePayload))
+            {
+                throw new FileEmptyException();
+            }
         }
 
         public ParseResults ValidateFile(FilePayload filePayload)

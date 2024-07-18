@@ -65,7 +65,7 @@
         {
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
-            CollectionAssert.IsSupersetOf(actual, dateTimeFormatsAndOffset);
+            Assert.That(actual, Is.SupersetOf(dateTimeFormatsAndOffset));
         }
 
         [Test]
@@ -75,7 +75,7 @@
 
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
-            CollectionAssert.AreEquivalent(actual, dateTimeFormatsAndOffset);
+            Assert.That(actual, Is.EquivalentTo(dateTimeFormatsAndOffset));
         }
 
         [Test]
@@ -85,7 +85,7 @@
 
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
-            CollectionAssert.AreEquivalent(actual, dateTimeFormatsAndOffset);
+            Assert.That(actual, Is.EquivalentTo(dateTimeFormatsAndOffset));
         }
 
         [Test]
@@ -93,8 +93,7 @@
         {
             (string format, int hourOffset)[] actual = systemUnderTest.GetStatsFileDateTimeFormatsAndOffset();
 
-            CollectionAssert.IsSupersetOf(actual,
-                new[]
+            Assert.That(actual, Is.SupersetOf(new[]
                 {
                     ("ddd MMM  d HH:mm:ss ZONE1 yyyy", -1),
                     ("ddd MMM dd HH:mm:ss ZONE1 yyyy", -1),
@@ -102,7 +101,7 @@
                     ("ddd MMM dd HH:mm:ss ZONE2 yyyy", 0),
                     ("ddd MMM  d HH:mm:ss ZONE3 yyyy", 1),
                     ("ddd MMM dd HH:mm:ss ZONE3 yyyy", 1)
-                });
+                }));
         }
 
         private IStatsFileDateTimeFormatsAndOffsetService NewStatsFileDateTimeFormatsAndOffsetProvider(
