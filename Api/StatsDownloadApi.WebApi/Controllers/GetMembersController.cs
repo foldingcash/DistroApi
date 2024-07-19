@@ -27,7 +27,7 @@
         public async Task<IActionResult> Get()
         {
             var fahStartDate = FoldingAtHome.FoldingAtHomeStartDate;
-            DateTime today = DateTime.Today;
+            DateTime today = DateTime.UtcNow.Date;
             return await InvokeApiService(apiService => apiService.GetMemberStats(fahStartDate, today));
         }
     }
