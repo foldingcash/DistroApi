@@ -32,6 +32,12 @@
 
         public EmailResult SendEmail(string subject, string body)
         {
+            if(!emailSettings.Enabled)
+            {
+                logger.LogInformation("Email is disabled");
+                return new EmailResult();
+            }
+
             try
             {
                 logger.LogInformation("Attempting to send email(s)");

@@ -15,5 +15,7 @@
         public int Port { get; set; }
 
         public ICollection<string> Receivers { get; set; }
+
+        public bool Enabled { get; set; }
     }
 }
