@@ -39,11 +39,11 @@
 
         private IDateTimeService dateTimeServiceMock;
 
-        private readonly DateTime endDateMock = DateTime.UtcNow.Date.AddDays(-1);
+        private readonly DateTime endDateMock = DateTime.UtcNow.Date;
 
         private ILogger<StatsDownloadApiProvider> loggerMock;
 
-        private readonly DateTime startDateMock = DateTime.UtcNow.Date.AddDays(-1);
+        private readonly DateTime startDateMock = DateTime.UtcNow.Date;
 
         private IStatsDownloadApiDatabaseService statsDownloadApiDatabaseServiceMock;
 
@@ -116,9 +116,9 @@
         }
 
         [Test]
-        public async Task GetDistro_WhenEndDateInputIsTodayOrFutureDate_ReturnsEndDateUnsearchableResponse()
+        public async Task GetDistro_WhenEndDateInputIsFutureDate_ReturnsEndDateUnsearchableResponse()
         {
-            GetDistroResponse actual = await InvokeGetDistro(startDateMock, DateTime.UtcNow, amountMock);
+            GetDistroResponse actual = await InvokeGetDistro(startDateMock, DateTime.UtcNow.AddDays(1), amountMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -236,9 +236,9 @@
         }
 
         [Test]
-        public async Task GetDistro_WhenStartDateInputIsTodayOrFutureDate_ReturnsStartDateUnsearchableResponse()
+        public async Task GetDistro_WhenStartDateInputIsFutureDate_ReturnsStartDateUnsearchableResponse()
         {
-            GetDistroResponse actual = await InvokeGetDistro(DateTime.UtcNow, endDateMock, amountMock);
+            GetDistroResponse actual = await InvokeGetDistro(DateTime.UtcNow.AddDays(1), endDateMock, amountMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(2));
@@ -314,9 +314,9 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenEndDateInputIsTodayOrFutureDate_ReturnsEndDateUnsearchableResponse()
+        public async Task GetMemberStats_WhenEndDateInputIsFutureDate_ReturnsEndDateUnsearchableResponse()
         {
-            GetMemberStatsResponse actual = await InvokeGetMemberStats(startDateMock, DateTime.UtcNow);
+            GetMemberStatsResponse actual = await InvokeGetMemberStats(startDateMock, DateTime.UtcNow.AddDays(1));
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -378,20 +378,9 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenStartAndEndSameDate_OffsetsStartAndEndDateTime()
+        public async Task GetMemberStats_WhenStartDateInputIsFutureDate_ReturnsStartDateUnsearchableResponse()
         {
-            DateTime dateTime = DateTime.UtcNow.Date.AddDays(-1);
-
-            await systemUnderTest.GetMemberStats(dateTime, dateTime);
-
-            await statsDownloadApiDataStoreServiceMock.Received()
-                                                      .GetMembers(dateTime.AddHours(12), dateTime.AddHours(36));
-        }
-
-        [Test]
-        public async Task GetMemberStats_WhenStartDateInputIsTodayOrFutureDate_ReturnsStartDateUnsearchableResponse()
-        {
-            GetMemberStatsResponse actual = await InvokeGetMemberStats(DateTime.UtcNow, endDateMock);
+            GetMemberStatsResponse actual = await InvokeGetMemberStats(DateTime.UtcNow.AddDays(1), endDateMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(2));
