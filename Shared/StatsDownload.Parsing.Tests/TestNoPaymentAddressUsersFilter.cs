@@ -63,12 +63,12 @@
             filterSettings.EnableNoPaymentAddressUsersFilter = true;
 
             innerServiceMock.Parse(FilePayload).Returns(new ParseResults(downloadDateTime,
-                new[] { new UserData(), new UserData { BitcoinAddress = "addy" } }, new[] { new FailedUserData() }));
+                new[] { new UserData(), new UserData { BitcoinAddress = "addy" }, new UserData { BitcoinCashAddress = "addy" }, new UserData { SlpAddress = "addy" }, new UserData { CashTokensAddress = "addy" } }, new[] { new FailedUserData() }));
 
             ParseResults actual = systemUnderTest.Parse(FilePayload);
 
-            Assert.That(actual.UsersData.Count(), Is.EqualTo(1));
-            Assert.That(actual.UsersData.Count(data => string.IsNullOrWhiteSpace(data.BitcoinAddress)), Is.EqualTo(0));
+            Assert.That(actual.UsersData.Count(), Is.EqualTo(4));
+            Assert.That(actual.UsersData.Count(data => string.IsNullOrWhiteSpace(data.BitcoinAddress) && string.IsNullOrWhiteSpace(data.BitcoinCashAddress) && string.IsNullOrWhiteSpace(data.SlpAddress) && string.IsNullOrWhiteSpace(data.CashTokensAddress)), Is.EqualTo(0));
         }
     }
 }
