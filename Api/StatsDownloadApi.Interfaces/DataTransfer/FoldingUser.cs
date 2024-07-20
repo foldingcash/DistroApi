@@ -27,5 +27,29 @@
         public string SlpAddress { get; set; }
 
         public long WorkUnitsGained { get; }
+
+        public string PaymentAddress
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(BitcoinAddress))
+                {
+                    return BitcoinAddress;
+                }
+                if (!string.IsNullOrEmpty(BitcoinCashAddress))
+                {
+                    return BitcoinCashAddress;
+                }
+                if (!string.IsNullOrEmpty(SlpAddress))
+                {
+                    return SlpAddress;
+                }
+                if (!string.IsNullOrEmpty(CashTokensAddress))
+                {
+                    return CashTokensAddress;
+                }
+                return string.Empty;
+            }
+        }
     }
 }

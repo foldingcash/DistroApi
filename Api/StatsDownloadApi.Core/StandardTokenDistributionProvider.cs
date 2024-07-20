@@ -47,21 +47,21 @@
         private void AddingUserToDistro(int amount, Dictionary<string, DistroUser> distro, long totalPoints,
             FoldingUser foldingUser)
         {
-            if (distro.ContainsKey(foldingUser.BitcoinAddress))
+            if (distro.ContainsKey(foldingUser.PaymentAddress))
             {
-                DistroUser previousUser = distro[foldingUser.BitcoinAddress];
+                DistroUser previousUser = distro[foldingUser.PaymentAddress];
                 DistroUser combinedUser = NewDistroUser(amount, totalPoints, foldingUser.BitcoinAddress,
                     foldingUser.BitcoinCashAddress, foldingUser.SlpAddress, foldingUser.CashTokensAddress,
                     previousUser.PointsGained + foldingUser.PointsGained,
                     previousUser.WorkUnitsGained + foldingUser.WorkUnitsGained);
-                distro[foldingUser.BitcoinAddress] = combinedUser;
+                distro[foldingUser.PaymentAddress] = combinedUser;
             }
             else
             {
                 DistroUser distroUser = NewDistroUser(amount, totalPoints, foldingUser.BitcoinAddress,
                     foldingUser.BitcoinCashAddress, foldingUser.SlpAddress, foldingUser.CashTokensAddress,
                     foldingUser.PointsGained, foldingUser.WorkUnitsGained);
-                distro.Add(foldingUser.BitcoinAddress, distroUser);
+                distro.Add(foldingUser.PaymentAddress, distroUser);
             }
         }
 

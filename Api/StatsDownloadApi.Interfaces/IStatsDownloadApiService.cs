@@ -7,7 +7,7 @@
     {
         Task<GetDistroResponse> GetDistro(DateTime? startDate, DateTime? endDate, int? amount, FoldingUserTypes includeFoldingUserTypes);
 
-        Task<GetMemberStatsResponse> GetMemberStats(DateTime? startDate, DateTime? endDate);
+        Task<GetMembersResponse> GetMembers(DateTime? startDate, DateTime? endDate);
 
         Task<GetTeamsResponse> GetTeams();
     }

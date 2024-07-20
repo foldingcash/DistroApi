@@ -27,13 +27,8 @@
 
             if (filterSettings.EnableNoPaymentAddressUsersFilter)
             {
-                bool HasBitcoinAddress(UserData user) => !string.IsNullOrWhiteSpace(user.BitcoinAddress);
-                bool HasBitcoinCashAddress(UserData user) => !string.IsNullOrWhiteSpace(user.BitcoinCashAddress);
-                bool HasSlpAddress(UserData user) => !string.IsNullOrWhiteSpace(user.SlpAddress);
-                bool HasCashTokensAddress(UserData user) => !string.IsNullOrWhiteSpace(user.CashTokensAddress);
-
                 return new ParseResults(results.DownloadDateTime,
-                    results.UsersData.Where(data => HasBitcoinAddress(data) || HasBitcoinCashAddress(data) || HasSlpAddress(data) || HasCashTokensAddress(data)).ToArray(),
+                    results.UsersData.Where(data => !string.IsNullOrEmpty(data.PaymentAddress)).ToArray(),
                     results.FailedUsersData);
             }
 

@@ -270,12 +270,12 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
+        public async Task GetMembers_WhenDatabaseIsUnavailable_ReturnsDatabaseUnavailableResponse()
         {
             statsDownloadApiDatabaseServiceMock.IsAvailable()
                                                .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
-            GetMemberStatsResponse actual = await InvokeGetMemberStats();
+            GetMembersResponse actual = await InvokeGetMembers();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -285,12 +285,12 @@
 
         [Test]
         public async Task
-            GetMemberStats_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
+            GetMembers_WhenDatabaseMissingRequiredObjects_ReturnsDatabaseMissingRequiredObjectsResponse()
         {
             statsDownloadApiDatabaseServiceMock.IsAvailable()
                                                .Returns((false, DatabaseFailedReason.DatabaseMissingRequiredObjects));
 
-            GetMemberStatsResponse actual = await InvokeGetMemberStats();
+            GetMembersResponse actual = await InvokeGetMembers();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -300,11 +300,11 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenDataStoreIsUnavailable_ReturnsDataStoreUnavailableResponse()
+        public async Task GetMembers_WhenDataStoreIsUnavailable_ReturnsDataStoreUnavailableResponse()
         {
             statsDownloadApiDataStoreServiceMock.IsAvailable().Returns(false);
 
-            GetMemberStatsResponse actual = await InvokeGetMemberStats();
+            GetMembersResponse actual = await InvokeGetMembers();
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -314,9 +314,9 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenEndDateInputIsFutureDate_ReturnsEndDateUnsearchableResponse()
+        public async Task GetMembers_WhenEndDateInputIsFutureDate_ReturnsEndDateUnsearchableResponse()
         {
-            GetMemberStatsResponse actual = await InvokeGetMemberStats(startDateMock, DateTime.UtcNow.AddDays(1));
+            GetMembersResponse actual = await InvokeGetMembers(startDateMock, DateTime.UtcNow.AddDays(1));
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -325,12 +325,12 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenErrorsOccurs_ReturnsErrorsResponse()
+        public async Task GetMembers_WhenErrorsOccurs_ReturnsErrorsResponse()
         {
             statsDownloadApiDatabaseServiceMock.IsAvailable()
                                                .Returns((false, DatabaseFailedReason.DatabaseUnavailable));
 
-            GetMemberStatsResponse actual = await InvokeGetMemberStats(null, null);
+            GetMembersResponse actual = await InvokeGetMembers(null, null);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Members, Is.Null);
@@ -339,13 +339,13 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenInvoked_ReturnsSuccessMemberStatsResponse()
+        public async Task GetMembers_WhenInvoked_ReturnsSuccessMembersResponse()
         {
             var members = new Member[2];
 
             statsDownloadApiDataStoreServiceMock.GetMembers(DateTime.MinValue, endDateMock).Returns(members);
 
-            GetMemberStatsResponse actual = await InvokeGetMemberStats(DateTime.MinValue, endDateMock);
+            GetMembersResponse actual = await InvokeGetMembers(DateTime.MinValue, endDateMock);
 
             Assert.That(actual.Success, Is.True);
             Assert.That(actual.Errors, Is.Null);
@@ -356,9 +356,9 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenNoEndDateIsProvided_ReturnsNoEndDateResponse()
+        public async Task GetMembers_WhenNoEndDateIsProvided_ReturnsNoEndDateResponse()
         {
-            GetMemberStatsResponse actual = await InvokeGetMemberStats(startDateMock, null);
+            GetMembersResponse actual = await InvokeGetMembers(startDateMock, null);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -367,9 +367,9 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenNoStartDateIsProvided_ReturnsNoStartDateResponse()
+        public async Task GetMembers_WhenNoStartDateIsProvided_ReturnsNoStartDateResponse()
         {
-            GetMemberStatsResponse actual = await InvokeGetMemberStats(null, endDateMock);
+            GetMembersResponse actual = await InvokeGetMembers(null, endDateMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -378,9 +378,9 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenStartDateInputIsFutureDate_ReturnsStartDateUnsearchableResponse()
+        public async Task GetMembers_WhenStartDateInputIsFutureDate_ReturnsStartDateUnsearchableResponse()
         {
-            GetMemberStatsResponse actual = await InvokeGetMemberStats(DateTime.UtcNow.AddDays(1), endDateMock);
+            GetMembersResponse actual = await InvokeGetMembers(DateTime.UtcNow.AddDays(1), endDateMock);
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(2));
@@ -390,9 +390,9 @@
         }
 
         [Test]
-        public async Task GetMemberStats_WhenStartDateIsLaterThanEndDate_ReturnsInvalidDateRangeResponse()
+        public async Task GetMembers_WhenStartDateIsLaterThanEndDate_ReturnsInvalidDateRangeResponse()
         {
-            GetMemberStatsResponse actual = await InvokeGetMemberStats(startDateMock, endDateMock.AddDays(-1));
+            GetMembersResponse actual = await InvokeGetMembers(startDateMock, endDateMock.AddDays(-1));
 
             Assert.That(actual.Success, Is.False);
             Assert.That(actual.Errors?.Count, Is.EqualTo(1));
@@ -469,14 +469,14 @@
             return await systemUnderTest.GetDistro(startDate, endDate, amount, FoldingUserTypes.BitcoinCash);
         }
 
-        private Task<GetMemberStatsResponse> InvokeGetMemberStats(DateTime? startDate, DateTime? endDate)
+        private Task<GetMembersResponse> InvokeGetMembers(DateTime? startDate, DateTime? endDate)
         {
-            return systemUnderTest.GetMemberStats(startDate, endDate);
+            return systemUnderTest.GetMembers(startDate, endDate);
         }
 
-        private Task<GetMemberStatsResponse> InvokeGetMemberStats()
+        private Task<GetMembersResponse> InvokeGetMembers()
         {
-            return InvokeGetMemberStats(startDateMock, endDateMock);
+            return InvokeGetMembers(startDateMock, endDateMock);
         }
 
         private Task<GetTeamsResponse> InvokeGetTeams()

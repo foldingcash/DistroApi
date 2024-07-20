@@ -35,5 +35,27 @@
         public long TotalPoints { get; }
 
         public long TotalWorkUnits { get; }
+
+        public string PaymentAddress {
+            get {
+                if(!string.IsNullOrEmpty(BitcoinAddress))
+                {
+                    return BitcoinAddress;
+                }
+                if (!string.IsNullOrEmpty(BitcoinCashAddress))
+                {
+                    return BitcoinCashAddress;
+                }
+                if (!string.IsNullOrEmpty(SlpAddress))
+                {
+                    return SlpAddress;
+                }
+                if (!string.IsNullOrEmpty(CashTokensAddress))
+                {
+                    return CashTokensAddress;
+                }
+                return string.Empty;
+            } 
+        }
     }
 }

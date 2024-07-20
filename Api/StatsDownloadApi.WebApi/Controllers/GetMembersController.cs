@@ -22,13 +22,26 @@
         ///     Get all members
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
-        [ProducesResponseType(typeof (GetMemberStatsResponse), (int)HttpStatusCode.OK)]
+        [HttpGet("All")]
+        [ProducesResponseType(typeof (GetMembersResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get()
         {
             var fahStartDate = FoldingAtHome.FoldingAtHomeStartDate;
             DateTime today = DateTime.UtcNow.Date;
-            return await InvokeApiService(apiService => apiService.GetMemberStats(fahStartDate, today));
+            return await InvokeApiService(apiService => apiService.GetMembers(fahStartDate, today));
+        }
+
+        /// <summary>
+        ///     Get members based on a start and end date
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(GetMembersResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> Get(DateTime? startDate, DateTime? endDate)
+        {
+            return await InvokeApiService(apiService => apiService.GetMembers(startDate, endDate));
         }
     }
 }
