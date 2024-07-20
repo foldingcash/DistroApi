@@ -35,7 +35,7 @@
         public Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate, FoldingUserTypes includeFoldingUserTypes)
         {
             return GetOrAdd(async () => await innerService.GetFoldingMembers(startDate, endDate, includeFoldingUserTypes),
-                $"{startDate}-{endDate}");
+                $"{startDate}-{endDate}-{includeFoldingUserTypes}");
         }
 
         public Task<Member[]> GetMembers(DateTime startDate, DateTime endDate)
