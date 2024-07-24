@@ -24,11 +24,11 @@
         /// <returns></returns>
         [HttpGet("All")]
         [ProducesResponseType(typeof (GetMembersResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Get()
+        public IActionResult GetAll()
         {
             var fahStartDate = FoldingAtHome.FoldingAtHomeStartDate;
             DateTime today = DateTime.UtcNow.Date;
-            return await InvokeApiService(apiService => apiService.GetMembers(fahStartDate, today));
+            return RedirectToAction(nameof(Get), new { startDate = fahStartDate, endDate = today });
         }
 
         /// <summary>

@@ -165,7 +165,7 @@
             foreach (UserData lastUserData in lastFileResults.UsersData)
             {
                 UserData firstUserData =
-                    firstFileResults.UsersData.FirstOrDefault(user => user.Name == lastUserData.Name);
+                    firstFileResults.UsersData.FirstOrDefault(user => user.Name == lastUserData.Name && user.TeamNumber == lastUserData.TeamNumber);
 
                 if (firstUserData == default(UserData))
                 {
