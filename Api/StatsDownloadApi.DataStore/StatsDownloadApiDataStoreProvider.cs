@@ -67,7 +67,7 @@
         public async Task<Team[]> GetTeams()
         {
             logger.LogMethodInvoked();
-            ParseResults[] parsedFiles = await GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
+            ParseResults[] parsedFiles = await GetValidatedFiles(DateTime.UtcNow.AddDays(-1).Date, DateTime.UtcNow.Date);
             Team[] teams = GetTeams(parsedFiles.Last());
             logger.LogMethodFinished();
             return teams;
