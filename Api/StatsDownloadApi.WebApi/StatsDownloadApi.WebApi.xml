@@ -15,14 +15,14 @@
             <param name="cancellationToken"></param>
             <returns></returns>
         </member>
-        <member name="M:StatsDownloadApi.WebApi.Controllers.GetDistroController.GetAllDistro(System.Threading.CancellationToken)">
+        <member name="M:StatsDownloadApi.WebApi.Controllers.GetDistroController.GetAll(System.Threading.CancellationToken)">
             <summary>
                 Get a system defined distribution
             </summary>
             <param name="cancellationToken"></param>
             <returns></returns>
         </member>
-        <member name="M:StatsDownloadApi.WebApi.Controllers.GetMembersController.Get">
+        <member name="M:StatsDownloadApi.WebApi.Controllers.GetMembersController.GetAll">
             <summary>
                 Get all members
             </summary>
