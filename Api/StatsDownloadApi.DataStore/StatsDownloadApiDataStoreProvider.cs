@@ -116,7 +116,7 @@
                 .ToDictionary(data => (data.Name, data.TeamNumber));
 
             int length = lastFileResults.UsersData.Length;
-            var users = new FoldingUser[length];
+            var users = new BlockingCollection<FoldingUser>(length);
 
             Parallel.For(0, length, index =>
             {
@@ -142,19 +142,19 @@
                             "Negative work units earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
                     }
 
-                    users[index] = user;
+                    users.Add(user);
                 }
                 else
                 {
-                    users[index] = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
+                    users.Add(new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
                         userData.BitcoinCashAddress, userData.SlpAddress, userData.CashTokensAddress,
                         userData.TotalPoints,
-                        userData.TotalWorkUnits);
+                        userData.TotalWorkUnits));
                 }
             });
 
             logger.LogMethodFinished();
-            return users;
+            return users.ToArray();
         }
 
         private Member[] GetMembers(ParseResults firstFileResults, ParseResults lastFileResults)
@@ -187,23 +187,21 @@
         private Team[] GetTeams(ParseResults lastFileResults)
         {
             logger.LogMethodInvoked();
-            var teams = new List<Team>();
+            var teams = new ConcurrentDictionary<long, Team>();
 
-            foreach (UserData userData in lastFileResults.UsersData)
+            Parallel.ForEach(lastFileResults.UsersData, user =>
             {
-                long teamNumber = userData.TeamNumber;
+                long teamNumber = user.TeamNumber;
 
-                if (teams.Any(team => team.TeamNumber == teamNumber))
+                if (!teams.ContainsKey(teamNumber))
                 {
-                    continue;
+                    // TODO: Get the team name
+                    teams.TryAdd(teamNumber, new Team(teamNumber, ""));
                 }
-
-                // TODO: Get the team name
-                teams.Add(new Team(teamNumber, ""));
-            }
+            });
 
             logger.LogMethodFinished();
-            return teams.ToArray();
+            return teams.Values.ToArray();
         }
 
         private async Task<ParseResults> GetValidatedFile(ValidatedFile validatedFile)
