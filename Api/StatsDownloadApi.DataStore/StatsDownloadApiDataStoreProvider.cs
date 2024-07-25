@@ -133,13 +133,13 @@
                     if (user.PointsGained < 0)
                     {
                         throw new InvalidDistributionStateException(
-                            "Negative points earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
+                            "Negative points earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development.");
                     }
 
                     if (user.WorkUnitsGained < 0)
                     {
                         throw new InvalidDistributionStateException(
-                            "Negative work units earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
+                            "Negative work units earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development.");
                     }
 
                     users.Add(user);
@@ -160,25 +160,27 @@
         private Member[] GetMembers(ParseResults firstFileResults, ParseResults lastFileResults)
         {
             logger.LogMethodInvoked();
-            var members = new List<Member>(lastFileResults.UsersData.Length);
+            var members = new BlockingCollection<Member>(lastFileResults.UsersData.Length);
+            var firstFile = firstFileResults.UsersData.ToDictionary(u => (u.Name, u.TeamNumber), u => u);
 
-            foreach (UserData lastUserData in lastFileResults.UsersData)
+            Parallel.ForEach(lastFileResults.UsersData, lastUserData =>
             {
-                UserData firstUserData =
-                    firstFileResults.UsersData.FirstOrDefault(user => user.Name == lastUserData.Name && user.TeamNumber == lastUserData.TeamNumber);
+                UserData firstUserData;
+                var existsInFirst = firstFile.TryGetValue((lastUserData.Name, lastUserData.TeamNumber), out firstUserData);
 
-                if (firstUserData == default(UserData))
+                if (existsInFirst)
                 {
                     members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
-                        lastUserData.TeamNumber, 0, 0, lastUserData.TotalPoints, lastUserData.TotalWorkUnits));
-                    continue;
-                }
-
-                members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
                     lastUserData.TeamNumber, firstUserData.TotalPoints, firstUserData.TotalWorkUnits,
                     lastUserData.TotalPoints - firstUserData.TotalPoints,
                     lastUserData.TotalWorkUnits - firstUserData.TotalWorkUnits));
-            }
+                }
+                else
+                {
+                    members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
+                        lastUserData.TeamNumber, 0, 0, lastUserData.TotalPoints, lastUserData.TotalWorkUnits));
+                }
+            });
 
             logger.LogMethodFinished();
             return members.ToArray();
