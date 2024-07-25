@@ -170,9 +170,9 @@
                 if (existsInFirst)
                 {
                     members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
-                    lastUserData.TeamNumber, firstUserData.TotalPoints, firstUserData.TotalWorkUnits,
-                    lastUserData.TotalPoints - firstUserData.TotalPoints,
-                    lastUserData.TotalWorkUnits - firstUserData.TotalWorkUnits));
+                        lastUserData.TeamNumber, firstUserData.TotalPoints, firstUserData.TotalWorkUnits,
+                        lastUserData.TotalPoints - firstUserData.TotalPoints,
+                        lastUserData.TotalWorkUnits - firstUserData.TotalWorkUnits));
                 }
                 else
                 {
