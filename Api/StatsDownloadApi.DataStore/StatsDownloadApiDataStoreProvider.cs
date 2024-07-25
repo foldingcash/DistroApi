@@ -118,14 +118,13 @@
             int length = lastFileResults.UsersData.Length;
             var users = new BlockingCollection<FoldingUser>(length);
 
-            Parallel.For(0, length, index =>
+            Parallel.ForEach(lastFileResults.UsersData, userData =>
             {
-                UserData userData = lastFileResults.UsersData[index];
-                bool exists = first.ContainsKey((userData.Name, userData.TeamNumber));
+                UserData previous;
+                bool exists = first.TryGetValue((userData.Name, userData.TeamNumber), out previous);
 
                 if (exists)
                 {
-                    UserData previous = first[(userData.Name, userData.TeamNumber)];
                     var user = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
                         userData.BitcoinCashAddress, userData.SlpAddress, userData.CashTokensAddress,
                         userData.TotalPoints - previous.TotalPoints, userData.TotalWorkUnits - previous.TotalWorkUnits);
