@@ -67,7 +67,7 @@
         public async Task<Team[]> GetTeams()
         {
             logger.LogMethodInvoked();
-            ParseResults[] parsedFiles = await GetValidatedFiles(DateTime.MinValue, DateTime.MaxValue);
+            ParseResults[] parsedFiles = await GetValidatedFiles(DateTime.UtcNow.AddDays(-1).Date, DateTime.UtcNow.Date);
             Team[] teams = GetTeams(parsedFiles.Last());
             logger.LogMethodFinished();
             return teams;
@@ -116,16 +116,15 @@
                 .ToDictionary(data => (data.Name, data.TeamNumber));
 
             int length = lastFileResults.UsersData.Length;
-            var users = new FoldingUser[length];
+            var users = new BlockingCollection<FoldingUser>(length);
 
-            Parallel.For(0, length, index =>
+            Parallel.ForEach(lastFileResults.UsersData, userData =>
             {
-                UserData userData = lastFileResults.UsersData[index];
-                bool exists = first.ContainsKey((userData.Name, userData.TeamNumber));
+                UserData previous;
+                bool exists = first.TryGetValue((userData.Name, userData.TeamNumber), out previous);
 
                 if (exists)
                 {
-                    UserData previous = first[(userData.Name, userData.TeamNumber)];
                     var user = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
                         userData.BitcoinCashAddress, userData.SlpAddress, userData.CashTokensAddress,
                         userData.TotalPoints - previous.TotalPoints, userData.TotalWorkUnits - previous.TotalWorkUnits);
@@ -133,52 +132,54 @@
                     if (user.PointsGained < 0)
                     {
                         throw new InvalidDistributionStateException(
-                            "Negative points earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
+                            "Negative points earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development.");
                     }
 
                     if (user.WorkUnitsGained < 0)
                     {
                         throw new InvalidDistributionStateException(
-                            "Negative work units earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development");
+                            "Negative work units earned was detected for a user. There may be an issue with the database state or the stat files download. Contact development.");
                     }
 
-                    users[index] = user;
+                    users.Add(user);
                 }
                 else
                 {
-                    users[index] = new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
+                    users.Add(new FoldingUser(userData.FriendlyName, userData.BitcoinAddress,
                         userData.BitcoinCashAddress, userData.SlpAddress, userData.CashTokensAddress,
                         userData.TotalPoints,
-                        userData.TotalWorkUnits);
+                        userData.TotalWorkUnits));
                 }
             });
 
             logger.LogMethodFinished();
-            return users;
+            return users.ToArray();
         }
 
         private Member[] GetMembers(ParseResults firstFileResults, ParseResults lastFileResults)
         {
             logger.LogMethodInvoked();
-            var members = new List<Member>(lastFileResults.UsersData.Length);
+            var members = new BlockingCollection<Member>(lastFileResults.UsersData.Length);
+            var firstFile = firstFileResults.UsersData.ToDictionary(u => (u.Name, u.TeamNumber), u => u);
 
-            foreach (UserData lastUserData in lastFileResults.UsersData)
+            Parallel.ForEach(lastFileResults.UsersData, lastUserData =>
             {
-                UserData firstUserData =
-                    firstFileResults.UsersData.FirstOrDefault(user => user.Name == lastUserData.Name);
+                UserData firstUserData;
+                var existsInFirst = firstFile.TryGetValue((lastUserData.Name, lastUserData.TeamNumber), out firstUserData);
 
-                if (firstUserData == default(UserData))
+                if (existsInFirst)
+                {
+                    members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
+                        lastUserData.TeamNumber, firstUserData.TotalPoints, firstUserData.TotalWorkUnits,
+                        lastUserData.TotalPoints - firstUserData.TotalPoints,
+                        lastUserData.TotalWorkUnits - firstUserData.TotalWorkUnits));
+                }
+                else
                 {
                     members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
                         lastUserData.TeamNumber, 0, 0, lastUserData.TotalPoints, lastUserData.TotalWorkUnits));
-                    continue;
                 }
-
-                members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
-                    lastUserData.TeamNumber, firstUserData.TotalPoints, firstUserData.TotalWorkUnits,
-                    lastUserData.TotalPoints - firstUserData.TotalPoints,
-                    lastUserData.TotalWorkUnits - firstUserData.TotalWorkUnits));
-            }
+            });
 
             logger.LogMethodFinished();
             return members.ToArray();
@@ -187,23 +188,21 @@
         private Team[] GetTeams(ParseResults lastFileResults)
         {
             logger.LogMethodInvoked();
-            var teams = new List<Team>();
+            var teams = new ConcurrentDictionary<long, Team>();
 
-            foreach (UserData userData in lastFileResults.UsersData)
+            Parallel.ForEach(lastFileResults.UsersData, user =>
             {
-                long teamNumber = userData.TeamNumber;
+                long teamNumber = user.TeamNumber;
 
-                if (teams.Any(team => team.TeamNumber == teamNumber))
+                if (!teams.ContainsKey(teamNumber))
                 {
-                    continue;
+                    // TODO: Get the team name
+                    teams.TryAdd(teamNumber, new Team(teamNumber, ""));
                 }
-
-                // TODO: Get the team name
-                teams.Add(new Team(teamNumber, ""));
-            }
+            });
 
             logger.LogMethodFinished();
-            return teams.ToArray();
+            return teams.Values.ToArray();
         }
 
         private async Task<ParseResults> GetValidatedFile(ValidatedFile validatedFile)

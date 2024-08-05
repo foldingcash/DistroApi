@@ -67,27 +67,27 @@
             return response;
         }
 
-        public async Task<GetMemberStatsResponse> GetMemberStats(DateTime? startDate, DateTime? endDate)
+        public async Task<GetMembersResponse> GetMembers(DateTime? startDate, DateTime? endDate)
         {
             logger.LogMethodInvoked();
 
             IList<ApiError> errors = new List<ApiError>();
 
-            bool isNotPreparedToRun = await IsNotPreparedToGetMemberStats(startDate, endDate, errors);
+            bool isNotPreparedToRun = await IsNotPreparedToGetMembers(startDate, endDate, errors);
 
             if (isNotPreparedToRun)
             {
                 logger.LogMethodFinished();
-                return new GetMemberStatsResponse(errors);
+                return new GetMembersResponse(errors);
             }
 
             IList<Member> members = await statsDownloadApiDataStoreService.GetMembers(startDate.Value, endDate.Value);
 
-            var memberStatsResponse = new GetMemberStatsResponse(members);
+            var membersResponse = new GetMembersResponse(members);
 
             logger.LogMethodFinished();
 
-            return memberStatsResponse;
+            return membersResponse;
         }
 
         public async Task<GetTeamsResponse> GetTeams()
@@ -132,7 +132,7 @@
             }
         }
 
-        private async Task<bool> IsNotPreparedToGetMemberStats(DateTime? startDate, DateTime? endDate,
+        private async Task<bool> IsNotPreparedToGetMembers(DateTime? startDate, DateTime? endDate,
                                                                IList<ApiError> errors)
         {
             ValidateStartDate(startDate, errors);

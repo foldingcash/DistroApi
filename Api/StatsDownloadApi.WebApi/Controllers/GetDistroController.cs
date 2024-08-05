@@ -43,10 +43,10 @@
         /// <returns></returns>
         [HttpGet("All")]
         [ProducesResponseType((int)HttpStatusCode.Redirect)]
-        public IActionResult GetAllDistro(CancellationToken cancellationToken = default)
+        public IActionResult GetAll(CancellationToken cancellationToken = default)
         {
             var startDate = FoldingAtHome.FoldingAtHomeStartDate;
-            DateTime endDate = DateTime.Today;
+            DateTime endDate = DateTime.UtcNow.Date;
             var amount = 100000;
             return RedirectToAction(nameof(Get), new { startDate, endDate, amount });
         }

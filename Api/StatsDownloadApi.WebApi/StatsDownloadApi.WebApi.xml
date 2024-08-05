@@ -15,22 +15,22 @@
             <param name="cancellationToken"></param>
             <returns></returns>
         </member>
-        <member name="M:StatsDownloadApi.WebApi.Controllers.GetDistroController.GetAllDistro(System.Threading.CancellationToken)">
+        <member name="M:StatsDownloadApi.WebApi.Controllers.GetDistroController.GetAll(System.Threading.CancellationToken)">
             <summary>
                 Get a system defined distribution
             </summary>
             <param name="cancellationToken"></param>
             <returns></returns>
         </member>
-        <member name="M:StatsDownloadApi.WebApi.Controllers.GetMembersController.Get">
+        <member name="M:StatsDownloadApi.WebApi.Controllers.GetMembersController.GetAll">
             <summary>
                 Get all members
             </summary>
             <returns></returns>
         </member>
-        <member name="M:StatsDownloadApi.WebApi.Controllers.GetMemberStatsController.Get(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:StatsDownloadApi.WebApi.Controllers.GetMembersController.Get(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
-                Get member stats based on a start and end date
+                Get members based on a start and end date
             </summary>
             <param name="startDate"></param>
             <param name="endDate"></param>

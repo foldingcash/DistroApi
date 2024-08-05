@@ -4,14 +4,14 @@
 
     using StatsDownloadApi.Interfaces.DataTransfer;
 
-    public class GetMemberStatsResponse : ApiResponse
+    public class GetMembersResponse : ApiResponse
     {
-        public GetMemberStatsResponse(IList<Member> members)
+        public GetMembersResponse(IList<Member> members)
         {
             Members = members;
         }
 
-        public GetMemberStatsResponse(IList<ApiError> errors)
+        public GetMembersResponse(IList<ApiError> errors)
             : base(errors)
         {
         }

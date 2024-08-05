@@ -168,6 +168,19 @@
         }
 
         [Test]
+        public void GetDistro_WhenInvokedWithNullAddress_NoExceptionThrown()
+        {
+            Assert.DoesNotThrow(() => systemUnderTest.GetDistro(1,
+                new[]
+                {
+                    new FoldingUser("friendlyName1", "address1", null, null, null, 1, 2),
+                    new FoldingUser("friendlyName2", null, "bchAddress2", null, null, 99, 98),
+                    new FoldingUser("friendlyName2", null, null, "slpAddress2", null, 99, 98),
+                    new FoldingUser("friendlyName2", null, null, null, "tokensAddress2", 99, 98)
+                }));
+        }
+
+        [Test]
         public void GetDistro_WhenProportionExceedsMaxPrecision_FloorsToHighestPrecision()
         {
             IList<DistroUser> actual = systemUnderTest.GetDistro(7750000,
