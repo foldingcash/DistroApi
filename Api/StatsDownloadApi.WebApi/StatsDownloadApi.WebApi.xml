@@ -42,5 +42,22 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:StatsDownloadApi.WebApi.Controllers.MetaController.GetMessage(System.String,System.Threading.CancellationToken)">
+            <summary>
+                Get a message to sign and verify ownership
+            </summary>
+            <param name="name"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:StatsDownloadApi.WebApi.Controllers.MetaController.UpdateMeta(System.String,StatsDownloadApi.WebApi.Controllers.MetaUpdateRequest,System.Threading.CancellationToken)">
+            <summary>
+                Update the user's meta data
+            </summary>
+            <param name="name"></param>
+            <param name="request"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>
