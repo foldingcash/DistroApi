@@ -38,9 +38,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "V2", "V2", "{64B2AAB0-86DF-412D-90CF-010319F3E7D1}"
 	ProjectSection(SolutionItems) = preProject
 		Database\V2\RunningStatsDownloadV2.sql = Database\V2\RunningStatsDownloadV2.sql
-		Database\V2\03.StatsApiStoredProceduresV2.SQL = Database\V2\03.StatsApiStoredProceduresV2.SQL
-		Database\V2\02.StatsDownloaderStoredProceduresV2.sql = Database\V2\02.StatsDownloaderStoredProceduresV2.sql
-		Database\V2\01.StatsDownloadSchemaV2.sql = Database\V2\01.StatsDownloadSchemaV2.sql
+		Database\V2\4.StatsApiStoredProceduresV2.SQL = Database\V2\4.StatsApiStoredProceduresV2.SQL
+		Database\V2\3.StatsDownloaderStoredProceduresV2.sql = Database\V2\3.StatsDownloaderStoredProceduresV2.sql
+		Database\V2\2.StatsDownloadSchemaV2.sql = Database\V2\2.StatsDownloadSchemaV2.sql
+		Database\V2\1.StatsDownloadDatabase.sql = Database\V2\1.StatsDownloadDatabase.sql
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.DataStore", "Shared\StatsDownload.DataStore\StatsDownload.DataStore.csproj", "{9802451D-B87B-484D-9A08-99DC6EC9E609}"
