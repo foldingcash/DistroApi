@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
     using Interfaces;
@@ -67,7 +68,8 @@
         public async Task<Team[]> GetTeams()
         {
             logger.LogMethodInvoked();
-            ParseResults[] parsedFiles = await GetValidatedFiles(DateTime.UtcNow.AddDays(-1).Date, DateTime.UtcNow.Date);
+            ParseResults[] parsedFiles =
+                await GetValidatedFiles(DateTime.UtcNow.AddDays(-1).Date, DateTime.UtcNow.Date);
             Team[] teams = GetTeams(parsedFiles.Last());
             logger.LogMethodFinished();
             return teams;
@@ -160,23 +162,27 @@
         {
             logger.LogMethodInvoked();
             var members = new BlockingCollection<Member>(lastFileResults.UsersData.Length);
-            var firstFile = firstFileResults.UsersData.ToDictionary(u => (u.Name, u.TeamNumber), u => u);
+            Dictionary<(string Name, long TeamNumber), UserData> firstFile =
+                firstFileResults.UsersData.ToDictionary(u => (u.Name, u.TeamNumber), u => u);
 
             Parallel.ForEach(lastFileResults.UsersData, lastUserData =>
             {
                 UserData firstUserData;
-                var existsInFirst = firstFile.TryGetValue((lastUserData.Name, lastUserData.TeamNumber), out firstUserData);
+                bool existsInFirst =
+                    firstFile.TryGetValue((lastUserData.Name, lastUserData.TeamNumber), out firstUserData);
 
                 if (existsInFirst)
                 {
-                    members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
+                    members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress,
+                        lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
                         lastUserData.TeamNumber, firstUserData.TotalPoints, firstUserData.TotalWorkUnits,
                         lastUserData.TotalPoints - firstUserData.TotalPoints,
                         lastUserData.TotalWorkUnits - firstUserData.TotalWorkUnits));
                 }
                 else
                 {
-                    members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress, lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
+                    members.Add(new Member(lastUserData.Name, lastUserData.FriendlyName, lastUserData.BitcoinAddress,
+                        lastUserData.BitcoinCashAddress, lastUserData.SlpAddress, lastUserData.CashTokensAddress,
                         lastUserData.TeamNumber, 0, 0, lastUserData.TotalPoints, lastUserData.TotalWorkUnits));
                 }
             });
@@ -230,16 +236,18 @@
             logger.LogDebug("Last File: DownloadId={downloadId} DownloadDateTime={downloadDateTime}",
                 lastFile.DownloadId, lastFile.DownloadDateTime);
 
-            var results = new BlockingCollection<ParseResults>();
+            var results = new Collection<ParseResults>();
 
-            await Task.WhenAll(
-                Task.Factory.StartNew(async () => results.Add(await GetValidatedFile(firstFile))),
-                Task.Factory.StartNew(async () => results.Add(await GetValidatedFile(lastFile))));
+            Task<ParseResults> first = GetValidatedFile(firstFile);
+            Task<ParseResults> last = GetValidatedFile(lastFile);
 
-            ParseResults[] ordered = results.OrderBy(file => file.DownloadDateTime).ToArray();
+            await Task.WhenAll(first, last);
+
+            results.Add(await first);
+            results.Add(await last);
 
             logger.LogMethodFinished();
-            return ordered;
+            return results.ToArray();
         }
     }
 }
