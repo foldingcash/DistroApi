@@ -113,7 +113,7 @@
             {
                 return new StatsDownloadApiDataStoreCacheProvider(
                     provider.GetRequiredService<ILogger<StatsDownloadApiDataStoreCacheProvider>>(),
-                    provider.GetRequiredService<IOptions<DataStoreCacheSettings>>(),
+                    provider.GetRequiredService<IOptionsMonitor<DataStoreCacheSettings>>(),
                     provider.GetRequiredService<IAppCache>(),
                     new StatsDownloadApiDataStoreProvider(provider.GetRequiredService<IDataStoreServiceFactory>(),
                         provider.GetRequiredService<IStatsDownloadApiDatabaseService>(),
