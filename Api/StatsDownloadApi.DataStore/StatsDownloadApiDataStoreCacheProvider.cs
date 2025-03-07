@@ -1,16 +1,14 @@
 ﻿namespace StatsDownloadApi.DataStore
 {
     using System;
-    using System.Runtime.CompilerServices;
+    using System.IO;
+    using System.Text.Json;
     using System.Threading.Tasks;
-
+    using Interfaces;
+    using Interfaces.DataTransfer;
     using LazyCache;
-
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-
-    using StatsDownloadApi.Interfaces;
-    using StatsDownloadApi.Interfaces.DataTransfer;
 
     public class StatsDownloadApiDataStoreCacheProvider : IStatsDownloadApiDataStoreService
     {
@@ -20,50 +18,85 @@
 
         private readonly ILogger logger;
 
-        private readonly DataStoreCacheSettings settings;
+        private readonly IOptionsMonitor<DataStoreCacheSettings> settingsMonitor;
 
         public StatsDownloadApiDataStoreCacheProvider(ILogger<StatsDownloadApiDataStoreCacheProvider> logger,
-                                                      IOptions<DataStoreCacheSettings> settings, IAppCache cache,
-                                                      IStatsDownloadApiDataStoreService innerService)
+            IOptionsMonitor<DataStoreCacheSettings> settingsMonitor, IAppCache cache,
+            IStatsDownloadApiDataStoreService innerService)
         {
             this.logger = logger;
-            this.settings = settings.Value;
+            this.settingsMonitor = settingsMonitor;
             this.cache = cache;
             this.innerService = innerService;
         }
 
-        public Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate, FoldingUserTypes includeFoldingUserTypes)
+        private DataStoreCacheSettings Settings => settingsMonitor.CurrentValue;
+
+        public Task<FoldingUsersResult> GetFoldingMembers(DateTime startDate, DateTime endDate,
+            FoldingUserTypes includeFoldingUserTypes)
         {
-            return GetOrAdd(async () => await innerService.GetFoldingMembers(startDate, endDate, includeFoldingUserTypes),
-                $"{startDate}-{endDate}-{includeFoldingUserTypes}");
+            return GetOrAdd(
+                $"{nameof(GetFoldingMembers)}-{startDate.ToFileTimeUtc()}-{endDate.ToFileTimeUtc()}-{includeFoldingUserTypes}",
+                () => innerService.GetFoldingMembers(startDate, endDate, includeFoldingUserTypes));
         }
 
         public Task<Member[]> GetMembers(DateTime startDate, DateTime endDate)
         {
-            return GetOrAdd(async () => await innerService.GetMembers(startDate, endDate), $"{startDate}-{endDate}");
+            return GetOrAdd($"{nameof(GetMembers)}-{startDate.ToFileTimeUtc()}-{endDate.ToFileTimeUtc()}",
+                () => innerService.GetMembers(startDate, endDate));
         }
 
         public Task<Team[]> GetTeams()
         {
-            return GetOrAdd(async () => await innerService.GetTeams(), DateTimeOffset.Now.AddHours(settings.Hours));
+            return cache.GetOrAdd(nameof(GetTeams), () => innerService.GetTeams(), DateTimeOffset.Now.AddDays(1));
         }
 
-        public async Task<bool> IsAvailable()
+        public Task<bool> IsAvailable()
         {
-            return await innerService.IsAvailable();
+            return innerService.IsAvailable();
         }
 
-        private async Task<T> GetOrAdd<T>(Func<Task<T>> func, DateTimeOffset addHours, string key = null,
-                                          [CallerMemberName] string method = null)
+        private Task<T> GetOrAdd<T>(string key, Func<Task<T>> func)
         {
-            return await cache.GetOrAdd($"{method}-{key}", func, addHours);
+            return GetOrAdd(key, func,
+                DateTimeOffset.Now.AddDays(Settings.Days).AddHours(Settings.Hours).AddMinutes(Settings.Minutes));
         }
 
-        private async Task<T> GetOrAdd<T>(Func<Task<T>> func, string key = null,
-                                          [CallerMemberName] string method = null)
+        private Task<T> GetOrAdd<T>(string key, Func<Task<T>> func, DateTimeOffset expires)
         {
-            return await cache.GetOrAdd($"{method}-{key}", func,
-                       DateTimeOffset.Now.AddDays(settings.Days).AddHours(settings.Hours).AddMinutes(settings.Minutes));
+            string file = Path.Combine(Settings.Directory, key) + ".json";
+            return cache.GetOrAdd(key, async () =>
+                {
+                    if (File.Exists(file))
+                    {
+                        try
+                        {
+                            string contents = await File.ReadAllTextAsync(file);
+                            return JsonSerializer.Deserialize<T>(contents);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "Failed to read {key} from cache", key);
+                        }
+                    }
+
+                    T members = await func();
+                    if (Directory.Exists(Settings.Directory))
+                    {
+                        try
+                        {
+                            string contents = JsonSerializer.Serialize(members);
+                            await File.WriteAllTextAsync(file, contents);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "Failed to write {key} to cache", key);
+                        }
+                    }
+
+                    return members;
+                },
+                expires);
         }
     }
 }
