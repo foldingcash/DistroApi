@@ -66,6 +66,8 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging(builder => builder.AddEventLog());
+
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
