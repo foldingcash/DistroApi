@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownloadApi.Core", "Api\StatsDownloadApi.Core\StatsDownloadApi.Core.csproj", "{6252FD46-3B1B-460F-96CC-545AE7CC676F}"
 EndProject
@@ -38,9 +38,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "V2", "V2", "{64B2AAB0-86DF-412D-90CF-010319F3E7D1}"
 	ProjectSection(SolutionItems) = preProject
 		Database\V2\RunningStatsDownloadV2.sql = Database\V2\RunningStatsDownloadV2.sql
-		Database\V2\StatsApiStoredProceduresV2.SQL = Database\V2\StatsApiStoredProceduresV2.SQL
-		Database\V2\StatsDownloaderStoredProceduresV2.sql = Database\V2\StatsDownloaderStoredProceduresV2.sql
-		Database\V2\StatsDownloadSchemaV2.sql = Database\V2\StatsDownloadSchemaV2.sql
+		Database\V2\4.StatsApiStoredProceduresV2.SQL = Database\V2\4.StatsApiStoredProceduresV2.SQL
+		Database\V2\3.StatsDownloaderStoredProceduresV2.sql = Database\V2\3.StatsDownloaderStoredProceduresV2.sql
+		Database\V2\2.StatsDownloadSchemaV2.sql = Database\V2\2.StatsDownloadSchemaV2.sql
+		Database\V2\1.StatsDownloadDatabase.sql = Database\V2\1.StatsDownloadDatabase.sql
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.DataStore", "Shared\StatsDownload.DataStore\StatsDownload.DataStore.csproj", "{9802451D-B87B-484D-9A08-99DC6EC9E609}"
@@ -87,7 +88,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing Apps", "Testing App
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Core.TestHarness", "StatsDownload\StatsDownload.Core.TestHarness\StatsDownload.Core.TestHarness.csproj", "{F8199C3F-77B9-4AA7-AE16-2C8DED0FCCF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDownload.Email.DependencyInjection", "Shared\StatsDownload.Email.DependencyInjection\StatsDownload.Email.DependencyInjection.csproj", "{27EF2C09-7D04-424B-B35A-0FE37A564DDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatsDownload.Email.DependencyInjection", "Shared\StatsDownload.Email.DependencyInjection\StatsDownload.Email.DependencyInjection.csproj", "{27EF2C09-7D04-424B-B35A-0FE37A564DDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
