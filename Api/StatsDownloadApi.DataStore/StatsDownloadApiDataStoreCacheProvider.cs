@@ -64,7 +64,7 @@
 
         private Task<T> GetOrAdd<T>(string key, Task<T> task, DateTimeOffset expires)
         {
-            string file = Path.Combine(Settings.Directory, $"{key}.json") + ".json";
+            string file = Path.Combine(Settings.Directory, $"{key}.json");
             return cache.GetOrAdd(key, async () =>
                 {
                     logger.LogInformation("Api cached service invoked function with {key}, expecting cached file at {file}", key, file);
