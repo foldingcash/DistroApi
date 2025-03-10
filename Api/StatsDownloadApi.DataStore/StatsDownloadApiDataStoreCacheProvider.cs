@@ -64,13 +64,15 @@
 
         private Task<T> GetOrAdd<T>(string key, Task<T> task, DateTimeOffset expires)
         {
-            string file = Path.Combine(Settings.Directory, key) + ".json";
+            string file = Path.Combine(Settings.Directory, $"{key}.json") + ".json";
             return cache.GetOrAdd(key, async () =>
                 {
+                    logger.LogInformation("Api cached service invoked function with {key}, expecting cached file at {file}", key, file);
                     if (File.Exists(file))
                     {
                         try
                         {
+                            logger.LogInformation("Cached file exists, reading from cache");
                             string contents = await File.ReadAllTextAsync(file);
                             return JsonSerializer.Deserialize<T>(contents);
                         }
@@ -85,6 +87,7 @@
                     {
                         try
                         {
+                            logger.LogInformation("Writing {key} to cache file {file}", key, file);
                             string contents = JsonSerializer.Serialize(members);
                             await File.WriteAllTextAsync(file, contents);
                         }
