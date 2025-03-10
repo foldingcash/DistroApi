@@ -37,13 +37,13 @@
         {
             return GetOrAdd(
                 $"{nameof(GetFoldingMembers)}-{startDate.ToFileTimeUtc()}-{endDate.ToFileTimeUtc()}-{includeFoldingUserTypes}",
-                innerService.GetFoldingMembers(startDate, endDate, includeFoldingUserTypes));
+                () => innerService.GetFoldingMembers(startDate, endDate, includeFoldingUserTypes));
         }
 
         public Task<Member[]> GetMembers(DateTime startDate, DateTime endDate)
         {
             return GetOrAdd($"{nameof(GetMembers)}-{startDate.ToFileTimeUtc()}-{endDate.ToFileTimeUtc()}",
-                innerService.GetMembers(startDate, endDate));
+                () => innerService.GetMembers(startDate, endDate));
         }
 
         public Task<Team[]> GetTeams()
@@ -56,18 +56,19 @@
             return innerService.IsAvailable();
         }
 
-        private Task<T> GetOrAdd<T>(string key, Task<T> task)
+        private Task<T> GetOrAdd<T>(string key, Func<Task<T>> func)
         {
-            return GetOrAdd(key, task,
+            return GetOrAdd(key, func,
                 DateTimeOffset.Now.AddDays(Settings.Days).AddHours(Settings.Hours).AddMinutes(Settings.Minutes));
         }
 
-        private Task<T> GetOrAdd<T>(string key, Task<T> task, DateTimeOffset expires)
+        private Task<T> GetOrAdd<T>(string key, Func<Task<T>> func, DateTimeOffset expires)
         {
             string file = Path.Combine(Settings.Directory, $"{key}.json");
             return cache.GetOrAdd(key, async () =>
                 {
-                    logger.LogInformation("Api cached service invoked function with {key}, expecting cached file at {file}", key, file);
+                    logger.LogInformation(
+                        "Api cached service invoked function with {key}, expecting cached file at {file}", key, file);
                     if (File.Exists(file))
                     {
                         try
@@ -82,7 +83,7 @@
                         }
                     }
 
-                    T members = await task;
+                    T members = await func();
                     if (Directory.Exists(Settings.Directory))
                     {
                         try
