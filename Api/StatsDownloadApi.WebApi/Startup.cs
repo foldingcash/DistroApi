@@ -4,26 +4,26 @@
     using System.Diagnostics;
     using System.IO;
     using System.Reflection;
-
+    using System.Text.Json.Serialization;
+    using Core;
+    using Database;
+    using DataStore;
+    using HealthChecks.UI.Client;
+    using Interfaces;
     using LazyCache;
-
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.OpenApi.Models;
-
     using StatsDownload.Core.Interfaces;
     using StatsDownload.Core.Interfaces.Settings;
     using StatsDownload.DependencyInjection;
-
-    using StatsDownloadApi.Core;
-    using StatsDownloadApi.Database;
-    using StatsDownloadApi.DataStore;
-    using StatsDownloadApi.Interfaces;
 
     public class Startup
     {
@@ -53,6 +53,8 @@
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseRouting();
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -60,17 +62,55 @@
                 c.RoutePrefix = swaggerSettings.SwaggerUrl;
             });
 
-            app.UseRouting();
-            app.UseEndpoints(builder => builder.MapControllers());
+            app.UseHealthChecksUI(options =>
+            {
+                options.PageTitle = "API Health UI";
+                options.UIPath = "/health-ui";
+            });
+
+            app.UseEndpoints(builder =>
+            {
+                builder.MapHealthChecks("/health");
+                builder.MapHealthChecks("/health/details", new HealthCheckOptions
+                {
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                builder.MapControllers();
+            });
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddLogging(builder => builder.AddEventLog());
+            services.AddLogging(builder =>
+            {
+                if (OperatingSystem.IsWindows())
+                {
+                    builder.AddEventLog();
+                }
+            });
+
+            services.AddHealthChecks()
+                    .AddSqlServer(configuration[$"{nameof(DatabaseSettings)}:ConnectionString"],
+                        healthQuery: "select 1", name: "SQL Server", failureStatus: HealthStatus.Unhealthy,
+                        tags: new[] { "Feedback", "Database" });
+
+            services.AddHealthChecksUI(settings =>
+                    {
+                        settings.AddWebhookNotification("Discord",
+                            configuration["Alerting:DiscordWebhook"],
+                            "{ \"content\": \"Webhook report for [[LIVENESS]]: [[FAILURE]] - Description: [[DESCRIPTIONS]]\" }",
+                            "{ \"content\": \"[[LIVENESS]] is back to life\" }");
+                        settings.SetNotifyUnHealthyOneTimeUntilChange();
+                        settings.SetEvaluationTimeInSeconds(10);
+                        settings.MaximumHistoryEntriesPerEndpoint(60);
+                        settings.SetApiMaxActiveRequests(1);
+                        settings.AddHealthCheckEndpoint("FoldingCash API", "/health/details");
+                    })
+                    .AddInMemoryStorage();
 
             services.AddControllers().AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
 
             services.AddSwaggerGen(c =>
