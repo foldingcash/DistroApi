@@ -9,6 +9,7 @@
     using Microsoft.Extensions.Logging;
 
     [Produces("application/json")]
+    [Route("[controller]")]
     [Route("v1/[controller]")]
     public class GetDistroController : ApiControllerBase
     {

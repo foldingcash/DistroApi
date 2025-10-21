@@ -134,7 +134,6 @@
                                     .Configure<DatabaseSettings>(configuration.GetSection(nameof(DatabaseSettings)))
                                     .Configure<FilterSettings>(configuration.GetSection(nameof(FilterSettings)))
                                     .Configure<DateTimeSettings>(configuration.GetSection(nameof(DateTimeSettings)))
-                                    .Configure<DatabaseSettings>(configuration.GetSection(nameof(DatabaseSettings)))
                                     .Configure<DataStoreSettings>(configuration.GetSection(nameof(DataStoreSettings)))
                                     .Configure<DownloadSettings>(configuration.GetSection(nameof(DownloadSettings)));
         }

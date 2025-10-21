@@ -10,6 +10,7 @@
     using StatsDownloadApi.Interfaces;
 
     [Produces("application/json")]
+    [Route("[controller]")]
     [Route("v1/[controller]")]
     public class GetMembersController : ApiControllerBase
     {
