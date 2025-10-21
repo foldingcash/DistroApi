@@ -4,14 +4,12 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
-    using System.Data.SqlClient;
     using System.Linq;
-
+    using Core.Interfaces;
+    using Core.Interfaces.Settings;
+    using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-
-    using StatsDownload.Core.Interfaces;
-    using StatsDownload.Core.Interfaces.Settings;
 
     public class MicrosoftSqlDatabaseConnectionProvider : IDatabaseConnectionService
     {
@@ -24,7 +22,7 @@
         private DbConnection sqlConnection;
 
         public MicrosoftSqlDatabaseConnectionProvider(ILogger<MicrosoftSqlDatabaseConnectionProvider> logger,
-                                                      IOptions<DatabaseSettings> settings)
+            IOptions<DatabaseSettings> settings)
         {
             this.logger = logger;
             this.settings = settings.Value;
@@ -109,7 +107,7 @@
         }
 
         public void ExecuteStoredProcedure(string storedProcedure, IEnumerable<DbParameter> parameters,
-                                           DataTable dataTable)
+            DataTable dataTable)
         {
             using (DbCommand command = CreateStoredProcedureCommand(storedProcedure))
             {
@@ -131,7 +129,7 @@
         }
 
         public int ExecuteStoredProcedure(DbTransaction transaction, string storedProcedure,
-                                          IEnumerable<DbParameter> parameters)
+            IEnumerable<DbParameter> parameters)
         {
             using (DbCommand command = CreateStoredProcedureCommand(storedProcedure))
             {
