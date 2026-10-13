@@ -68,6 +68,8 @@
                 options.UIPath = "/health-ui";
             });
 
+            app.UseCors();
+
             app.UseEndpoints(builder =>
             {
                 builder.MapHealthChecks("/health");
@@ -108,6 +110,16 @@
                     })
                     .AddInMemoryStorage();
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder
+                        .AllowAnyHeader()
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod();
+                });
+            });
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
